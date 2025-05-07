@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>profiles</title>
+  </head>
+  <body>
+    <div class="main-container">
+      <% for (let profile of profiles) { %>
+      <div class="profile">
+        <h3><%= profile.name %> (@<%= profile.username %>)</h3>
+        <p><strong>Gender:</strong> <%= profile.gender %></p>
+        <p><strong>City:</strong> <%= profile.city %></p>
+        <a href="/profiles/<%= profile._id %>">View Profile</a>
+      </div>
+      <% } %>
+    </div>
+  </body>
+</html>

@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   },
   city: {
     type: String,
-    // required: true,
+    required: true,
   },
   contact: {
     type: Number,
@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["male", "female", "rather not say"],
   },
-  interestedIn: [
+  peopleInterested: [
     {
       type: mongoose.Types.ObjectId,
       ref: "User",

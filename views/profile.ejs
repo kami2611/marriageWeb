@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile</title>
+  </head>
+  <body>
+    <h1>Profile Details</h1>
+    <p><strong>Name:</strong> <%= profile.name %></p>
+    <p><strong>Gender:</strong> <%= profile.gender %></p>
+    <p><strong>Age:</strong> <%= profile.age %></p>
+    <p><strong>Email:</strong> <%= profile.email %></p>
+    <button onclick="handleInterestClick(this)" data-id="<%= profile._id %>">
+      interested? request full access
+    </button>
+  </body>
+  <script>
+    async function handleInterestClick(button) {
+      const profileId = button.dataset.id;
+      const response = await fetch(`/interested/${profileId}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }).then((res) => {
+        console.log(res);
+      });
+    }
+  </script>
+</html>
