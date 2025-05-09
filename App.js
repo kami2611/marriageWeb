@@ -73,28 +73,45 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get("/account", isLoggedIn, findUser, (req, res) => {
-  console.log(req.userData);
-  const userData = req.userData;
-  res.render("account", { userData });
+// app.get("/account", isLoggedIn, findUser, (req, res) => {
+//   //just rendering the missed fileds. nned to fix that. get user details, find the missing fileds, pass that to ejs and ejs renders form based on missing inputs
+//   console.log(req.userData);
+//   const userData = req.userData;
+//   res.render("account", { userData });
+// });
+
+// app.post("/account", async (req, res) => {
+//   const { adress, city, contact, religion } = req.body;
+//   await User.findByIdAndUpdate(req.session.userId, {
+//     adress,
+//     city,
+//     contact,
+//     religion,
+//   });
+//   return res.send("updated your profile");
+// });
+
+app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
+  const accountInfo = req.userData;
+  res.render("account/accountInfo", { accountInfo });
 });
-app.post("/account", async (req, res) => {
-  const { adress, city, contact, religion } = req.body;
-  await User.findByIdAndUpdate(req.session.userId, {
-    adress,
-    city,
-    contact,
-    religion,
-  });
-  return res.send("updated your profile");
+
+// app.get("/yourAccount/info", isLoggedIn, findUser, (req, res) => {
+//   const accountInfo = req.userData;
+//   console.log(accountInfo);
+//   res.render("userAccount/accountInfo", { accountInfo });
+// });
+app.get("/account/peopleInterested", isLoggedIn, findUser, (req, res) => {
+  const accountInfo = req.userData;
+  console.log(accountInfo);
+  res.render("account/peopleInterested", { accountInfo });
 });
 
 app.get("/profiles", async (req, res) => {
-  //we will get only name, gender, city and _id say.
+  //we will get only name, gender, city and _id say. modify this and get only specific informations.
   const profiles = await User.find({});
   console.log(profiles);
   return res.render("profiles", { profiles });
-  // res.json(profiles);
 });
 app.get("/profiles/:id", async (req, res) => {
   try {
@@ -128,15 +145,15 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   }
   return res.json({ message: "User has been added to peopleInterested" });
 });
-app.get("/everyprof", async (req, res) => {
-  const allprofs = await User.find({}).populate("peopleInterested");
-  console.log(allprofs);
-});
-app.get("/sana", async (req, res) => {
-  const sana = await User.find({ username: "sana88" }).populate(
+// app.get("/everyprof", async (req, res) => {
+//   const allprofs = await User.find({}).populate("peopleInterested");
+//   console.log(allprofs);
+// });
+app.get("/kamran", async (req, res) => {
+  const ahmad = await User.find({ username: "kamran" }).populate(
     "peopleInterested"
   );
-  console.log(JSON.stringify(sana, null, 2));
+  console.log(JSON.stringify(ahmad, null, 2));
 });
 
 app.listen(3000, (req, res) => {

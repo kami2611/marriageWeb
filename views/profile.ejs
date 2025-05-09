@@ -18,14 +18,15 @@
   <script>
     async function handleInterestClick(button) {
       const profileId = button.dataset.id;
-      const response = await fetch(`/interested/${profileId}`, {
+      const res = await fetch(`/interested/${profileId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-      }).then((res) => {
-        console.log(res);
       });
-    }
+      const data = await res.json();
+      button.innerHTML = "Request Sent";
+      alert(data.message);
+    } //working fine.
   </script>
 </html>
