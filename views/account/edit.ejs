@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>edit account</title>
+  </head>
+  <body>
+    <form action="/account/edit" method="POST">
+      <label>
+        Name:
+        <input type="text" name="name" value="<%= userData.name %>" />
+      </label>
+
+      <br />
+
+      <label>
+        Address:
+        <input type="text" name="adress" value="<%= userData.adress %>" />
+      </label>
+      <br />
+
+      <label>
+        City:
+        <input type="text" name="city" value="<%= userData.city %>" />
+      </label>
+      <br />
+
+      <label>
+        Contact:
+        <input type="number" name="contact" value="<%= userData.contact %>" />
+      </label>
+      <br />
+      <label>
+        Gender:
+        <select name="gender">
+          <% if (userData.gender === "male") { %>
+          <option value="male" selected>Male</option>
+          <% } else { %>
+          <option value="male">Male</option>
+          <% } %> <% if (userData.gender === "female") { %>
+          <option value="female" selected>Female</option>
+          <% } else { %>
+          <option value="female">Female</option>
+          <% } %> <% if (userData.gender === "rather not say") { %>
+          <option value="rather not say" selected>Rather not say</option>
+          <% } else { %>
+          <option value="rather not say">Rather not say</option>
+          <% } %>
+        </select>
+      </label>
+      <br />
+
+      <button type="submit">Update</button>
+    </form>
+  </body>
+</html>

@@ -73,51 +73,59 @@ app.get("/logout", (req, res) => {
   });
 });
 
-// app.get("/account", isLoggedIn, findUser, (req, res) => {
-//   //just rendering the missed fileds. nned to fix that. get user details, find the missing fileds, pass that to ejs and ejs renders form based on missing inputs
-//   console.log(req.userData);
-//   const userData = req.userData;
-//   res.render("account", { userData });
-// });
+app.get("/account/edit", isLoggedIn, findUser, (req, res) => {
+  const userData = req.userData;
+  res.render("account/edit", { userData });
+});
+app.post("/account/edit", isLoggedIn, findUser, async (req, res) => {
+  const { name, adress, city, contact, gender } = req.body;
+  const user = req.userData;
 
-// app.post("/account", async (req, res) => {
-//   const { adress, city, contact, religion } = req.body;
-//   await User.findByIdAndUpdate(req.session.userId, {
-//     adress,
-//     city,
-//     contact,
-//     religion,
-//   });
-//   return res.send("updated your profile");
-// });
+  // Update fields if they exist
+  user.name = name || user.name;
+  user.adress = adress || user.adress;
+  user.city = city || user.city;
+  user.contact = contact || user.contact;
+  user.gender = gender || user.gender;
+
+  await user.save();
+  res.redirect("/account"); // or wherever you want to redirect
+});
 
 app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
   const accountInfo = req.userData;
   res.render("account/accountInfo", { accountInfo });
 });
 
-// app.get("/yourAccount/info", isLoggedIn, findUser, (req, res) => {
-//   const accountInfo = req.userData;
-//   console.log(accountInfo);
-//   res.render("userAccount/accountInfo", { accountInfo });
-// });
 app.get("/account/peopleInterested", isLoggedIn, findUser, (req, res) => {
+  //will be used as a notification system only.
   const accountInfo = req.userData;
   console.log(accountInfo);
   res.render("account/peopleInterested", { accountInfo });
 });
 
+app.get("/account/shared", isLoggedIn, findUser, async (req, res) => {
+  const allAccounts = await User.find().populate("peopleInterested");
+  const yourInfoSharedWithAccounts = allAccounts.filter((account) =>
+    account.peopleInterested.some(
+      (person) => person._id.toString() === req.userData._id.toString()
+    )
+  );
+  res.render("account/shared", { yourInfoSharedWithAccounts });
+});
+
 app.get("/profiles", async (req, res) => {
   //we will get only name, gender, city and _id say. modify this and get only specific informations.
   const profiles = await User.find({});
-  console.log(profiles);
+  // console.log(profiles);
   return res.render("profiles", { profiles });
 });
 app.get("/profiles/:id", async (req, res) => {
   try {
+    console.log("user visited");
     const { id } = req.params;
     const foundProfile = await User.findById(id);
-    console.log(foundProfile);
+    console.log("profile found", foundProfile);
     if (!foundProfile) {
       return res.status(404).send("Profile not found");
     }
@@ -145,17 +153,25 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   }
   return res.json({ message: "User has been added to peopleInterested" });
 });
-// app.get("/everyprof", async (req, res) => {
-//   const allprofs = await User.find({}).populate("peopleInterested");
-//   console.log(allprofs);
-// });
-app.get("/kamran", async (req, res) => {
-  const ahmad = await User.find({ username: "kamran" }).populate(
-    "peopleInterested"
-  );
-  console.log(JSON.stringify(ahmad, null, 2));
-});
+app.post(
+  "/account/stop-sharing/:id",
+  isLoggedIn,
+  findUser,
+  async (req, res) => {
+    const userIdToRemove = req.params.id;
+    const currentUserId = req.userData._id;
 
+    const user = await User.findById(userIdToRemove);
+    if (!user) return res.json({ success: false, message: "User not found" });
+
+    user.peopleInterested = user.peopleInterested.filter(
+      (id) => id.toString() !== currentUserId.toString()
+    );
+
+    await user.save();
+    res.json({ success: true });
+  }
+);
 app.listen(3000, (req, res) => {
   console.log("on port 3000!");
 });

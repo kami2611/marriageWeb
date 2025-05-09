@@ -27,6 +27,10 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["male", "female", "rather not say"],
   },
+  religion: {
+    type: String,
+    enum: ["islam", "hinduism", "christianity", "other"],
+  },
   peopleInterested: [
     {
       type: mongoose.Types.ObjectId,
