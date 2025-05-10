@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Requests</title>
+  </head>
+  <body>
+    <h1>Requests you sent</h1>
+
+    <% if (requestsSentByYou.length === 0) { %>
+    <p>You haven't sent any requests yet.</p>
+    <% } else { %>
+    <ul>
+      <% requestsSentByYou.forEach(req => { %>
+      <li>
+        <p><strong>Username:</strong> <%= req.to.username %></p>
+        <p><strong>City:</strong> <%= req.to.city %></p>
+        <p><strong>Status:</strong> <%= req.status %></p>
+      </li>
+      <hr />
+      <% }) %>
+    </ul>
+    <% } %>
+  </body>
+</html>

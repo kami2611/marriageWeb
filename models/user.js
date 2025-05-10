@@ -37,5 +37,11 @@ const userSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
+  likeRequests: [
+    {
+      type: mongoose.Types.ObjectId,
+      ref: "Request",
+    },
+  ],
 });
 module.exports = mongoose.model("User", userSchema);

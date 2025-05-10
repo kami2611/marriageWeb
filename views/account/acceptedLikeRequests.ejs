@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>accepted Requests</title>
+  </head>
+  <body>
+    <h1>accepted Requests</h1>
+    <h3>
+      there are the people that have shared all their info with you and you are
+      sharing your full information back
+    </h3>
+    <% if (acceptedlikeRequests.length === 0) { %>
+    <p>You did not accept any request/ not sharing any data with someone.</p>
+    <% } else { %>
+    <ul>
+      <% acceptedlikeRequests.forEach((req) => { %>
+      <li>
+        <p><strong>From:</strong> <%= req.from.username %></p>
+        <ul>
+          <li>Username: <%= req.from.username %></li>
+          <li>Name: <%= req.from.name %></li>
+          <li>City: <%= req.from.city %></li>
+          <li>Contact: <%= req.from.contact %></li>
+          <li>Gender: <%= req.from.gender %></li>
+          <li>Religion: <%= req.from.religion %></li>
+          <li>Address: <%= req.from.adress %></li>
+        </ul>
+        <p><strong>Status:</strong> <%= req.status %></p>
+
+        <form
+          action="/requests/<%= req._id %>/reject"
+          method="POST"
+          style="display: inline"
+        >
+          <button type="submit">Reject</button>
+        </form>
+      </li>
+      <hr />
+      <% }) %>
+    </ul>
+    <% } %>
+  </body>
+</html>

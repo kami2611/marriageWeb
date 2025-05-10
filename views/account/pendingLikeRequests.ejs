@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pending Requests</title>
+  </head>
+  <body>
+    <h1>Pending Requests</h1>
+    <p>
+      the requests that are sent by someone (they are sharing all their info
+      data with you but you are not.)
+    </p>
+    <% if (pendinglikeRequests.length === 0) { %>
+    <p>No pending like requests.</p>
+    <% } else { %>
+    <ul>
+      <% pendinglikeRequests.forEach((req) => { %>
+      <li>
+        <p><strong>From:</strong> <%= req.from.username %></p>
+        <ul>
+          <li>Username: <%= req.from.username %></li>
+          <li>Name: <%= req.from.name %></li>
+          <li>City: <%= req.from.city %></li>
+          <li>Contact: <%= req.from.contact %></li>
+          <li>Gender: <%= req.from.gender %></li>
+          <li>Religion: <%= req.from.religion %></li>
+          <li>Address: <%= req.from.adress %></li>
+        </ul>
+        <p><strong>Status:</strong> <%= req.status %></p>
+        <h3>
+          if you want to share all your data with them too, click accept.
+          otherwise reject
+        </h3>
+        <form
+          action="/requests/<%= req._id %>/accept"
+          method="POST"
+          style="display: inline"
+        >
+          <button type="submit">Accept</button>
+        </form>
+
+        <form
+          action="/requests/<%= req._id %>/reject"
+          method="POST"
+          style="display: inline"
+        >
+          <button type="submit">Reject</button>
+        </form>
+      </li>
+      <hr />
+      <% }) %>
+    </ul>
+    <% } %>
+  </body>
+</html>
