@@ -17,6 +17,13 @@
         <p><strong>Username:</strong> <%= req.to.username %></p>
         <p><strong>City:</strong> <%= req.to.city %></p>
         <p><strong>Status:</strong> <%= req.status %></p>
+        <% if (req.status === 'accepted') { %>
+        <p><strong>Name:</strong> <%= req.to.name %></p>
+        <p><strong>Address:</strong> <%= req.to.adress %></p>
+        <p><strong>Contact:</strong> <%= req.to.contact %></p>
+        <p><strong>Gender:</strong> <%= req.to.gender %></p>
+        <p><strong>Religion:</strong> <%= req.to.religion %></p>
+        <% } %>
       </li>
       <hr />
       <% }) %>
