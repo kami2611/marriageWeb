@@ -29,6 +29,12 @@
         <p><strong>Username:</strong> <%= req.to.username %></p>
         <p><strong>City:</strong> <%= req.to.city %></p>
         <p><strong>Status:</strong> <%= req.status %></p>
+        <button
+          onclick="handleRequestCancel(this)"
+          data-request_id="<%= req._id %>"
+        >
+          cancel request
+        </button>
         <% if (req.status === 'accepted') { %>
         <p><strong>Name:</strong> <%= req.to.name %></p>
         <p><strong>Address:</strong> <%= req.to.adress %></p>
@@ -55,6 +61,19 @@
             req.style.display = "none";
           }
         });
+      }
+      async function handleRequestCancel(button) {
+        const requestId = button.dataset.request_id;
+        const res = await fetch(`/requests/${requestId}/cancel`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (res.ok) {
+          button.innerText = "canceled";
+          button.disabled = true;
+        }
       }
     </script>
   </body>

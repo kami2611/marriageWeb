@@ -155,6 +155,11 @@ app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
   await loggedUser.save();
   res.json({ message: "request rejected" });
 });
+app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {
+  const requestId = req.params.id;
+  await Request.findByIdAndDelete(requestId);
+  res.json({ message: "request canceled" });
+});
 
 app.get("/profiles", async (req, res) => {
   //we will get only name, gender, city and _id say. modify this and get only specific informations.
