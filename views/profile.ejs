@@ -9,17 +9,27 @@
     <h1>Profile Details</h1>
     <p><strong>Name:</strong> <%= profile.name %></p>
     <p><strong>Gender:</strong> <%= profile.gender %></p>
+
+    <% if (canAccessFullProfile) { %>
+    <h3>you can access their full profile</h3>
     <p><strong>Age:</strong> <%= profile.age %></p>
     <p><strong>Email:</strong> <%= profile.email %></p>
+    <p><strong>City:</strong> <%= profile.city %></p>
+    <p><strong>Address:</strong> <%= profile.adress %></p>
+    <p><strong>Contact:</strong> <%= profile.contact %></p>
+    <p><strong>Religion:</strong> <%= profile.religion %></p>
+    <% } else { %>
     <p>
-      you will be sharing all your information with this person e.g contact
-      number etc. if they accept your request, they will start sharing their
-      full data too
+      You will be sharing all your information with this person (e.g., contact
+      number etc). If they accept your request, they will start sharing their
+      full data too.
     </p>
     <button onclick="handleInterestClick(this)" data-id="<%= profile._id %>">
-      interested? request full access
+      Interested? Request full access
     </button>
+    <% } %>
   </body>
+
   <script>
     async function handleInterestClick(button) {
       const profileId = button.dataset.id;
@@ -30,6 +40,10 @@
         },
       });
       const data = await res.json();
+      if (!res.ok) {
+        alert(data.message);
+        return;
+      }
       button.innerHTML = "Request Sent";
       alert(data.message);
     } //working fine.

@@ -27,6 +27,9 @@ mongoose
   .catch((err) => {
     console.log("Err mongoose!");
   });
+app.get(["/", "/home"], (req, res) => {
+  res.render("home");
+});
 
 app.get("/register", (req, res) => {
   res.render("register");
@@ -134,6 +137,12 @@ app.post("/requests/:id/accept", async (req, res) => {
   const request = await Request.findById(requestId);
   request.status = "accepted";
   await request.save();
+  const requestFromUser = await User.findById(request.from);
+  const requestToUser = await User.findById(request.to);
+  requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
+  requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
+  await requestFromUser.save();
+  await requestToUser.save();
   res.json({ message: "request accepted" });
 });
 app.post("/requests/:id/reject", async (req, res) => {
@@ -171,16 +180,30 @@ app.get("/profiles", async (req, res) => {
   // console.log(profiles);
   return res.render("profiles", { profiles });
 });
+
 app.get("/profiles/:id", async (req, res) => {
   try {
-    console.log("user visited");
     const { id } = req.params;
     const foundProfile = await User.findById(id);
-    // console.log("profile found", foundProfile);
+
     if (!foundProfile) {
       return res.status(404).send("Profile not found");
     }
-    res.render("profile", { profile: foundProfile });
+
+    let canAccessFullProfile = false; // Initialize with default value
+
+    if (req.session.userId) {
+      const loggedUser = await User.findById(req.session.userId);
+      if (
+        loggedUser.canAccessFullProfileOf.some((userId) =>
+          userId.equals(foundProfile._id)
+        )
+      ) {
+        canAccessFullProfile = true;
+      }
+    }
+
+    res.render("profile", { profile: foundProfile, canAccessFullProfile });
   } catch (err) {
     res.status(500).send("Server error");
   }
@@ -189,15 +212,15 @@ app.get("/profiles/:id", async (req, res) => {
 app.post("/interested/:id", isLoggedIn, async (req, res) => {
   const beinglikeduserId = req.params.id; //beingliked
   const beingLikedUser = await User.findById(beinglikeduserId);
-  // console.log(beingLikedUser);
   const likeUserId = req.session.userId; //whoisliking
+  beingLikedUser.canAccessFullProfileOf.push(likeUserId); //pushing your id to the liked person access full profile list.
+  await beingLikedUser.save();
   const newRequest = new Request({
     from: likeUserId,
     to: beinglikeduserId,
   });
   await newRequest.save();
-  // const beinglikeduser = req.session.user;
-  // const beinglikedUser = await User.findById(req.session.userId);
+
   beingLikedUser.likeRequests.push(newRequest);
   await beingLikedUser.save();
   return res.json({
@@ -237,6 +260,7 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
 //     res.json({ success: true });
 //   }
 // );
+
 app.listen(3000, (req, res) => {
   console.log("on port 3000!");
 });
