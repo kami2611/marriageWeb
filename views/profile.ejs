@@ -18,6 +18,8 @@
     <p><strong>Address:</strong> <%= profile.adress %></p>
     <p><strong>Contact:</strong> <%= profile.contact %></p>
     <p><strong>Religion:</strong> <%= profile.religion %></p>
+    <% } else { %> <% if (hasalreadysentrequest) { %>
+    <p>You’ve already sent a request. Please wait for their response.</p>
     <% } else { %>
     <p>
       You will be sharing all your information with this person (e.g., contact
@@ -27,7 +29,7 @@
     <button onclick="handleInterestClick(this)" data-id="<%= profile._id %>">
       Interested? Request full access
     </button>
-    <% } %>
+    <% } %> <% } %>
   </body>
 
   <script>
@@ -45,7 +47,8 @@
         return;
       }
       button.innerHTML = "Request Sent";
+      button.disabled = true;
       alert(data.message);
-    } //working fine.
+    }
   </script>
 </html>

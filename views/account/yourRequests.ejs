@@ -4,16 +4,28 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Your Requests</title>
+    <style>
+      .hidden {
+        display: none;
+      }
+    </style>
   </head>
   <body>
     <h1>Requests you sent</h1>
 
+    <label for="statusFilter">Filter by status:</label>
+    <select id="statusFilter" onchange="filterRequests()">
+      <option value="all">All</option>
+      <option value="pending">Pending</option>
+      <option value="accepted">Accepted</option>
+    </select>
+
     <% if (requestsSentByYou.length === 0) { %>
     <p>You haven't sent any requests yet.</p>
     <% } else { %>
-    <ul>
+    <ul id="requestList">
       <% requestsSentByYou.forEach(req => { %>
-      <li>
+      <li class="request" data-status="<%= req.status %>">
         <p><strong>Username:</strong> <%= req.to.username %></p>
         <p><strong>City:</strong> <%= req.to.city %></p>
         <p><strong>Status:</strong> <%= req.status %></p>
@@ -24,10 +36,26 @@
         <p><strong>Gender:</strong> <%= req.to.gender %></p>
         <p><strong>Religion:</strong> <%= req.to.religion %></p>
         <% } %>
+        <hr />
       </li>
-      <hr />
       <% }) %>
     </ul>
     <% } %>
+
+    <script>
+      function filterRequests() {
+        const selected = document.getElementById("statusFilter").value;
+        const requests = document.querySelectorAll(".request");
+
+        requests.forEach((req) => {
+          const status = req.dataset.status;
+          if (selected === "all" || status === selected) {
+            req.style.display = "block";
+          } else {
+            req.style.display = "none";
+          }
+        });
+      }
+    </script>
   </body>
 </html>

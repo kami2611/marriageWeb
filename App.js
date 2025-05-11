@@ -132,7 +132,7 @@ app.get("/account/yourRequests", isLoggedIn, async (req, res) => {
   res.render("account/yourRequests", { requestsSentByYou });
 });
 
-app.post("/requests/:id/accept", async (req, res) => {
+app.post("/requests/:id/accept", isLoggedIn, async (req, res) => {
   const requestId = req.params.id;
   const request = await Request.findById(requestId);
   request.status = "accepted";
@@ -145,34 +145,16 @@ app.post("/requests/:id/accept", async (req, res) => {
   await requestToUser.save();
   res.json({ message: "request accepted" });
 });
-app.post("/requests/:id/reject", async (req, res) => {
+app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
   const requestId = req.params.id;
   const request = await Request.findById(requestId);
   request.status = "rejected";
   await request.save();
+  const loggedUser = await User.findById(req.session.userId);
+  loggedUser.canAccessFullProfileOf.pull(request.from);
+  await loggedUser.save();
   res.json({ message: "request rejected" });
 });
-
-// app.get("/account/peopleInterested", isLoggedIn, findUser, (req, res) => {
-//   //will be used as a notification system only.
-//   const accountInfo = req.userData;
-//   console.log(accountInfo);
-//   res.render("account/peopleInterested", { accountInfo });
-// });
-
-// app.get("/account/youAreSharingWith", (req, res) => {});
-// app.get("/account/sharingWithYou", (req, res) => {});
-// app.get("/account/mutualSharing", (req, res) => {});
-
-// app.get("/account/shared", isLoggedIn, findUser, async (req, res) => {
-//   const allAccounts = await User.find().populate("peopleInterested");
-//   const yourInfoSharedWithAccounts = allAccounts.filter((account) =>
-//     account.peopleInterested.some(
-//       (person) => person._id.toString() === req.userData._id.toString()
-//     )
-//   );
-//   res.render("account/shared", { yourInfoSharedWithAccounts });
-// });
 
 app.get("/profiles", async (req, res) => {
   //we will get only name, gender, city and _id say. modify this and get only specific informations.
@@ -185,15 +167,16 @@ app.get("/profiles/:id", async (req, res) => {
   try {
     const { id } = req.params;
     const foundProfile = await User.findById(id);
-
     if (!foundProfile) {
       return res.status(404).send("Profile not found");
     }
 
-    let canAccessFullProfile = false; // Initialize with default value
+    let canAccessFullProfile = false;
+    let hasalreadysentrequest = false; // Initialize safely for both logged-in and not
 
     if (req.session.userId) {
       const loggedUser = await User.findById(req.session.userId);
+
       if (
         loggedUser.canAccessFullProfileOf.some((userId) =>
           userId.equals(foundProfile._id)
@@ -201,9 +184,23 @@ app.get("/profiles/:id", async (req, res) => {
       ) {
         canAccessFullProfile = true;
       }
+
+      const existingRequest = await Request.findOne({
+        from: req.session.userId,
+        to: id,
+        status: "pending",
+      });
+
+      if (existingRequest) {
+        hasalreadysentrequest = true;
+      }
     }
 
-    res.render("profile", { profile: foundProfile, canAccessFullProfile });
+    res.render("profile", {
+      profile: foundProfile,
+      canAccessFullProfile,
+      hasalreadysentrequest,
+    });
   } catch (err) {
     res.status(500).send("Server error");
   }
@@ -226,20 +223,6 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   return res.json({
     message: `successully sent your like request along with your data to ${beingLikedUser.username}`,
   });
-  //need to handle duplicate requests.
-
-  //   if (
-  //     !beingLikedUser.peopleInterested.some(
-  //       (id) => id.toString() === likeUserId.toString()
-  //     )
-  //   ) {
-  //     console.log("this is running code");
-  //     console.log(beingLikedUser);
-  //     console.log(likeUserId);
-  //     beingLikedUser.peopleInterested.push(likeUserId);
-  //     await beingLikedUser.save();
-  //   }
-  //   return res.json({ message: "User has been added to peopleInterested" });
 });
 // app.post(
 //   "/account/stop-sharing/:id",
@@ -255,7 +238,6 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
 //     user.peopleInterested = user.peopleInterested.filter(
 //       (id) => id.toString() !== currentUserId.toString()
 //     );
-
 //     await user.save();
 //     res.json({ success: true });
 //   }
