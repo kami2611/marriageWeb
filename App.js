@@ -152,13 +152,42 @@ app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
   await request.save();
   const loggedUser = await User.findById(req.session.userId);
   loggedUser.canAccessFullProfileOf.pull(request.from);
+  const requestFromUser = await User.findById(request.from);
+  try {
+    requestFromUser.canAccessFullProfileOf.pull(req.session.userId);
+  } catch (error) {
+    res.send(
+      "maybe the other user doesnt has currently access to your profule",
+      error
+    );
+  }
+  await requestFromUser.save();
   await loggedUser.save();
   res.json({ message: "request rejected" });
 });
+
 app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {
   const requestId = req.params.id;
+  const requestToCancel = await Request.findById(requestId);
+  if (!requestToCancel) {
+    return res.status(404).json({ message: "Request not found" });
+  }
+
+  const fromUserId = requestToCancel.from.toString();
+  const toUserId = requestToCancel.to.toString();
+
+  const fromUser = await User.findById(fromUserId);
+  const toUser = await User.findById(toUserId);
+
+  // Remove each other from access lists
+  fromUser.canAccessFullProfileOf.pull(toUserId);
+  toUser.canAccessFullProfileOf.pull(fromUserId);
+
+  await fromUser.save();
+  await toUser.save();
   await Request.findByIdAndDelete(requestId);
-  res.json({ message: "request canceled" });
+
+  res.json({ message: "Request canceled and access revoked from both sides." });
 });
 
 app.get("/profiles", async (req, res) => {
@@ -229,24 +258,6 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
     message: `successully sent your like request along with your data to ${beingLikedUser.username}`,
   });
 });
-// app.post(
-//   "/account/stop-sharing/:id",
-//   isLoggedIn,
-//   findUser,
-//   async (req, res) => {
-//     const userIdToRemove = req.params.id;
-//     const currentUserId = req.userData._id;
-
-//     const user = await User.findById(userIdToRemove);
-//     if (!user) return res.json({ success: false, message: "User not found" });
-
-//     user.peopleInterested = user.peopleInterested.filter(
-//       (id) => id.toString() !== currentUserId.toString()
-//     );
-//     await user.save();
-//     res.json({ success: true });
-//   }
-// );
 
 app.listen(3000, (req, res) => {
   console.log("on port 3000!");
