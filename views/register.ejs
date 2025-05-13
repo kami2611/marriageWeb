@@ -3,33 +3,128 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>register</title>
+    <title>Register - DateIt</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/register.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <a href="https://wa.me/923065896726" target="_blank">
-      Chat with us on WhatsApp to get the registration code.
-    </a>
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="/imgs/LOGO.png?height=60&width=180" alt="Company Logo" />
+          </a>
+        </div>
+        <div class="auth-buttons">
+          <a href="/register" class="btn btn-signup">Register</a>
+          <a href="/login" class="btn btn-login">Login</a>
+        </div>
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
 
-    <form action="/register" method="post">
-      <label for="username">
-        <input type="text" name="username" placeholder="name: " />
-      </label>
-      <label for="password">
-        <input type="password" name="password" placeholder="password: " />
-      </label>
-      <!-- <label for="adress">
-            <input type="text" name="adress" placeholder="adress: ">
-        </label> -->
-      <label for="city">
-        <input type="text" name="city" placeholder="city: " />
-      </label>
-      <!-- <label for="contact">
-        <input type="number" name="contact" placeholder="contact: ">
-        </label> -->
-      <label for="passcode">
-        <input type="number" name="passcode" placeholder="passcode: " />
-      </label>
-      <button type="submit">register</button>
-    </form>
+    <main>
+      <div class="container">
+        <div class="register-container">
+          <h1>Create an Account</h1>
+
+          <div class="whatsapp-link">
+            <i class="fab fa-whatsapp"></i>
+            <a href="https://wa.me/923065896726" target="_blank">
+              Chat with us on WhatsApp to get the registration code
+            </a>
+          </div>
+
+          <form action="/register" method="post" class="register-form">
+            <div class="form-group">
+              <label for="username">Name</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                placeholder="Enter your name"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Create a password"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="city">City</label>
+              <input
+                type="text"
+                id="city"
+                name="city"
+                placeholder="Enter your city"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label for="passcode">Passcode</label>
+              <input
+                type="number"
+                id="passcode"
+                name="passcode"
+                placeholder="Enter registration passcode"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn btn-signup btn-full">
+              Register
+            </button>
+          </form>
+
+          <div class="login-link">
+            Already have an account? <a href="/login">Login here</a>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We provide the latest fashion for children of all ages.</p>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <p>Email: info@example.com</p>
+            <p>Phone: (123) 456-7890</p>
+          </div>
+          <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+    <script src="/js/main.js"></script>
   </body>
 </html>

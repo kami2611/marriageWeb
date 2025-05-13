@@ -1,4 +1,5 @@
 const User = require("./models/user");
+const path = require("path");
 const Request = require("./models/Request");
 const isLoggedIn = require("./middlewares/isLoggedIn");
 const findUser = require("./middlewares/findUser");
@@ -9,6 +10,7 @@ const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 const app = express();
+app.use(express.static(path.join(__dirname, "public")));
 app.use(
   session({
     secret: process.env.SECRETKEYSESSION,

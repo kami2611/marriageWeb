@@ -3,9 +3,394 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>home</title>
+    <meta
+      name="description"
+      content="Shop the latest fashion for boys and girls"
+    />
+    <meta
+      name="keywords"
+      content="fashion, boys clothing, girls clothing, kids fashion"
+    />
+    <title>Fashion Store | Home</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- <style>
+      /* Reset and base styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Arial", sans-serif;
+        line-height: 1.6;
+        color: #333;
+        background-color: #fff;
+      }
+
+      .container {
+        width: 90%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 15px;
+      }
+
+      a {
+        text-decoration: none;
+        color: inherit;
+      }
+
+      img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      /* Header styles */
+      .header {
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 15px 0;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header .container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo img {
+        height: 60px;
+      }
+
+      .auth-buttons {
+        display: flex;
+        gap: 15px;
+      }
+
+      .btn {
+        padding: 10px 20px;
+        border-radius: 25px;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+
+      .btn-signup {
+        background-color: #ff69b4; /* Pink theme */
+        color: white;
+        border: 2px solid #ff69b4;
+      }
+
+      .btn-login {
+        background-color: transparent;
+        color: #ff69b4;
+        border: 2px solid #ff69b4;
+      }
+
+      .btn-signup:hover {
+        background-color: #ff5ba7;
+        border-color: #ff5ba7;
+      }
+
+      .btn-login:hover {
+        background-color: #fff0f5;
+      }
+
+      .mobile-menu-toggle {
+        display: none;
+        font-size: 24px;
+        color: #ff69b4;
+        cursor: pointer;
+      }
+
+      /* Categories section */
+      .categories {
+        padding: 40px 0;
+      }
+
+      .category-grid {
+        display: flex;
+        gap: 30px;
+      }
+
+      .category-item {
+        flex: 1;
+        position: relative;
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+      }
+
+      .category-item:hover {
+        transform: translateY(-5px);
+      }
+
+      .category-image {
+        position: relative;
+      }
+
+      .category-image img {
+        width: 100%;
+        height: 400px;
+        object-fit: cover;
+      }
+
+      .category-title {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: rgba(255, 105, 180, 0.8); /* Pink with opacity */
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 24px;
+        margin: 0;
+      }
+
+      /* Footer styles */
+      .footer {
+        background-color: #ffeaf2; /* Light pink */
+        padding: 40px 0 20px;
+        margin-top: 40px;
+      }
+
+      .footer-content {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 30px;
+      }
+
+      .footer-section {
+        flex: 1;
+        min-width: 200px;
+      }
+
+      .footer-section h3 {
+        color: #ff69b4;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+
+      .social-icons {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+      }
+
+      .social-icons a {
+        display: inline-block;
+        width: 40px;
+        height: 40px;
+        background-color: #ff69b4;
+        color: white;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 40px;
+        transition: background-color 0.3s ease;
+      }
+
+      .social-icons a:hover {
+        background-color: #ff5ba7;
+      }
+
+      .footer-bottom {
+        text-align: center;
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 1px solid #ffcce0;
+        color: #666;
+        font-size: 14px;
+      }
+
+      /* Responsive styles */
+      @media (max-width: 768px) {
+        .header .container {
+          flex-wrap: wrap;
+        }
+
+        .logo {
+          flex: 1;
+        }
+
+        .auth-buttons {
+          display: none;
+          width: 100%;
+          margin-top: 15px;
+          justify-content: center;
+        }
+
+        .auth-buttons.active {
+          display: flex;
+        }
+
+        .mobile-menu-toggle {
+          display: block;
+        }
+
+        .category-grid {
+          flex-direction: column;
+        }
+
+        .footer-content {
+          flex-direction: column;
+          gap: 20px;
+        }
+
+        .footer-section {
+          text-align: center;
+        }
+
+        .social-icons {
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .btn {
+          padding: 8px 15px;
+          font-size: 14px;
+        }
+
+        .category-image img {
+          height: 300px;
+        }
+
+        .category-title {
+          font-size: 20px;
+          padding: 10px;
+        }
+      }
+    </style> -->
   </head>
   <body>
-    <h1>home page</h1>
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="/imgs/LOGO.png?height=60&width=180" alt="Company Logo" />
+          </a>
+        </div>
+        <div class="auth-buttons">
+          <a href="/register" class="btn btn-signup">Sign Up</a>
+          <a href="/login" class="btn btn-login">Login</a>
+        </div>
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="categories">
+        <div class="container">
+          <div class="category-grid">
+            <div class="category-item">
+              <a href="/boys">
+                <div class="category-image">
+                  <img
+                    src="/imgs/man.jpg?height=400&width=600"
+                    alt="Boys Fashion"
+                  />
+                  <h2 class="category-title">Boys</h2>
+                </div>
+              </a>
+            </div>
+            <div class="category-item">
+              <a href="/girls">
+                <div class="category-image">
+                  <img
+                    src="/imgs/portrait-stunning-bride-with-blonde-hair-holding-peach-wedding-bouquet-her-arms.jpg?height=400&width=600"
+                    alt="Girls Fashion"
+                  />
+                  <h2 class="category-title">Girls</h2>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We provide the latest fashion for children of all ages.</p>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <p>Email: info@example.com</p>
+            <p>Phone: (123) 456-7890</p>
+          </div>
+          <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu toggle
+        const menuToggle = document.querySelector(".mobile-menu-toggle");
+        const authButtons = document.querySelector(".auth-buttons");
+
+        if (menuToggle && authButtons) {
+          menuToggle.addEventListener("click", function () {
+            authButtons.classList.toggle("active");
+          });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !event.target.closest(".mobile-menu-toggle") &&
+            !event.target.closest(".auth-buttons") &&
+            authButtons &&
+            authButtons.classList.contains("active")
+          ) {
+            authButtons.classList.remove("active");
+          }
+        });
+
+        // Add smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+          anchor.addEventListener("click", function (e) {
+            e.preventDefault();
+
+            const targetId = this.getAttribute("href");
+            if (targetId === "#") return;
+
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+              targetElement.scrollIntoView({
+                behavior: "smooth",
+              });
+            }
+          });
+        });
+      });
+    </script>
   </body>
 </html>

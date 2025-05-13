@@ -1,0 +1,142 @@
+/* Registration page specific styles */
+.register-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.register-container h1 {
+    text-align: center;
+    color: #ff69b4;
+    margin-bottom: 25px;
+    font-size: 28px;
+}
+
+.whatsapp-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 25px;
+    padding: 15px;
+    background-color: #ffeaf2;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.whatsapp-link i {
+    color: #25D366;
+    font-size: 24px;
+    margin-right: 10px;
+}
+
+.whatsapp-link a {
+    color: #333;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.whatsapp-link a:hover {
+    color: #ff69b4;
+    text-decoration: underline;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: bold;
+    color: #555;
+    font-size: 14px;
+}
+
+.form-group input {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #ff69b4;
+    box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.2);
+}
+
+.form-group input::placeholder {
+    color: #aaa;
+}
+
+/* Override for number input to remove arrows */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.btn-full {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    margin-top: 10px;
+}
+
+.login-link {
+    text-align: center;
+    margin-top: 25px;
+    color: #666;
+    font-size: 14px;
+}
+
+.login-link a {
+    color: #ff69b4;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .register-container {
+        margin: 20px auto;
+        padding: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .register-container {
+        padding: 15px;
+    }
+    
+    .register-container h1 {
+        font-size: 24px;
+    }
+    
+    .whatsapp-link {
+        font-size: 14px;
+        padding: 12px;
+    }
+    
+    .form-group input {
+        padding: 10px 12px;
+    }
+}
