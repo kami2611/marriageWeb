@@ -240,7 +240,7 @@
             if (button) {
               const isAccept = button.classList.contains("btn-accept");
               const icon = isAccept ? "check" : "times";
-              const text = isAccept ? "Accepting..." : "Rejecting...";
+              const text = isAccept ? "Accepted" : "Rejected...";
 
               button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${text}`;
               button.disabled = true;

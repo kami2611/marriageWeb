@@ -202,8 +202,15 @@ app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {
 });
 
 app.get("/profiles", async (req, res) => {
+  let profiles;
+  const { gender } = req.query;
+  console.log(gender);
+  if (gender) {
+    profiles = await User.find({ gender: gender });
+  } else {
+    profiles = await User.find({});
+  }
   //we will get only name, gender, city and _id say. modify this and get only specific informations.
-  const profiles = await User.find({});
   // console.log(profiles);
   return res.render("profiles", { profiles });
 });
