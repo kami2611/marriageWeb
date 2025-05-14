@@ -3,18 +3,212 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>profiles</title>
+    <title>Browse Profiles - Fashion Store</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/profiles.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <div class="main-container">
-      <% for (let profile of profiles) { %>
-      <div class="profile">
-        <h3><%= profile.name %> (@<%= profile.username %>)</h3>
-        <p><strong>Gender:</strong> <%= profile.gender %></p>
-        <p><strong>City:</strong> <%= profile.city %></p>
-        <a href="/profiles/<%= profile._id %>">View Profile</a>
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="/imgs/LOGO.png" alt="Company Logo" />
+          </a>
+        </div>
+        <div class="auth-buttons">
+          <% if (locals.user) { %>
+          <a href="/logout" class="btn btn-signup">Logout</a>
+          <% } else { %>
+          <a href="/register" class="btn btn-signup">Sign Up</a>
+          <a href="/login" class="btn btn-login">Login</a>
+          <% } %>
+        </div>
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
       </div>
-      <% } %>
-    </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="profiles-header">
+          <h1>Browse Profiles</h1>
+          <p>Discover people in our community</p>
+        </div>
+
+        <!-- Layout switcher -->
+        <div class="layout-switcher">
+          <span>Layout:</span>
+          <div class="layout-options">
+            <button class="layout-btn active" data-columns="3">
+              <i class="fas fa-th-large"></i> 3 Columns
+            </button>
+            <button class="layout-btn" data-columns="4">
+              <i class="fas fa-th"></i> 4 Columns
+            </button>
+          </div>
+        </div>
+
+        <div class="profiles-grid" data-current-layout="3">
+          <% for (let profile of profiles) { %>
+          <div class="profile-card">
+            <div class="profile-avatar">
+              <% if (profile.gender && profile.gender.toLowerCase() ===
+              'female') { %>
+              <i class="fas fa-female"></i>
+              <% } else { %>
+              <i class="fas fa-male"></i>
+              <% } %>
+            </div>
+            <div class="profile-info">
+              <h3>
+                <%= profile.name %>
+                <span class="username">@<%= profile.username %></span>
+              </h3>
+              <div class="profile-details">
+                <p><i class="fas fa-venus-mars"></i> <%= profile.gender %></p>
+                <p><i class="fas fa-map-marker-alt"></i> <%= profile.city %></p>
+              </div>
+              <a href="/profiles/<%= profile._id %>" class="profile-link">
+                View Profile <i class="fas fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+          <% } %>
+        </div>
+
+        <% if (profiles.length === 0) { %>
+        <div class="no-profiles">
+          <i class="fas fa-users-slash"></i>
+          <p>No profiles found</p>
+        </div>
+        <% } %>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We provide the latest fashion for children of all ages.</p>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <p>Email: info@example.com</p>
+            <p>Phone: (123) 456-7890</p>
+          </div>
+          <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu toggle
+        const menuToggle = document.querySelector(".mobile-menu-toggle");
+        const authButtons = document.querySelector(".auth-buttons");
+
+        if (menuToggle && authButtons) {
+          menuToggle.addEventListener("click", function () {
+            authButtons.classList.toggle("active");
+          });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !event.target.closest(".mobile-menu-toggle") &&
+            !event.target.closest(".auth-buttons") &&
+            authButtons &&
+            authButtons.classList.contains("active")
+          ) {
+            authButtons.classList.remove("active");
+          }
+        });
+
+        // Add animation to profile cards
+        const profileCards = document.querySelectorAll(".profile-card");
+        profileCards.forEach((card, index) => {
+          // Stagger the animation delay
+          card.style.animationDelay = `${index * 0.1}s`;
+        });
+
+        // Layout switcher functionality
+        const layoutButtons = document.querySelectorAll(".layout-btn");
+        const profilesGrid = document.querySelector(".profiles-grid");
+
+        // Save user preference to localStorage
+        const savedLayout = localStorage.getItem("profilesLayout");
+        if (savedLayout) {
+          changeLayout(savedLayout);
+
+          // Update active button
+          layoutButtons.forEach((btn) => {
+            btn.classList.toggle("active", btn.dataset.columns === savedLayout);
+          });
+        }
+
+        layoutButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const columns = this.dataset.columns;
+
+            // Don't do anything if already active
+            if (this.classList.contains("active")) return;
+
+            // Update active button
+            layoutButtons.forEach((btn) => btn.classList.remove("active"));
+            this.classList.add("active");
+
+            // Change layout with animation
+            changeLayout(columns);
+
+            // Save preference
+            localStorage.setItem("profilesLayout", columns);
+          });
+        });
+
+        function changeLayout(columns) {
+          // Add transition class for animation
+          profilesGrid.classList.add("layout-transition");
+
+          // Set current layout attribute for CSS
+          profilesGrid.dataset.currentLayout = columns;
+
+          // Reset animation for cards
+          profileCards.forEach((card) => {
+            card.style.opacity = 0;
+
+            // Trigger reflow to restart animation
+            void card.offsetWidth;
+
+            // Stagger the animation delay
+            setTimeout(() => {
+              card.style.opacity = 1;
+            }, Math.random() * 300);
+          });
+
+          // Remove transition class after animation completes
+          setTimeout(() => {
+            profilesGrid.classList.remove("layout-transition");
+          }, 500);
+        }
+      });
+    </script>
   </body>
 </html>

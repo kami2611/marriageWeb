@@ -3,52 +3,298 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Profile</title>
+    <title><%= profile.name %>'s Profile - Fashion Store</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/profile.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <h1>Profile Details</h1>
-    <p><strong>Name:</strong> <%= profile.name %></p>
-    <p><strong>Gender:</strong> <%= profile.gender %></p>
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="/imgs/LOGO.png" alt="Company Logo" />
+          </a>
+        </div>
+        <div class="auth-buttons">
+          <% if (locals.user) { %>
+          <a href="/logout" class="btn btn-signup">Logout</a>
+          <% } else { %>
+          <a href="/register" class="btn btn-signup">Sign Up</a>
+          <a href="/login" class="btn btn-login">Login</a>
+          <% } %>
+        </div>
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
 
-    <% if (canAccessFullProfile) { %>
-    <h3>you can access their full profile</h3>
-    <p><strong>Age:</strong> <%= profile.age %></p>
-    <p><strong>Email:</strong> <%= profile.email %></p>
-    <p><strong>City:</strong> <%= profile.city %></p>
-    <p><strong>Address:</strong> <%= profile.adress %></p>
-    <p><strong>Contact:</strong> <%= profile.contact %></p>
-    <p><strong>Religion:</strong> <%= profile.religion %></p>
-    <% } else { %> <% if (hasalreadysentrequest) { %>
-    <p>You’ve already sent a request. Please wait for their response.</p>
-    <% } else { %>
-    <p>
-      You will be sharing all your information with this person (e.g., contact
-      number etc). If they accept your request, they will start sharing their
-      full data too.
-    </p>
-    <button onclick="handleInterestClick(this)" data-id="<%= profile._id %>">
-      Interested? Request full access
-    </button>
-    <% } %> <% } %>
-  </body>
+    <main>
+      <div class="container">
+        <div class="profile-container">
+          <div class="profile-header">
+            <a href="/profiles" class="back-link">
+              <i class="fas fa-arrow-left"></i> Back to Profiles
+            </a>
+            <h1>Profile Details</h1>
+          </div>
 
-  <script>
-    async function handleInterestClick(button) {
-      const profileId = button.dataset.id;
-      const res = await fetch(`/interested/${profileId}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+          <div class="profile-card">
+            <div class="profile-banner">
+              <div class="profile-avatar">
+                <% if (profile.gender && profile.gender.toLowerCase() ===
+                'female') { %>
+                <i class="fas fa-female"></i>
+                <% } else { %>
+                <i class="fas fa-male"></i>
+                <% } %>
+              </div>
+            </div>
+
+            <div class="profile-content">
+              <div class="profile-basic-info">
+                <h2><%= profile.name %></h2>
+                <span class="profile-gender">
+                  <i class="fas fa-venus-mars"></i> <%= profile.gender %>
+                </span>
+              </div>
+
+              <!-- Basic info visible to all users -->
+              <div class="profile-details">
+                <div class="detail-group">
+                  <div class="detail-item">
+                    <i class="fas fa-birthday-cake"></i>
+                    <div>
+                      <span class="label">Age</span>
+                      <span class="value"><%= profile.age %></span>
+                    </div>
+                  </div>
+
+                  <div class="detail-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <div>
+                      <span class="label">City</span>
+                      <span class="value"><%= profile.city %></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Full access section -->
+              <% if (canAccessFullProfile) { %>
+              <div class="access-section">
+                <div class="access-badge">
+                  <i class="fas fa-unlock"></i> Full Access Granted
+                </div>
+
+                <div class="extended-details">
+                  <h3>Additional Information</h3>
+
+                  <div class="detail-group">
+                    <div class="detail-item">
+                      <i class="fas fa-envelope"></i>
+                      <div>
+                        <span class="label">Email</span>
+                        <span class="value"><%= profile.email %></span>
+                      </div>
+                    </div>
+
+                    <div class="detail-item">
+                      <i class="fas fa-phone"></i>
+                      <div>
+                        <span class="label">Contact</span>
+                        <span class="value"><%= profile.contact %></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="detail-group">
+                    <div class="detail-item">
+                      <i class="fas fa-home"></i>
+                      <div>
+                        <span class="label">Address</span>
+                        <span class="value"
+                          ><%= profile.adress || 'Not provided' %></span
+                        >
+                      </div>
+                    </div>
+
+                    <div class="detail-item">
+                      <i class="fas fa-pray"></i>
+                      <div>
+                        <span class="label">Religion</span>
+                        <span class="value"
+                          ><%= profile.religion || 'Not provided' %></span
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <% } else { %>
+              <!-- Request access section -->
+              <div class="access-section limited">
+                <div class="access-divider">
+                  <span>Private Information</span>
+                </div>
+
+                <div class="limited-access">
+                  <div class="lock-icon">
+                    <i class="fas fa-lock"></i>
+                  </div>
+
+                  <% if (hasalreadysentrequest) { %>
+                  <div class="request-pending">
+                    <h3>Request Pending</h3>
+                    <p>
+                      You've already sent a request. Please wait for their
+                      response.
+                    </p>
+                    <div class="status-indicator">
+                      <div class="spinner"></div>
+                      <span>Awaiting response</span>
+                    </div>
+                  </div>
+                  <% } else { %>
+                  <div class="request-access">
+                    <h3>Request Full Profile Access</h3>
+                    <p>
+                      You will be sharing all your information with this person
+                      (e.g., contact number etc). If they accept your request,
+                      they will start sharing their full data too.
+                    </p>
+                    <button
+                      id="requestAccessBtn"
+                      class="request-btn"
+                      onclick="handleInterestClick(this)"
+                      data-id="<%= profile._id %>"
+                    >
+                      <i class="fas fa-key"></i> Request Full Access
+                    </button>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We provide the latest fashion for children of all ages.</p>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <p>Email: info@example.com</p>
+            <p>Phone: (123) 456-7890</p>
+          </div>
+          <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu toggle
+        const menuToggle = document.querySelector(".mobile-menu-toggle");
+        const authButtons = document.querySelector(".auth-buttons");
+
+        if (menuToggle && authButtons) {
+          menuToggle.addEventListener("click", function () {
+            authButtons.classList.toggle("active");
+          });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !event.target.closest(".mobile-menu-toggle") &&
+            !event.target.closest(".auth-buttons") &&
+            authButtons &&
+            authButtons.classList.contains("active")
+          ) {
+            authButtons.classList.remove("active");
+          }
+        });
       });
-      const data = await res.json();
-      if (!res.ok) {
-        alert(data.message);
-        return;
+
+      async function handleInterestClick(button) {
+        // Show loading state
+        const originalText = button.innerHTML;
+        button.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
+        button.disabled = true;
+        button.classList.add("loading");
+
+        const profileId = button.dataset.id;
+
+        try {
+          const res = await fetch(`/interested/${profileId}`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          const data = await res.json();
+
+          if (!res.ok) {
+            alert(data.message);
+            // Reset button
+            button.innerHTML = originalText;
+            button.disabled = false;
+            button.classList.remove("loading");
+            return;
+          }
+
+          // Success state
+          button.innerHTML = '<i class="fas fa-check"></i> Request Sent';
+          button.classList.remove("loading");
+          button.classList.add("success");
+
+          // Show success message
+          const requestAccess = document.querySelector(".request-access");
+          if (requestAccess) {
+            requestAccess.innerHTML = `
+              <h3>Request Sent</h3>
+              <p>${data.message}</p>
+              <div class="status-indicator">
+                <div class="spinner"></div>
+                <span>Awaiting response</span>
+              </div>
+            `;
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again.");
+
+          // Reset button
+          button.innerHTML = originalText;
+          button.disabled = false;
+          button.classList.remove("loading");
+        }
       }
-      button.innerHTML = "Request Sent";
-      button.disabled = true;
-      alert(data.message);
-    }
-  </script>
+    </script>
+  </body>
 </html>

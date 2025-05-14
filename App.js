@@ -19,6 +19,7 @@ app.use(
     cookie: { secure: false, httpOnly: true }, // secure: true only if using HTTPS
   })
 );
+// Add this middleware after your session setup but before your routes
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -30,6 +31,11 @@ mongoose
   .catch((err) => {
     console.log("Err mongoose!");
   });
+app.use((req, res, next) => {
+  // Make user data available to all templates
+  res.locals.user = req.session.user || null;
+  next();
+});
 app.get(["/", "/home"], (req, res) => {
   res.render("home", {
     user: req.session.user || null,

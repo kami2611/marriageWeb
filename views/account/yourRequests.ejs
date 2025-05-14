@@ -3,56 +3,242 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Your Requests</title>
-    <style>
-      .hidden {
-        display: none;
-      }
-    </style>
+    <title>Your Requests - Fashion Store</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/account.css" />
+    <link rel="stylesheet" href="/css/requests.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <h1>Requests you sent</h1>
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="/imgs/LOGO.png" alt="Company Logo" />
+          </a>
+        </div>
+        <div class="auth-buttons">
+          <% if (user) { %>
+          <a href="/logout" class="btn btn-signup">Logout</a>
+          <% } else { %>
+          <a href="/register" class="btn btn-signup">Sign Up</a>
+          <a href="/login" class="btn btn-login">Login</a>
+          <% } %>
+        </div>
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
 
-    <label for="statusFilter">Filter by status:</label>
-    <select id="statusFilter" onchange="filterRequests()">
-      <option value="all">All</option>
-      <option value="pending">Pending</option>
-      <option value="accepted">Accepted</option>
-    </select>
+    <main>
+      <div class="container">
+        <div class="account-container">
+          <div class="page-header">
+            <h1>Your Requests</h1>
+            <p>Manage the requests you've sent to others</p>
+          </div>
 
-    <% if (requestsSentByYou.length === 0) { %>
-    <p>You haven't sent any requests yet.</p>
-    <% } else { %>
-    <ul id="requestList">
-      <% requestsSentByYou.forEach(req => { %>
-      <li class="request" data-status="<%= req.status %>">
-        <p><strong>Username:</strong> <%= req.to.username %></p>
-        <p><strong>City:</strong> <%= req.to.city %></p>
-        <p><strong>Status:</strong> <%= req.status %></p>
-        <% if (req.status==='pending' || req.status === 'accepted') { %>
-        <button
-          onclick="handleRequestCancel(this)"
-          data-request_id="<%= req._id %>"
-        >
-          cancel request
-        </button>
-        <% } %> <% if (req.status === 'accepted') { %>
-        <p><strong>Name:</strong> <%= req.to.name %></p>
-        <p><strong>Address:</strong> <%= req.to.adress %></p>
-        <p><strong>Contact:</strong> <%= req.to.contact %></p>
-        <p><strong>Gender:</strong> <%= req.to.gender %></p>
-        <p><strong>Religion:</strong> <%= req.to.religion %></p>
-        <% } %>
-        <hr />
-      </li>
-      <% }) %>
-    </ul>
-    <% } %>
+          <div class="account-card">
+            <div class="account-nav">
+              <a href="/account/info" class="nav-item">
+                <i class="fas fa-user"></i> Account Info
+              </a>
+              <a href="/account/yourRequests" class="nav-item active">
+                <i class="fas fa-paper-plane"></i> Your Requests
+              </a>
+              <a href="/account/pendingRequests" class="nav-item">
+                <i class="fas fa-clock"></i> Pending Requests
+              </a>
+              <a href="/account/acceptedRequests" class="nav-item">
+                <i class="fas fa-check-circle"></i> Accepted Requests
+              </a>
+              <a href="/account/edit" class="nav-item">
+                <i class="fas fa-edit"></i> Edit Profile
+              </a>
+            </div>
+
+            <div class="account-content">
+              <div class="requests-container">
+                <div class="filter-container">
+                  <label for="statusFilter" class="filter-label">
+                    <i class="fas fa-filter"></i> Filter by status:
+                  </label>
+                  <select
+                    id="statusFilter"
+                    class="filter-select"
+                    onchange="filterRequests()"
+                  >
+                    <option value="all">All Requests</option>
+                    <option value="pending">Pending</option>
+                    <option value="accepted">Accepted</option>
+                  </select>
+                </div>
+
+                <% if (requestsSentByYou.length === 0) { %>
+                <div class="empty-state">
+                  <div class="empty-icon">
+                    <i class="fas fa-paper-plane"></i>
+                  </div>
+                  <p>You haven't sent any requests yet.</p>
+                  <a href="/profiles" class="btn btn-primary"
+                    >Browse Profiles</a
+                  >
+                </div>
+                <% } else { %>
+                <div class="requests-list" id="requestList">
+                  <% requestsSentByYou.forEach(req => { %>
+                  <div class="request-card" data-status="<%= req.status %>">
+                    <div class="request-header">
+                      <div class="user-info">
+                        <div class="avatar">
+                          <% if (req.to.gender && req.to.gender.toLowerCase()
+                          === 'female') { %>
+                          <i class="fas fa-female"></i>
+                          <% } else { %>
+                          <i class="fas fa-male"></i>
+                          <% } %>
+                        </div>
+                        <div>
+                          <h3><%= req.to.username %></h3>
+                          <p class="location">
+                            <i class="fas fa-map-marker-alt"></i> <%=
+                            req.to.city %>
+                          </p>
+                        </div>
+                      </div>
+                      <div class="status-badge status-<%= req.status %>">
+                        <%= req.status %>
+                      </div>
+                    </div>
+
+                    <% if (req.status === 'accepted') { %>
+                    <div class="request-details">
+                      <div class="detail-row">
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-user"></i> Name</span
+                          >
+                          <span class="value"><%= req.to.name %></span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-venus-mars"></i> Gender</span
+                          >
+                          <span class="value"><%= req.to.gender %></span>
+                        </div>
+                      </div>
+                      <div class="detail-row">
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-home"></i> Address</span
+                          >
+                          <span class="value"
+                            ><%= req.to.adress || 'Not provided' %></span
+                          >
+                        </div>
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-phone"></i> Contact</span
+                          >
+                          <span class="value"><%= req.to.contact %></span>
+                        </div>
+                      </div>
+                      <div class="detail-row">
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-pray"></i> Religion</span
+                          >
+                          <span class="value"
+                            ><%= req.to.religion || 'Not provided' %></span
+                          >
+                        </div>
+                      </div>
+                    </div>
+                    <% } %>
+
+                    <div class="request-actions">
+                      <% if (req.status === 'pending' || req.status ===
+                      'accepted') { %>
+                      <button
+                        class="btn btn-cancel"
+                        onclick="handleRequestCancel(this)"
+                        data-request_id="<%= req._id %>"
+                      >
+                        <i class="fas fa-times"></i> Cancel Request
+                      </button>
+                      <% } %>
+                    </div>
+                  </div>
+                  <% }) %>
+                </div>
+                <% } %>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We provide the latest fashion for children of all ages.</p>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <p>Email: info@example.com</p>
+            <p>Phone: (123) 456-7890</p>
+          </div>
+          <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
 
     <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu toggle
+        const menuToggle = document.querySelector(".mobile-menu-toggle");
+        const authButtons = document.querySelector(".auth-buttons");
+
+        if (menuToggle && authButtons) {
+          menuToggle.addEventListener("click", function () {
+            authButtons.classList.toggle("active");
+          });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !event.target.closest(".mobile-menu-toggle") &&
+            !event.target.closest(".auth-buttons") &&
+            authButtons &&
+            authButtons.classList.contains("active")
+          ) {
+            authButtons.classList.remove("active");
+          }
+        });
+      });
+
       function filterRequests() {
         const selected = document.getElementById("statusFilter").value;
-        const requests = document.querySelectorAll(".request");
+        const requests = document.querySelectorAll(".request-card");
 
         requests.forEach((req) => {
           const status = req.dataset.status;
@@ -63,17 +249,44 @@
           }
         });
       }
+
       async function handleRequestCancel(button) {
+        button.innerHTML =
+          '<i class="fas fa-spinner fa-spin"></i> Canceling...';
+        button.disabled = true;
+
         const requestId = button.dataset.request_id;
-        const res = await fetch(`/requests/${requestId}/cancel`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (res.ok) {
-          button.innerText = "canceled";
-          button.disabled = true;
+        try {
+          const res = await fetch(`/requests/${requestId}/cancel`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+
+          if (res.ok) {
+            button.innerHTML = '<i class="fas fa-check"></i> Canceled';
+            button.classList.remove("btn-cancel");
+            button.classList.add("btn-disabled");
+
+            // Update the status badge
+            const card = button.closest(".request-card");
+            const statusBadge = card.querySelector(".status-badge");
+            statusBadge.className = "status-badge status-canceled";
+            statusBadge.textContent = "canceled";
+
+            // Update the data-status attribute for filtering
+            card.dataset.status = "canceled";
+          } else {
+            button.innerHTML = '<i class="fas fa-times"></i> Cancel Request';
+            button.disabled = false;
+            alert("Failed to cancel request. Please try again.");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          button.innerHTML = '<i class="fas fa-times"></i> Cancel Request';
+          button.disabled = false;
+          alert("An error occurred. Please try again.");
         }
       }
     </script>

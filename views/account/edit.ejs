@@ -3,55 +3,227 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>edit account</title>
+    <title>Edit Account - Fashion Store</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/edit-account.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
   </head>
   <body>
-    <form action="/account/edit" method="POST">
-      <label>
-        Name:
-        <input type="text" name="name" value="<%= userData.name %>" />
-      </label>
-
-      <br />
-
-      <label>
-        Address:
-        <input type="text" name="adress" value="<%= userData.adress %>" />
-      </label>
-      <br />
-
-      <label>
-        City:
-        <input type="text" name="city" value="<%= userData.city %>" />
-      </label>
-      <br />
-
-      <label>
-        Contact:
-        <input type="number" name="contact" value="<%= userData.contact %>" />
-      </label>
-      <br />
-      <label>
-        Gender:
-        <select name="gender">
-          <% if (userData.gender === "male") { %>
-          <option value="male" selected>Male</option>
+    <header class="header">
+      <div class="container">
+        <div class="logo">
+          <a href="/">
+            <img src="/imgs/LOGO.png" alt="Company Logo" />
+          </a>
+        </div>
+        <div class="auth-buttons">
+          <% if (user) { %>
+          <a href="/logout" class="btn btn-signup">Logout</a>
           <% } else { %>
-          <option value="male">Male</option>
-          <% } %> <% if (userData.gender === "female") { %>
-          <option value="female" selected>Female</option>
-          <% } else { %>
-          <option value="female">Female</option>
-          <% } %> <% if (userData.gender === "rather not say") { %>
-          <option value="rather not say" selected>Rather not say</option>
-          <% } else { %>
-          <option value="rather not say">Rather not say</option>
+          <a href="/register" class="btn btn-signup">Sign Up</a>
+          <a href="/login" class="btn btn-login">Login</a>
           <% } %>
-        </select>
-      </label>
-      <br />
+        </div>
+        <div class="mobile-menu-toggle">
+          <i class="fas fa-bars"></i>
+        </div>
+      </div>
+    </header>
 
-      <button type="submit">Update</button>
-    </form>
+    <main>
+      <div class="container">
+        <div class="edit-account-container">
+          <div class="page-header">
+            <h1>Edit Your Account</h1>
+            <p>Update your personal information</p>
+          </div>
+          
+          <div class="account-card">
+            <div class="account-nav">
+              <a href="/account" class="nav-item">
+                <i class="fas fa-user"></i> Profile
+              </a>
+              <a href="/account/edit" class="nav-item active">
+                <i class="fas fa-edit"></i> Edit Profile
+              </a>
+              <a href="/account/requests" class="nav-item">
+                <i class="fas fa-bell"></i> Requests
+              </a>
+              <a href="/account/settings" class="nav-item">
+                <i class="fas fa-cog"></i> Settings
+              </a>
+            </div>
+            
+            <div class="account-content">
+              <form action="/account/edit" method="POST" class="edit-form">
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="name">
+                      <i class="fas fa-user"></i> Name
+                    </label>
+                    <input 
+                      type="text" 
+                      id="name" 
+                      name="name" 
+                      value="<%= userData.name %>" 
+                      required 
+                    />
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="adress">
+                      <i class="fas fa-home"></i> Address
+                    </label>
+                    <input 
+                      type="text" 
+                      id="adress" 
+                      name="adress" 
+                      value="<%= userData.adress %>" 
+                    />
+                  </div>
+                </div>
+                
+                <div class="form-row two-columns">
+                  <div class="form-group">
+                    <label for="city">
+                      <i class="fas fa-map-marker-alt"></i> City
+                    </label>
+                    <input 
+                      type="text" 
+                      id="city" 
+                      name="city" 
+                      value="<%= userData.city %>" 
+                      required 
+                    />
+                  </div>
+                  
+                  <div class="form-group">
+                    <label for="contact">
+                      <i class="fas fa-phone"></i> Contact
+                    </label>
+                    <input 
+                      type="number" 
+                      id="contact" 
+                      name="contact" 
+                      value="<%= userData.contact %>" 
+                    />
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="gender">
+                      <i class="fas fa-venus-mars"></i> Gender
+                    </label>
+                    <select id="gender" name="gender" class="select-styled">
+                      <option value="male" <%= userData.gender === "male" ? "selected" : "" %>>Male</option>
+                      <option value="female" <%= userData.gender === "female" ? "selected" : "" %>>Female</option>
+                      <option value="rather not say" <%= userData.gender === "rather not say" ? "selected" : "" %>>Rather not say</option>
+                    </select>
+                  </div>
+                </div>
+                
+                <div class="form-actions">
+                  <a href="/account" class="btn btn-cancel">Cancel</a>
+                  <button type="submit" class="btn btn-save">
+                    <i class="fas fa-save"></i> Save Changes
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <h3>About Us</h3>
+            <p>We provide the latest fashion for children of all ages.</p>
+          </div>
+          <div class="footer-section">
+            <h3>Contact</h3>
+            <p>Email: info@example.com</p>
+            <p>Phone: (123) 456-7890</p>
+          </div>
+          <div class="footer-section">
+            <h3>Follow Us</h3>
+            <div class="social-icons">
+              <a href="#"><i class="fab fa-facebook"></i></a>
+              <a href="#"><i class="fab fa-instagram"></i></a>
+              <a href="#"><i class="fab fa-twitter"></i></a>
+            </div>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Mobile menu toggle
+        const menuToggle = document.querySelector(".mobile-menu-toggle");
+        const authButtons = document.querySelector(".auth-buttons");
+
+        if (menuToggle && authButtons) {
+          menuToggle.addEventListener("click", function () {
+            authButtons.classList.toggle("active");
+          });
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener("click", function (event) {
+          if (
+            !event.target.closest(".mobile-menu-toggle") &&
+            !event.target.closest(".auth-buttons") &&
+            authButtons &&
+            authButtons.classList.contains("active")
+          ) {
+            authButtons.classList.remove("active");
+          }
+        });
+        
+        // Form validation
+        const form = document.querySelector('.edit-form');
+        if (form) {
+          form.addEventListener('submit', function(e) {
+            const nameInput = document.getElementById('name');
+            const cityInput = document.getElementById('city');
+            
+            if (!nameInput.value.trim()) {
+              e.preventDefault();
+              nameInput.classList.add('error');
+              alert('Please enter your name');
+              return;
+            }
+            
+            if (!cityInput.value.trim()) {
+              e.preventDefault();
+              cityInput.classList.add('error');
+              alert('Please enter your city');
+              return;
+            }
+          });
+          
+          // Remove error class on input
+          const inputs = form.querySelectorAll('input, select');
+          inputs.forEach(input => {
+            input.addEventListener('input', function() {
+              this.classList.remove('error');
+            });
+          });
+        }
+      });
+    </script>
   </body>
 </html>
