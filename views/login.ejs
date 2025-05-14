@@ -21,7 +21,7 @@
           </a>
         </div>
         <div class="auth-buttons">
-          <a href="/register" class="btn btn-signup">Register</a>
+          <a href="/register" class="btn btn-signup">Sign Up</a>
           <a href="/login" class="btn btn-login">Login</a>
         </div>
         <div class="mobile-menu-toggle">
@@ -35,7 +35,15 @@
         <div class="login-container">
           <h1>Welcome Back</h1>
 
-          <form action="/login" method="post" class="login-form">
+          <!-- Error message container -->
+          <div id="error-message" class="error-message"></div>
+
+          <form
+            id="login-form"
+            action="/login"
+            method="post"
+            class="login-form"
+          >
             <div class="form-group">
               <label for="username">Username</label>
               <div class="input-with-icon">
@@ -112,5 +120,6 @@
     </footer>
 
     <script src="/js/main.js"></script>
+    <script src="/js/login.js"></script>
   </body>
 </html>

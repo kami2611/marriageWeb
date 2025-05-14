@@ -21,6 +21,7 @@ app.use(
 );
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 mongoose
   .connect("mongodb://127.0.0.1:27017/marriageajs")
   .then(() => {
@@ -30,7 +31,9 @@ mongoose
     console.log("Err mongoose!");
   });
 app.get(["/", "/home"], (req, res) => {
-  res.render("home");
+  res.render("home", {
+    user: req.session.user || null,
+  });
 });
 
 app.get("/register", (req, res) => {
@@ -58,15 +61,15 @@ app.post("/login", async (req, res) => {
   const { username, password } = req.body;
   const foundUser = await User.findOne({ username: username });
   if (!foundUser) {
-    return res.send("User not found");
+    return res.json({ error: "username or password is incorrect" });
   }
   const isMatch = await bcrypt.compare(password, foundUser.password);
   if (isMatch) {
     req.session.userId = foundUser._id; // create session
     req.session.user = foundUser;
-    return res.send("Login successful");
+    return res.json("Login successful");
   } else {
-    return res.send("Incorrect password");
+    return res.json({ error: "username or password is incorrect" });
   }
 });
 app.get("/logout", (req, res) => {
@@ -75,7 +78,7 @@ app.get("/logout", (req, res) => {
       return res.send("error logging out");
     }
     res.clearCookie("connect.sid");
-    res.send("Logged out successfully");
+    res.redirect("/home");
   });
 });
 
