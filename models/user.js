@@ -7,6 +7,9 @@ const userSchema = new mongoose.Schema({
   name: {
     type: String,
   },
+  age: {
+    type: Number,
+  },
   password: {
     type: String,
     required: true,
@@ -29,9 +32,9 @@ const userSchema = new mongoose.Schema({
   },
   religion: {
     type: String,
-    enum: ["islam", "hinduism", "christianity", "other"],
+    // enum: ["islam", "hinduism", "christianity", "other"],
   },
-  caste: {
+  cast: {
     type: String,
   },
   peopleInterested: [

@@ -58,7 +58,7 @@ app.post("/register", async (req, res) => {
     await newUser.save();
     req.session.userId = newUser._id;
     req.session.user = newUser;
-    return res.send("successfully registered");
+    return res.redirect("/home");
   } else {
     return res.send("invalid passcode , try again");
   }
@@ -69,6 +69,7 @@ app.post("/login", async (req, res) => {
   if (!foundUser) {
     return res.json({ error: "username or password is incorrect" });
   }
+  console.log(foundUser.password);
   const isMatch = await bcrypt.compare(password, foundUser.password);
   if (isMatch) {
     req.session.userId = foundUser._id; // create session
@@ -93,7 +94,7 @@ app.get("/account/edit", isLoggedIn, findUser, (req, res) => {
   res.render("account/edit", { userData });
 });
 app.post("/account/edit", isLoggedIn, findUser, async (req, res) => {
-  const { name, adress, city, contact, gender } = req.body;
+  const { name, adress, city, contact, gender, religion, cast, age } = req.body;
   const user = req.userData;
 
   // Update fields if they exist
@@ -102,6 +103,9 @@ app.post("/account/edit", isLoggedIn, findUser, async (req, res) => {
   user.city = city || user.city;
   user.contact = contact || user.contact;
   user.gender = gender || user.gender;
+  user.religion = religion || user.religion;
+  user.age = age || user.age;
+  user.cast = cast || user.cast;
 
   await user.save();
   res.redirect("/account"); // or wherever you want to redirect
@@ -154,7 +158,8 @@ app.post("/requests/:id/accept", isLoggedIn, async (req, res) => {
   requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
   await requestFromUser.save();
   await requestToUser.save();
-  res.json({ message: "request accepted" });
+  return res.redirect("/account/pendingRequests");
+  // res.json({ message: "request accepted" });
 });
 app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
   const requestId = req.params.id;
@@ -174,7 +179,8 @@ app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
   }
   await requestFromUser.save();
   await loggedUser.save();
-  res.json({ message: "request rejected" });
+  // res.json({ message: "request rejected" });
+  res.redirect("/account/acceptedRequests");
 });
 
 app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {

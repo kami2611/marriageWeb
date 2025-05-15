@@ -80,6 +80,7 @@
                 </div>
 
                 <% if (requestsSentByYou.length === 0) { %>
+
                 <div class="empty-state">
                   <div class="empty-icon">
                     <i class="fas fa-paper-plane"></i>
@@ -104,7 +105,10 @@
                           <% } %>
                         </div>
                         <div>
-                          <h3><%= req.to.username %></h3>
+                          <a href="/profiles/<%=req.to._id  %>">
+                            <h3><%= req.to.username %></h3>
+                          </a>
+
                           <p class="location">
                             <i class="fas fa-map-marker-alt"></i> <%=
                             req.to.city %>
@@ -155,6 +159,24 @@
                           >
                           <span class="value"
                             ><%= req.to.religion || 'Not provided' %></span
+                          >
+                        </div>
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-pray"></i> age</span
+                          >
+                          <span class="value"
+                            ><%= req.to.age || 'Not provided' %></span
+                          >
+                        </div>
+                      </div>
+                      <div class="detail-row">
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-pray"></i> cast</span
+                          >
+                          <span class="value"
+                            ><%= req.to.cast || 'Not provided' %></span
                           >
                         </div>
                       </div>

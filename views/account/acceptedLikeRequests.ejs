@@ -69,10 +69,7 @@
                   <div class="empty-icon">
                     <i class="fas fa-user-shield"></i>
                   </div>
-                  <p>
-                    You haven't accepted any requests yet. You're not sharing
-                    your data with anyone.
-                  </p>
+                  <p>You haven't accepted any requests yet.</p>
                 </div>
                 <% } else { %>
                 <div class="notification-box">
@@ -116,6 +113,18 @@
                             ><i class="fas fa-user"></i> Name</span
                           >
                           <span class="value"><%= req.from.name %></span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-user"></i> cast</span
+                          >
+                          <span class="value"><%= req.from.cast %></span>
+                        </div>
+                        <div class="detail-item">
+                          <span class="label"
+                            ><i class="fas fa-user"></i> age</span
+                          >
+                          <span class="value"><%= req.from.age %></span>
                         </div>
                         <div class="detail-item">
                           <span class="label"
