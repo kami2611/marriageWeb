@@ -273,7 +273,7 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   beingLikedUser.likeRequests.push(newRequest);
   await beingLikedUser.save();
   return res.json({
-    message: `successully sent your like request along with your data to ${beingLikedUser.username}`,
+    message: `successully sent your like request`,
   });
 });
 

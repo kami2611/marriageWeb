@@ -9,8 +9,20 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // Close menu when clicking outside
+  // Account dropdown toggle
+  const accountDropdown = document.querySelector(".account-dropdown");
+  const dropdownToggle = document.querySelector(".dropdown-toggle");
+
+  if (accountDropdown && dropdownToggle) {
+    dropdownToggle.addEventListener("click", function (e) {
+      e.stopPropagation();
+      accountDropdown.classList.toggle("active");
+    });
+  }
+
+  // Close dropdown and mobile menu when clicking outside
   document.addEventListener("click", function (event) {
+    // Close mobile menu
     if (
       !event.target.closest(".mobile-menu-toggle") &&
       !event.target.closest(".auth-buttons") &&
@@ -18,6 +30,15 @@ document.addEventListener("DOMContentLoaded", function () {
       authButtons.classList.contains("active")
     ) {
       authButtons.classList.remove("active");
+    }
+
+    // Close account dropdown
+    if (
+      accountDropdown &&
+      !event.target.closest(".account-dropdown") &&
+      accountDropdown.classList.contains("active")
+    ) {
+      accountDropdown.classList.remove("active");
     }
   });
 

@@ -17,12 +17,25 @@
       <div class="container">
         <div class="logo">
           <a href="/">
-            <img src="/imgs/LOGO.png" alt="Company Logo" />
+            <img src="/imgs/LOGO.png?height=60&width=180" alt="Company Logo" />
           </a>
         </div>
         <div class="auth-buttons">
-          <% if (locals.user) { %>
-          <a href="/logout" class="btn btn-signup">Logout</a>
+          <% if (user) { %>
+          <div class="account-dropdown">
+            <button class="btn btn-account dropdown-toggle">
+              <i class="fas fa-user"></i> Account
+              <i class="fas fa-chevron-down"></i>
+            </button>
+            <div class="dropdown-menu">
+              <a href="/account/info" class="dropdown-item">
+                <i class="fas fa-user-circle"></i> My Account
+              </a>
+              <a href="/logout" class="dropdown-item">
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </a>
+            </div>
+          </div>
           <% } else { %>
           <a href="/register" class="btn btn-signup">Sign Up</a>
           <a href="/login" class="btn btn-login">Login</a>
@@ -213,6 +226,7 @@
         </div>
       </div>
     </footer>
+    <script src="/js/main.js"></script>
 
     <script>
       document.addEventListener("DOMContentLoaded", function () {
