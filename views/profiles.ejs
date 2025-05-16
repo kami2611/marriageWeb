@@ -113,45 +113,84 @@
 
                 <div class="filter-section">
                   <h4>Location</h4>
-
                   <div class="filter-group">
-                    <label for="city">City</label>
-                    <input
-                      type="text"
-                      name="city"
-                      id="city"
-                      class="filter-input"
-                      placeholder="Enter city name"
-                      value="<%= filters && filters.city || '' %>"
-                    />
-                  </div>
-                </div>
+  <label for="city">City</label>
+  <select name="city" id="city" class="filter-select">
+    <option value="">Any City</option>
+    <option value="karachi" <%= filters && filters.city === 'karachi' ? 'selected' : '' %>>Karachi</option>
+    <option value="lahore" <%= filters && filters.city === 'lahore' ? 'selected' : '' %>>Lahore</option>
+    <option value="islamabad" <%= filters && filters.city === 'islamabad' ? 'selected' : '' %>>Islamabad</option>
+    <option value="rawalpindi" <%= filters && filters.city === 'rawalpindi' ? 'selected' : '' %>>Rawalpindi</option>
+    <option value="faisalabad" <%= filters && filters.city === 'faisalabad' ? 'selected' : '' %>>Faisalabad</option>
+    <option value="multan" <%= filters && filters.city === 'multan' ? 'selected' : '' %>>Multan</option>
+    <option value="peshawar" <%= filters && filters.city === 'peshawar' ? 'selected' : '' %>>Peshawar</option>
+    <option value="quetta" <%= filters && filters.city === 'quetta' ? 'selected' : '' %>>Quetta</option>
+    <option value="hyderabad" <%= filters && filters.city === 'hyderabad' ? 'selected' : '' %>>Hyderabad</option>
+    <option value="sialkot" <%= filters && filters.city === 'sialkot' ? 'selected' : '' %>>Sialkot</option>
+    <option value="gujranwala" <%= filters && filters.city === 'gujranwala' ? 'selected' : '' %>>Gujranwala</option>
+    <option value="bahawalpur" <%= filters && filters.city === 'bahawalpur' ? 'selected' : '' %>>Bahawalpur</option>
+    <option value="sargodha" <%= filters && filters.city === 'sargodha' ? 'selected' : '' %>>Sargodha</option>
+    <option value="sukkur" <%= filters && filters.city === 'sukkur' ? 'selected' : '' %>>Sukkur</option>
+    <option value="larkana" <%= filters && filters.city === 'larkana' ? 'selected' : '' %>>Larkana</option>
+    <option value="sheikhupura" <%= filters && filters.city === 'sheikhupura' ? 'selected' : '' %>>Sheikhupura</option>
+    <option value="mardan" <%= filters && filters.city === 'mardan' ? 'selected' : '' %>>Mardan</option>
+    <option value="abbottabad" <%= filters && filters.city === 'abbottabad' ? 'selected' : '' %>>Abbottabad</option>
+    <option value="mirpur" <%= filters && filters.city === 'mirpur' ? 'selected' : '' %>>Mirpur</option>
+    <option value="muzaffarabad" <%= filters && filters.city === 'muzaffarabad' ? 'selected' : '' %>>Muzaffarabad</option>
+    <option value="other" <%= filters && filters.city === 'other' ? 'selected' : '' %>>Other</option>
+  </select>
+</div>
 
+                </div>
                 <div class="filter-section">
                   <h4>Background</h4>
+                  <div class="filter-group">
+  <label for="religion">Religion</label>
+  <select name="religion" id="religion" class="filter-select">
+    <option value="">Any Religion</option>
+    <option value="islam" <%= filters && filters.religion === 'islam' ? 'selected' : '' %>>Islam</option>
+    <option value="hinduism" <%= filters && filters.religion === 'hinduism' ? 'selected' : '' %>>Hinduism</option>
+    <option value="christianity" <%= filters && filters.religion === 'christianity' ? 'selected' : '' %>>Christianity</option>
+    <option value="sikhism" <%= filters && filters.religion === 'sikhism' ? 'selected' : '' %>>Sikhism</option>
+    <option value="ahmadiyya" <%= filters && filters.religion === 'ahmadiyya' ? 'selected' : '' %>>Ahmadiyya</option>
+    <option value="zoroastrianism" <%= filters && filters.religion === 'zoroastrianism' ? 'selected' : '' %>>Zoroastrianism</option>
+    <option value="judaism" <%= filters && filters.religion === 'judaism' ? 'selected' : '' %>>Judaism</option>
+    <option value="buddhism" <%= filters && filters.religion === 'buddhism' ? 'selected' : '' %>>Buddhism</option>
+    <option value="atheism" <%= filters && filters.religion === 'atheism' ? 'selected' : '' %>>Atheism</option>
+    <option value="other" <%= filters && filters.religion === 'other' ? 'selected' : '' %>>Other</option>
+  </select>
+</div>
 
                   <div class="filter-group">
-                    <label for="religion">Religion</label>
-                    <select name="religion" id="religion" class="filter-select">
-                      <option value="">Any Religion</option>
-                      <option value="islam" <%= filters && filters.religion === 'islam' ? 'selected' : '' %>>Islam</option>
-                      <option value="hinduism" <%= filters && filters.religion === 'hinduism' ? 'selected' : '' %>>Hinduism</option>
-                      <option value="christianity" <%= filters && filters.religion === 'christianity' ? 'selected' : '' %>>Christianity</option>
-                      <option value="other" <%= filters && filters.religion === 'other' ? 'selected' : '' %>>Other</option>
-                    </select>
-                  </div>
+  <label for="caste">caste</label>
+  <select name="caste" id="caste" class="filter-select">
+    <option value="">Any caste</option>
+    <option value="syed" <%= filters && filters.caste === 'syed' ? 'selected' : '' %>>Syed</option>
+    <option value="sheikh" <%= filters && filters.caste === 'sheikh' ? 'selected' : '' %>>Sheikh</option>
+    <option value="pathan" <%= filters && filters.caste === 'pathan' ? 'selected' : '' %>>Pathan</option>
+    <option value="ansari" <%= filters && filters.caste === 'ansari' ? 'selected' : '' %>>Ansari</option>
+    <option value="mughal" <%= filters && filters.caste === 'mughal' ? 'selected' : '' %>>Mughal</option>
+    <option value="chaudhry" <%= filters && filters.caste === 'chaudhry' ? 'selected' : '' %>>Chaudhry</option>
+    <option value="gujjar" <%= filters && filters.caste === 'gujjar' ? 'selected' : '' %>>Gujjar</option>
+    <option value="rajput" <%= filters && filters.caste === 'rajput' ? 'selected' : '' %>>Rajput</option>
+    <option value="malik" <%= filters && filters.caste === 'malik' ? 'selected' : '' %>>Malik</option>
+    <option value="butt" <%= filters && filters.caste === 'butt' ? 'selected' : '' %>>Butt</option>
+    <option value="qureshi" <%= filters && filters.caste === 'qureshi' ? 'selected' : '' %>>Qureshi</option>
+    <option value="abbasi" <%= filters && filters.caste === 'abbasi' ? 'selected' : '' %>>Abbasi</option>
+    <option value="jutt" <%= filters && filters.caste === 'jutt' ? 'selected' : '' %>>Jutt</option>\
+    <option value="awan" <%= filters && filters.caste === 'awan' ? 'selected' : '' %>>Awan</option>
+    <option value="kamboh" <%= filters && filters.caste === 'kamboh' ? 'selected' : '' %>>Kamboh</option>
+    <option value="nai" <%= filters && filters.caste === 'nai' ? 'selected' : '' %>>Nai</option>
+    <option value="lohar" <%= filters && filters.caste === 'lohar' ? 'selected' : '' %>>Lohar</option>
+    <option value="baloch" <%= filters && filters.caste === 'baloch' ? 'selected' : '' %>>Baloch</option>
+    <option value="memon" <%= filters && filters.caste === 'memon' ? 'selected' : '' %>>Memon</option>
+    <option value="muhajir" <%= filters && filters.caste === 'muhajir' ? 'selected' : '' %>>Muhajir</option>
+    <option value="sunni" <%= filters && filters.caste === 'sunni' ? 'selected' : '' %>>Sunni</option>
+    <option value="shia" <%= filters && filters.caste === 'shia' ? 'selected' : '' %>>Shia</option>
+    <option value="other" <%= filters && filters.caste === 'other' ? 'selected' : '' %>>Other</option>
+  </select>
+</div>
 
-                  <div class="filter-group">
-                    <label for="cast">Caste</label>
-                    <input
-                      type="text"
-                      name="cast"
-                      id="cast"
-                      class="filter-input"
-                      placeholder="Enter caste"
-                      value="<%= filters && filters.cast || '' %>"
-                    />
-                  </div>
                 </div>
 
                 <div class="filter-actions">
@@ -182,8 +221,8 @@
                 <% if (filters.religion) { %>
                   <div class="filter-tag">Religion: <%= filters.religion %></div>
                 <% } %>
-                <% if (filters.cast) { %>
-                  <div class="filter-tag">Caste: <%= filters.cast %></div>
+                <% if (filters.caste) { %>
+                  <div class="filter-tag">caste: <%= filters.caste %></div>
                 <% } %>
                 <a href="/profiles" class="clear-filters">Clear All Filters</a>
               </div>

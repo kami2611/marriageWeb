@@ -25,7 +25,7 @@ mongoose
         contact: 3001234567,
         gender: "male",
         religion: "islam",
-        cast: "padhiyar",
+        caste: "padhiyar",
       },
       {
         username: "fatima456",
@@ -37,7 +37,7 @@ mongoose
         contact: 3027654321,
         gender: "female",
         religion: "islam",
-        cast: "syed",
+        caste: "syed",
       },
       {
         username: "ahmed789",
@@ -49,7 +49,7 @@ mongoose
         contact: 3031111111,
         gender: "male",
         religion: "islam",
-        cast: "memon",
+        caste: "memon",
       },
       {
         username: "sana321",
@@ -61,7 +61,7 @@ mongoose
         contact: 3042222222,
         gender: "female",
         religion: "islam",
-        cast: "rajput",
+        caste: "rajput",
       },
       {
         username: "zain999",
@@ -73,7 +73,7 @@ mongoose
         contact: 3053333333,
         gender: "male",
         religion: "islam",
-        cast: "jutt",
+        caste: "jutt",
       },
       {
         username: "aliya555",
@@ -85,7 +85,7 @@ mongoose
         contact: 3064444444,
         gender: "female",
         religion: "islam",
-        cast: "sheikh",
+        caste: "sheikh",
       },
       {
         username: "usman007",
@@ -97,7 +97,7 @@ mongoose
         contact: 3075555555,
         gender: "male",
         religion: "islam",
-        cast: "ansari",
+        caste: "ansari",
       },
       {
         username: "hira786",
@@ -109,7 +109,7 @@ mongoose
         contact: 3086666666,
         gender: "female",
         religion: "islam",
-        cast: "yousafzai",
+        caste: "yousafzai",
       },
       {
         username: "fahad101",
@@ -121,7 +121,7 @@ mongoose
         contact: 3097777777,
         gender: "male",
         religion: "islam",
-        cast: "gujjar",
+        caste: "gujjar",
       },
       {
         username: "nimra333",
@@ -133,7 +133,7 @@ mongoose
         contact: 3108888888,
         gender: "female",
         religion: "islam",
-        cast: "choudhary",
+        caste: "choudhary",
       },
       {
         username: "bilal000",
@@ -145,7 +145,7 @@ mongoose
         contact: 3119999999,
         gender: "male",
         religion: "islam",
-        cast: "khan",
+        caste: "khan",
       },
       {
         username: "iqra444",
@@ -157,7 +157,7 @@ mongoose
         contact: 3121234567,
         gender: "female",
         religion: "islam",
-        cast: "shaikh",
+        caste: "shaikh",
       },
       {
         username: "arsalan88",
@@ -169,7 +169,7 @@ mongoose
         contact: 3137654321,
         gender: "male",
         religion: "islam",
-        cast: "mirza",
+        caste: "mirza",
       },
       {
         username: "mehwish111",
@@ -181,7 +181,7 @@ mongoose
         contact: 3149876543,
         gender: "female",
         religion: "islam",
-        cast: "mughal",
+        caste: "mughal",
       },
       {
         username: "hamza555",
@@ -193,7 +193,7 @@ mongoose
         contact: 3151237890,
         gender: "male",
         religion: "islam",
-        cast: "syed",
+        caste: "syed",
       },
     ];
     const hashedUserData = await Promise.all(

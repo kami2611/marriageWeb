@@ -93,7 +93,8 @@ app.get("/account/edit", isLoggedIn, findUser, (req, res) => {
   res.render("account/edit", { userData });
 });
 app.post("/account/edit", isLoggedIn, findUser, async (req, res) => {
-  const { name, adress, city, contact, gender, religion, cast, age } = req.body;
+  const { name, adress, city, contact, gender, religion, caste, age } =
+    req.body;
   const user = req.userData;
 
   // Update fields if they exist
@@ -104,7 +105,7 @@ app.post("/account/edit", isLoggedIn, findUser, async (req, res) => {
   user.gender = gender || user.gender;
   user.religion = religion || user.religion;
   user.age = age || user.age;
-  user.cast = cast || user.cast;
+  user.caste = caste || user.caste;
 
   await user.save();
   res.redirect("/account"); // or wherever you want to redirect
@@ -210,25 +211,11 @@ app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {
   res.json({ message: "Request canceled and access revoked from both sides." });
 });
 
-// app.get("/profiles", async (req, res) => {
-//   console.log("hello i am being visited");
-//   let profiles;
-//   const { gender } = req.query;
-//   console.log(gender);
-//   if (gender) {
-//     profiles = await User.find({ gender: gender });
-//   } else {
-//     profiles = await User.find({});
-//   }
-//   //we will get only name, gender, city and _id say. modify this and get only specific informations.
-//   // console.log(profiles);
-//   return res.render("profiles", { profiles });
-// });
 app.get("/profiles", async (req, res) => {
   console.log("Profiles route accessed with query:", req.query);
 
   // Extract filter parameters
-  const { gender, minAge, maxAge, city, religion, cast } = req.query;
+  const { gender, minAge, maxAge, city, religion, caste } = req.query;
 
   // Build filter object
   const filter = {};
@@ -237,7 +224,7 @@ app.get("/profiles", async (req, res) => {
   if (gender) filter.gender = gender;
   if (city) filter.city = { $regex: new RegExp(city, "i") }; // Case-insensitive search
   if (religion) filter.religion = religion;
-  if (cast) filter.cast = { $regex: new RegExp(cast, "i") }; // Case-insensitive search
+  if (caste) filter.caste = { $regex: new RegExp(caste, "i") }; // Case-insensitive search
 
   // Handle age range filter
   if (minAge || maxAge) {
@@ -260,7 +247,7 @@ app.get("/profiles", async (req, res) => {
       maxAge,
       city,
       religion,
-      cast,
+      caste,
     };
 
     return res.render("profiles", {

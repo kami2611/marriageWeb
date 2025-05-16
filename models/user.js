@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     // enum: ["islam", "hinduism", "christianity", "other"],
   },
-  cast: {
+  caste: {
     type: String,
   },
   peopleInterested: [
