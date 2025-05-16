@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Browse Profiles - Fashion Store</title>
+    <title>Browse Profiles - Pink Match</title>
     <link rel="stylesheet" href="/css/styles.css" />
     <link rel="stylesheet" href="/css/profiles.css" />
     <!-- Font Awesome for icons -->
@@ -11,6 +11,81 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
+    <style>
+      /* Fix for the layout issues */
+      .profiles-container {
+        display: flex;
+        gap: 30px;
+        margin-top: 30px;
+        width: 100%;
+      }
+      
+      .sidebar {
+        width: 280px;
+        flex-shrink: 0;
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        position: sticky;
+        top: 20px;
+        height: fit-content;
+        max-height: calc(100vh - 40px);
+        overflow-y: auto;
+      }
+      
+      .profiles-content {
+        flex: 1;
+        min-width: 0; /* Prevent flex item from overflowing */
+      }
+      
+      /* Ensure the grid doesn't overflow */
+      .profiles-grid {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+      }
+      
+      .profiles-grid[data-current-layout="4"] {
+        grid-template-columns: repeat(4, 1fr);
+      }
+      
+      /* Responsive adjustments */
+      @media (max-width: 1200px) {
+        .profiles-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .profiles-grid[data-current-layout="4"] {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+      
+      @media (max-width: 992px) {
+        .profiles-container {
+          flex-direction: column;
+        }
+        
+        .sidebar {
+          width: 100%;
+          position: relative;
+          top: 0;
+          max-height: none;
+        }
+        
+        .profiles-grid[data-current-layout="4"] {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      
+      @media (max-width: 576px) {
+        .profiles-grid,
+        .profiles-grid[data-current-layout="4"] {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
   </head>
   <body>
     <header class="header">
@@ -53,167 +128,199 @@
           <h1>Browse Profiles</h1>
           <p>Discover people in our community</p>
         </div>
-        <!-- Add this sidebar filter to your profiles.ejs file -->
+        
+        <!-- Profiles container with sidebar and content -->
+        <div class="profiles-container">
+          <!-- Sidebar with filters -->
+          <div class="sidebar">
+            <div class="filter-toggle">
+              <i class="fas fa-filter"></i>
+              <span>Show Filters</span>
+            </div>
 
-        <!-- Layout switcher -->
-        <div class="layout-switcher">
-          <span>Layout:</span>
-          <div class="layout-options">
-            <button class="layout-btn active" data-columns="3">
-              <i class="fas fa-th-large"></i> 3 Columns
-            </button>
-            <button class="layout-btn" data-columns="4">
-              <i class="fas fa-th"></i> 4 Columns
-            </button>
-          </div>
-        </div>
+            <div class="filter-container active">
+              <h3 class="filter-title">Find Your Match</h3>
 
-        <div class="sidebar">
-          <div class="logo-container">
-            <a href="/" class="logo">
-              <i class="fas fa-heart"></i>
-              <span>Pink Match</span>
-            </a>
-          </div>
+              <form id="profile-filter-form" class="filter-form">
+                <div class="filter-section">
+                  <h4>Basic Info</h4>
 
-          <div class="filter-toggle">
-            <i class="fas fa-filter"></i>
-            <span>Show Filters</span>
-          </div>
+                  <div class="filter-group">
+                    <label for="gender">Gender</label>
+                    <select name="gender" id="gender" class="filter-select">
+                      <option value="">Any Gender</option>
+                      <option value="female" <%= filters && filters.gender === 'female' ? 'selected' : '' %>>Female</option>
+                      <option value="male" <%= filters && filters.gender === 'male' ? 'selected' : '' %>>Male</option>
+                      <option value="rather not say" <%= filters && filters.gender === 'rather not say' ? 'selected' : '' %>>Rather not say</option>
+                    </select>
+                  </div>
 
-          <div class="filter-container">
-            <h3 class="filter-title">Find Your Match</h3>
-
-            <form id="profile-filter-form" class="filter-form">
-              <div class="filter-section">
-                <h4>Basic Info</h4>
-
-                <div class="filter-group">
-                  <label for="gender">Gender</label>
-                  <select name="gender" id="gender" class="filter-select">
-                    <option value="">Any Gender</option>
-                    <option value="female">Female</option>
-                    <option value="male">Male</option>
-                  </select>
-                </div>
-
-                <div class="filter-group">
-                  <label>Age Range</label>
-                  <div class="range-slider">
-                    <div class="range-values">
-                      <span id="age-min-value">18</span> -
-                      <span id="age-max-value">60</span> years
-                    </div>
-                    <div class="range-inputs">
-                      <input
-                        type="range"
-                        name="minAge"
-                        id="age-range-min"
-                        min="18"
-                        max="80"
-                        value="18"
-                        class="range-input"
-                      />
-                      <input
-                        type="range"
-                        name="maxAge"
-                        id="age-range-max"
-                        min="18"
-                        max="80"
-                        value="60"
-                        class="range-input"
-                      />
+                  <div class="filter-group">
+                    <label>Age Range</label>
+                    <div class="range-slider">
+                      <div class="range-values">
+                        <span id="age-min-value"><%= filters && filters.minAge || '18' %></span> -
+                        <span id="age-max-value"><%= filters && filters.maxAge || '60' %></span> years
+                      </div>
+                      <div class="range-inputs">
+                        <input
+                          type="range"
+                          name="minAge"
+                          id="age-range-min"
+                          min="18"
+                          max="80"
+                          value="<%= filters && filters.minAge || '18' %>"
+                          class="range-input"
+                        />
+                        <input
+                          type="range"
+                          name="maxAge"
+                          id="age-range-max"
+                          min="18"
+                          max="80"
+                          value="<%= filters && filters.maxAge || '60' %>"
+                          class="range-input"
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
 
-              <div class="filter-section">
-                <h4>Location</h4>
+                <div class="filter-section">
+                  <h4>Location</h4>
 
-                <div class="filter-group">
-                  <label for="city">City</label>
-                  <input
-                    type="text"
-                    name="city"
-                    id="city"
-                    class="filter-input"
-                    placeholder="Enter city name"
-                  />
-                </div>
-              </div>
-
-              <div class="filter-section">
-                <h4>Background</h4>
-
-                <div class="filter-group">
-                  <label for="religion">Religion</label>
-                  <select name="religion" id="religion" class="filter-select">
-                    <option value="">Any Religion</option>
-                    <option value="islam">Islam</option>
-                    <option value="hinduism">Hinduism</option>
-                    <option value="christianity">Christianity</option>
-                    <option value="other">Other</option>
-                  </select>
+                  <div class="filter-group">
+                    <label for="city">City</label>
+                    <input
+                      type="text"
+                      name="city"
+                      id="city"
+                      class="filter-input"
+                      placeholder="Enter city name"
+                      value="<%= filters && filters.city || '' %>"
+                    />
+                  </div>
                 </div>
 
-                <div class="filter-group">
-                  <label for="cast">Caste</label>
-                  <input
-                    type="text"
-                    name="cast"
-                    id="cast"
-                    class="filter-input"
-                    placeholder="Enter caste"
-                  />
-                </div>
-              </div>
+                <div class="filter-section">
+                  <h4>Background</h4>
 
-              <div class="filter-actions">
-                <button type="submit" class="btn-filter-apply">
-                  <i class="fas fa-search"></i> Apply Filters
-                </button>
-                <button type="reset" class="btn-filter-reset">
-                  <i class="fas fa-undo"></i> Reset
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="profiles-grid" data-current-layout="3">
-          <% for (let profile of profiles) { %>
-          <div class="profile-card">
-            <div class="profile-avatar">
-              <% if (profile.gender && profile.gender.toLowerCase() ===
-              'female') { %>
-              <i class="fas fa-female"></i>
-              <% } else { %>
-              <i class="fas fa-male"></i>
-              <% } %>
-            </div>
-            <div class="profile-info">
-              <h3>
-                <%= profile.name %>
-                <span class="username">@<%= profile.username %></span>
-              </h3>
-              <div class="profile-details">
-                <p><i class="fas fa-venus-mars"></i> <%= profile.gender %></p>
-                <p><i class="fas fa-map-marker-alt"></i> <%= profile.city %></p>
-              </div>
-              <a href="/profiles/<%= profile._id %>" class="profile-link">
-                View Profile <i class="fas fa-arrow-right"></i>
-              </a>
+                  <div class="filter-group">
+                    <label for="religion">Religion</label>
+                    <select name="religion" id="religion" class="filter-select">
+                      <option value="">Any Religion</option>
+                      <option value="islam" <%= filters && filters.religion === 'islam' ? 'selected' : '' %>>Islam</option>
+                      <option value="hinduism" <%= filters && filters.religion === 'hinduism' ? 'selected' : '' %>>Hinduism</option>
+                      <option value="christianity" <%= filters && filters.religion === 'christianity' ? 'selected' : '' %>>Christianity</option>
+                      <option value="other" <%= filters && filters.religion === 'other' ? 'selected' : '' %>>Other</option>
+                    </select>
+                  </div>
+
+                  <div class="filter-group">
+                    <label for="cast">Caste</label>
+                    <input
+                      type="text"
+                      name="cast"
+                      id="cast"
+                      class="filter-input"
+                      placeholder="Enter caste"
+                      value="<%= filters && filters.cast || '' %>"
+                    />
+                  </div>
+                </div>
+
+                <div class="filter-actions">
+                  <button type="submit" class="btn-filter-apply">
+                    <i class="fas fa-search"></i> Apply Filters
+                  </button>
+                  <button type="reset" class="btn-filter-reset">
+                    <i class="fas fa-undo"></i> Reset
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-          <% } %>
-        </div>
+          
+          <!-- Profiles content -->
+          <div class="profiles-content">
+            <% if (filters && Object.keys(filters).some(key => filters[key])) { %>
+              <div class="active-filters">
+                <% if (filters.gender) { %>
+                  <div class="filter-tag">Gender: <%= filters.gender %></div>
+                <% } %>
+                <% if (filters.minAge && filters.maxAge) { %>
+                  <div class="filter-tag">Age: <%= filters.minAge %> - <%= filters.maxAge %></div>
+                <% } %>
+                <% if (filters.city) { %>
+                  <div class="filter-tag">City: <%= filters.city %></div>
+                <% } %>
+                <% if (filters.religion) { %>
+                  <div class="filter-tag">Religion: <%= filters.religion %></div>
+                <% } %>
+                <% if (filters.cast) { %>
+                  <div class="filter-tag">Caste: <%= filters.cast %></div>
+                <% } %>
+                <a href="/profiles" class="clear-filters">Clear All Filters</a>
+              </div>
+            <% } %>
+            
+            <!-- Layout switcher -->
+            <div class="layout-switcher">
+              <span>Layout:</span>
+              <div class="layout-options">
+                <button class="layout-btn active" data-columns="3">
+                  <i class="fas fa-th-large"></i> 3 Columns
+                </button>
+                <button class="layout-btn" data-columns="4">
+                  <i class="fas fa-th"></i> 4 Columns
+                </button>
+              </div>
+            </div>
 
-        <% if (profiles.length === 0) { %>
-        <div class="no-profiles">
-          <i class="fas fa-users-slash"></i>
-          <p>No profiles found</p>
+            <% if (profiles.length > 0) { %>
+              <div class="profiles-grid" data-current-layout="3">
+                <% for (let profile of profiles) { %>
+                <div class="profile-card">
+                  <div class="profile-avatar">
+                    <% if (profile.gender && profile.gender.toLowerCase() === 'female') { %>
+                    <i class="fas fa-female"></i>
+                    <% } else { %>
+                    <i class="fas fa-male"></i>
+                    <% } %>
+                  </div>
+                  <div class="profile-info">
+                    <h3>
+                      <%= profile.name || 'No Name' %>
+                      <span class="username">@<%= profile.username %></span>
+                    </h3>
+                    <div class="profile-details">
+                      <% if (profile.gender) { %>
+                        <p><i class="fas fa-venus-mars"></i> <%= profile.gender %></p>
+                      <% } %>
+                      <% if (profile.age) { %>
+                        <p><i class="fas fa-birthday-cake"></i> <%= profile.age %> years</p>
+                      <% } %>
+                      <% if (profile.city) { %>
+                        <p><i class="fas fa-map-marker-alt"></i> <%= profile.city %></p>
+                      <% } %>
+                    </div>
+                    <a href="/profiles/<%= profile._id %>" class="profile-link">
+                      View Profile <i class="fas fa-arrow-right"></i>
+                    </a>
+                  </div>
+                </div>
+                <% } %>
+              </div>
+            <% } else { %>
+              <div class="no-results">
+                <i class="fas fa-users-slash"></i>
+                <h3>No profiles found</h3>
+                <p>Try adjusting your filters to see more results</p>
+                <a href="/profiles" class="btn-filter-apply">Clear All Filters</a>
+              </div>
+            <% } %>
+          </div>
         </div>
-        <% } %>
       </div>
     </main>
 
@@ -222,11 +329,11 @@
         <div class="footer-content">
           <div class="footer-section">
             <h3>About Us</h3>
-            <p>We provide the latest fashion for children of all ages.</p>
+            <p>We help you find your perfect match.</p>
           </div>
           <div class="footer-section">
             <h3>Contact</h3>
-            <p>Email: info@example.com</p>
+            <p>Email: info@pinkmatch.com</p>
             <p>Phone: (123) 456-7890</p>
           </div>
           <div class="footer-section">
@@ -239,42 +346,13 @@
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2025 Fashion Store. All rights reserved.</p>
+          <p>&copy; 2025 Pink Match. All rights reserved.</p>
         </div>
       </div>
     </footer>
     <script src="/js/main.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
-        // Mobile menu toggle
-        const menuToggle = document.querySelector(".mobile-menu-toggle");
-        const authButtons = document.querySelector(".auth-buttons");
-
-        if (menuToggle && authButtons) {
-          menuToggle.addEventListener("click", function () {
-            authButtons.classList.toggle("active");
-          });
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener("click", function (event) {
-          if (
-            !event.target.closest(".mobile-menu-toggle") &&
-            !event.target.closest(".auth-buttons") &&
-            authButtons &&
-            authButtons.classList.contains("active")
-          ) {
-            authButtons.classList.remove("active");
-          }
-        });
-
-        // Add animation to profile cards
-        const profileCards = document.querySelectorAll(".profile-card");
-        profileCards.forEach((card, index) => {
-          // Stagger the animation delay
-          card.style.animationDelay = `${index * 0.1}s`;
-        });
-
         // Layout switcher functionality
         const layoutButtons = document.querySelectorAll(".layout-btn");
         const profilesGrid = document.querySelector(".profiles-grid");
@@ -315,19 +393,6 @@
 
           // Set current layout attribute for CSS
           profilesGrid.dataset.currentLayout = columns;
-
-          // Reset animation for cards
-          profileCards.forEach((card) => {
-            card.style.opacity = 0;
-
-            // Trigger reflow to restart animation
-            void card.offsetWidth;
-
-            // Stagger the animation delay
-            setTimeout(() => {
-              card.style.opacity = 1;
-            }, Math.random() * 300);
-          });
 
           // Remove transition class after animation completes
           setTimeout(() => {
