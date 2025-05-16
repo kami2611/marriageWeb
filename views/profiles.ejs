@@ -53,6 +53,7 @@
           <h1>Browse Profiles</h1>
           <p>Discover people in our community</p>
         </div>
+        <!-- Add this sidebar filter to your profiles.ejs file -->
 
         <!-- Layout switcher -->
         <div class="layout-switcher">
@@ -67,6 +68,118 @@
           </div>
         </div>
 
+        <div class="sidebar">
+          <div class="logo-container">
+            <a href="/" class="logo">
+              <i class="fas fa-heart"></i>
+              <span>Pink Match</span>
+            </a>
+          </div>
+
+          <div class="filter-toggle">
+            <i class="fas fa-filter"></i>
+            <span>Show Filters</span>
+          </div>
+
+          <div class="filter-container">
+            <h3 class="filter-title">Find Your Match</h3>
+
+            <form id="profile-filter-form" class="filter-form">
+              <div class="filter-section">
+                <h4>Basic Info</h4>
+
+                <div class="filter-group">
+                  <label for="gender">Gender</label>
+                  <select name="gender" id="gender" class="filter-select">
+                    <option value="">Any Gender</option>
+                    <option value="female">Female</option>
+                    <option value="male">Male</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label>Age Range</label>
+                  <div class="range-slider">
+                    <div class="range-values">
+                      <span id="age-min-value">18</span> -
+                      <span id="age-max-value">60</span> years
+                    </div>
+                    <div class="range-inputs">
+                      <input
+                        type="range"
+                        name="minAge"
+                        id="age-range-min"
+                        min="18"
+                        max="80"
+                        value="18"
+                        class="range-input"
+                      />
+                      <input
+                        type="range"
+                        name="maxAge"
+                        id="age-range-max"
+                        min="18"
+                        max="80"
+                        value="60"
+                        class="range-input"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="filter-section">
+                <h4>Location</h4>
+
+                <div class="filter-group">
+                  <label for="city">City</label>
+                  <input
+                    type="text"
+                    name="city"
+                    id="city"
+                    class="filter-input"
+                    placeholder="Enter city name"
+                  />
+                </div>
+              </div>
+
+              <div class="filter-section">
+                <h4>Background</h4>
+
+                <div class="filter-group">
+                  <label for="religion">Religion</label>
+                  <select name="religion" id="religion" class="filter-select">
+                    <option value="">Any Religion</option>
+                    <option value="islam">Islam</option>
+                    <option value="hinduism">Hinduism</option>
+                    <option value="christianity">Christianity</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="filter-group">
+                  <label for="cast">Caste</label>
+                  <input
+                    type="text"
+                    name="cast"
+                    id="cast"
+                    class="filter-input"
+                    placeholder="Enter caste"
+                  />
+                </div>
+              </div>
+
+              <div class="filter-actions">
+                <button type="submit" class="btn-filter-apply">
+                  <i class="fas fa-search"></i> Apply Filters
+                </button>
+                <button type="reset" class="btn-filter-reset">
+                  <i class="fas fa-undo"></i> Reset
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
         <div class="profiles-grid" data-current-layout="3">
           <% for (let profile of profiles) { %>
           <div class="profile-card">

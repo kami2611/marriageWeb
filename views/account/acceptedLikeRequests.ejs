@@ -95,7 +95,10 @@
                           <% } %>
                         </div>
                         <div>
-                          <h3><%= req.from.username %></h3>
+                          <a href="/profiles/<%=req.from._id%>">
+                            <h3><%= req.from.username %></h3>
+                          </a>
+
                           <p class="location">
                             <i class="fas fa-map-marker-alt"></i> <%=
                             req.from.city %>

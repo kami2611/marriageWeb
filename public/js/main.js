@@ -58,4 +58,95 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   });
+
+  // Profile Filter Functionality
+  const profileFilterForm = document.getElementById("profile-filter-form");
+  const ageRangeMin = document.getElementById("age-range-min");
+  const ageRangeMax = document.getElementById("age-range-max");
+  const ageRangeMinValue = document.getElementById("age-min-value");
+  const ageRangeMaxValue = document.getElementById("age-max-value");
+  const filterToggle = document.querySelector(".filter-toggle");
+  const filterContainer = document.querySelector(".filter-container");
+
+  // Toggle filter visibility on mobile
+  if (filterToggle && filterContainer) {
+    filterToggle.addEventListener("click", function () {
+      filterContainer.classList.toggle("active");
+
+      // Change the icon and text based on state
+      const icon = this.querySelector("i");
+      const text = this.querySelector("span");
+
+      if (filterContainer.classList.contains("active")) {
+        icon.className = "fas fa-times";
+        text.textContent = "Close Filters";
+      } else {
+        icon.className = "fas fa-filter";
+        text.textContent = "Show Filters";
+      }
+    });
+  }
+
+  // Update age range display values
+  if (ageRangeMin && ageRangeMinValue) {
+    ageRangeMin.addEventListener("input", function () {
+      ageRangeMinValue.textContent = this.value;
+
+      // Ensure min doesn't exceed max
+      if (parseInt(ageRangeMin.value) > parseInt(ageRangeMax.value)) {
+        ageRangeMax.value = ageRangeMin.value;
+        ageRangeMaxValue.textContent = ageRangeMax.value;
+      }
+    });
+  }
+
+  if (ageRangeMax && ageRangeMaxValue) {
+    ageRangeMax.addEventListener("input", function () {
+      ageRangeMaxValue.textContent = this.value;
+
+      // Ensure max doesn't go below min
+      if (parseInt(ageRangeMax.value) < parseInt(ageRangeMin.value)) {
+        ageRangeMin.value = ageRangeMax.value;
+        ageRangeMinValue.textContent = ageRangeMin.value;
+      }
+    });
+  }
+
+  // Handle filter form submission
+  if (profileFilterForm) {
+    profileFilterForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      // Get form data
+      const formData = new FormData(profileFilterForm);
+
+      // Convert to query string
+      const queryParams = new URLSearchParams();
+
+      for (const [key, value] of formData.entries()) {
+        if (value) {
+          // Only add non-empty values
+          queryParams.append(key, value);
+        }
+      }
+
+      // Redirect to profiles page with query string
+      window.location.href = `/profiles?${queryParams.toString()}`;
+    });
+
+    // Handle reset button
+    const resetButton = profileFilterForm.querySelector('button[type="reset"]');
+    if (resetButton) {
+      resetButton.addEventListener("click", function () {
+        // Reset the displayed values for age sliders
+        if (ageRangeMinValue) ageRangeMinValue.textContent = "18";
+        if (ageRangeMaxValue) ageRangeMaxValue.textContent = "60";
+
+        // Wait for the form to reset then redirect to profiles without filters
+        setTimeout(() => {
+          window.location.href = "/profiles";
+        }, 100);
+      });
+    }
+  }
 });

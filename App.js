@@ -69,7 +69,6 @@ app.post("/login", async (req, res) => {
   if (!foundUser) {
     return res.json({ error: "username or password is incorrect" });
   }
-  console.log(foundUser.password);
   const isMatch = await bcrypt.compare(password, foundUser.password);
   if (isMatch) {
     req.session.userId = foundUser._id; // create session
@@ -109,6 +108,10 @@ app.post("/account/edit", isLoggedIn, findUser, async (req, res) => {
 
   await user.save();
   res.redirect("/account"); // or wherever you want to redirect
+});
+app.get("/find", async (req, res) => {
+  const user = await User.findById("6820a57b1d1732e5c02277bf");
+  console.log(user);
 });
 
 app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
@@ -207,18 +210,71 @@ app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {
   res.json({ message: "Request canceled and access revoked from both sides." });
 });
 
+// app.get("/profiles", async (req, res) => {
+//   console.log("hello i am being visited");
+//   let profiles;
+//   const { gender } = req.query;
+//   console.log(gender);
+//   if (gender) {
+//     profiles = await User.find({ gender: gender });
+//   } else {
+//     profiles = await User.find({});
+//   }
+//   //we will get only name, gender, city and _id say. modify this and get only specific informations.
+//   // console.log(profiles);
+//   return res.render("profiles", { profiles });
+// });
 app.get("/profiles", async (req, res) => {
-  let profiles;
-  const { gender } = req.query;
-  console.log(gender);
-  if (gender) {
-    profiles = await User.find({ gender: gender });
-  } else {
-    profiles = await User.find({});
+  console.log("Profiles route accessed with query:", req.query);
+
+  // Extract filter parameters
+  const { gender, minAge, maxAge, city, religion, cast } = req.query;
+
+  // Build filter object
+  const filter = {};
+
+  // Add filters only if they exist
+  if (gender) filter.gender = gender;
+  if (city) filter.city = { $regex: new RegExp(city, "i") }; // Case-insensitive search
+  if (religion) filter.religion = religion;
+  if (cast) filter.cast = { $regex: new RegExp(cast, "i") }; // Case-insensitive search
+
+  // Handle age range filter
+  if (minAge || maxAge) {
+    filter.age = {};
+    if (minAge) filter.age.$gte = parseInt(minAge);
+    if (maxAge) filter.age.$lte = parseInt(maxAge);
   }
-  //we will get only name, gender, city and _id say. modify this and get only specific informations.
-  // console.log(profiles);
-  return res.render("profiles", { profiles });
+
+  console.log("Applying filters:", filter);
+
+  try {
+    // Find profiles with the applied filters
+    const profiles = await User.find(filter);
+    console.log(`Found ${profiles.length} profiles matching the filters`);
+
+    // Pass the filters to the template for displaying active filters
+    const activeFilters = {
+      gender,
+      minAge,
+      maxAge,
+      city,
+      religion,
+      cast,
+    };
+
+    return res.render("profiles", {
+      profiles,
+      filters: Object.keys(req.query).length > 0 ? activeFilters : null,
+    });
+  } catch (error) {
+    console.error("Error fetching profiles:", error);
+    return res.status(500).render("error", {
+      title: "Error",
+      message: "Failed to fetch profiles",
+      error: process.env.NODE_ENV === "development" ? error : {},
+    });
+  }
 });
 
 app.get("/profiles/:id", async (req, res) => {

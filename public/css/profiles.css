@@ -1,3 +1,4 @@
+/* this is profiles.css file */
 /* Profiles page specific styles */
 .profiles-header {
     text-align: center;
@@ -290,4 +291,85 @@
     .layout-switcher span {
         margin-right: 0;
     }
+}
+/* Add this to your profiles.css file */
+.profiles-container {
+  display: flex;
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.profiles-content {
+  flex: 1;
+}
+
+.profiles-header {
+  margin-bottom: 25px;
+}
+
+.profiles-title {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.profiles-subtitle {
+  font-size: 16px;
+  color: #666;
+}
+
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fff0f5;
+  color: #ff69b4;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.filter-tag i {
+  margin-left: 6px;
+  cursor: pointer;
+}
+
+.no-results {
+  text-align: center;
+  padding: 40px 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.no-results i {
+  font-size: 48px;
+  color: #ff69b4;
+  margin-bottom: 15px;
+}
+
+.no-results h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.no-results p {
+  color: #666;
+  margin-bottom: 20px;
+}
+
+/* Responsive styles */
+@media (max-width: 992px) {
+  .profiles-container {
+    flex-direction: column;
+  }
 }
