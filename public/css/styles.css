@@ -355,38 +355,16 @@ img {
 /* Sidebar Filter Styles */
 .sidebar {
   width: 280px;
+  flex-shrink: 0;
   background-color: #fff;
   border-radius: 10px;
   box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
   padding: 20px;
   position: sticky;
   top: 20px;
+  height: fit-content;
   max-height: calc(100vh - 40px);
   overflow-y: auto;
-}
-
-.logo-container {
-  margin-bottom: 25px;
-  text-align: center;
-}
-
-.logo {
-  display: inline-flex;
-  align-items: center;
-  font-size: 22px;
-  font-weight: 700;
-  color: #ff69b4;
-  text-decoration: none;
-  transition: all 0.3s ease;
-}
-
-.logo i {
-  margin-right: 10px;
-  font-size: 24px;
-}
-
-.logo:hover {
-  transform: scale(1.05);
 }
 
 .filter-toggle {
@@ -575,36 +553,67 @@ img {
   margin-right: 8px;
 }
 
-/* Responsive styles */
-@media (max-width: 992px) {
-  .sidebar {
-    width: 100%;
-    position: relative;
-    top: 0;
-    margin-bottom: 20px;
-    max-height: none;
-  }
-  
-  .filter-toggle {
-    display: flex;
-  }
-  
-  .filter-container {
-    display: none;
-  }
-  
-  .filter-container.active {
-    display: block;
-  }
+/* Active filters */
+.active-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+  padding: 15px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
 }
 
-@media (max-width: 576px) {
-  .filter-actions {
-    flex-direction: column;
-  }
-  
-  .btn-filter-apply,
-  .btn-filter-reset {
-    width: 100%;
-  }
+.filter-tag {
+  display: inline-flex;
+  align-items: center;
+  background-color: #fff0f5;
+  color: #ff69b4;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.clear-filters {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f0f0f0;
+  color: #666;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.clear-filters:hover {
+  background-color: #e0e0e0;
+  color: #333;
+}
+
+/* No results message */
+.no-results {
+  text-align: center;
+  padding: 60px 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+}
+
+.no-results i {
+  font-size: 48px;
+  color: #ff69b4;
+  margin-bottom: 15px;
+}
+
+.no-results h3 {
+  font-size: 20px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.no-results p {
+  color: #666;
+  margin-bottom: 20px;
 }

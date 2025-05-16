@@ -293,83 +293,89 @@
     }
 }
 /* Add this to your profiles.css file */
+/* Profiles container layout */
 .profiles-container {
   display: flex;
   gap: 30px;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  margin-top: 30px;
+  width: 100%;
 }
 
 .profiles-content {
   flex: 1;
+  min-width: 0; /* Prevent flex item from overflowing */
 }
 
-.profiles-header {
-  margin-bottom: 25px;
+/* Profiles grid */
+.profiles-grid {
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
 }
 
-.profiles-title {
-  font-size: 24px;
-  color: #333;
-  margin-bottom: 10px;
+.profiles-grid[data-current-layout="4"] {
+  grid-template-columns: repeat(4, 1fr);
 }
 
-.profiles-subtitle {
-  font-size: 16px;
-  color: #666;
-}
-
-.active-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.filter-tag {
-  display: inline-flex;
-  align-items: center;
-  background-color: #fff0f5;
-  color: #ff69b4;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-}
-
-.filter-tag i {
-  margin-left: 6px;
-  cursor: pointer;
-}
-
-.no-results {
-  text-align: center;
-  padding: 40px 20px;
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-}
-
-.no-results i {
-  font-size: 48px;
-  color: #ff69b4;
-  margin-bottom: 15px;
-}
-
-.no-results h3 {
-  font-size: 20px;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-.no-results p {
-  color: #666;
-  margin-bottom: 20px;
+/* Layout transition */
+.layout-transition {
+  transition: all 0.3s ease;
 }
 
 /* Responsive styles */
+@media (max-width: 1200px) {
+  .profiles-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .profiles-grid[data-current-layout="4"] {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
 @media (max-width: 992px) {
   .profiles-container {
     flex-direction: column;
+  }
+  
+  .sidebar {
+    width: 100%;
+    position: relative;
+    top: 0;
+    max-height: none;
+  }
+  
+  .filter-container {
+    display: none;
+  }
+  
+  .filter-container.active {
+    display: block;
+  }
+  
+  .filter-toggle {
+    display: flex;
+  }
+  
+  .profiles-grid[data-current-layout="4"] {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 993px) {
+  .filter-toggle {
+    display: none;
+  }
+  
+  .filter-container {
+    display: block !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .profiles-grid,
+  .profiles-grid[data-current-layout="4"] {
+    grid-template-columns: 1fr;
   }
 }

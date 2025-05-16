@@ -60,6 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // Profile Filter Functionality
+  // Profile Filter Functionality
   const profileFilterForm = document.getElementById("profile-filter-form");
   const ageRangeMin = document.getElementById("age-range-min");
   const ageRangeMax = document.getElementById("age-range-max");
@@ -147,6 +148,55 @@ document.addEventListener("DOMContentLoaded", function () {
           window.location.href = "/profiles";
         }, 100);
       });
+    }
+  }
+
+  // Layout switcher functionality
+  const layoutButtons = document.querySelectorAll(".layout-btn");
+  const profilesGrid = document.querySelector(".profiles-grid");
+
+  if (layoutButtons.length > 0 && profilesGrid) {
+    // Save user preference to localStorage
+    const savedLayout = localStorage.getItem("profilesLayout");
+    if (savedLayout) {
+      changeLayout(savedLayout);
+
+      // Update active button
+      layoutButtons.forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.columns === savedLayout);
+      });
+    }
+
+    layoutButtons.forEach((button) => {
+      button.addEventListener("click", function () {
+        const columns = this.dataset.columns;
+
+        // Don't do anything if already active
+        if (this.classList.contains("active")) return;
+
+        // Update active button
+        layoutButtons.forEach((btn) => btn.classList.remove("active"));
+        this.classList.add("active");
+
+        // Change layout with animation
+        changeLayout(columns);
+
+        // Save preference
+        localStorage.setItem("profilesLayout", columns);
+      });
+    });
+
+    function changeLayout(columns) {
+      // Add transition class for animation
+      profilesGrid.classList.add("layout-transition");
+
+      // Set current layout attribute for CSS
+      profilesGrid.dataset.currentLayout = columns;
+
+      // Remove transition class after animation completes
+      setTimeout(() => {
+        profilesGrid.classList.remove("layout-transition");
+      }, 500);
     }
   }
 });
