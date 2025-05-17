@@ -60,12 +60,18 @@
           <div class="profile-card">
             <div class="profile-banner">
               <div class="profile-avatar">
-                <% if (profile.gender && profile.gender.toLowerCase() ===
-                'female') { %>
+                <% if (profile.profilePic && profile.profilePic.url) { %>
+                <img
+                  src="<%= profile.profilePic.url %>"
+                  alt="<%= profile.name %>'s profile picture"
+                  class="profile-image"
+                />
+                <% } else { %> <% if (profile.gender &&
+                profile.gender.toLowerCase() === 'female') { %>
                 <i class="fas fa-female"></i>
                 <% } else { %>
                 <i class="fas fa-male"></i>
-                <% } %>
+                <% } %> <% } %>
               </div>
             </div>
 
@@ -73,7 +79,15 @@
               <div class="profile-basic-info">
                 <h2><%= profile.name %></h2>
                 <span class="profile-gender">
-                  <i class="fas fa-venus-mars"></i> <%= profile.gender %>
+                  <% if (profile.gender && profile.gender.toLowerCase() ===
+                  'female') { %>
+                  <i class="fas fa-venus"></i>
+                  <% } else if (profile.gender && profile.gender.toLowerCase()
+                  === 'male') { %>
+                  <i class="fas fa-mars"></i>
+                  <% } else { %>
+                  <i class="fas fa-venus-mars"></i>
+                  <% } %> <%= profile.gender %>
                 </span>
               </div>
 

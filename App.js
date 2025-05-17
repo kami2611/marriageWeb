@@ -7,6 +7,10 @@ const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
+const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+
 require("dotenv").config();
 
 const app = express();
@@ -19,6 +23,20 @@ app.use(
     cookie: { secure: false, httpOnly: true }, // secure: true only if using HTTPS
   })
 );
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_KEY,
+  api_secret: process.env.CLOUDINARY_SECRET,
+});
+const storage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: "user_profiles",
+    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  },
+});
+const upload = multer({ storage });
+
 // Add this middleware after your session setup but before your routes
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
@@ -92,24 +110,38 @@ app.get("/account/edit", isLoggedIn, findUser, (req, res) => {
   const userData = req.userData;
   res.render("account/edit", { userData });
 });
-app.post("/account/edit", isLoggedIn, findUser, async (req, res) => {
-  const { name, adress, city, contact, gender, religion, caste, age } =
-    req.body;
-  const user = req.userData;
+app.post(
+  "/account/edit",
+  isLoggedIn,
+  findUser,
+  upload.single("profilePic"),
+  async (req, res) => {
+    const { name, adress, city, contact, gender, religion, caste, age } =
+      req.body;
+    const user = req.userData;
 
-  // Update fields if they exist
-  user.name = name || user.name;
-  user.adress = adress || user.adress;
-  user.city = city || user.city;
-  user.contact = contact || user.contact;
-  user.gender = gender || user.gender;
-  user.religion = religion || user.religion;
-  user.age = age || user.age;
-  user.caste = caste || user.caste;
+    if (user.profilePic?.public_id) {
+      await cloudinary.uploader.destroy(user.profilePic.public_id);
+    }
+    user.profilePic = {
+      url: req.file.path,
+      public_id: req.file.filename,
+    };
 
-  await user.save();
-  res.redirect("/account"); // or wherever you want to redirect
-});
+    // Update fields if they exist
+    user.name = name || user.name;
+    user.adress = adress || user.adress;
+    user.city = city || user.city;
+    user.contact = contact || user.contact;
+    user.gender = gender || user.gender;
+    user.religion = religion || user.religion;
+    user.age = age || user.age;
+    user.caste = caste || user.caste;
+
+    await user.save();
+    res.redirect("/account"); // or wherever you want to redirect
+  }
+);
 app.get("/find", async (req, res) => {
   const user = await User.findById("6820a57b1d1732e5c02277bf");
   console.log(user);
@@ -324,6 +356,12 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   return res.json({
     message: `successully sent your like request`,
   });
+});
+
+app.get("/testpics", isLoggedIn, findUser, async (req, res) => {
+  const user = req.session.user;
+  console.log(user);
+  res.render("testpics", { user });
 });
 
 app.listen(3000, (req, res) => {

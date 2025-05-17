@@ -244,35 +244,48 @@
             <% if (profiles.length > 0) { %>
               <div class="profiles-grid" data-current-layout="3">
                 <% for (let profile of profiles) { %>
-                <div class="profile-card">
-                  <div class="profile-avatar">
-                    <% if (profile.gender && profile.gender.toLowerCase() === 'female') { %>
-                    <i class="fas fa-female"></i>
-                    <% } else { %>
-                    <i class="fas fa-male"></i>
-                    <% } %>
-                  </div>
-                  <div class="profile-info">
-                    <h3>
-                      <%= profile.name || 'No Name' %>
-                      <span class="username">@<%= profile.username %></span>
-                    </h3>
-                    <div class="profile-details">
-                      <% if (profile.gender) { %>
-                        <p><i class="fas fa-venus-mars"></i> <%= profile.gender %></p>
-                      <% } %>
-                      <% if (profile.age) { %>
-                        <p><i class="fas fa-birthday-cake"></i> <%= profile.age %> years</p>
-                      <% } %>
-                      <% if (profile.city) { %>
-                        <p><i class="fas fa-map-marker-alt"></i> <%= profile.city %></p>
-                      <% } %>
-                    </div>
-                    <a href="/profiles/<%= profile._id %>" class="profile-link">
-                      View Profile <i class="fas fa-arrow-right"></i>
-                    </a>
-                  </div>
-                </div>
+                <!-- This is just the part that needs to change in the profile card -->
+<div class="profile-card">
+  <div class="profile-avatar">
+    <% if (profile.profilePic && profile.profilePic.url) { %>
+      <img src="<%= profile.profilePic.url %>" alt="<%= profile.name %>'s profile picture" class="profile-image">
+    <% } else { %>
+      <% if (profile.gender && profile.gender.toLowerCase() === 'female') { %>
+        <i class="fas fa-female"></i>
+      <% } else { %>
+        <i class="fas fa-male"></i>
+      <% } %>
+    <% } %>
+  </div>
+  <div class="profile-info">
+    <h3>
+      <%= profile.name || 'No Name' %>
+      <% if (profile.gender) { %>
+        <span class="gender-icon">
+          <% if (profile.gender.toLowerCase() === 'female') { %>
+            <i class="fas fa-venus"></i>
+          <% } else if (profile.gender.toLowerCase() === 'male') { %>
+            <i class="fas fa-mars"></i>
+          <% } else { %>
+            <i class="fas fa-genderless"></i>
+          <% } %>
+        </span>
+      <% } %>
+      <span class="username">@<%= profile.username %></span>
+    </h3>
+    <div class="profile-details">
+      <% if (profile.age) { %>
+        <p><i class="fas fa-birthday-cake"></i> <%= profile.age %> years</p>
+      <% } %>
+      <% if (profile.city) { %>
+        <p><i class="fas fa-map-marker-alt"></i> <%= profile.city %></p>
+      <% } %>
+    </div>
+    <a href="/profiles/<%= profile._id %>" class="profile-link">
+      View Profile <i class="fas fa-arrow-right"></i>
+    </a>
+  </div>
+</div>
                 <% } %>
               </div>
             <% } else { %>
