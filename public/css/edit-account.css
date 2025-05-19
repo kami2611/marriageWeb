@@ -311,3 +311,76 @@ input[type="number"]::-webkit-inner-spin-button {
         font-size: 14px;
     }
 }
+/* Custom File Input Styling */
+.custom-file-input {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.file-input-button {
+  display: inline-flex;
+  align-items: center;
+  background-color: #ff69b4;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 25px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.file-input-button:hover {
+  background-color: #ff5ba7;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+}
+
+.file-input-button i {
+  margin-right: 8px;
+}
+
+input[type="file"] {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+.file-name {
+  display: inline-block;
+  margin-left: 10px;
+  font-size: 14px;
+  color: #666;
+}
+
+/* Image Preview Styling */
+.image-preview-container {
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 10px;
+  border: 2px solid #ff69b4;
+  position: relative;
+}
+
+.image-preview-placeholder {
+  color: #999;
+  font-size: 14px;
+  text-align: center;
+  padding: 15px;
+}
+
+.image-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: none;
+}

@@ -65,12 +65,19 @@
               <div class="account-info-container">
                 <div class="profile-header">
                   <div class="profile-avatar">
-                    <% if (accountInfo.gender &&
+                    <% if (accountInfo.profilePic && accountInfo.profilePic.url)
+                    { %>
+                    <img
+                      src="<%= accountInfo.profilePic.url %>"
+                      alt="<%= accountInfo.name %>'s profile picture"
+                      class="profile-image"
+                    />
+                    <% } else { %> <% if (accountInfo.gender &&
                     accountInfo.gender.toLowerCase() === 'female') { %>
                     <i class="fas fa-female"></i>
                     <% } else { %>
                     <i class="fas fa-male"></i>
-                    <% } %>
+                    <% } %> <% } %>
                   </div>
                   <div class="profile-title">
                     <h2><%= accountInfo.name %></h2>
@@ -158,7 +165,10 @@
         <div class="footer-content">
           <div class="footer-section">
             <h3>About Us</h3>
-            <p>We provide the latest fashion for children of all ages.</p>
+            <p>
+              We make knowing eachother secure that ever and find the perfect
+              match for you
+            </p>
           </div>
           <div class="footer-section">
             <h3>Contact</h3>
