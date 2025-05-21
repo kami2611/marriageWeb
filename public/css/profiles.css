@@ -507,3 +507,90 @@
     height: 220px;
   }
 }
+/* Login Required Message */
+.login-required {
+  padding: 20px;
+  text-align: center;
+  background-color: #fff0f5;
+  border-radius: 10px;
+  border: 1px dashed #ff69b4;
+}
+
+.login-icon {
+  font-size: 40px;
+  color: #ff69b4;
+  margin-bottom: 15px;
+}
+
+.login-required h4 {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.login-required p {
+  color: #666;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.login-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-login-action,
+.btn-register-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 15px;
+  border-radius: 25px;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.btn-login-action {
+  background-color: #ff69b4;
+  color: white;
+}
+
+.btn-login-action:hover {
+  background-color: #ff5ba7;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 105, 180, 0.3);
+}
+
+.btn-register-action {
+  background-color: white;
+  color: #ff69b4;
+  border: 1px solid #ff69b4;
+}
+
+.btn-register-action:hover {
+  background-color: #fff0f5;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 105, 180, 0.1);
+}
+
+.btn-login-action i,
+.btn-register-action i {
+  margin-right: 5px;
+}
+
+/* Responsive adjustments for login required message */
+@media (max-width: 992px) {
+  .login-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .btn-login-action,
+  .btn-register-action {
+    width: 100%;
+  }
+}

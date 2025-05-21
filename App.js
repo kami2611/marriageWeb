@@ -23,6 +23,7 @@ app.use(
     cookie: { secure: false, httpOnly: true }, // secure: true only if using HTTPS
   })
 );
+
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUDINARY_KEY,
@@ -142,10 +143,6 @@ app.post(
     res.redirect("/account"); // or wherever you want to redirect
   }
 );
-app.get("/find", async (req, res) => {
-  const user = await User.findById("6820a57b1d1732e5c02277bf");
-  console.log(user);
-});
 
 app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
   const accountInfo = req.userData;
@@ -356,12 +353,6 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   return res.json({
     message: `successully sent your like request`,
   });
-});
-
-app.get("/testpics", isLoggedIn, findUser, async (req, res) => {
-  const user = req.session.user;
-  console.log(user);
-  res.render("testpics", { user });
 });
 
 app.listen(3000, (req, res) => {
