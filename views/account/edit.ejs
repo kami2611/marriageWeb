@@ -177,10 +177,15 @@
                     <div class="file-input-button">
                       <i class="fas fa-upload"></i> Choose Image
                     </div>
-                    <input type="file" id="profilePic" name="profilePic" accept="image/*" />
+                    <input type="file" id="profilePic" name="profilePic" accept="image/*" style="display:none;" />
                     <span class="file-name">No file chosen</span>
+                    <button type="button" id="removeImageBtn" style="display:none; margin-left:10px;">Remove</button>
                   </div>
-
+                  <div id="imagePreview" style="margin-top:10px;">
+                    <% if (userData.profilePic && userData.profilePic.url) { %>
+                    <img src="<%= userData.profilePic.url %>" alt="Current Profile" style="max-width:120px; border-radius:8px;" id="currentProfileImg">
+                    <% } %>
+                  </div>
                 </div>
               </div>
               <div class="form-actions">
@@ -277,6 +282,59 @@
           });
         });
       }
+
+      // Profile image preview and remove
+      const fileInput = document.getElementById('profilePic');
+      const fileInputButton = document.querySelector('.file-input-button');
+      const fileNameSpan = document.querySelector('.file-name');
+      const imagePreview = document.getElementById('imagePreview');
+      const removeImageBtn = document.getElementById('removeImageBtn');
+      const currentProfileImg = document.getElementById('currentProfileImg');
+
+      // Open file dialog when clicking the custom button
+      if (fileInputButton) {
+        fileInputButton.addEventListener('click', function(e) {
+          fileInput.click();
+        });
+      }
+
+      // Show preview and file name when a file is selected
+      fileInput.addEventListener('change', function(e) {
+        const file = this.files[0];
+        if (file) {
+          fileNameSpan.textContent = file.name;
+          removeImageBtn.style.display = 'inline-block';
+
+          // Show preview
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            imagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview" style="max-width:120px; border-radius:8px;">`;
+          };
+          reader.readAsDataURL(file);
+        } else {
+          fileNameSpan.textContent = 'No file chosen';
+          removeImageBtn.style.display = 'none';
+          // Restore current image if exists
+          if (currentProfileImg) {
+            imagePreview.innerHTML = currentProfileImg.outerHTML;
+          } else {
+            imagePreview.innerHTML = '';
+          }
+        }
+      });
+
+      // Remove selected image
+      removeImageBtn.addEventListener('click', function() {
+        fileInput.value = '';
+        fileNameSpan.textContent = 'No file chosen';
+        removeImageBtn.style.display = 'none';
+        // Restore current image if exists
+        if (currentProfileImg) {
+          imagePreview.innerHTML = currentProfileImg.outerHTML;
+        } else {
+          imagePreview.innerHTML = '';
+        }
+      });
     });
   </script>
 </body>
