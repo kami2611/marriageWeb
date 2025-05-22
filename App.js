@@ -40,8 +40,7 @@ const upload = multer({ storage });
 
 // Add this middleware after your session setup but before your routes
 app.set("view engine", "ejs");
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+
 mongoose
   .connect("mongodb://127.0.0.1:27017/marriageajs")
   .then(() => {
@@ -55,6 +54,8 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
 });
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.get(["/", "/home"], (req, res) => {
   res.render("home", {
     user: req.session.user || null,
@@ -69,11 +70,11 @@ app.get("/login", (req, res) => {
 });
 
 app.post("/register", async (req, res) => {
-  const { username, password, passcode, city } = req.body;
+  const { username, password, passcode } = req.body;
   // console.log(name, password, city, passcode);
   if (passcode == process.env.PASSCODE) {
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({ username, password: hashedPassword, city });
+    const newUser = new User({ username, password: hashedPassword });
     await newUser.save();
     req.session.userId = newUser._id;
     req.session.user = newUser;
@@ -83,7 +84,7 @@ app.post("/register", async (req, res) => {
   }
 });
 app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password, remember } = req.body;
   const foundUser = await User.findOne({ username: username });
   if (!foundUser) {
     return res.json({ error: "username or password is incorrect" });
@@ -92,6 +93,11 @@ app.post("/login", async (req, res) => {
   if (isMatch) {
     req.session.userId = foundUser._id; // create session
     req.session.user = foundUser;
+    if (remember === "true" || remember === true) {
+      req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
+    } else {
+      req.session.cookie.expires = false; // Session cookie (browser closes = logout)
+    }
     return res.json("Login successful");
   } else {
     return res.json({ error: "username or password is incorrect" });
@@ -117,6 +123,7 @@ app.post(
   findUser,
   upload.single("profilePic"),
   async (req, res) => {
+    console.log("req.body", req.body);
     const { name, adress, city, contact, gender, religion, caste, age } =
       req.body;
     const user = req.userData;

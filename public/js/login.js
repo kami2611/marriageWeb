@@ -49,11 +49,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Set loading state
     setLoading(true);
-
     // Get form data
     const formData = {
       username: usernameInput.value.trim(),
       password: passwordInput.value,
+      remember: document.getElementById("remember").checked,
     };
 
     // Send AJAX request

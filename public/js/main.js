@@ -67,7 +67,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const ageRangeMinValue = document.getElementById("age-min-value");
   const ageRangeMaxValue = document.getElementById("age-max-value");
   const filterToggle = document.querySelector(".filter-toggle");
-  s;
+
   const filterContainer = document.querySelector(".filter-container");
 
   // Toggle filter visibility on mobile
