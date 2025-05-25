@@ -54,7 +54,7 @@ Cancel or Revoke: Senders can cancel unaccepted requests; any party can revoke s
 
 📦 Installation:
 
-git clone https://github.com/yourusername/marriageWeb.git
+git clone https://github.com/kami2611/marriageWeb.git
 cd marriageWeb
 npm install
 
