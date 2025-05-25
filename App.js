@@ -10,8 +10,8 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
-
 require("dotenv").config();
+const port = process.env.PORT;
 
 const app = express();
 app.use(express.static(path.join(__dirname, "public")));
@@ -127,14 +127,16 @@ app.post(
     const { name, adress, city, contact, gender, religion, caste, age } =
       req.body;
     const user = req.userData;
+    if (req.file) {
+      if (user.profilePic?.public_id) {
+        await cloudinary.uploader.destroy(user.profilePic.public_id);
+      }
 
-    if (user.profilePic?.public_id) {
-      await cloudinary.uploader.destroy(user.profilePic.public_id);
+      user.profilePic = {
+        url: req.file.path,
+        public_id: req.file.filename,
+      };
     }
-    user.profilePic = {
-      url: req.file.path,
-      public_id: req.file.filename,
-    };
 
     // Update fields if they exist
     user.name = name || user.name;
@@ -256,11 +258,16 @@ app.get("/profiles", async (req, res) => {
   // Build filter object
   const filter = {};
 
+  // Exclude the logged-in user's own profile
+  if (req.session.userId) {
+    filter._id = { $ne: req.session.userId };
+  }
+
   // Add filters only if they exist
   if (gender) filter.gender = gender;
-  if (city) filter.city = { $regex: new RegExp(city, "i") }; // Case-insensitive search
+  if (city) filter.city = { $regex: new RegExp(city, "i") };
   if (religion) filter.religion = religion;
-  if (caste) filter.caste = { $regex: new RegExp(caste, "i") }; // Case-insensitive search
+  if (caste) filter.caste = { $regex: new RegExp(caste, "i") };
 
   // Handle age range filter
   if (minAge || maxAge) {
@@ -272,11 +279,9 @@ app.get("/profiles", async (req, res) => {
   console.log("Applying filters:", filter);
 
   try {
-    // Find profiles with the applied filters
     const profiles = await User.find(filter);
     console.log(`Found ${profiles.length} profiles matching the filters`);
 
-    // Pass the filters to the template for displaying active filters
     const activeFilters = {
       gender,
       minAge,
@@ -362,6 +367,6 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   });
 });
 
-app.listen(3000, (req, res) => {
+app.listen(port, (req, res) => {
   console.log("on port 3000!");
 });

@@ -93,14 +93,16 @@
                       <div class="info-label">
                         <i class="fas fa-venus-mars"></i> Gender
                       </div>
-                      <div class="info-value"><%= accountInfo.gender %></div>
+                      <div class="info-value">
+                        <%= accountInfo.gender || '-' %>
+                      </div>
                     </div>
                     <div class="info-item">
                       <div class="info-label">
                         <i class="fas fa-venus-mars"></i> age
                       </div>
                       <div class="info-value">
-                        <%= accountInfo.age || 'Not specified' %>
+                        <%= accountInfo.age || '-' %>
                       </div>
                     </div>
                     <div class="info-item">
@@ -108,7 +110,7 @@
                         <i class="fas fa-venus-mars"></i> caste
                       </div>
                       <div class="info-value">
-                        <%= accountInfo.caste || 'Not specified' %>
+                        <%= accountInfo.caste || '-' %>
                       </div>
                     </div>
 
@@ -117,7 +119,7 @@
                         <i class="fas fa-pray"></i> Religion
                       </div>
                       <div class="info-value">
-                        <%= accountInfo.religion || 'Not specified' %>
+                        <%= accountInfo.religion || '-' %>
                       </div>
                     </div>
 
@@ -125,7 +127,9 @@
                       <div class="info-label">
                         <i class="fas fa-map-marker-alt"></i> City
                       </div>
-                      <div class="info-value"><%= accountInfo.city %></div>
+                      <div class="info-value">
+                        <%= accountInfo.city || '-' %>
+                      </div>
                     </div>
 
                     <div class="info-item">
@@ -133,7 +137,7 @@
                         <i class="fas fa-home"></i> Address
                       </div>
                       <div class="info-value">
-                        <%= accountInfo.adress || 'Not specified' %>
+                        <%= accountInfo.adress || '-' %>
                       </div>
                     </div>
 
@@ -142,7 +146,7 @@
                         <i class="fas fa-phone"></i> Contact
                       </div>
                       <div class="info-value">
-                        <%= accountInfo.contact || 'Not specified' %>
+                        <%= accountInfo.contact || '-' %>
                       </div>
                     </div>
                   </div>

@@ -338,6 +338,9 @@
   .profiles-container {
     flex-direction: column;
   }
+  .layout-switcher{
+    display: none;
+  }
   
   .sidebar {
     width: 100%;
