@@ -200,4 +200,22 @@ document.addEventListener("DOMContentLoaded", function () {
       }, 500);
     }
   }
+
+  // Remove individual filter functionality
+  document.querySelectorAll(".filter-remove").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      const filter = btn.getAttribute("data-filter");
+      const url = new URL(window.location.href);
+      if (filter === "age") {
+        url.searchParams.delete("minAge");
+        url.searchParams.delete("maxAge");
+      } else {
+        url.searchParams.delete(filter);
+      }
+      // Remove empty params for clean URL
+      window.location.href =
+        url.pathname +
+        (url.searchParams.toString() ? "?" + url.searchParams.toString() : "");
+    });
+  });
 });

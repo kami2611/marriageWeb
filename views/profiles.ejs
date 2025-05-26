@@ -230,19 +230,34 @@
             <% if (filters && Object.keys(filters).some(key => filters[key])) { %>
               <div class="active-filters">
                 <% if (filters.gender) { %>
-                  <div class="filter-tag">Gender: <%= filters.gender %></div>
+                  <div class="filter-tag" data-filter="gender">
+                    Gender: <%= filters.gender %>
+                    <button type="button" class="filter-remove" data-filter="gender" title="Remove">×</button>
+                  </div>
                 <% } %>
                 <% if (filters.minAge && filters.maxAge) { %>
-                  <div class="filter-tag">Age: <%= filters.minAge %> - <%= filters.maxAge %></div>
+                  <div class="filter-tag" data-filter="age">
+                    Age: <%= filters.minAge %> - <%= filters.maxAge %>
+                    <button type="button" class="filter-remove" data-filter="age" title="Remove">×</button>
+                  </div>
                 <% } %>
                 <% if (filters.city) { %>
-                  <div class="filter-tag">City: <%= filters.city %></div>
+                  <div class="filter-tag" data-filter="city">
+                    City: <%= filters.city %>
+                    <button type="button" class="filter-remove" data-filter="city" title="Remove">×</button>
+                  </div>
                 <% } %>
                 <% if (filters.religion) { %>
-                  <div class="filter-tag">Religion: <%= filters.religion %></div>
+                  <div class="filter-tag" data-filter="religion">
+                    Religion: <%= filters.religion %>
+                    <button type="button" class="filter-remove" data-filter="religion" title="Remove">×</button>
+                  </div>
                 <% } %>
                 <% if (filters.caste) { %>
-                  <div class="filter-tag">caste: <%= filters.caste %></div>
+                  <div class="filter-tag" data-filter="caste">
+                    caste: <%= filters.caste %>
+                    <button type="button" class="filter-remove" data-filter="caste" title="Remove">×</button>
+                  </div>
                 <% } %>
                 <a href="/profiles" class="clear-filters">Clear All Filters</a>
               </div>
