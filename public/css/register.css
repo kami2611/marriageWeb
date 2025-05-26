@@ -114,6 +114,25 @@ input[type="number"]::-webkit-inner-spin-button {
     text-decoration: underline;
 }
 
+.register-error {
+  background: #ffeaf2;
+  color: #e53935;
+  border: 1.5px solid #ff69b4;
+  border-radius: 8px;
+  padding: 12px 18px;
+  margin-bottom: 18px;
+  text-align: center;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+.register-error i {
+  color: #ff69b4;
+  font-size: 18px;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
     .register-container {

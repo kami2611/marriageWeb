@@ -63,15 +63,22 @@ app.get(["/", "/home"], (req, res) => {
 });
 
 app.get("/register", (req, res) => {
+  if (req.session.userId) {
+    // User is already logged in, redirect to home or dashboard
+    return res.redirect("/home");
+  }
   res.render("register");
 });
 app.get("/login", (req, res) => {
+  if (req.session.userId) {
+    // User is already logged in, redirect to home or dashboard
+    return res.redirect("/home");
+  }
   res.render("login");
 });
 
 app.post("/register", async (req, res) => {
   const { username, password, passcode } = req.body;
-  // console.log(name, password, city, passcode);
   if (passcode == process.env.PASSCODE) {
     const hashedPassword = await bcrypt.hash(password, 12);
     const newUser = new User({ username, password: hashedPassword });
@@ -80,7 +87,10 @@ app.post("/register", async (req, res) => {
     req.session.user = newUser;
     return res.redirect("/home");
   } else {
-    return res.send("invalid passcode , try again");
+    // Render register page with error message
+    return res.render("register", {
+      error: "Invalid passcode, please try again.",
+    });
   }
 });
 app.post("/login", async (req, res) => {
@@ -98,7 +108,10 @@ app.post("/login", async (req, res) => {
     } else {
       req.session.cookie.expires = false; // Session cookie (browser closes = logout)
     }
-    return res.json("Login successful");
+    const redirectUrl = req.session.returnTo || "/home";
+    delete req.session.returnTo;
+    // return res.json("Login successful");
+    return res.json({ success: true, redirect: redirectUrl });
   } else {
     return res.json({ error: "username or password is incorrect" });
   }

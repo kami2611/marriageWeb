@@ -56,12 +56,12 @@ const userSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  profilesYouHaveFullAccessTo: [
-    {
-      type: mongoose.Types.ObjectId,
-      ref: "User",
-    },
-  ],
+  // profilesYouHaveFullAccessTo: [
+  //   {
+  //     type: mongoose.Types.ObjectId,
+  //     ref: "User",
+  //   },
+  // ],
   profilePic: {
     url: String,
     filename: String,

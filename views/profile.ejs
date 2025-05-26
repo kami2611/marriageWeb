@@ -277,6 +277,27 @@
         });
       });
 
+      function showToast(message, duration = 3000) {
+        const toast = document.getElementById("toast");
+        if (!toast) return;
+        toast.textContent = message;
+        toast.classList.add("show");
+
+        // Hide on click outside or after duration
+        function hideToast() {
+          toast.classList.remove("show");
+          document.removeEventListener("mousedown", outsideClickListener);
+        }
+        const outsideClickListener = (event) => {
+          if (!toast.contains(event.target)) {
+            hideToast();
+          }
+        };
+        document.addEventListener("mousedown", outsideClickListener);
+
+        setTimeout(hideToast, duration);
+      }
+
       async function handleInterestClick(button) {
         // Show loading state
         const originalText = button.innerHTML;
@@ -293,6 +314,9 @@
             headers: {
               "Content-Type": "application/json",
             },
+            body: JSON.stringify({
+              returnTo: window.location.pathname // send current page path
+            }),
           });
 
           const data = await res.json();
@@ -323,10 +347,12 @@
               </div>
             `;
           }
-        } catch (error) {
-          console.error("Error:", error);
-          alert("An error occurred. Please try again.");
 
+          // Show toast notification
+          showToast("Request sent successfully!");
+        } catch (error) {
+          showToast("You must be logged in to request full access.");
+          console.log("error", error);
           // Reset button
           button.innerHTML = originalText;
           button.disabled = false;
@@ -334,5 +360,6 @@
         }
       }
     </script>
+    <div id="toast" class="toast"></div>
   </body>
 </html>

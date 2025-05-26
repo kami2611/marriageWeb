@@ -42,6 +42,14 @@
             </a>
           </div>
 
+          <!-- Error message display -->
+          <% if (typeof error !== "undefined" && error) { %>
+          <div class="register-error" id="register-error">
+            <i class="fas fa-exclamation-circle"></i>
+            <%= error %>
+          </div>
+          <% } %>
+
           <form action="/register" method="post" class="register-form">
             <div class="form-group">
               <label for="username">Username</label>
@@ -122,5 +130,30 @@
       </div>
     </footer>
     <script src="/js/main.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const errorBox = document.getElementById("register-error");
+        if (!errorBox) return;
+
+        // Hide error when user types in any input
+        document.querySelectorAll(".register-form input").forEach((input) => {
+          input.addEventListener("input", () => {
+            errorBox.style.display = "none";
+          });
+        });
+
+        // Hide error when clicking outside the error box or form
+        document.addEventListener("mousedown", function (e) {
+          const form = document.querySelector(".register-form");
+          if (
+            errorBox.style.display !== "none" &&
+            !form.contains(e.target) &&
+            !errorBox.contains(e.target)
+          ) {
+            errorBox.style.display = "none";
+          }
+        });
+      });
+    </script>
   </body>
 </html>

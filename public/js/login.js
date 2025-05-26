@@ -68,22 +68,10 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => response.json())
       .then((data) => {
         setLoading(false);
-
-        if (data.error) {
-          // Show error message
+        if (data.success && data.redirect) {
+          window.location.href = data.redirect;
+        } else if (data.error) {
           showError(data.error);
-
-          // Add error class to inputs
-          const inputContainers = document.querySelectorAll(".input-with-icon");
-          inputContainers.forEach((container) => {
-            container.classList.add("error");
-          });
-
-          // Focus on username input
-          usernameInput.focus();
-        } else if (data === "Login successful") {
-          // Redirect to dashboard or home page
-          window.location.href = "/";
         }
       })
       .catch((error) => {
