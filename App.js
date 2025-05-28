@@ -263,37 +263,32 @@ app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {
 });
 
 app.get("/profiles", async (req, res) => {
-  console.log("Profiles route accessed with query:", req.query);
+  // Pagination params
+  const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
+  const limit = 10;
+  const skip = (page - 1) * limit;
 
   // Extract filter parameters
   const { gender, minAge, maxAge, city, religion, caste } = req.query;
 
   // Build filter object
   const filter = {};
-
-  // Exclude the logged-in user's own profile
   if (req.session.userId) {
     filter._id = { $ne: req.session.userId };
   }
-
-  // Add filters only if they exist
   if (gender) filter.gender = gender;
   if (city) filter.city = { $regex: new RegExp(city, "i") };
   if (religion) filter.religion = religion;
   if (caste) filter.caste = { $regex: new RegExp(caste, "i") };
-
-  // Handle age range filter
   if (minAge || maxAge) {
     filter.age = {};
     if (minAge) filter.age.$gte = parseInt(minAge);
     if (maxAge) filter.age.$lte = parseInt(maxAge);
   }
 
-  console.log("Applying filters:", filter);
-
   try {
-    const profiles = await User.find(filter);
-    console.log(`Found ${profiles.length} profiles matching the filters`);
+    const totalProfiles = await User.countDocuments(filter);
+    const profiles = await User.find(filter).skip(skip).limit(limit);
 
     const activeFilters = {
       gender,
@@ -304,9 +299,14 @@ app.get("/profiles", async (req, res) => {
       caste,
     };
 
+    const totalPages = Math.ceil(totalProfiles / limit);
+
     return res.render("profiles", {
       profiles,
       filters: Object.keys(req.query).length > 0 ? activeFilters : null,
+      page,
+      totalPages,
+      totalProfiles,
     });
   } catch (error) {
     console.error("Error fetching profiles:", error);

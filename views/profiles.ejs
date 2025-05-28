@@ -331,6 +331,20 @@
                 <a href="/profiles" class="btn-filter-apply">Clear All Filters</a>
               </div>
             <% } %>
+
+            <% if (totalPages && totalPages > 1) { %>
+  <div class="pagination">
+    <% if (page > 1) { %>
+      <a class="pagination-btn" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page - 1 %>">&laquo; Prev</a>
+    <% } %>
+    <% for (let i = 1; i <= totalPages; i++) { %>
+      <a class="pagination-btn <%= i === page ? 'active' : '' %>" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= i %>"><%= i %></a>
+    <% } %>
+    <% if (page < totalPages) { %>
+      <a class="pagination-btn" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page + 1 %>">Next &raquo;</a>
+    <% } %>
+  </div>
+<% } %>
           </div>
         </div>
       </div>
