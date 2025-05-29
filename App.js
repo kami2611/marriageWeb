@@ -10,6 +10,7 @@ const bcrypt = require("bcrypt");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const MongoStore = require("connect-mongo");
 require("dotenv").config();
 const port = process.env.PORT;
 
@@ -20,7 +21,11 @@ app.use(
     secret: process.env.SECRETKEYSESSION,
     resave: false,
     saveUninitialized: false,
-    cookie: { secure: false, httpOnly: true }, // secure: true only if using HTTPS
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGODB_URI,
+      collectionName: "sessions",
+    }),
+    cookie: { secure: false, httpOnly: true }, // set secure: true if using HTTPS
   })
 );
 
@@ -42,12 +47,12 @@ const upload = multer({ storage });
 app.set("view engine", "ejs");
 
 mongoose
-  .connect("mongodb://127.0.0.1:27017/marriageajs")
+  .connect(process.env.MONGODB_URI, {})
   .then(() => {
     console.log("Mongoose Server Started!");
   })
   .catch((err) => {
-    console.log("Err mongoose!");
+    console.log("Err mongoose!", err);
   });
 app.use((req, res, next) => {
   // Make user data available to all templates
