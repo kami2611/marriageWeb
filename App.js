@@ -106,22 +106,38 @@ app.use((req, res, next) => {
 
 app.post("/register", async (req, res) => {
   const { username, password, passcode } = req.body;
-  if (passcode == process.env.PASSCODE) {
-    const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({ username, password: hashedPassword });
-    await newUser.save();
-    req.session.userId = newUser._id;
-    req.session.user = newUser;
-    // Redirect to edit with message
-    return res.redirect(
-      "/account/edit?msg=Please complete your profile to continue."
-    );
-  } else {
-    // Render register page with error message
+
+  // Check passcode
+  if (passcode != process.env.PASSCODE) {
     return res.render("register", {
       error: "Invalid passcode, please try again.",
     });
   }
+
+  // Check password length
+  if (!password || password.length < 5) {
+    return res.render("register", {
+      error: "Password must be at least 5 characters long.",
+    });
+  }
+
+  // Check unique username
+  const existingUser = await User.findOne({ username });
+  if (existingUser) {
+    return res.render("register", {
+      error: "Username already exists. Please choose another or Login.",
+    });
+  }
+
+  // All good, proceed with registration
+  const hashedPassword = await bcrypt.hash(password, 12);
+  const newUser = new User({ username, password: hashedPassword });
+  await newUser.save();
+  req.session.userId = newUser._id;
+  req.session.user = newUser;
+  return res.redirect(
+    "/account/edit?msg=Please complete your profile to continue."
+  );
 });
 app.post("/login", async (req, res) => {
   const { username, password, remember } = req.body;
