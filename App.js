@@ -3,6 +3,7 @@ const path = require("path");
 const Request = require("./models/Request");
 const isLoggedIn = require("./middlewares/isLoggedIn");
 const findUser = require("./middlewares/findUser");
+const requireProfileComplete = require("./middlewares/requireProfileComplete");
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
@@ -82,6 +83,27 @@ app.get("/login", (req, res) => {
   res.render("login");
 });
 
+// Place this after session and before your protected routes
+app.use((req, res, next) => {
+  const openPaths = [
+    "/account/edit",
+    "/logout",
+    "/register",
+    "/login",
+    "/",
+    "/home",
+  ];
+  if (
+    openPaths.includes(req.path) ||
+    req.path.startsWith("/css") ||
+    req.path.startsWith("/js") ||
+    req.path.startsWith("/imgs")
+  ) {
+    return next();
+  }
+  requireProfileComplete(req, res, next);
+});
+
 app.post("/register", async (req, res) => {
   const { username, password, passcode } = req.body;
   if (passcode == process.env.PASSCODE) {
@@ -90,7 +112,10 @@ app.post("/register", async (req, res) => {
     await newUser.save();
     req.session.userId = newUser._id;
     req.session.user = newUser;
-    return res.redirect("/home");
+    // Redirect to edit with message
+    return res.redirect(
+      "/account/edit?msg=Please complete your profile to continue."
+    );
   } else {
     // Render register page with error message
     return res.render("register", {
@@ -133,7 +158,9 @@ app.get("/logout", (req, res) => {
 
 app.get("/account/edit", isLoggedIn, findUser, (req, res) => {
   const userData = req.userData;
-  res.render("account/edit", { userData });
+  // Get message from query param if present
+  const msg = req.query.msg || null;
+  res.render("account/edit", { userData, msg });
 });
 app.post(
   "/account/edit",

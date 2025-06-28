@@ -41,6 +41,13 @@
           <p>Update your personal information</p>
         </div>
 
+        <% if (typeof msg !== "undefined" && msg) { %>
+          <div class="info-message">
+            <i class="fas fa-info-circle info-icon"></i>
+            <%= msg %>
+          </div>
+        <% } %>
+
         <div class="account-card">
           <div class="account-nav">
             <a href="/account" class="nav-item">
