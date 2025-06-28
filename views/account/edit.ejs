@@ -73,7 +73,7 @@
                   <label for="age">
                     <i class="fas fa-user"></i> age
                   </label>
-                  <input type="number" id="age" name="age" min="1" max="120" value="<%= userData.age %>" required />
+                  <input type="number" id="age" name="age" min="15" max="80" value="<%= userData.age %>" required />
                 </div>
               </div>
               <div class="form-row">
@@ -127,33 +127,36 @@
                   <input type="text" id="adress" name="adress" value="<%= userData.adress %>" />
                 </div>
               </div>
-
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="country">
+                    <i class="fas fa-globe"></i> Country
+                  </label>
+                  <select id="country" name="country" class="select-styled" required data-selected="<%= userData.country || '' %>">
+                    <option value="">Select Country</option>
+                    <option value="Pakistan" <%= userData.country === 'Pakistan' ? 'selected' : '' %>>Pakistan</option>
+                    <option value="India" <%= userData.country === 'India' ? 'selected' : '' %>>India</option>
+                    <option value="UK" <%= userData.country === 'UK' ? 'selected' : '' %>>United Kingdom</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="state">
+                    <i class="fas fa-map"></i> State/Province
+                  </label>
+                  <select id="state" name="state" class="select-styled" required data-selected="<%= userData.state || '' %>">
+                    <option value="">Select State</option>
+                  </select>
+                </div>
+              </div>
               <div class="form-row two-columns">
                 <div class="form-group">
                   <label for="city">
                     <i class="fas fa-map-marker-alt"></i> City
                   </label>
-                  <select id="city" name="city" class="select-styled" required>
+                  <select id="city" name="city" class="select-styled" required data-selected="<%= userData.city || '' %>">
                     <option value="">Select City</option>
-                    <option value="karachi" <%= userData.city === 'karachi' ? 'selected' : '' %>>Karachi</option>
-                    <option value="lahore" <%= userData.city === 'lahore' ? 'selected' : '' %>>Lahore</option>
-                    <option value="islamabad" <%= userData.city === 'islamabad' ? 'selected' : '' %>>Islamabad</option>
-                    <option value="rawalpindi" <%= userData.city === 'rawalpindi' ? 'selected' : '' %>>Rawalpindi</option>
-                    <option value="faisalabad" <%= userData.city === 'faisalabad' ? 'selected' : '' %>>Faisalabad</option>
-                    <option value="multan" <%= userData.city === 'multan' ? 'selected' : '' %>>Multan</option>
-                    <option value="peshawar" <%= userData.city === 'peshawar' ? 'selected' : '' %>>Peshawar</option>
-                    <option value="quetta" <%= userData.city === 'quetta' ? 'selected' : '' %>>Quetta</option>
-                    <option value="sialkot" <%= userData.city === 'sialkot' ? 'selected' : '' %>>Sialkot</option>
-                    <option value="gujranwala" <%= userData.city === 'gujranwala' ? 'selected' : '' %>>Gujranwala</option>
-                    <option value="hyderabad" <%= userData.city === 'hyderabad' ? 'selected' : '' %>>Hyderabad</option>
-                    <option value="sargodha" <%= userData.city === 'sargodha' ? 'selected' : '' %>>Sargodha</option>
-                    <option value="bahawalpur" <%= userData.city === 'bahawalpur' ? 'selected' : '' %>>Bahawalpur</option>
-                    <option value="abbottabad" <%= userData.city === 'abbottabad' ? 'selected' : '' %>>Abbottabad</option>
-                    <option value="other" <%= userData.city === 'other' ? 'selected' : '' %>>Other</option>
                   </select>
                 </div>
-
-
                 <div class="form-group">
                   <label for="contact">
                     <i class="fas fa-phone"></i> Contact
@@ -161,7 +164,6 @@
                   <input type="number" id="contact" name="contact" value="<%= userData.contact %>" />
                 </div>
               </div>
-
               <div class="form-row">
                 <div class="form-group">
                   <label for="gender">
@@ -341,6 +343,77 @@
         } else {
           imagePreview.innerHTML = '';
         }
+      });
+    });
+
+    const countryStateCity = {
+      Pakistan: {
+        Punjab: ["Lahore", "Faisalabad", "Rawalpindi", "Multan", "Gujranwala", "Sialkot", "Bahawalpur", "Sargodha", "Rahim Yar Khan", "Gujrat", "Sheikhupura", "Jhelum", "Kasur", "Okara", "Vehari", "Mandi Bahauddin", "Chiniot", "Toba Tek Singh", "Muzaffargarh", "Khanewal", "Dera Ghazi Khan", "Bahawalnagar", "Mianwali", "Pakpattan", "Lodhran", "Hafizabad", "Narowal", "Attock", "Sahiwal", "Other"],
+        Sindh: ["Karachi", "Hyderabad", "Sukkur", "Larkana", "Nawabshah", "Mirpur Khas", "Shikarpur", "Jacobabad", "Dadu", "Khairpur", "Ghotki", "Other"],
+        KPK: ["Peshawar", "Abbottabad", "Mardan", "Swat", "Kohat", "Bannu", "Dera Ismail Khan", "Charsadda", "Nowshera", "Mansehra", "Other"],
+        Balochistan: ["Quetta", "Turbat", "Gwadar", "Khuzdar", "Sibi", "Zhob", "Loralai", "Chaman", "Other"],
+        "Azad Kashmir": ["Muzaffarabad", "Mirpur", "Kotli", "Bagh", "Rawalakot", "Other"],
+      },
+      India: {
+        Maharashtra: ["Mumbai", "Pune", "Nagpur", "Other"],
+        Delhi: ["New Delhi", "Other"],
+        Punjab: ["Amritsar", "Ludhiana", "Other"],
+        "Uttar Pradesh": ["Lucknow", "Kanpur", "Other"],
+        "West Bengal": ["Kolkata", "Other"],
+        Other: ["Other"]
+      },
+      UK: {
+        England: ["London", "Manchester", "Birmingham", "Liverpool", "Leeds", "Sheffield", "Bristol", "Other"],
+        Scotland: ["Edinburgh", "Glasgow", "Aberdeen", "Dundee", "Other"],
+        Wales: ["Cardiff", "Swansea", "Newport", "Other"],
+        "Northern Ireland": ["Belfast", "Derry", "Lisburn", "Other"]
+      }
+    };
+
+    function populateStates(country) {
+      const stateSelect = document.getElementById('state');
+      stateSelect.innerHTML = '<option value="">Select State</option>';
+      if (countryStateCity[country]) {
+        Object.keys(countryStateCity[country]).forEach(state => {
+          stateSelect.innerHTML += `<option value="${state}" >${state}</option>`;
+        });
+      }
+    }
+
+    function populateCities(country, state) {
+      const citySelect = document.getElementById('city');
+      citySelect.innerHTML = '<option value="">Select City</option>';
+      if (countryStateCity[country] && countryStateCity[country][state]) {
+        countryStateCity[country][state].forEach(city => {
+          citySelect.innerHTML += `<option value="${city}">${city}</option>`;
+        });
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const countrySelect = document.getElementById('country');
+      const stateSelect = document.getElementById('state');
+      const citySelect = document.getElementById('city');
+
+      // Pre-populate state and city if editing
+      if (countrySelect.value) {
+        populateStates(countrySelect.value);
+        if (stateSelect && stateSelect.getAttribute('data-selected')) {
+          stateSelect.value = stateSelect.getAttribute('data-selected');
+          populateCities(countrySelect.value, stateSelect.value);
+        }
+        if (citySelect && citySelect.getAttribute('data-selected')) {
+          citySelect.value = citySelect.getAttribute('data-selected');
+        }
+      }
+
+      countrySelect.addEventListener('change', function() {
+        populateStates(this.value);
+        citySelect.innerHTML = '<option value="">Select City</option>';
+      });
+
+      stateSelect.addEventListener('change', function() {
+        populateCities(countrySelect.value, this.value);
       });
     });
   </script>

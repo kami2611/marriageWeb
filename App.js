@@ -185,8 +185,18 @@ app.post(
   upload.single("profilePic"),
   async (req, res) => {
     console.log("req.body", req.body);
-    const { name, adress, city, contact, gender, religion, caste, age } =
-      req.body;
+    const {
+      name,
+      adress,
+      city,
+      state,
+      country,
+      contact,
+      gender,
+      religion,
+      caste,
+      age,
+    } = req.body;
     const user = req.userData;
     if (req.file) {
       if (user.profilePic?.public_id) {
@@ -202,6 +212,8 @@ app.post(
     // Update fields if they exist
     user.name = name || user.name;
     user.adress = adress || user.adress;
+    user.state = state || user.state;
+    user.country = country || user.country;
     user.city = city || user.city;
     user.contact = contact || user.contact;
     user.gender = gender || user.gender;

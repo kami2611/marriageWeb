@@ -33,7 +33,6 @@ const userSchema = new mongoose.Schema({
   },
   religion: {
     type: String,
-    // enum: ["islam", "hinduism", "christianity", "other"],
   },
   caste: {
     type: String,
@@ -56,15 +55,16 @@ const userSchema = new mongoose.Schema({
       ref: "User",
     },
   ],
-  // profilesYouHaveFullAccessTo: [
-  //   {
-  //     type: mongoose.Types.ObjectId,
-  //     ref: "User",
-  //   },
-  // ],
+
   profilePic: {
     url: String,
     filename: String,
+  },
+  country: {
+    type: String,
+  },
+  state: {
+    type: String,
   },
 });
 module.exports = mongoose.model("User", userSchema);
