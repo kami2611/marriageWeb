@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login - date-It</title>
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/login.css" />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <main>
+      <div class="container">
+        <div class="login-container">
+          <h1>Admin Login</h1>
+
+          <!-- Error message container -->
+          <div id="error-message" class="error-message"></div>
+
+          <form
+            id="login-form"
+            action="/admin/login"
+            method="post"
+            class="login-form"
+          >
+            <div class="form-group">
+              <label for="username">Username</label>
+              <div class="input-with-icon">
+                <i class="fas fa-user"></i>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Enter your username"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="password">Password</label>
+              <div class="input-with-icon">
+                <i class="fas fa-lock"></i>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  required
+                />
+              </div>
+            </div>
+
+            <div class="form-options">
+              <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember" />
+                <label for="remember">Remember me</label>
+              </div>
+              <a href="/admin/forgot-password" class="forgot-password"
+                >Forgot password?</a
+              >
+            </div>
+
+            <button type="submit" class="btn btn-login btn-full">Login</button>
+          </form>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const loginForm = document.getElementById("login-form");
+        const errorMessage = document.getElementById("error-message");
+        const usernameInput = document.getElementById("username");
+        const passwordInput = document.getElementById("password");
+        const loginButton = loginForm.querySelector('button[type="submit"]');
+
+        function showError(message) {
+          errorMessage.textContent = message;
+          errorMessage.classList.add("show");
+          errorMessage.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+        function hideError() {
+          errorMessage.textContent = "";
+          errorMessage.classList.remove("show");
+        }
+        function setLoading(isLoading) {
+          if (isLoading) {
+            loginButton.classList.add("loading");
+            loginButton.disabled = true;
+          } else {
+            loginButton.classList.remove("loading");
+            loginButton.disabled = false;
+          }
+        }
+
+        loginForm.addEventListener("submit", function (e) {
+          e.preventDefault();
+          hideError();
+
+          if (!usernameInput.value.trim()) {
+            showError("Please enter your username");
+            return;
+          }
+          if (!passwordInput.value) {
+            showError("Please enter your password");
+            return;
+          }
+
+          setLoading(true);
+
+          const formData = {
+            username: usernameInput.value.trim(),
+            password: passwordInput.value,
+            remember: document.getElementById("remember").checked,
+          };
+
+          // Use the form's action attribute for the endpoint!
+          fetch(loginForm.action, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+            credentials: "same-origin",
+          })
+            .then((response) => response.text())
+            .then((data) => {
+              setLoading(false);
+              // If redirected, go to dashboard
+              if (data.includes("/admin/dashboard")) {
+                window.location.href = "/admin/dashboard";
+              } else if (data.includes("Invalid credentials")) {
+                showError("Invalid credentials");
+              } else {
+                // fallback: reload or show error
+                showError("Login failed");
+              }
+            })
+            .catch((error) => {
+              setLoading(false);
+              showError("Login failed");
+            });
+        });
+
+        [usernameInput, passwordInput].forEach((input) => {
+          input.addEventListener("input", function () {
+            if (errorMessage.classList.contains("show")) {
+              hideError();
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

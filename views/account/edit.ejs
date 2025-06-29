@@ -63,7 +63,7 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="name">
-                    <i class="fas fa-user"></i> Name
+                    <i class="fas fa-user"></i>Name <span style="color:red">*</span>
                   </label>
                   <input type="text" id="name" name="name" value="<%= userData.name %>" required />
                 </div>
@@ -71,17 +71,17 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="age">
-                    <i class="fas fa-user"></i> age
+                    <i class="fas fa-user"></i>Age <span style="color:red">*</span> 
                   </label>
-                  <input type="number" id="age" name="age" min="15" max="80" value="<%= userData.age %>" required />
+                  <input type="number" id="age" name="age" min="15" max="80" value="<%= userData.age %> " required />
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label for="religion">
-                    <i class="fas fa-user"></i> Religion
+                    <i class="fas fa-user"></i> Religion <span style="color:red">*</span>
                   </label>
-                  <select id="religion" name="religion" class="select-styled">
+                  <select id="religion" name="religion" class="select-styled" required>
                     <option value="">Select Religion</option>
                     <option value="islam" <%= userData.religion === 'islam' ? 'selected' : '' %>>Islam</option>
                     <option value="hinduism" <%= userData.religion === 'hinduism' ? 'selected' : '' %>>Hinduism</option>
@@ -98,9 +98,9 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="caste">
-                    <i class="fas fa-user"></i> caste
+                    <i class="fas fa-user"></i> Caste <span style="color:red">*</span>
                   </label>
-                  <select id="caste" name="caste" class="select-styled">
+                  <select id="caste" name="caste" class="select-styled" required>
                     <option value="">Select caste</option>
                     <option value="syed" <%= userData.caste === 'syed' ? 'selected' : '' %>>Syed</option>
                     <option value="sheikh" <%= userData.caste === 'sheikh' ? 'selected' : '' %>>Sheikh</option>
@@ -122,15 +122,15 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="adress">
-                    <i class="fas fa-home"></i> Address
+                    <i class="fas fa-home"></i> Address <span style="color:red">*</span>
                   </label>
-                  <input type="text" id="adress" name="adress" value="<%= userData.adress %>" />
+                  <input type="text" id="adress" name="adress" value="<%= userData.adress %>" required />
                 </div>
               </div>
               <div class="form-row two-columns">
                 <div class="form-group">
                   <label for="country">
-                    <i class="fas fa-globe"></i> Country
+                    <i class="fas fa-globe"></i> Country <span style="color:red">*</span>
                   </label>
                   <select id="country" name="country" class="select-styled" required data-selected="<%= userData.country || '' %>">
                     <option value="">Select Country</option>
@@ -141,7 +141,7 @@
                 </div>
                 <div class="form-group">
                   <label for="state">
-                    <i class="fas fa-map"></i> State/Province
+                    <i class="fas fa-map"></i> State/Province <span style="color:red">*</span>
                   </label>
                   <select id="state" name="state" class="select-styled" required data-selected="<%= userData.state || '' %>">
                     <option value="">Select State</option>
@@ -151,7 +151,7 @@
               <div class="form-row two-columns">
                 <div class="form-group">
                   <label for="city">
-                    <i class="fas fa-map-marker-alt"></i> City
+                    <i class="fas fa-map-marker-alt"></i> City <span style="color:red">*</span>
                   </label>
                   <select id="city" name="city" class="select-styled" required data-selected="<%= userData.city || '' %>">
                     <option value="">Select City</option>
@@ -159,17 +159,26 @@
                 </div>
                 <div class="form-group">
                   <label for="contact">
-                    <i class="fas fa-phone"></i> Contact
+                    <i class="fas fa-phone"></i> Contact 
                   </label>
-                  <input type="number" id="contact" name="contact" value="<%= userData.contact %>" />
+                  <div style="display: flex; align-items: center;">
+                    <span id="countryCode" style="margin-right: 6px; min-width: 38px; font-weight: bold;">
+                      <% if (userData.country === 'Pakistan') { %>+92
+                      <% } else if (userData.country === 'India') { %>+91
+                      <% } else if (userData.country === 'UK') { %>+44
+                      <% } else { %>+92
+                      <% } %>
+                    </span>
+                    <input type="number" id="contact" name="contact" value="<%= userData.contact %>" style="flex:1;"/>
+                  </div>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
                   <label for="gender">
-                    <i class="fas fa-venus-mars"></i> Gender
+                    <i class="fas fa-venus-mars"></i> Gender <span style="color:red">*</span>
                   </label>
-                  <select id="gender" name="gender" class="select-styled">
+                  <select id="gender" name="gender" class="select-styled" required>
                     <option value="male" <%= userData.gender === "male" ? "selected" : "" %>>Male</option>
                     <option value="female" <%= userData.gender === "female" ? "selected" : "" %>>Female</option>
                     <option value="rather not say" <%= userData.gender === "rather not say" ? "selected" : "" %>>Rather not say</option>
@@ -415,6 +424,26 @@
       stateSelect.addEventListener('change', function() {
         populateCities(countrySelect.value, this.value);
       });
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const countrySelect = document.getElementById('country');
+      const countryCodeSpan = document.getElementById('countryCode');
+
+      function updateCountryCode() {
+        const countrySelect = document.getElementById('country');
+        const countryCodeSpan = document.getElementById('countryCode');
+        let code = '+92';
+        if (countrySelect.value === 'Pakistan') code = '+92';
+        else if (countrySelect.value === 'India') code = '+91';
+        else if (countrySelect.value === 'UK') code = '+44';
+        countryCodeSpan.textContent = code;
+      }
+
+      // Initial set
+      updateCountryCode();
+
+      countrySelect.addEventListener('change', updateCountryCode);
     });
   </script>
 </body>

@@ -439,6 +439,20 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
     message: `successully sent your like request`,
   });
 });
+app.get("/admin", (req, res) => {
+  res.render("admin/login");
+});
+app.post("/admin/login", async (req, res) => {
+  const { username, password } = req.body;
+  if (
+    username === process.env.ADMIN_USERNAME &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    req.session.isAdmin = true; // Set admin session
+    return res.redirect("/admin/dashboard");
+  }
+  return res.render("admin/login", { error: "Invalid credentials" });
+});
 
 app.listen(port, (req, res) => {
   console.log("on port 3000!");
