@@ -88,3 +88,185 @@
   font-size: 0.95rem;
   background: #fafafa;
 }
+
+/* Edit button styling */
+.admin-edit-btn,
+.admin-save-btn,
+.admin-cancel-btn {
+  display: inline-block;
+  background: #f5f6fa;
+  color: #2980b9;
+  border: 1px solid #d6eaff;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 1rem;
+  margin-right: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  outline: none;
+}
+
+.admin-edit-btn i,
+.admin-save-btn i,
+.admin-cancel-btn i {
+  margin-right: 4px;
+}
+
+.admin-edit-btn:hover,
+.admin-save-btn:hover {
+  background: #2980b9;
+  color: #fff;
+  border-color: #2980b9;
+}
+
+.admin-cancel-btn {
+  background: #fff0f0;
+  color: #c0392b;
+  border-color: #ffd6d6;
+}
+
+.admin-cancel-btn:hover {
+  background: #c0392b;
+  color: #fff;
+  border-color: #c0392b;
+}
+
+/* Delete button styling */
+.admin-delete-btn {
+  background: #fff0f0;
+  color: #c0392b;
+  border: 1px solid #ffd6d6;
+  border-radius: 4px;
+  padding: 6px 14px;
+  font-size: 1rem;
+  margin-right: 6px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.admin-delete-btn:hover {
+  background: #c0392b;
+  color: #fff;
+  border-color: #c0392b;
+}
+
+/* Inline editable input/select styling */
+.admin-users-table td input[type="text"],
+.admin-users-table td input[type="number"],
+.admin-users-table td select {
+  width: 95%;
+  padding: 5px 8px;
+  font-size: 1rem;
+  border: 1.5px solid #b2bec3;
+  border-radius: 4px;
+  background: #f9f9f9;
+  color: #2d3436;
+  transition: border 0.2s;
+}
+
+.admin-users-table td input[type="text"]:focus,
+.admin-users-table td input[type="number"]:focus,
+.admin-users-table td select:focus {
+  border-color: #2980b9;
+  background: #fff;
+  outline: none;
+}
+
+/* Modal overlay */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 62, 80, 0.55);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Modal box */
+.admin-modal-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px 28px 24px 28px;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+  min-width: 320px;
+  max-width: 90vw;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.admin-modal-message {
+  font-size: 1.1rem;
+  color: #2c3e50;
+  margin-bottom: 18px;
+}
+
+.admin-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+}
+
+.admin-add-btn {
+  background: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 22px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.admin-add-btn:hover {
+  background: #145a8a;
+}
+
+.admin-modal-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+.admin-modal-fields input,
+.admin-modal-fields select {
+  width: 48%;
+  padding: 7px 10px;
+  font-size: 1rem;
+  border: 1.5px solid #b2bec3;
+  border-radius: 4px;
+  background: #f9f9f9;
+  color: #2d3436;
+  margin-bottom: 2px;
+}
+@media (max-width: 600px) {
+  .admin-modal-fields input,
+  .admin-modal-fields select {
+    width: 100%;
+  }
+}
+
+/* Style for the OK button in the delete confirmation modal */
+.admin-modal-ok-btn {
+  background: #c0392b;
+  color: #fff;
+  border: 1px solid #c0392b;
+  border-radius: 4px;
+  padding: 6px 22px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+  margin-left: 6px;
+}
+
+.admin-modal-ok-btn:hover {
+  background: #fff;
+  color: #c0392b;
+  border-color: #c0392b;
+}

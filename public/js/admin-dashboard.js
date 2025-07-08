@@ -188,4 +188,273 @@ document.addEventListener("DOMContentLoaded", function () {
       row.style.display = show ? "" : "none";
     });
   }
+
+  // Inline editing
+  document.querySelectorAll(".admin-edit-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      const row = btn.closest("tr");
+      if (row.classList.contains("editing")) return;
+      row.classList.add("editing");
+      btn.style.display = "none";
+
+      // Store original values
+      row._originalValues = {};
+      row.querySelectorAll("td[data-field]").forEach((td) => {
+        row._originalValues[td.dataset.field] = td.textContent.trim();
+      });
+
+      // Editable fields
+      row.querySelectorAll("td[data-field]").forEach((td) => {
+        const field = td.dataset.field;
+        const value = td.textContent.trim();
+        let input;
+        if (field === "gender") {
+          input = document.createElement("select");
+          ["male", "female", "rather not say"].forEach((opt) => {
+            const option = document.createElement("option");
+            option.value = opt;
+            option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+            if (opt === value.toLowerCase()) option.selected = true;
+            input.appendChild(option);
+          });
+        } else if (field === "country") {
+          input = document.createElement("select");
+          ["Pakistan", "India", "UK"].forEach((opt) => {
+            const option = document.createElement("option");
+            option.value = opt;
+            option.textContent = opt;
+            if (opt === value) option.selected = true;
+            input.appendChild(option);
+          });
+        } else if (field === "religion") {
+          input = document.createElement("select");
+          [
+            "islam",
+            "hinduism",
+            "christianity",
+            "sikhism",
+            "buddhism",
+            "judaism",
+            "other",
+          ].forEach((opt) => {
+            const option = document.createElement("option");
+            option.value = opt;
+            option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+            if (opt === value.toLowerCase()) option.selected = true;
+            input.appendChild(option);
+          });
+        } else if (field === "caste") {
+          input = document.createElement("select");
+          [
+            "syed",
+            "sheikh",
+            "pathan",
+            "rajput",
+            "mughal",
+            "gujjar",
+            "jutt",
+            "ansari",
+            "awwan",
+            "qureshi",
+            "malik",
+            "choudhary",
+            "other",
+          ].forEach((opt) => {
+            const option = document.createElement("option");
+            option.value = opt;
+            option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1);
+            if (opt === value.toLowerCase()) option.selected = true;
+            input.appendChild(option);
+          });
+        } else {
+          input = document.createElement("input");
+          input.type = field === "age" ? "number" : "text";
+          input.value = value;
+        }
+        input.name = field;
+        td.innerHTML = "";
+        td.appendChild(input);
+      });
+
+      // Add Save/Cancel buttons
+      const actionsTd = row.querySelector("td:last-child");
+      const saveBtn = document.createElement("button");
+      saveBtn.textContent = "Save";
+      saveBtn.className = "admin-save-btn";
+      const cancelBtn = document.createElement("button");
+      cancelBtn.textContent = "Cancel";
+      cancelBtn.className = "admin-cancel-btn";
+      actionsTd.appendChild(saveBtn);
+      actionsTd.appendChild(cancelBtn);
+
+      // Save handler
+      saveBtn.addEventListener("click", async function () {
+        const userId = btn.dataset.userId;
+        const data = {};
+        row.querySelectorAll("td[data-field]").forEach((td) => {
+          const input = td.querySelector("input,select");
+          data[td.dataset.field] = input.value;
+        });
+        // Send update to server
+        const res = await fetch(`/admin/user/${userId}/edit`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+        if (res.ok) {
+          // Update row with new values
+          row.querySelectorAll("td[data-field]").forEach((td) => {
+            td.textContent = data[td.dataset.field];
+          });
+          row.classList.remove("editing");
+          btn.style.display = "";
+          saveBtn.remove();
+          cancelBtn.remove();
+        } else {
+          alert("Failed to update user.");
+        }
+      });
+
+      // Cancel handler
+      cancelBtn.addEventListener("click", function () {
+        row.querySelectorAll("td[data-field]").forEach((td) => {
+          td.textContent = row._originalValues[td.dataset.field];
+        });
+        row.classList.remove("editing");
+        btn.style.display = "";
+        saveBtn.remove();
+        cancelBtn.remove();
+      });
+    });
+  });
+
+  let userIdToDelete = null;
+  let rowToDelete = null;
+
+  const modal = document.getElementById("delete-modal");
+  const modalCancel = document.getElementById("admin-modal-cancel");
+  const modalOk = document.getElementById("admin-modal-ok");
+
+  document.querySelectorAll("table .admin-delete-btn").forEach((btn) => {
+    btn.addEventListener("click", function () {
+      userIdToDelete = btn.dataset.userId;
+      rowToDelete = btn.closest("tr");
+      modal.style.display = "flex";
+    });
+  });
+
+  modalCancel.addEventListener("click", function () {
+    modal.style.display = "none";
+    userIdToDelete = null;
+    rowToDelete = null;
+  });
+
+  modalOk.addEventListener("click", function () {
+    if (!userIdToDelete || !rowToDelete) return;
+    fetch(`/admin/user/${userIdToDelete}/delete`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    })
+      .then((res) => {
+        if (res.ok) {
+          rowToDelete.remove();
+        } else {
+          alert("Failed to delete user.");
+        }
+        modal.style.display = "none";
+        userIdToDelete = null;
+        rowToDelete = null;
+      })
+      .catch(() => {
+        alert("Failed to delete user.");
+        modal.style.display = "none";
+        userIdToDelete = null;
+        rowToDelete = null;
+      });
+  });
+
+  // Hide modal when clicking outside the modal box
+  modal.addEventListener("click", function (e) {
+    if (e.target === modal) {
+      modal.style.display = "none";
+      userIdToDelete = null;
+      rowToDelete = null;
+    }
+  });
+
+  // Country/State/City data (reuse from your filter logic)
+  const addCountry = document.getElementById("add-country");
+  const addState = document.getElementById("add-state");
+  const addCity = document.getElementById("add-city");
+
+  function populateAddStates(country) {
+    addState.innerHTML = '<option value="">State</option>';
+    addState.disabled = !country;
+    addCity.innerHTML = '<option value="">City</option>';
+    addCity.disabled = true;
+    if (countryStateCity[country]) {
+      Object.keys(countryStateCity[country]).forEach((state) => {
+        addState.innerHTML += `<option value="${state}">${state}</option>`;
+      });
+    }
+  }
+  function populateAddCities(country, state) {
+    addCity.innerHTML = '<option value="">City</option>';
+    addCity.disabled = !state;
+    if (countryStateCity[country] && countryStateCity[country][state]) {
+      countryStateCity[country][state].forEach((city) => {
+        addCity.innerHTML += `<option value="${city}">${city}</option>`;
+      });
+    }
+  }
+  addCountry.addEventListener("change", function () {
+    populateAddStates(this.value);
+  });
+  addState.addEventListener("change", function () {
+    populateAddCities(addCountry.value, this.value);
+  });
+
+  // Modal logic
+  const addUserModal = document.getElementById("add-user-modal");
+  const addUserBtn = document.getElementById("admin-add-user-btn");
+  const addUserCancel = document.getElementById("add-user-cancel");
+  const addUserForm = document.getElementById("add-user-form");
+
+  addUserBtn.addEventListener("click", function () {
+    addUserModal.style.display = "flex";
+  });
+  addUserCancel.addEventListener("click", function () {
+    addUserModal.style.display = "none";
+    addUserForm.reset();
+    addState.disabled = true;
+    addCity.disabled = true;
+  });
+  addUserModal.addEventListener("click", function (e) {
+    if (e.target === addUserModal) {
+      addUserModal.style.display = "none";
+      addUserForm.reset();
+      addState.disabled = true;
+      addCity.disabled = true;
+    }
+  });
+
+  // Add user submit
+  addUserForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const formData = Object.fromEntries(new FormData(addUserForm).entries());
+    fetch("/admin/user/add", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success) {
+          location.reload(); // Reload to show new user
+        } else {
+          alert(data.error || "Failed to add user.");
+        }
+      })
+      .catch(() => alert("Failed to add user."));
+  });
 });

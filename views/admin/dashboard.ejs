@@ -14,9 +14,21 @@
   <body>
     <main>
       <div class="admin-dashboard-container">
-        <h1 class="admin-dashboard-title">
-          <i class="fas fa-user-shield"></i> Admin Dashboard
-        </h1>
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+          "
+        >
+          <h1 class="admin-dashboard-title">
+            <i class="fas fa-user-shield"></i> Admin Dashboard
+          </h1>
+          <button id="admin-add-user-btn" class="admin-add-btn">
+            <i class="fas fa-user-plus"></i> Add User
+          </button>
+        </div>
         <div class="admin-users-table-wrapper">
           <table class="admin-users-table">
             <thead>
@@ -121,18 +133,17 @@
                   <% } %>
                 </td>
                 <td><%= user.username %></td>
-                <td><%= user.name %></td>
-                <td><%= user.age %></td>
-                <td><%= user.gender %></td>
-                <td><%= user.country %></td>
-                <td><%= user.state %></td>
-                <td><%= user.city %></td>
-                <td><%= user.contact %></td>
-                <td><%= user.religion %></td>
-                <td><%= user.caste %></td>
-                <td><%= user.adress %></td>
+                <td data-field="name"><%= user.name %></td>
+                <td data-field="age"><%= user.age %></td>
+                <td data-field="gender"><%= user.gender %></td>
+                <td data-field="country"><%= user.country %></td>
+                <td data-field="state"><%= user.state %></td>
+                <td data-field="city"><%= user.city %></td>
+                <td data-field="contact"><%= user.contact %></td>
+                <td data-field="religion"><%= user.religion %></td>
+                <td data-field="caste"><%= user.caste %></td>
+                <td data-field="adress"><%= user.adress %></td>
                 <td>
-                  <!-- Future: Add edit/delete/ban buttons here -->
                   <a
                     href="/profiles/<%= user._id %>"
                     class="admin-action-btn"
@@ -141,6 +152,22 @@
                   >
                     <i class="fas fa-eye"></i>
                   </a>
+                  <button
+                    type="button"
+                    class="admin-edit-btn"
+                    data-user-id="<%= user._id %>"
+                    title="Edit"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="admin-delete-btn"
+                    data-user-id="<%= user._id %>"
+                    title="Delete"
+                  >
+                    <i class="fas fa-trash"></i>
+                  </button>
                 </td>
               </tr>
               <% }) %>
@@ -149,6 +176,105 @@
         </div>
       </div>
     </main>
+    <!-- Custom Delete Confirmation Modal -->
+    <div id="delete-modal" class="admin-modal-overlay" style="display: none">
+      <div class="admin-modal-box">
+        <div class="admin-modal-message">
+          This action will delete this user all data, tap yes to confirm.
+        </div>
+        <div class="admin-modal-actions">
+          <button id="admin-modal-cancel" class="admin-cancel-btn">
+            Cancel
+          </button>
+          <button id="admin-modal-ok" class="admin-modal-ok-btn">OK</button>
+        </div>
+      </div>
+    </div>
+    <!-- Add User Modal -->
+    <div id="add-user-modal" class="admin-modal-overlay" style="display: none">
+      <div class="admin-modal-box">
+        <form id="add-user-form" autocomplete="off">
+          <div class="admin-modal-message" style="margin-bottom: 10px">
+            Add New User
+          </div>
+          <div class="admin-modal-fields">
+            <input
+              type="text"
+              name="username"
+              placeholder="Username"
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <input type="text" name="name" placeholder="Name" required />
+            <input
+              type="number"
+              name="age"
+              placeholder="Age"
+              min="15"
+              max="75"
+              required
+            />
+            <select name="gender" required>
+              <option value="">Gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="rather not say">Rather not say</option>
+            </select>
+            <select name="country" id="add-country" required>
+              <option value="">Country</option>
+              <option value="Pakistan">Pakistan</option>
+              <option value="India">India</option>
+              <option value="UK">United Kingdom</option>
+            </select>
+            <select name="state" id="add-state" required disabled>
+              <option value="">State</option>
+            </select>
+            <select name="city" id="add-city" required disabled>
+              <option value="">City</option>
+            </select>
+            <input type="text" name="contact" placeholder="Contact" required />
+            <select name="religion" id="add-religion" required>
+              <option value="">Religion</option>
+              <option value="islam">Islam</option>
+              <option value="hinduism">Hinduism</option>
+              <option value="christianity">Christianity</option>
+              <option value="sikhism">Sikhism</option>
+              <option value="buddhism">Buddhism</option>
+              <option value="judaism">Judaism</option>
+              <option value="other">Other</option>
+            </select>
+            <select name="caste" id="add-caste" required>
+              <option value="">Caste</option>
+              <option value="syed">Syed</option>
+              <option value="sheikh">Sheikh</option>
+              <option value="pathan">Pathan</option>
+              <option value="rajput">Rajput</option>
+              <option value="mughal">Mughal</option>
+              <option value="gujjar">Gujjar</option>
+              <option value="jutt">Jutt</option>
+              <option value="ansari">Ansari</option>
+              <option value="awwan">Awwan</option>
+              <option value="qureshi">Qureshi</option>
+              <option value="malik">Malik</option>
+              <option value="choudhary">Choudhary</option>
+              <option value="other">Other</option>
+            </select>
+            <input type="text" name="adress" placeholder="Address" required />
+          </div>
+          <div class="admin-modal-actions" style="margin-top: 18px">
+            <button type="button" id="add-user-cancel" class="admin-cancel-btn">
+              Cancel
+            </button>
+            <button type="submit" class="admin-save-btn">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
     <script src="/js/admin-dashboard.js"></script>
   </body>
 </html>

@@ -460,6 +460,85 @@ app.get("/admin/dashboard", async (req, res) => {
   const users = await User.find({});
   res.render("admin/dashboard", { users });
 });
+app.post("/admin/user/:id/edit", async (req, res) => {
+  if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
+  const { id } = req.params;
+  const allowedFields = [
+    "name",
+    "age",
+    "gender",
+    "country",
+    "state",
+    "city",
+    "contact",
+    "religion",
+    "caste",
+    "adress",
+  ];
+  const update = {};
+  allowedFields.forEach((field) => {
+    if (req.body[field] !== undefined) update[field] = req.body[field];
+  });
+  try {
+    await User.findByIdAndUpdate(id, update);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Update failed" });
+  }
+});
+app.post("/admin/user/:id/delete", async (req, res) => {
+  if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
+  const { id } = req.params;
+  try {
+    await User.findByIdAndDelete(id);
+    // Optionally: delete related requests, images, etc.
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Delete failed" });
+  }
+});
+app.post("/admin/user/add", async (req, res) => {
+  if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
+  const {
+    username,
+    password,
+    name,
+    age,
+    gender,
+    country,
+    state,
+    city,
+    contact,
+    religion,
+    caste,
+    adress,
+  } = req.body;
+  if (!username || !password)
+    return res.json({ error: "Username and password required" });
+  try {
+    const existing = await User.findOne({ username });
+    if (existing) return res.json({ error: "Username already exists" });
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const user = new User({
+      username,
+      password: hashedPassword,
+      name,
+      age,
+      gender,
+      country,
+      state,
+      city,
+      contact,
+      religion,
+      caste,
+      adress,
+    });
+    await user.save();
+    res.json({ success: true });
+  } catch (err) {
+    res.json({ error: "Failed to add user" });
+  }
+});
 
 app.listen(port, (req, res) => {
   console.log("on port 3000!");
