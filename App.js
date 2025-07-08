@@ -453,6 +453,13 @@ app.post("/admin/login", async (req, res) => {
   }
   return res.render("admin/login", { error: "Invalid credentials" });
 });
+app.get("/admin/dashboard", async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.redirect("/admin");
+  }
+  const users = await User.find({});
+  res.render("admin/dashboard", { users });
+});
 
 app.listen(port, (req, res) => {
   console.log("on port 3000!");

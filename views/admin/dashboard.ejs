@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard - date-It</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/admin-dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <main>
+      <div class="admin-dashboard-container">
+        <h1 class="admin-dashboard-title">
+          <i class="fas fa-user-shield"></i> Admin Dashboard
+        </h1>
+        <div class="admin-users-table-wrapper">
+          <table class="admin-users-table">
+            <thead>
+              <tr>
+                <th>Profile</th>
+                <th>Username</th>
+                <th>Name</th>
+                <th>Age</th>
+                <th class="filterable-th">
+                  Gender
+                  <div class="filter-dropdown" data-filter="gender">
+                    <select id="filter-gender">
+                      <option value="">All</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="rather not say">Rather not say</option>
+                    </select>
+                  </div>
+                </th>
+                <th class="filterable-th">
+                  Country
+                  <div class="filter-dropdown" data-filter="country">
+                    <select id="filter-country">
+                      <option value="">All</option>
+                      <option value="Pakistan">Pakistan</option>
+                      <option value="India">India</option>
+                      <option value="UK">United Kingdom</option>
+                    </select>
+                  </div>
+                </th>
+                <th class="filterable-th">
+                  State
+                  <div class="filter-dropdown" data-filter="state">
+                    <select id="filter-state" disabled>
+                      <option value="">All</option>
+                    </select>
+                  </div>
+                </th>
+                <th class="filterable-th">
+                  City
+                  <div class="filter-dropdown" data-filter="city">
+                    <select id="filter-city" disabled>
+                      <option value="">All</option>
+                    </select>
+                  </div>
+                </th>
+                <th>Contact</th>
+                <th class="filterable-th">
+                  Religion
+                  <div class="filter-dropdown" data-filter="religion">
+                    <select id="filter-religion">
+                      <option value="">All</option>
+                      <option value="islam">Islam</option>
+                      <option value="hinduism">Hinduism</option>
+                      <option value="christianity">Christianity</option>
+                      <option value="sikhism">Sikhism</option>
+                      <option value="buddhism">Buddhism</option>
+                      <option value="judaism">Judaism</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </th>
+                <th class="filterable-th">
+                  Caste
+                  <div class="filter-dropdown" data-filter="caste">
+                    <select id="filter-caste">
+                      <option value="">All</option>
+                      <option value="syed">Syed</option>
+                      <option value="sheikh">Sheikh</option>
+                      <option value="pathan">Pathan</option>
+                      <option value="rajput">Rajput</option>
+                      <option value="mughal">Mughal</option>
+                      <option value="gujjar">Gujjar</option>
+                      <option value="jutt">Jutt</option>
+                      <option value="ansari">Ansari</option>
+                      <option value="awwan">Awwan</option>
+                      <option value="qureshi">Qureshi</option>
+                      <option value="malik">Malik</option>
+                      <option value="choudhary">Choudhary</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+                </th>
+                <th>Address</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% users.forEach(function(user) { %>
+              <tr>
+                <td>
+                  <% if (user.profilePic && user.profilePic.url) { %>
+                  <img
+                    src="<%= user.profilePic.url %>"
+                    alt="Profile"
+                    class="admin-profile-img"
+                  />
+                  <% } else { %>
+                  <span class="admin-profile-placeholder"
+                    ><i class="fas fa-user"></i
+                  ></span>
+                  <% } %>
+                </td>
+                <td><%= user.username %></td>
+                <td><%= user.name %></td>
+                <td><%= user.age %></td>
+                <td><%= user.gender %></td>
+                <td><%= user.country %></td>
+                <td><%= user.state %></td>
+                <td><%= user.city %></td>
+                <td><%= user.contact %></td>
+                <td><%= user.religion %></td>
+                <td><%= user.caste %></td>
+                <td><%= user.adress %></td>
+                <td>
+                  <!-- Future: Add edit/delete/ban buttons here -->
+                  <a
+                    href="/profiles/<%= user._id %>"
+                    class="admin-action-btn"
+                    target="_blank"
+                    title="View Profile"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </td>
+              </tr>
+              <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+    <script src="/js/admin-dashboard.js"></script>
+  </body>
+</html>
