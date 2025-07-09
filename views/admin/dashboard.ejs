@@ -25,6 +25,15 @@
           <h1 class="admin-dashboard-title">
             <i class="fas fa-user-shield"></i> Admin Dashboard
           </h1>
+          <div class="admin-search-bar-wrapper">
+            <input
+              type="text"
+              id="admin-user-search"
+              class="admin-search-bar"
+              placeholder="Search by username or name..."
+              autocomplete="off"
+            />
+          </div>
           <button id="admin-add-user-btn" class="admin-add-btn">
             <i class="fas fa-user-plus"></i> Add User
           </button>
@@ -148,7 +157,7 @@
                     href="/profiles/<%= user._id %>"
                     class="admin-action-btn"
                     target="_blank"
-                    title="View Profile"
+                    title=""
                   >
                     <i class="fas fa-eye"></i>
                   </a>

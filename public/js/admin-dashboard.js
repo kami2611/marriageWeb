@@ -457,4 +457,24 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch(() => alert("Failed to add user."));
   });
+
+  // --- Admin user search bar logic ---
+  const searchInput = document.getElementById("admin-user-search");
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
+      const query = this.value.trim().toLowerCase();
+      document
+        .querySelectorAll(".admin-users-table tbody tr")
+        .forEach((row) => {
+          const username =
+            row.children[1]?.textContent.trim().toLowerCase() || "";
+          const name = row.children[2]?.textContent.trim().toLowerCase() || "";
+          if (!query || username.includes(query) || name.includes(query)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+    });
+  }
 });
