@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard - User Profile</title>
+    <link rel="stylesheet" href="/css/admin-dashboard.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      .admin-profile-layout {
+        display: flex;
+        gap: 32px;
+        margin-top: 32px;
+      }
+      .admin-profile-sidebar {
+        width: 220px;
+        background: #f7f7f7;
+        border-radius: 8px;
+        padding: 24px 0;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        min-height: 320px;
+        box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+      }
+      .admin-profile-sidebar button {
+        background: none;
+        border: none;
+        color: #2980b9;
+        font-size: 1.08rem;
+        text-align: left;
+        padding: 12px 32px;
+        cursor: pointer;
+        border-left: 4px solid transparent;
+        transition: background 0.2s, border 0.2s, color 0.2s;
+      }
+      .admin-profile-sidebar button.active,
+      .admin-profile-sidebar button:hover {
+        background: #eaf6ff;
+        border-left: 4px solid #2980b9;
+        color: #145a8a;
+      }
+      .admin-profile-content {
+        flex: 1;
+        background: #fff;
+        border-radius: 10px;
+        padding: 32px 28px;
+        min-height: 320px;
+        box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="admin-dashboard-container">
+        <h1 class="admin-dashboard-title">
+          <i class="fas fa-user-shield"></i> Admin Dashboard
+        </h1>
+        <div class="admin-profile-layout">
+          <div class="admin-profile-sidebar">
+            <button class="sidebar-btn active" data-section="user">
+              User Requests
+            </button>
+            <button class="sidebar-btn" data-section="pending">
+              Pending Requests
+            </button>
+            <button class="sidebar-btn" data-section="accepted">
+              Accepted Requests
+            </button>
+          </div>
+          <div class="admin-profile-content" id="profile-content">
+            <!-- Content will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </main>
+    <script>
+      // Data passed from server
+      const user = JSON.stringify(user);
+      const pendingRequests = JSON.stringify(pendingRequests);
+      const acceptedRequests = JSON.stringify(acceptedRequests);
+      const userRequests = JSON.stringify(userRequests);
+
+      function renderUserRequests() {
+        if (!userRequests.length) return "<div>No user requests.</div>";
+        return (
+          "<ul>" +
+          userRequests
+            .map(
+              (r) =>
+                `<li>${r.from?.username || "Unknown"} &rarr; ${
+                  r.to?.username || "Unknown"
+                } (${r.status})</li>`
+            )
+            .join("") +
+          "</ul>"
+        );
+      }
+      function renderPendingRequests() {
+        if (!pendingRequests.length) return "<div>No pending requests.</div>";
+        return (
+          "<ul>" +
+          pendingRequests
+            .map(
+              (r) =>
+                `<li>${r.from?.username || "Unknown"} &rarr; ${
+                  r.to?.username || "Unknown"
+                } (${r.status})</li>`
+            )
+            .join("") +
+          "</ul>"
+        );
+      }
+      function renderAcceptedRequests() {
+        if (!acceptedRequests.length) return "<div>No accepted requests.</div>";
+        return (
+          "<ul>" +
+          acceptedRequests
+            .map(
+              (r) =>
+                `<li>${r.from?.username || "Unknown"} &rarr; ${
+                  r.to?.username || "Unknown"
+                } (${r.status})</li>`
+            )
+            .join("") +
+          "</ul>"
+        );
+      }
+
+      function setContent(section) {
+        const content = document.getElementById("profile-content");
+        if (section === "user") content.innerHTML = renderUserRequests();
+        if (section === "pending") content.innerHTML = renderPendingRequests();
+        if (section === "accepted")
+          content.innerHTML = renderAcceptedRequests();
+      }
+
+      document.querySelectorAll(".sidebar-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+          document
+            .querySelectorAll(".sidebar-btn")
+            .forEach((b) => b.classList.remove("active"));
+          this.classList.add("active");
+          setContent(this.dataset.section);
+        });
+      });
+
+      // Initial content
+      setContent("user");
+    </script>
+  </body>
+</html>

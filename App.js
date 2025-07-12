@@ -539,6 +539,26 @@ app.post("/admin/user/add", async (req, res) => {
     res.json({ error: "Failed to add user" });
   }
 });
+app.get("/admin/user/:id", async (req, res) => {
+  if (!req.session.isAdmin) return res.redirect("/admin");
+  const user = await User.findById(req.params.id);
+  if (!user) return res.status(404).send("User not found");
+
+  // Requests where this user is involved
+  const Request = require("./models/Request");
+  const userRequests = await Request.find({
+    $or: [{ from: user._id }, { to: user._id }],
+  }).populate("from to");
+  const pendingRequests = userRequests.filter((r) => r.status === "pending");
+  const acceptedRequests = userRequests.filter((r) => r.status === "accepted");
+
+  res.render("admin/userProfile", {
+    user,
+    userRequests,
+    pendingRequests,
+    acceptedRequests,
+  });
+});
 
 app.listen(port, (req, res) => {
   console.log("on port 3000!");
