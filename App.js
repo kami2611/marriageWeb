@@ -387,9 +387,12 @@ app.get("/profiles/:id", async (req, res) => {
     }
 
     let canAccessFullProfile = false;
-    let hasalreadysentrequest = false; // Initialize safely for both logged-in and not
+    let hasalreadysentrequest = false;
 
-    if (req.session.userId) {
+    // If admin, always grant full access
+    if (req.session.isAdmin) {
+      canAccessFullProfile = true;
+    } else if (req.session.userId) {
       const loggedUser = await User.findById(req.session.userId);
 
       if (
@@ -415,6 +418,8 @@ app.get("/profiles/:id", async (req, res) => {
       profile: foundProfile,
       canAccessFullProfile,
       hasalreadysentrequest,
+      user: req.user, // if you use it
+      isAdmin: req.session.isAdmin, // <-- add this
     });
   } catch (err) {
     res.status(500).send("Server error");

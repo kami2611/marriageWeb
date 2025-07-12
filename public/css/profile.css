@@ -33,6 +33,27 @@
   margin: 0;
 }
 
+/* Admin Profile Header */
+.admin-profile-header {
+  padding: 24px 0 0 40px;
+  background: #fff;
+}
+
+.admin-profile-header h2 {
+  color: #2980b9;
+  font-size: 2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+}
+
+.admin-profile-header .fa-user-shield {
+  color: #145a8a;
+  font-size: 1.3em;
+}
+
 /* Profile Card */
 .profile-card {
   background-color: #fff;
@@ -187,7 +208,7 @@
 }
 
 .access-divider:before {
-  content: '';
+  content: "";
   display: block;
   height: 1px;
   background-color: #ddd;
@@ -305,7 +326,7 @@
   font-size: 16px;
   opacity: 0;
   transition: opacity 0.4s, visibility 0.4s;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 .toast.show {
@@ -318,7 +339,7 @@
   .profile-content {
     padding: 90px 20px 20px;
   }
-  
+
   .detail-group {
     grid-template-columns: 1fr;
     gap: 15px;
@@ -329,17 +350,17 @@
   .profile-banner {
     height: 150px;
   }
-  
+
   .profile-avatar {
     width: 120px;
     height: 120px;
     bottom: -60px;
   }
-  
+
   .profile-content {
     padding-top: 70px;
   }
-  
+
   .profile-basic-info h2 {
     font-size: 24px;
   }

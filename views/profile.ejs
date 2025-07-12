@@ -13,6 +13,11 @@
     />
   </head>
   <body>
+    <% if (isAdmin) { %>
+    <div class="admin-profile-header">
+      <h2>Admin</h2>
+    </div>
+    <% } else { %>
     <header class="header">
       <div class="container">
         <div class="logo">
@@ -46,6 +51,7 @@
         </div>
       </div>
     </header>
+    <% } %>
 
     <main>
       <div class="container">
@@ -117,22 +123,25 @@
               <!-- Full access section -->
               <% if (canAccessFullProfile) { %>
               <div class="access-section">
-                <div class="access-badge">
-                  <i class="fas fa-unlock"></i> Full Access Granted
-                </div>
-
                 <div class="extended-details">
-                  <h3>Additional Information</h3>
-
                   <div class="detail-group">
+                    <% if (profile.username) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-user"></i>
+                      <div>
+                        <span class="label">Username</span>
+                        <span class="value"><%= profile.username %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.email) { %>
                     <div class="detail-item">
                       <i class="fas fa-envelope"></i>
                       <div>
-                        <span class="label">caste</span>
-                        <span class="value"><%= profile.caste %></span>
+                        <span class="label">Email</span>
+                        <span class="value"><%= profile.email %></span>
                       </div>
                     </div>
-
+                    <% } %> <% if (profile.contact) { %>
                     <div class="detail-item">
                       <i class="fas fa-phone"></i>
                       <div>
@@ -140,28 +149,55 @@
                         <span class="value"><%= profile.contact %></span>
                       </div>
                     </div>
-                  </div>
-
-                  <div class="detail-group">
+                    <% } %> <% if (profile.caste) { %>
                     <div class="detail-item">
-                      <i class="fas fa-home"></i>
+                      <i class="fas fa-users"></i>
                       <div>
-                        <span class="label">Address</span>
-                        <span class="value"
-                          ><%= profile.adress || 'Not provided' %></span
-                        >
+                        <span class="label">Caste</span>
+                        <span class="value"><%= profile.caste %></span>
                       </div>
                     </div>
-
+                    <% } %> <% if (profile.religion) { %>
                     <div class="detail-item">
                       <i class="fas fa-pray"></i>
                       <div>
                         <span class="label">Religion</span>
-                        <span class="value"
-                          ><%= profile.religion || 'Not provided' %></span
-                        >
+                        <span class="value"><%= profile.religion %></span>
                       </div>
                     </div>
+                    <% } %> <% if (profile.country) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-flag"></i>
+                      <div>
+                        <span class="label">Country</span>
+                        <span class="value"><%= profile.country %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.state) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-map"></i>
+                      <div>
+                        <span class="label">State</span>
+                        <span class="value"><%= profile.state %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.city) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-city"></i>
+                      <div>
+                        <span class="label">City</span>
+                        <span class="value"><%= profile.city %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.adress) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-home"></i>
+                      <div>
+                        <span class="label">Address</span>
+                        <span class="value"><%= profile.adress %></span>
+                      </div>
+                    </div>
+                    <% } %>
                   </div>
                 </div>
               </div>
@@ -221,6 +257,7 @@
       </div>
     </main>
 
+    <% if (!isAdmin) { %>
     <footer class="footer">
       <div class="container">
         <div class="footer-content">
@@ -250,6 +287,7 @@
         </div>
       </div>
     </footer>
+    <% } %>
     <script src="/js/main.js"></script>
 
     <script>

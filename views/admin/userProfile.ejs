@@ -8,49 +8,6 @@
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
-    <style>
-      .admin-profile-layout {
-        display: flex;
-        gap: 32px;
-        margin-top: 32px;
-      }
-      .admin-profile-sidebar {
-        width: 220px;
-        background: #f7f7f7;
-        border-radius: 8px;
-        padding: 24px 0;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-        min-height: 320px;
-        box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
-      }
-      .admin-profile-sidebar button {
-        background: none;
-        border: none;
-        color: #2980b9;
-        font-size: 1.08rem;
-        text-align: left;
-        padding: 12px 32px;
-        cursor: pointer;
-        border-left: 4px solid transparent;
-        transition: background 0.2s, border 0.2s, color 0.2s;
-      }
-      .admin-profile-sidebar button.active,
-      .admin-profile-sidebar button:hover {
-        background: #eaf6ff;
-        border-left: 4px solid #2980b9;
-        color: #145a8a;
-      }
-      .admin-profile-content {
-        flex: 1;
-        background: #fff;
-        border-radius: 10px;
-        padding: 32px 28px;
-        min-height: 320px;
-        box-shadow: 0 2px 8px rgba(44, 62, 80, 0.06);
-      }
-    </style>
   </head>
   <body>
     <main>
@@ -78,54 +35,90 @@
     </main>
     <script>
       // Data passed from server
-      const user = JSON.stringify(user);
-      const pendingRequests = JSON.stringify(pendingRequests);
-      const acceptedRequests = JSON.stringify(acceptedRequests);
-      const userRequests = JSON.stringify(userRequests);
+      const user = <%- JSON.stringify(user) %>;
+      const pendingRequests = <%- JSON.stringify(pendingRequests) %>;
+      const acceptedRequests = <%- JSON.stringify(acceptedRequests) %>;
+      const userRequests = <%- JSON.stringify(userRequests) %>;
 
       function renderUserRequests() {
-        if (!userRequests.length) return "<div>No user requests.</div>";
+        if (!userRequests || !userRequests.length)
+          return '<div class="admin-profile-empty">No user requests.</div>';
         return (
-          "<ul>" +
+          '<div class="admin-profile-list">' +
           userRequests
             .map(
               (r) =>
-                `<li>${r.from?.username || "Unknown"} &rarr; ${
-                  r.to?.username || "Unknown"
-                } (${r.status})</li>`
+                `<div class="admin-profile-request-card">
+            <div>
+              <a class="admin-profile-username" href="/profiles/${r.from?._id || ''}" target="_blank">
+                ${r.from?.username || "Unknown"}
+              </a>
+              <span class="admin-profile-arrow">&rarr;</span>
+              <a class="admin-profile-username" href="/profiles/${r.to?._id || ''}" target="_blank">
+                ${r.to?.username || "Unknown"}
+              </a>
+            </div>
+            <div class="admin-profile-status admin-profile-status-${r.status}">
+              ${r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+            </div>
+          </div>`
             )
             .join("") +
-          "</ul>"
+          "</div>"
         );
       }
       function renderPendingRequests() {
-        if (!pendingRequests.length) return "<div>No pending requests.</div>";
+        if (!pendingRequests || !pendingRequests.length)
+          return '<div class="admin-profile-empty">No pending requests.</div>';
         return (
-          "<ul>" +
+          '<div class="admin-profile-list">' +
           pendingRequests
             .map(
               (r) =>
-                `<li>${r.from?.username || "Unknown"} &rarr; ${
-                  r.to?.username || "Unknown"
-                } (${r.status})</li>`
+                `<div class="admin-profile-request-card">
+            <div>
+              <a class="admin-profile-username" href="/profiles/${r.from?._id || ''}" target="_blank">
+                ${r.from?.username || "Unknown"}
+              </a>
+              <span class="admin-profile-arrow">&rarr;</span>
+              <a class="admin-profile-username" href="/profiles/${r.to?._id || ''}" target="_blank">
+                ${r.to?.username || "Unknown"}
+              </a>
+            </div>
+            <div class="admin-profile-status admin-profile-status-${r.status}">
+              ${r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+            </div>
+          </div>`
             )
             .join("") +
-          "</ul>"
+          "</div>"
         );
       }
       function renderAcceptedRequests() {
-        if (!acceptedRequests.length) return "<div>No accepted requests.</div>";
+        if (!acceptedRequests || !acceptedRequests.length)
+          return '<div class="admin-profile-empty">No accepted requests.</div>';
         return (
-          "<ul>" +
+          '<div class="admin-profile-list">' +
           acceptedRequests
             .map(
               (r) =>
-                `<li>${r.from?.username || "Unknown"} &rarr; ${
-                  r.to?.username || "Unknown"
-                } (${r.status})</li>`
+                `<div class="admin-profile-request-card">
+            <div>
+              <a class="admin-profile-username" href="/profiles/${r.from?._id || ''}" target="_blank">
+                ${r.from?.username || "Unknown"}
+              </a>
+              <span class="admin-profile-arrow">&rarr;</span>
+              <a class="admin-profile-username" href="/profiles/${r.to?._id || ''}" target="_blank">
+                ${r.to?.username || "Unknown"}
+              </a>
+            </div>
+            <div class="admin-profile-status admin-profile-status-${r.status}">
+              ${r.status.charAt(0).toUpperCase() + r.status.slice(1)}
+            </div>
+          </div>`
             )
             .join("") +
-          "</ul>"
+          "</div>"
         );
       }
 
