@@ -149,6 +149,125 @@
                         <%= accountInfo.contact || '-' %>
                       </div>
                     </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-eye"></i> Eye Color
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.eyeColor || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-paint-brush"></i> Hair Color
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.hairColor || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Complexion
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.complexion || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-dumbbell"></i> Build
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.build || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-ruler-vertical"></i> Height (cm)
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.height || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-language"></i> Languages Spoken
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.languagesSpoken &&
+                        accountInfo.languagesSpoken.length ?
+                        accountInfo.languagesSpoken.join(', ') : '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-graduation-cap"></i> Education
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.education || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-flag"></i> Nationality
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.nationality || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-users"></i> Ethnicity
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.ethnicity || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-ring"></i> Marital Status
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.maritalStatus === true ? 'Married' :
+                        (accountInfo.maritalStatus === false ? 'Unmarried' :
+                        '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-wheelchair"></i> Disability
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.disability && accountInfo.disability !==
+                        'no' ? accountInfo.disability : 'No' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-smoking"></i> Smoker
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.smoker === true ? 'Yes' :
+                        (accountInfo.smoker === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-mosque"></i> Born Muslim
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.bornMuslim === true ? 'Yes' :
+                        (accountInfo.bornMuslim === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-pray"></i> Islamic Sect/Fiqh
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.islamicSect || '-' %>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

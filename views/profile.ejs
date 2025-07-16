@@ -100,6 +100,7 @@
               <!-- Basic info visible to all users -->
               <div class="profile-details">
                 <div class="detail-group">
+                  <!-- Public Information -->
                   <div class="detail-item">
                     <i class="fas fa-birthday-cake"></i>
                     <div>
@@ -109,12 +110,56 @@
                       >
                     </div>
                   </div>
-
                   <div class="detail-item">
                     <i class="fas fa-map-marker-alt"></i>
                     <div>
-                      <span class="label">City</span>
-                      <span class="value"><%= profile.city %></span>
+                      <span class="label">Location</span>
+                      <span class="value">
+                        <%= [profile.city, profile.state,
+                        profile.country].filter(Boolean).join(', ') || '-' %>
+                      </span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-flag"></i>
+                    <div>
+                      <span class="label">Nationality</span>
+                      <span class="value"
+                        ><%= profile.nationality || '-' %></span
+                      >
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-venus-mars"></i>
+                    <div>
+                      <span class="label">Gender</span>
+                      <span class="value"><%= profile.gender || '-' %></span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-ruler-vertical"></i>
+                    <div>
+                      <span class="label">Height</span>
+                      <span class="value"
+                        ><%= profile.height ? profile.height + ' cm' : '-'
+                        %></span
+                      >
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-graduation-cap"></i>
+                    <div>
+                      <span class="label">Education</span>
+                      <span class="value"><%= profile.education || '-' %></span>
+                    </div>
+                  </div>
+                  <div class="detail-item">
+                    <i class="fas fa-briefcase"></i>
+                    <div>
+                      <span class="label">Work</span>
+                      <span class="value"
+                        ><%= profile.fatherProfession || '-' %></span
+                      >
                     </div>
                   </div>
                 </div>

@@ -274,6 +274,99 @@
               <option value="other">Other</option>
             </select>
             <input type="text" name="adress" placeholder="Address" required />
+            <select name="eyeColor" required>
+              <option value="">Eye Color</option>
+              <option value="black">Black</option>
+              <option value="brown">Brown</option>
+              <option value="grey">Grey</option>
+              <option value="other">Other</option>
+            </select>
+            <select name="hairColor" required>
+              <option value="">Hair Color</option>
+              <option value="black">Black</option>
+              <option value="brown">Brown</option>
+              <option value="blonde">Blonde</option>
+            </select>
+            <select name="complexion" required>
+              <option value="">Complexion</option>
+              <option value="fair">Fair</option>
+              <option value="wheatish">Wheatish</option>
+              <option value="dark">Dark</option>
+            </select>
+            <select name="build" required>
+              <option value="">Build</option>
+              <option value="slim">Slim</option>
+              <option value="average">Average</option>
+              <option value="athletic">Athletic</option>
+              <option value="heavy">Heavy</option>
+            </select>
+            <input
+              type="number"
+              name="height"
+              placeholder="Height (cm)"
+              min="50"
+              max="250"
+              required
+            />
+            <input
+              type="text"
+              name="languagesSpoken"
+              placeholder="Languages Spoken (comma separated)"
+              required
+            />
+            <input
+              type="text"
+              name="education"
+              placeholder="Education"
+              required
+            />
+            <input
+              type="text"
+              name="nationality"
+              placeholder="Nationality"
+              required
+            />
+            <select name="ethnicity" required>
+              <option value="">Ethnicity</option>
+              <option value="asian">Asian</option>
+              <option value="african">African</option>
+              <option value="caucasian">Caucasian</option>
+              <option value="latino">Latino</option>
+              <option value="arab">Arab</option>
+              <option value="other">Other</option>
+            </select>
+            <select name="maritalStatus" required>
+              <option value="">Marital Status</option>
+              <option value="false">Unmarried</option>
+              <option value="true">Married</option>
+            </select>
+            <select name="disability" required>
+              <option value="no">Disability</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <input
+              type="text"
+              name="disabilityDetail"
+              placeholder="If yes, specify disability"
+              style="margin-bottom: 8px"
+            />
+            <select name="smoker" required>
+              <option value="">Smoker</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <select name="bornMuslim" required>
+              <option value="">Born Muslim</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <input
+              type="text"
+              name="islamicSect"
+              placeholder="Islamic Sect/Fiqh"
+              required
+            />
           </div>
           <div class="admin-modal-actions" style="margin-top: 18px">
             <button type="button" id="add-user-cancel" class="admin-cancel-btn">

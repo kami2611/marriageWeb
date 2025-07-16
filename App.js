@@ -196,6 +196,21 @@ app.post(
       religion,
       caste,
       age,
+      eyeColor,
+      hairColor,
+      complexion,
+      build,
+      height,
+      languagesSpoken,
+      education,
+      nationality,
+      ethnicity,
+      maritalStatus,
+      disability,
+      disabilityDetail,
+      smoker,
+      bornMuslim,
+      islamicSect,
     } = req.body;
     const user = req.userData;
     if (req.file) {
@@ -220,6 +235,46 @@ app.post(
     user.religion = religion || user.religion;
     user.age = age || user.age;
     user.caste = caste || user.caste;
+
+    // New fields
+    user.eyeColor = eyeColor || user.eyeColor;
+    user.hairColor = hairColor || user.hairColor;
+    user.complexion = complexion || user.complexion;
+    user.build = build || user.build;
+    user.height = height || user.height;
+    // Handle languagesSpoken as array
+    user.languagesSpoken = languagesSpoken
+      ? Array.isArray(languagesSpoken)
+        ? languagesSpoken
+        : languagesSpoken
+            .split(",")
+            .map((l) => l.trim())
+            .filter(Boolean)
+      : [];
+    user.education = education || user.education;
+    user.nationality = nationality || user.nationality;
+    user.ethnicity = ethnicity || user.ethnicity;
+    // Boolean fields from select (string "true"/"false")
+    user.maritalStatus =
+      typeof maritalStatus !== "undefined" && maritalStatus !== ""
+        ? maritalStatus === "true"
+        : user.maritalStatus;
+    // Disability: if "yes", use detail, else "no"
+    user.disability =
+      disability === "yes"
+        ? disabilityDetail && disabilityDetail.trim()
+          ? disabilityDetail.trim()
+          : "yes"
+        : "no";
+    user.smoker =
+      typeof smoker !== "undefined" && smoker !== ""
+        ? smoker === "true"
+        : user.smoker;
+    user.bornMuslim =
+      typeof bornMuslim !== "undefined" && bornMuslim !== ""
+        ? bornMuslim === "true"
+        : user.bornMuslim;
+    user.islamicSect = islamicSect || user.islamicSect;
 
     await user.save();
     res.redirect("/account"); // or wherever you want to redirect
@@ -418,7 +473,7 @@ app.get("/profiles/:id", async (req, res) => {
       profile: foundProfile,
       canAccessFullProfile,
       hasalreadysentrequest,
-      user: req.user, // if you use it
+      user: req.session.user, // if you use it
       isAdmin: req.session.isAdmin, // <-- add this
     });
   } catch (err) {

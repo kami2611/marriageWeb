@@ -206,6 +206,160 @@
                   </div>
                 </div>
               </div>
+              
+              <!-- Additional fields for physical attributes, education, and other details -->
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="eyeColor">
+                    <i class="fas fa-eye"></i> Eye Color
+                  </label>
+                  <select id="eyeColor" name="eyeColor" class="select-styled">
+                    <option value="">Select Eye Color</option>
+                    <option value="black" <%= userData.eyeColor === 'black' ? 'selected' : '' %>>Black</option>
+                    <option value="brown" <%= userData.eyeColor === 'brown' ? 'selected' : '' %>>Brown</option>
+                    <option value="grey" <%= userData.eyeColor === 'grey' ? 'selected' : '' %>>Grey</option>
+                    <option value="other" <%= userData.eyeColor === 'other' ? 'selected' : '' %>>Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="hairColor">
+                    <i class="fas fa-paint-brush"></i> Hair Color
+                  </label>
+                  <select id="hairColor" name="hairColor" class="select-styled">
+                    <option value="">Select Hair Color</option>
+                    <option value="black" <%= userData.hairColor === 'black' ? 'selected' : '' %>>Black</option>
+                    <option value="brown" <%= userData.hairColor === 'brown' ? 'selected' : '' %>>Brown</option>
+                    <option value="blonde" <%= userData.hairColor === 'blonde' ? 'selected' : '' %>>Blonde</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="complexion">
+                    <i class="fas fa-user"></i> Complexion
+                  </label>
+                  <select id="complexion" name="complexion" class="select-styled">
+                    <option value="">Select Complexion</option>
+                    <option value="fair" <%= userData.complexion === 'fair' ? 'selected' : '' %>>Fair</option>
+                    <option value="wheatish" <%= userData.complexion === 'wheatish' ? 'selected' : '' %>>Wheatish</option>
+                    <option value="dark" <%= userData.complexion === 'dark' ? 'selected' : '' %>>Dark</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="build">
+                    <i class="fas fa-dumbbell"></i> Build
+                  </label>
+                  <select id="build" name="build" class="select-styled">
+                    <option value="">Select Build</option>
+                    <option value="slim" <%= userData.build === 'slim' ? 'selected' : '' %>>Slim</option>
+                    <option value="average" <%= userData.build === 'average' ? 'selected' : '' %>>Average</option>
+                    <option value="athletic" <%= userData.build === 'athletic' ? 'selected' : '' %>>Athletic</option>
+                    <option value="heavy" <%= userData.build === 'heavy' ? 'selected' : '' %>>Heavy</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="height">
+                    <i class="fas fa-ruler-vertical"></i> Height (cm)
+                  </label>
+                  <input type="number" id="height" name="height" min="50" max="250" value="<%= userData.height || '' %>">
+                </div>
+                <div class="form-group">
+                  <label for="languagesSpoken">
+                    <i class="fas fa-language"></i> Languages Spoken
+                  </label>
+                  <input type="text" id="languagesSpoken" name="languagesSpoken" value="<%= userData.languagesSpoken ? userData.languagesSpoken.join(', ') : '' %>" placeholder="e.g. Urdu, English, Arabic">
+                  <small>Comma separated</small>
+                </div>
+              </div>
+
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="education">
+                    <i class="fas fa-graduation-cap"></i> Education
+                  </label>
+                  <input type="text" id="education" name="education" value="<%= userData.education || '' %>">
+                </div>
+                <div class="form-group">
+                  <label for="nationality">
+                    <i class="fas fa-flag"></i> Nationality
+                  </label>
+                  <input type="text" id="nationality" name="nationality" value="<%= userData.nationality || '' %>">
+                </div>
+              </div>
+
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="ethnicity">
+                    <i class="fas fa-users"></i> Ethnicity
+                  </label>
+                  <select id="ethnicity" name="ethnicity" class="select-styled">
+                    <option value="">Select Ethnicity</option>
+                    <option value="asian" <%= userData.ethnicity === 'asian' ? 'selected' : '' %>>Asian</option>
+                    <option value="african" <%= userData.ethnicity === 'african' ? 'selected' : '' %>>African</option>
+                    <option value="caucasian" <%= userData.ethnicity === 'caucasian' ? 'selected' : '' %>>Caucasian</option>
+                    <option value="latino" <%= userData.ethnicity === 'latino' ? 'selected' : '' %>>Latino</option>
+                    <option value="arab" <%= userData.ethnicity === 'arab' ? 'selected' : '' %>>Arab</option>
+                    <option value="other" <%= userData.ethnicity === 'other' ? 'selected' : '' %>>Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="maritalStatus">
+                    <i class="fas fa-ring"></i> Marital Status
+                  </label>
+                  <select id="maritalStatus" name="maritalStatus" class="select-styled">
+                    <option value="">Select Status</option>
+                    <option value="false" <%= userData.maritalStatus === false ? 'selected' : '' %>>Unmarried</option>
+                    <option value="true" <%= userData.maritalStatus === true ? 'selected' : '' %>>Married</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="disability">
+                    <i class="fas fa-wheelchair"></i> Disability
+                  </label>
+                  <select id="disability" name="disability" class="select-styled">
+                    <option value="no" <%= userData.disability === 'no' ? 'selected' : '' %>>No</option>
+                    <option value="yes" <%= userData.disability !== 'no' && userData.disability ? 'selected' : '' %>>Yes</option>
+                  </select>
+                  <input type="text" id="disabilityDetail" name="disabilityDetail" placeholder="If yes, specify" value="<%= userData.disability !== 'no' ? userData.disability : '' %>" style="margin-top:8px; display:<%= userData.disability !== 'no' && userData.disability ? 'block' : 'none' %>;">
+                </div>
+                <div class="form-group">
+                  <label for="smoker">
+                    <i class="fas fa-smoking"></i> Smoker
+                  </label>
+                  <select id="smoker" name="smoker" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="false" <%= userData.smoker === false ? 'selected' : '' %>>No</option>
+                    <option value="true" <%= userData.smoker === true ? 'selected' : '' %>>Yes</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="bornMuslim">
+                    <i class="fas fa-mosque"></i> Born Muslim
+                  </label>
+                  <select id="bornMuslim" name="bornMuslim" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.bornMuslim === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.bornMuslim === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="islamicSect">
+                    <i class="fas fa-pray"></i> Islamic Sect/Fiqh
+                  </label>
+                  <input type="text" id="islamicSect" name="islamicSect" value="<%= userData.islamicSect || '' %>">
+                </div>
+              </div>
+              
               <div class="form-actions">
                 <a href="/account" class="btn btn-cancel">Cancel</a>
                 <button type="submit" class="btn btn-save">
@@ -445,6 +599,23 @@
 
       countrySelect.addEventListener('change', updateCountryCode);
     });
+
+   
+  document.addEventListener('DOMContentLoaded', function() {
+    const disabilitySelect = document.getElementById('disability');
+    const disabilityDetail = document.getElementById('disabilityDetail');
+    if (disabilitySelect && disabilityDetail) {
+      disabilitySelect.addEventListener('change', function() {
+        if (this.value === 'yes') {
+          disabilityDetail.style.display = 'block';
+        } else {
+          disabilityDetail.style.display = 'none';
+          disabilityDetail.value = '';
+        }
+      });
+    }
+  });
+
   </script>
 </body>
 
