@@ -560,7 +560,6 @@ app.post("/admin/user/:id/delete", async (req, res) => {
 app.post("/admin/user/add", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
   const {
-    username,
     password,
     name,
     age,
@@ -572,13 +571,102 @@ app.post("/admin/user/add", async (req, res) => {
     religion,
     caste,
     adress,
+    eyeColor,
+    hairColor,
+    complexion,
+    build,
+    height,
+    languagesSpoken,
+    education,
+    nationality,
+    ethnicity,
+    maritalStatus,
+    disability,
+    disabilityDetail,
+    smoker,
+    bornMuslim,
+    islamicSect,
+    prays,
+    celebratesMilaad,
+    celebrateKhatams,
+    islamIsImportantToMeInfo,
+    acceptSomeoneWithChildren,
+    acceptADivorcedPerson,
+    agreesWithPolygamy,
+    acceptAWidow,
+    AcceptSomeoneWithBeard,
+    AcceptSomeoneWithHijab,
+    ConsiderARevert,
+    livingArrangementsAfterMarriage,
+    futurePlans,
+    describeNature,
+    QualitiesThatYouCanBringToYourMarriage,
+    fatherName,
+    motherName,
+    fatherProfession,
+    aboutMe,
+    hobbies,
+    willingToRelocate,
+    preferredAgeRange,
+    preferredHeightRange,
+    preferredCaste,
+    preferredEthnicity,
+    allowParnterToWork,
+    allowPartnerToStudy,
+    acceptSomeoneInOtherCountry,
+    qualitiesYouNeedInYourPartner,
+    lookingForASpouseThatIs,
+    willingToSharePhotosUponRequest,
+    willingToMeetUpOutside,
+    whoCompletedProfile,
   } = req.body;
-  if (!username || !password)
-    return res.json({ error: "Username and password required" });
+
+  if (!gender || !password)
+    return res.json({ error: "Gender and password required" });
+
+  // Generate username
+  const count = await User.countDocuments({ gender });
+  let username = "";
+  if (gender === "male") {
+    username = `M${count + 1}`;
+  } else if (gender === "female") {
+    username = `F${count + 1}`;
+  } else {
+    username = `U${count + 1}`;
+  }
+
   try {
     const existing = await User.findOne({ username });
     if (existing) return res.json({ error: "Username already exists" });
     const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Parse/convert fields as needed
+    const langs = languagesSpoken
+      ? Array.isArray(languagesSpoken)
+        ? languagesSpoken
+        : languagesSpoken
+            .split(",")
+            .map((l) => l.trim())
+            .filter(Boolean)
+      : [];
+    const qualities = QualitiesThatYouCanBringToYourMarriage
+      ? QualitiesThatYouCanBringToYourMarriage.split(",")
+          .map((q) => q.trim())
+          .filter(Boolean)
+      : [];
+    const hobbiesArr = hobbies
+      ? hobbies
+          .split(",")
+          .map((h) => h.trim())
+          .filter(Boolean)
+      : [];
+    const qualitiesNeeded = qualitiesYouNeedInYourPartner
+      ? qualitiesYouNeedInYourPartner
+          .split(",")
+          .map((q) => q.trim())
+          .filter(Boolean)
+      : [];
+
     const user = new User({
       username,
       password: hashedPassword,
@@ -592,10 +680,65 @@ app.post("/admin/user/add", async (req, res) => {
       religion,
       caste,
       adress,
+      eyeColor,
+      hairColor,
+      complexion,
+      build,
+      height,
+      languagesSpoken: langs,
+      education,
+      nationality,
+      ethnicity,
+      maritalStatus: maritalStatus === "true",
+      disability:
+        disability === "yes"
+          ? disabilityDetail && disabilityDetail.trim()
+            ? disabilityDetail.trim()
+            : "yes"
+          : "no",
+      smoker: smoker === "true",
+      bornMuslim: bornMuslim === "true",
+      islamicSect,
+      prays: prays === "true",
+      celebratesMilaad: celebratesMilaad === "true",
+      celebrateKhatams: celebrateKhatams === "true",
+      islamIsImportantToMeInfo,
+      acceptSomeoneWithChildren: acceptSomeoneWithChildren === "true",
+      acceptADivorcedPerson: acceptADivorcedPerson === "true",
+      agreesWithPolygamy: agreesWithPolygamy === "true",
+      acceptAWidow: acceptAWidow === "true",
+      AcceptSomeoneWithBeard: AcceptSomeoneWithBeard === "true",
+      AcceptSomeoneWithHijab: AcceptSomeoneWithHijab === "true",
+      ConsiderARevert: ConsiderARevert === "true",
+      livingArrangementsAfterMarriage,
+      futurePlans,
+      describeNature,
+      QualitiesThatYouCanBringToYourMarriage: qualities,
+      fatherName,
+      motherName,
+      fatherProfession,
+      aboutMe,
+      hobbies: hobbiesArr,
+      willingToRelocate: willingToRelocate === "true",
+      preferredAgeRange,
+      preferredHeightRange,
+      preferredCaste,
+      preferredEthnicity,
+      allowParnterToWork: allowParnterToWork === "true",
+      allowPartnerToStudy: allowPartnerToStudy === "true",
+      acceptSomeoneInOtherCountry: acceptSomeoneInOtherCountry === "true",
+      qualitiesYouNeedInYourPartner: qualitiesNeeded,
+      lookingForASpouseThatIs,
+      willingToSharePhotosUponRequest:
+        willingToSharePhotosUponRequest === "true",
+      willingToMeetUpOutside: willingToMeetUpOutside === "true",
+      whoCompletedProfile,
     });
+
     await user.save();
     res.json({ success: true });
   } catch (err) {
+    console.error("Add user error:", err);
     res.json({ error: "Failed to add user" });
   }
 });
@@ -618,6 +761,12 @@ app.get("/admin/user/:id", async (req, res) => {
     pendingRequests,
     acceptedRequests,
   });
+});
+app.get("/admin/usercount", async (req, res) => {
+  const gender = req.query.gender;
+  if (!gender) return res.json({ count: 0 });
+  const count = await User.countDocuments({ gender });
+  res.json({ count });
 });
 
 app.listen(port, (req, res) => {

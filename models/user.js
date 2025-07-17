@@ -208,7 +208,7 @@ const userSchema = new mongoose.Schema({
   acceptSomeoneInOtherCountry: {
     type: Boolean, // true = yes, false = no
   },
-  qualitiesYouNeedInYourPartner: [{ type: Boolean }],
+  qualitiesYouNeedInYourPartner: [{ type: String }],
   lookingForASpouseThatIs: {
     type: String, // e.g., "educated", "religious", "career-oriented"
   },

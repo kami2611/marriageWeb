@@ -477,4 +477,47 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
   }
+
+  const genderSelect = document.getElementById("add-gender");
+  const usernameInput = document.getElementById("add-username");
+
+  genderSelect.addEventListener("change", async function () {
+    const gender = this.value;
+    if (!gender) {
+      usernameInput.value = "";
+      return;
+    }
+    // Fetch the current count from the server
+    const res = await fetch(`/admin/usercount?gender=${gender}`);
+    const data = await res.json();
+    if (gender === "male") {
+      usernameInput.value = `M${data.count + 1}`;
+    } else if (gender === "female") {
+      usernameInput.value = `F${data.count + 1}`;
+    } else {
+      usernameInput.value = `U${data.count + 1}`;
+    }
+  });
+
+  // Disability field logic
+  const disabilitySelect = document.querySelector('select[name="disability"]');
+  const disabilityDetailInput = document.querySelector(
+    'input[name="disabilityDetail"]'
+  );
+
+  function updateDisabilityDetail() {
+    if (disabilitySelect.value === "yes") {
+      disabilityDetailInput.readOnly = false;
+      disabilityDetailInput.placeholder = "If yes, specify disability";
+    } else {
+      disabilityDetailInput.readOnly = true;
+      disabilityDetailInput.value = "";
+      disabilityDetailInput.placeholder = "If yes, specify disability";
+    }
+  }
+
+  if (disabilitySelect && disabilityDetailInput) {
+    updateDisabilityDetail();
+    disabilitySelect.addEventListener("change", updateDisabilityDetail);
+  }
 });
