@@ -532,15 +532,16 @@ app.get("/admin", (req, res) => {
   res.render("admin/login");
 });
 app.post("/admin/login", async (req, res) => {
-  const { username, password } = req.body;
+  const username = req.body.username ? req.body.username.trim() : "";
+  const password = req.body.password ? req.body.password.trim() : "";
   if (
-    username === process.env.ADMIN_USERNAME &&
-    password === process.env.ADMIN_PASSWORD
+    username == process.env.ADMIN_USERNAME &&
+    password == process.env.ADMIN_PASSWORD
   ) {
-    req.session.isAdmin = true; // Set admin session
-    return res.redirect("/admin/dashboard");
+    req.session.isAdmin = true;
+    return res.json({ success: true, redirect: "/admin/dashboard" });
   }
-  return res.render("admin/login", { error: "Invalid credentials" });
+  return res.json({ error: "Invalid credentials" });
 });
 app.get("/admin/dashboard", async (req, res) => {
   if (!req.session.isAdmin) {

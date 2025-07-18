@@ -113,29 +113,27 @@
 
           setLoading(true);
 
-          const formData = {
-            username: usernameInput.value.trim(),
-            password: passwordInput.value,
-            remember: document.getElementById("remember").checked,
-          };
+          // Use URLSearchParams to send as form data
+          const params = new URLSearchParams();
+          params.append("username", usernameInput.value.trim());
+          params.append("password", passwordInput.value);
+          params.append(
+            "remember",
+            document.getElementById("remember").checked
+          );
 
-          // Use the form's action attribute for the endpoint!
           fetch(loginForm.action, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: params.toString(),
             credentials: "same-origin",
           })
-            .then((response) => response.text())
+            .then((response) => response.json())
             .then((data) => {
               setLoading(false);
-              // If redirected, go to dashboard
-              if (data.includes("/admin/dashboard")) {
-                window.location.href = "/admin/dashboard";
-              } else if (data.includes("Invalid credentials")) {
-                showError("Invalid credentials");
+              if (data.success) {
+                window.location.href = data.redirect;
               } else {
-                // fallback: reload or show error
                 showError("Login failed");
               }
             })
