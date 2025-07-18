@@ -212,6 +212,10 @@ app.post(
       bornMuslim,
       islamicSect,
       work,
+      waliMyContactDetails,
+      whoCompletedProfile,
+      siblings,
+      birthPlace,
     } = req.body;
     const user = req.userData;
     if (req.file) {
@@ -277,6 +281,14 @@ app.post(
         : user.bornMuslim;
     user.islamicSect = islamicSect || user.islamicSect;
     user.work = work || user.work;
+    user.waliMyContactDetails =
+      waliMyContactDetails || user.waliMyContactDetails;
+    user.whoCompletedProfile = whoCompletedProfile || user.whoCompletedProfile;
+    user.siblings =
+      typeof siblings !== "undefined" && siblings !== ""
+        ? Number(siblings)
+        : user.siblings;
+    user.birthPlace = birthPlace || user.birthPlace;
 
     await user.save();
     res.redirect("/account"); // or wherever you want to redirect
@@ -292,10 +304,7 @@ app.get("/account/pendingRequests", isLoggedIn, async (req, res) => {
   const beinglikeduser = await User.findById(req.session.userId).populate({
     path: "likeRequests",
     match: { status: "pending" },
-    populate: [
-      { path: "from", model: "User" },
-      // { path: "to", model: "User" },
-    ],
+    populate: [{ path: "from", model: "User" }],
   });
   const pendinglikeRequests = beinglikeduser.likeRequests;
   res.render("account/pendingLikeRequests", { pendinglikeRequests });
@@ -622,6 +631,9 @@ app.post("/admin/user/add", async (req, res) => {
     willingToSharePhotosUponRequest,
     willingToMeetUpOutside,
     whoCompletedProfile,
+    waliMyContactDetails,
+    siblings, // <-- add this
+    birthPlace, // <-- add this
   } = req.body;
 
   if (!gender || !password)
@@ -737,6 +749,12 @@ app.post("/admin/user/add", async (req, res) => {
         willingToSharePhotosUponRequest === "true",
       willingToMeetUpOutside: willingToMeetUpOutside === "true",
       whoCompletedProfile,
+      waliMyContactDetails,
+      siblings:
+        typeof siblings !== "undefined" && siblings !== ""
+          ? Number(siblings)
+          : 0, // <-- add this
+      birthPlace: birthPlace || "", // <-- add this
     });
 
     await user.save();

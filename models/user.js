@@ -221,8 +221,18 @@ const userSchema = new mongoose.Schema({
   willingToMeetUpOutside: {
     type: Boolean, // true = yes, false = no
   },
+  waliMyContactDetails: {
+    type: String, // e.g., "wali's contact details"
+  },
   whoCompletedProfile: {
     type: String, // e.g., "self", "family member"
+  },
+  siblings: {
+    type: Number,
+    default: 0,
+  },
+  birthPlace: {
+    type: String,
   },
 });
 module.exports = mongoose.model("User", userSchema);

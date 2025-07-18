@@ -94,6 +94,23 @@
                   <div class="info-grid">
                     <div class="info-item">
                       <div class="info-label">
+                        <i class="fas fa-user-shield"></i> Wali's Contact
+                        Details
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.waliMyContactDetails || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user-check"></i> Who Completed Profile
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.whoCompletedProfile || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
                         <i class="fas fa-venus-mars"></i> Gender
                       </div>
                       <div class="info-value">
@@ -573,6 +590,23 @@
                       </div>
                       <div class="info-value">
                         <%= accountInfo.whoCompletedProfile || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-users"></i> Siblings
+                      </div>
+                      <div class="info-value">
+                        <%= typeof accountInfo.siblings !== 'undefined' ?
+                        accountInfo.siblings : '0' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-map-marker-alt"></i> Birth Place
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.birthPlace || '-' %>
                       </div>
                     </div>
                   </div>
