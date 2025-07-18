@@ -211,6 +211,7 @@ app.post(
       smoker,
       bornMuslim,
       islamicSect,
+      work,
     } = req.body;
     const user = req.userData;
     if (req.file) {
@@ -275,6 +276,7 @@ app.post(
         ? bornMuslim === "true"
         : user.bornMuslim;
     user.islamicSect = islamicSect || user.islamicSect;
+    user.work = work || user.work;
 
     await user.save();
     res.redirect("/account"); // or wherever you want to redirect
@@ -562,6 +564,7 @@ app.post("/admin/user/add", async (req, res) => {
   const {
     password,
     name,
+    work,
     age,
     gender,
     country,
@@ -671,6 +674,7 @@ app.post("/admin/user/add", async (req, res) => {
       username,
       password: hashedPassword,
       name,
+      work,
       age,
       gender,
       country,

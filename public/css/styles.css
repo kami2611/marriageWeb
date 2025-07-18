@@ -48,7 +48,8 @@ img {
 }
 
 .logo img {
-  height: 60px;
+  height: 70px; /* Increased from 60px to 100px */
+  max-width: 220px; /* Optional: set a max width if needed */
 }
 
 .auth-buttons {

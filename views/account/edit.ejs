@@ -16,7 +16,10 @@
     <div class="container">
       <div class="logo">
         <a href="/">
-          <img src="/imgs/LOGO.png" alt="Company Logo" />
+          <img
+              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
+              alt="Company Logo"
+            />
         </a>
       </div>
       <div class="auth-buttons">
@@ -73,7 +76,7 @@
                   <label for="age">
                     <i class="fas fa-user"></i>Age <span style="color:red">*</span> 
                   </label>
-                  <input type="number" id="age" name="age" min="15" max="80" value="<%= userData.age %> " required />
+                  <input type="number" id="age" name="age" min="15" max="80" value="<%= userData.age %>" required />
                 </div>
               </div>
               <div class="form-row">
@@ -92,7 +95,6 @@
                     <option value="other" <%= userData.religion === 'other' ? 'selected' : '' %>>Other</option>
                   </select>
                 </div>
-
               </div>
 
               <div class="form-row">
@@ -360,6 +362,259 @@
                 </div>
               </div>
               
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="fatherName"><i class="fas fa-user"></i> Father Name</label>
+                  <input type="text" id="fatherName" name="fatherName" value="<%= userData.fatherName || '' %>">
+                </div>
+                <div class="form-group">
+                  <label for="motherName"><i class="fas fa-user"></i> Mother Name</label>
+                  <input type="text" id="motherName" name="motherName" value="<%= userData.motherName || '' %>">
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="fatherProfession"><i class="fas fa-briefcase"></i> Father Profession</label>
+                  <input type="text" id="fatherProfession" name="fatherProfession" value="<%= userData.fatherProfession || '' %>">
+                </div>
+                <div class="form-group">
+                  <label for="aboutMe"><i class="fas fa-info-circle"></i> About Me</label>
+                  <input type="text" id="aboutMe" name="aboutMe" value="<%= userData.aboutMe || '' %>">
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="describeNature"><i class="fas fa-info-circle"></i> Describe Nature</label>
+                  <input type="text" id="describeNature" name="describeNature" value="<%= userData.describeNature || '' %>">
+                </div>
+                <div class="form-group">
+                  <label for="whoCompletedProfile"><i class="fas fa-user"></i> Who Completed Profile</label>
+                  <input type="text" id="whoCompletedProfile" name="whoCompletedProfile" value="<%= userData.whoCompletedProfile || '' %>">
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="preferredAgeRange"><i class="fas fa-user"></i> Preferred Age Range</label>
+                  <input type="text" id="preferredAgeRange" name="preferredAgeRange" value="<%= userData.preferredAgeRange || '' %>">
+                </div>
+                <div class="form-group">
+                  <label for="preferredHeightRange"><i class="fas fa-user"></i> Preferred Height Range</label>
+                  <input type="text" id="preferredHeightRange" name="preferredHeightRange" value="<%= userData.preferredHeightRange || '' %>">
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="preferredCaste"><i class="fas fa-user"></i> Preferred Caste</label>
+                  <input type="text" id="preferredCaste" name="preferredCaste" value="<%= userData.preferredCaste || '' %>">
+                </div>
+                <div class="form-group">
+                  <label for="preferredEthnicity"><i class="fas fa-user"></i> Preferred Ethnicity</label>
+                  <input type="text" id="preferredEthnicity" name="preferredEthnicity" value="<%= userData.preferredEthnicity || '' %>">
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="allowParnterToWork"><i class="fas fa-briefcase"></i> Allow Partner To Work</label>
+                  <select id="allowParnterToWork" name="allowParnterToWork" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.allowParnterToWork === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.allowParnterToWork === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="allowPartnerToStudy"><i class="fas fa-book"></i> Allow Partner To Study</label>
+                  <select id="allowPartnerToStudy" name="allowPartnerToStudy" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.allowPartnerToStudy === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.allowPartnerToStudy === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="acceptSomeoneInOtherCountry"><i class="fas fa-globe"></i> Accept Someone In Other Country</label>
+                  <select id="acceptSomeoneInOtherCountry" name="acceptSomeoneInOtherCountry" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.acceptSomeoneInOtherCountry === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.acceptSomeoneInOtherCountry === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="willingToRelocate"><i class="fas fa-plane"></i> Willing To Relocate</label>
+                  <select id="willingToRelocate" name="willingToRelocate" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.willingToRelocate === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.willingToRelocate === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="QualitiesThatYouCanBringToYourMarriage"><i class="fas fa-star"></i> Qualities That You Can Bring To Your Marriage</label>
+                  <input type="text" id="QualitiesThatYouCanBringToYourMarriage" name="QualitiesThatYouCanBringToYourMarriage" value="<%= userData.QualitiesThatYouCanBringToYourMarriage && userData.QualitiesThatYouCanBringToYourMarriage.length ? userData.QualitiesThatYouCanBringToYourMarriage.join(', ') : '' %>" placeholder="Comma separated">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="hobbies"><i class="fas fa-heart"></i> Hobbies</label>
+                  <input type="text" id="hobbies" name="hobbies" value="<%= userData.hobbies && userData.hobbies.length ? userData.hobbies.join(', ') : '' %>" placeholder="Comma separated">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="qualitiesYouNeedInYourPartner"><i class="fas fa-star"></i> Qualities You Need In Your Partner</label>
+                  <input type="text" id="qualitiesYouNeedInYourPartner" name="qualitiesYouNeedInYourPartner" value="<%= userData.qualitiesYouNeedInYourPartner && userData.qualitiesYouNeedInYourPartner.length ? userData.qualitiesYouNeedInYourPartner.join(', ') : '' %>" placeholder="Comma separated">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="lookingForASpouseThatIs"><i class="fas fa-heart"></i> Looking For A Spouse That Is</label>
+                  <input type="text" id="lookingForASpouseThatIs" name="lookingForASpouseThatIs" value="<%= userData.lookingForASpouseThatIs || '' %>">
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="acceptSomeoneWithChildren"><i class="fas fa-child"></i> Accept Someone With Children</label>
+                  <select id="acceptSomeoneWithChildren" name="acceptSomeoneWithChildren" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.acceptSomeoneWithChildren === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.acceptSomeoneWithChildren === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="acceptADivorcedPerson"><i class="fas fa-user-times"></i> Accept A Divorced Person</label>
+                  <select id="acceptADivorcedPerson" name="acceptADivorcedPerson" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.acceptADivorcedPerson === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.acceptADivorcedPerson === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="agreesWithPolygamy"><i class="fas fa-users"></i> Agrees With Polygamy</label>
+                  <select id="agreesWithPolygamy" name="agreesWithPolygamy" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.agreesWithPolygamy === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.agreesWithPolygamy === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="acceptAWidow"><i class="fas fa-user-slash"></i> Accept A Widow</label>
+                  <select id="acceptAWidow" name="acceptAWidow" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.acceptAWidow === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.acceptAWidow === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="AcceptSomeoneWithBeard"><i class="fas fa-user"></i> Accept Someone With Beard</label>
+                  <select id="AcceptSomeoneWithBeard" name="AcceptSomeoneWithBeard" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.AcceptSomeoneWithBeard === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.AcceptSomeoneWithBeard === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="AcceptSomeoneWithHijab"><i class="fas fa-user"></i> Accept Someone With Hijab</label>
+                  <select id="AcceptSomeoneWithHijab" name="AcceptSomeoneWithHijab" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.AcceptSomeoneWithHijab === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.AcceptSomeoneWithHijab === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="ConsiderARevert"><i class="fas fa-user"></i> Consider A Revert</label>
+                  <select id="ConsiderARevert" name="ConsiderARevert" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.ConsiderARevert === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.ConsiderARevert === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="livingArrangementsAfterMarriage"><i class="fas fa-home"></i> Living Arrangements After Marriage</label>
+                  <select id="livingArrangementsAfterMarriage" name="livingArrangementsAfterMarriage" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="live with parents" <%= userData.livingArrangementsAfterMarriage === 'live with parents' ? 'selected' : '' %>>Live with parents</option>
+                    <option value="live alone" <%= userData.livingArrangementsAfterMarriage === 'live alone' ? 'selected' : '' %>>Live alone</option>
+                    <option value="live with spouse" <%= userData.livingArrangementsAfterMarriage === 'live with spouse' ? 'selected' : '' %>>Live with spouse</option>
+                    <option value="other" <%= userData.livingArrangementsAfterMarriage === 'other' ? 'selected' : '' %>>Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="futurePlans"><i class="fas fa-plane"></i> Future Plans</label>
+                  <select id="futurePlans" name="futurePlans" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="settle abroad" <%= userData.futurePlans === 'settle abroad' ? 'selected' : '' %>>Settle abroad</option>
+                    <option value="stay in current country" <%= userData.futurePlans === 'stay in current country' ? 'selected' : '' %>>Stay in current country</option>
+                    <option value="other" <%= userData.futurePlans === 'other' ? 'selected' : '' %>>Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="prays"><i class="fas fa-pray"></i> Prays</label>
+                  <select id="prays" name="prays" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.prays === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.prays === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="celebratesMilaad"><i class="fas fa-pray"></i> Celebrates Milaad</label>
+                  <select id="celebratesMilaad" name="celebratesMilaad" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.celebratesMilaad === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.celebratesMilaad === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="celebrateKhatams"><i class="fas fa-pray"></i> Celebrate Khatams</label>
+                  <select id="celebrateKhatams" name="celebrateKhatams" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.celebrateKhatams === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.celebrateKhatams === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="islamIsImportantToMeInfo"><i class="fas fa-info-circle"></i> Islam Is Important To Me Info</label>
+                  <input type="text" id="islamIsImportantToMeInfo" name="islamIsImportantToMeInfo" value="<%= userData.islamIsImportantToMeInfo || '' %>">
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="willingToSharePhotosUponRequest"><i class="fas fa-image"></i> Willing To Share Photos Upon Request</label>
+                  <select id="willingToSharePhotosUponRequest" name="willingToSharePhotosUponRequest" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.willingToSharePhotosUponRequest === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.willingToSharePhotosUponRequest === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="willingToMeetUpOutside"><i class="fas fa-users"></i> Willing To Meet Up Outside</label>
+                  <select id="willingToMeetUpOutside" name="willingToMeetUpOutside" class="select-styled">
+                    <option value="">Select</option>
+                    <option value="true" <%= userData.willingToMeetUpOutside === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.willingToMeetUpOutside === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="work"><i class="fas fa-briefcase"></i> Work</label>
+                  <input type="text" id="work" name="work" value="<%= userData.work || '' %>">
+                </div>
+              </div>
               <div class="form-actions">
                 <a href="/account" class="btn btn-cancel">Cancel</a>
                 <button type="submit" class="btn btn-save">

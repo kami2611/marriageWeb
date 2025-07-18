@@ -93,6 +93,9 @@ const userSchema = new mongoose.Schema({
   education: {
     type: String,
   },
+  work: {
+    type: String, // e.g., "Software Engineer", "Doctor", etc.
+  },
   nationality: {
     type: String,
   },

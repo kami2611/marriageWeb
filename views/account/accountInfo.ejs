@@ -17,7 +17,10 @@
       <div class="container">
         <div class="logo">
           <a href="/">
-            <img src="/imgs/LOGO.png" alt="Company Logo" />
+            <img
+              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
+              alt="Company Logo"
+            />
           </a>
         </div>
         <div class="auth-buttons">
@@ -209,6 +212,14 @@
                     </div>
                     <div class="info-item">
                       <div class="info-label">
+                        <i class="fas fa-briefcase"></i> Work
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.work || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
                         <i class="fas fa-flag"></i> Nationality
                       </div>
                       <div class="info-value">
@@ -266,6 +277,302 @@
                       </div>
                       <div class="info-value">
                         <%= accountInfo.islamicSect || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-pray"></i> Prays
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.prays === true ? 'Yes' :
+                        (accountInfo.prays === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-pray"></i> Celebrates Milaad
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.celebratesMilaad === true ? 'Yes' :
+                        (accountInfo.celebratesMilaad === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-pray"></i> Celebrate Khatams
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.celebrateKhatams === true ? 'Yes' :
+                        (accountInfo.celebrateKhatams === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-info-circle"></i> Islam Is Important To
+                        Me Info
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.islamIsImportantToMeInfo || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-child"></i> Accept Someone With
+                        Children
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.acceptSomeoneWithChildren === true ?
+                        'Yes' : (accountInfo.acceptSomeoneWithChildren === false
+                        ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user-times"></i> Accept A Divorced
+                        Person
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.acceptADivorcedPerson === true ? 'Yes' :
+                        (accountInfo.acceptADivorcedPerson === false ? 'No' :
+                        '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-users"></i> Agrees With Polygamy
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.agreesWithPolygamy === true ? 'Yes' :
+                        (accountInfo.agreesWithPolygamy === false ? 'No' : '-')
+                        %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user-slash"></i> Accept A Widow
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.acceptAWidow === true ? 'Yes' :
+                        (accountInfo.acceptAWidow === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Accept Someone With Beard
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.AcceptSomeoneWithBeard === true ? 'Yes'
+                        : (accountInfo.AcceptSomeoneWithBeard === false ? 'No' :
+                        '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Accept Someone With Hijab
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.AcceptSomeoneWithHijab === true ? 'Yes'
+                        : (accountInfo.AcceptSomeoneWithHijab === false ? 'No' :
+                        '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Consider A Revert
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.ConsiderARevert === true ? 'Yes' :
+                        (accountInfo.ConsiderARevert === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-home"></i> Living Arrangements After
+                        Marriage
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.livingArrangementsAfterMarriage || '-'
+                        %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-plane"></i> Future Plans
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.futurePlans || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-info-circle"></i> Describe Nature
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.describeNature || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Father Name
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.fatherName || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Mother Name
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.motherName || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-briefcase"></i> Father Profession
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.fatherProfession || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-info-circle"></i> About Me
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.aboutMe || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-heart"></i> Hobbies
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.hobbies && accountInfo.hobbies.length ?
+                        accountInfo.hobbies.join(', ') : '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-plane"></i> Willing To Relocate
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.willingToRelocate === true ? 'Yes' :
+                        (accountInfo.willingToRelocate === false ? 'No' : '-')
+                        %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Preferred Age Range
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.preferredAgeRange || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Preferred Height Range
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.preferredHeightRange || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Preferred Caste
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.preferredCaste || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Preferred Ethnicity
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.preferredEthnicity || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-briefcase"></i> Allow Partner To Work
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.allowParnterToWork === true ? 'Yes' :
+                        (accountInfo.allowParnterToWork === false ? 'No' : '-')
+                        %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-book"></i> Allow Partner To Study
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.allowPartnerToStudy === true ? 'Yes' :
+                        (accountInfo.allowPartnerToStudy === false ? 'No' : '-')
+                        %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-globe"></i> Accept Someone In Other
+                        Country
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.acceptSomeoneInOtherCountry === true ?
+                        'Yes' : (accountInfo.acceptSomeoneInOtherCountry ===
+                        false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-star"></i> Qualities You Need In Your
+                        Partner
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.qualitiesYouNeedInYourPartner &&
+                        accountInfo.qualitiesYouNeedInYourPartner.length ?
+                        accountInfo.qualitiesYouNeedInYourPartner.join(', ') :
+                        '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-heart"></i> Looking For A Spouse That
+                        Is
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.lookingForASpouseThatIs || '-' %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-image"></i> Willing To Share Photos
+                        Upon Request
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.willingToSharePhotosUponRequest === true
+                        ? 'Yes' : (accountInfo.willingToSharePhotosUponRequest
+                        === false ? 'No' : '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-users"></i> Willing To Meet Up Outside
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.willingToMeetUpOutside === true ? 'Yes'
+                        : (accountInfo.willingToMeetUpOutside === false ? 'No' :
+                        '-') %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-user"></i> Who Completed Profile
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.whoCompletedProfile || '-' %>
                       </div>
                     </div>
                   </div>
