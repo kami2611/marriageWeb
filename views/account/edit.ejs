@@ -635,6 +635,22 @@
                   <input type="text" id="work" name="work" value="<%= userData.work || '' %>">
                 </div>
               </div>
+              
+              <!-- Add these fields before the form-actions, after your other fields -->
+
+<div class="form-row">
+  <div class="form-group">
+    <label for="children"><i class="fas fa-child"></i> Children</label>
+    <textarea id="children" name="children" rows="3" placeholder='Example: [{"name":"Ali","age":5,"livingLocation":"Lahore"}]'><%= userData.children && userData.children.length ? JSON.stringify(userData.children) : "" %></textarea>
+    <small>Enter as JSON array. Each child: name, age, livingLocation.</small>
+  </div>
+</div>
+<div class="form-row">
+  <div class="form-group">
+    <label for="anySpecialInformationPeopleShouldKnow"><i class="fas fa-info-circle"></i> Any Special Information People Should Know</label>
+    <input type="text" id="anySpecialInformationPeopleShouldKnow" name="anySpecialInformationPeopleShouldKnow" value="<%= userData.anySpecialInformationPeopleShouldKnow || '' %>">
+  </div>
+</div>
               <div class="form-actions">
                 <a href="/account" class="btn btn-cancel">Cancel</a>
                 <button type="submit" class="btn btn-save">

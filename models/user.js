@@ -234,5 +234,15 @@ const userSchema = new mongoose.Schema({
   birthPlace: {
     type: String,
   },
+  children: [
+    {
+      name: { type: String },
+      age: { type: Number },
+      livingLocation: { type: String },
+    },
+  ],
+  anySpecialInformationPeopleShouldKnow: {
+    type: String, // e.g., "any special information"
+  },
 });
 module.exports = mongoose.model("User", userSchema);

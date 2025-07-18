@@ -245,6 +245,101 @@
                         <span class="value"><%= profile.adress %></span>
                       </div>
                     </div>
+                    <% } %> <% if (profile.aboutMe) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-user"></i>
+                      <div>
+                        <span class="label">About Me</span>
+                        <span class="value"><%= profile.aboutMe %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.islamIsImportantToMeInfo) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-mosque"></i>
+                      <div>
+                        <span class="label">Islam Is Important To Me Info</span>
+                        <span class="value"
+                          ><%= profile.islamIsImportantToMeInfo %></span
+                        >
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.hobbies && profile.hobbies.length) {
+                    %>
+                    <div class="detail-item">
+                      <i class="fas fa-heart"></i>
+                      <div>
+                        <span class="label">Hobbies</span>
+                        <span class="value"
+                          ><%= profile.hobbies.join(', ') %></span
+                        >
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.describeNature) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-info-circle"></i>
+                      <div>
+                        <span class="label">Describe Nature</span>
+                        <span class="value"><%= profile.describeNature %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.lookingForASpouseThatIs) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-search"></i>
+                      <div>
+                        <span class="label">Looking For A Spouse That Is</span>
+                        <span class="value"
+                          ><%= profile.lookingForASpouseThatIs %></span
+                        >
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.siblings !== undefined) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-users"></i>
+                      <div>
+                        <span class="label">Siblings</span>
+                        <span class="value"><%= profile.siblings %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.birthPlace) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-map-marker-alt"></i>
+                      <div>
+                        <span class="label">Birth Place</span>
+                        <span class="value"><%= profile.birthPlace %></span>
+                      </div>
+                    </div>
+                    <% } %> <% if (profile.children && profile.children.length)
+                    { %>
+                    <div class="detail-item">
+                      <i class="fas fa-child"></i>
+                      <div>
+                        <span class="label">Children</span>
+                        <span class="value">
+                          <ul style="padding-left: 18px; margin: 0">
+                            <% profile.children.forEach(function(child) { %>
+                            <li>
+                              <strong>Name:</strong> <%= child.name || '-' %>,
+                              <strong>Age:</strong> <%= child.age || '-' %>,
+                              <strong>Location:</strong> <%=
+                              child.livingLocation || '-' %>
+                            </li>
+                            <% }); %>
+                          </ul>
+                        </span>
+                      </div>
+                    </div>
+                    <% } %> <% if
+                    (profile.anySpecialInformationPeopleShouldKnow) { %>
+                    <div class="detail-item">
+                      <i class="fas fa-info-circle"></i>
+                      <div>
+                        <span class="label">Any Special Information</span>
+                        <span class="value"
+                          ><%= profile.anySpecialInformationPeopleShouldKnow
+                          %></span
+                        >
+                      </div>
+                    </div>
                     <% } %>
                   </div>
                 </div>

@@ -400,11 +400,6 @@
               name="describeNature"
               placeholder="Describe Nature"
             />
-            <input
-              type="text"
-              name="whoCompletedProfile"
-              placeholder="Who Completed Profile"
-            />
 
             <input
               type="text"
@@ -556,9 +551,138 @@
               name="siblings"
               placeholder="Number of Siblings"
               min="0"
-              value="0"
             />
             <input type="text" name="birthPlace" placeholder="Birth Place" />
+            <input
+              type="text"
+              name="anySpecialInformationPeopleShouldKnow"
+              placeholder="Any Special Information People Should Know"
+            />
+
+            <div id="children-section">
+              <label style="display: block; margin-top: 16px"
+                >Any Children?</label
+              >
+              <select
+                id="has-children"
+                name="hasChildren"
+                style="width: 100%; margin-bottom: 10px"
+              >
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+              </select>
+
+              <div id="children-inputs" style="display: none">
+                <div id="children-list"></div>
+                <div
+                  class="children-row"
+                  style="display: flex; gap: 8px; margin-bottom: 8px"
+                >
+                  <input
+                    type="text"
+                    id="child-name"
+                    placeholder="Child Name"
+                    style="flex: 2"
+                  />
+                  <input
+                    type="number"
+                    id="child-age"
+                    placeholder="Age"
+                    min="0"
+                    style="flex: 1"
+                  />
+                  <input
+                    type="text"
+                    id="child-location"
+                    placeholder="Living Location"
+                    style="flex: 2"
+                  />
+                  <button
+                    type="button"
+                    id="add-child-btn"
+                    style="flex: 0 0 auto"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              <!-- Hidden input to store children array as JSON -->
+              <input
+                type="hidden"
+                name="children"
+                id="children-json"
+                value="[]"
+              />
+            </div>
+
+            <script>
+              // Children dynamic logic
+              const hasChildrenSelect = document.getElementById("has-children");
+              const childrenInputsDiv =
+                document.getElementById("children-inputs");
+              const addChildBtn = document.getElementById("add-child-btn");
+              const childrenListDiv = document.getElementById("children-list");
+              const childrenJsonInput =
+                document.getElementById("children-json");
+
+              let childrenArr = [];
+
+              hasChildrenSelect.addEventListener("change", function () {
+                if (this.value === "yes") {
+                  childrenInputsDiv.style.display = "";
+                } else {
+                  childrenInputsDiv.style.display = "none";
+                  childrenArr = [];
+                  childrenListDiv.innerHTML = "";
+                  childrenJsonInput.value = "[]";
+                }
+              });
+
+              addChildBtn.addEventListener("click", function () {
+                const name = document.getElementById("child-name").value.trim();
+                const age = parseInt(
+                  document.getElementById("child-age").value,
+                  10
+                );
+                const livingLocation = document
+                  .getElementById("child-location")
+                  .value.trim();
+
+                if (!name || isNaN(age) || !livingLocation) {
+                  alert("Please fill all child fields.");
+                  return;
+                }
+
+                childrenArr.push({ name, age, livingLocation });
+                childrenJsonInput.value = JSON.stringify(childrenArr);
+
+                // Show added children
+                renderChildrenList();
+
+                // Clear inputs
+                document.getElementById("child-name").value = "";
+                document.getElementById("child-age").value = "";
+                document.getElementById("child-location").value = "";
+              });
+
+              function renderChildrenList() {
+                childrenListDiv.innerHTML = "";
+                childrenArr.forEach((child, idx) => {
+                  const div = document.createElement("div");
+                  div.style.marginBottom = "4px";
+                  div.innerHTML = `
+                    <span>${child.name}, Age: ${child.age}, Location: ${child.livingLocation}</span>
+                    <button type="button" data-idx="${idx}" style="margin-left:8px;">Remove</button>
+                  `;
+                  div.querySelector("button").onclick = function () {
+                    childrenArr.splice(idx, 1);
+                    childrenJsonInput.value = JSON.stringify(childrenArr);
+                    renderChildrenList();
+                  };
+                  childrenListDiv.appendChild(div);
+                });
+              }
+            </script>
           </div>
           <div class="admin-modal-actions" style="margin-top: 18px">
             <button type="button" id="add-user-cancel" class="admin-cancel-btn">

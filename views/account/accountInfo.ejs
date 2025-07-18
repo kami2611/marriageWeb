@@ -609,6 +609,36 @@
                         <%= accountInfo.birthPlace || '-' %>
                       </div>
                     </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-child"></i> Children
+                      </div>
+                      <div class="info-value">
+                        <% if (accountInfo.children &&
+                        accountInfo.children.length) { %>
+                        <ul style="padding-left: 18px; margin: 0">
+                          <% accountInfo.children.forEach(function(child) { %>
+                          <li>
+                            <strong>Name:</strong> <%= child.name || '-' %>,
+                            <strong>Age:</strong> <%= child.age || '-' %>,
+                            <strong>Location:</strong> <%= child.livingLocation
+                            || '-' %>
+                          </li>
+                          <% }); %>
+                        </ul>
+                        <% } else { %> - <% } %>
+                      </div>
+                    </div>
+                    <div class="info-item">
+                      <div class="info-label">
+                        <i class="fas fa-info-circle"></i> Any Special
+                        Information People Should Know
+                      </div>
+                      <div class="info-value">
+                        <%= accountInfo.anySpecialInformationPeopleShouldKnow ||
+                        '-' %>
+                      </div>
+                    </div>
                   </div>
                 </div>
 

@@ -216,6 +216,8 @@ app.post(
       whoCompletedProfile,
       siblings,
       birthPlace,
+      children,
+      anySpecialInformationPeopleShouldKnow,
     } = req.body;
     const user = req.userData;
     if (req.file) {
@@ -289,6 +291,22 @@ app.post(
         ? Number(siblings)
         : user.siblings;
     user.birthPlace = birthPlace || user.birthPlace;
+
+    // Parse and update children array if present
+    if (children) {
+      try {
+        user.children =
+          typeof children === "string" && children.trim() !== ""
+            ? JSON.parse(children)
+            : [];
+      } catch (e) {
+        user.children = [];
+      }
+    }
+
+    user.anySpecialInformationPeopleShouldKnow =
+      anySpecialInformationPeopleShouldKnow ||
+      user.anySpecialInformationPeopleShouldKnow;
 
     await user.save();
     res.redirect("/account"); // or wherever you want to redirect
@@ -634,6 +652,8 @@ app.post("/admin/user/add", async (req, res) => {
     waliMyContactDetails,
     siblings, // <-- add this
     birthPlace, // <-- add this
+    children,
+    anySpecialInformationPeopleShouldKnow,
   } = req.body;
 
   if (!gender || !password)
@@ -681,6 +701,16 @@ app.post("/admin/user/add", async (req, res) => {
           .map((q) => q.trim())
           .filter(Boolean)
       : [];
+
+    // Parse children JSON if present
+    let childrenArr = [];
+    if (children) {
+      try {
+        childrenArr = typeof children === "string" ? JSON.parse(children) : [];
+      } catch (e) {
+        childrenArr = [];
+      }
+    }
 
     const user = new User({
       username,
@@ -755,6 +785,8 @@ app.post("/admin/user/add", async (req, res) => {
           ? Number(siblings)
           : 0, // <-- add this
       birthPlace: birthPlace || "", // <-- add this
+      children: childrenArr,
+      anySpecialInformationPeopleShouldKnow,
     });
 
     await user.save();

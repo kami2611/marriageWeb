@@ -265,6 +265,31 @@
   }
 }
 
+/* Make specific long-text fields span the full width in the add-user modal */
+.admin-modal-fields input[name="islamIsImportantToMeInfo"],
+.admin-modal-fields input[name="QualitiesThatYouCanBringToYourMarriage"],
+.admin-modal-fields input[name="hobbies"],
+.admin-modal-fields input[name="lookingForASpouseThatIs"],
+.admin-modal-fields input[name="qualitiesYouNeedInYourPartner"],
+.admin-modal-fields input[name="anySpecialInformationPeopleShouldKnow"],
+.admin-modal-fields input[name="education"],
+.admin-modal-fields input[name="aboutMe"],
+.admin-modal-fields input[name="describeNature"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  margin-bottom: 0.5em;
+}
+
+/* Make the "Any Children?" select span the full width in the add-user modal */
+.admin-modal-fields #children-section,
+.admin-modal-fields #children-section > label,
+.admin-modal-fields #children-section > select,
+.admin-modal-fields #children-section > div,
+.admin-modal-fields #children-section > input[type="hidden"] {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
 /* Style for the OK button in the delete confirmation modal */
 .admin-modal-ok-btn {
   background: #c0392b;
