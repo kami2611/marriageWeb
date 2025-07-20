@@ -278,6 +278,8 @@
   grid-column: 1 / -1;
   width: 100%;
   margin-bottom: 0.5em;
+  resize: vertical;
+  min-height: 60px;
 }
 
 /* Make the "Any Children?" select span the full width in the add-user modal */
@@ -286,6 +288,16 @@
 .admin-modal-fields #children-section > select,
 .admin-modal-fields #children-section > div,
 .admin-modal-fields #children-section > input[type="hidden"] {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+/* Add this to your admin-dashboard.css to make the education section full width like children */
+.admin-modal-fields #education-section,
+.admin-modal-fields #education-section > label,
+.admin-modal-fields #education-section > select,
+.admin-modal-fields #education-section > div,
+.admin-modal-fields #education-section > input[type="hidden"] {
   grid-column: 1 / -1;
   width: 100%;
 }
@@ -496,4 +508,25 @@
     border-bottom: 4px solid #2980b9;
     background: #eaf6ff;
   }
+}
+
+/* Additional styles for admin-modal-fields */
+.admin-modal-fields textarea[name="aboutMe"],
+.admin-modal-fields textarea[name="describeNature"],
+.admin-modal-fields textarea[name="islamIsImportantToMeInfo"],
+.admin-modal-fields textarea[name="QualitiesThatYouCanBringToYourMarriage"],
+.admin-modal-fields textarea[name="lookingForASpouseThatIs"],
+.admin-modal-fields textarea[name="anySpecialInformationPeopleShouldKnow"] {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-height: 60px;
+  font-size: 1.08rem;
+  padding: 8px 10px;
+  margin-bottom: 0.5em;
+  resize: vertical;
+  box-sizing: border-box;
+  white-space: pre-wrap;
+  word-break: break-word;
+  overflow-y: auto;
+  display: block;
 }

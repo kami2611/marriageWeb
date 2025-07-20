@@ -717,6 +717,17 @@ app.post("/admin/user/add", async (req, res) => {
       }
     }
 
+    // Parse education JSON if present
+    let educationArr = [];
+    if (education) {
+      try {
+        educationArr =
+          typeof education === "string" ? JSON.parse(education) : [];
+      } catch (e) {
+        educationArr = [];
+      }
+    }
+
     const user = new User({
       username,
       password: hashedPassword,
@@ -737,7 +748,7 @@ app.post("/admin/user/add", async (req, res) => {
       build,
       height,
       languagesSpoken: langs,
-      education,
+      education: educationArr,
       nationality,
       ethnicity,
       maritalStatus: maritalStatus === "true",

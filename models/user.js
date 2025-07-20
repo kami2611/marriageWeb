@@ -92,7 +92,9 @@ const userSchema = new mongoose.Schema({
   ],
   education: [
     {
-      type: String,
+      title: { type: String },
+      institute: { type: String },
+      year: { type: String },
     },
   ],
   work: {

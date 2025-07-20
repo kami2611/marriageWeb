@@ -330,12 +330,6 @@
             />
             <input
               type="text"
-              name="education"
-              placeholder="Education"
-              required
-            />
-            <input
-              type="text"
               name="work"
               placeholder="Work (Job/Profession)"
             />
@@ -409,13 +403,12 @@
               name="fatherProfession"
               placeholder="Father Profession"
             />
-            <input type="text" name="aboutMe" placeholder="About Me" />
-            <input
-              type="text"
+            <textarea name="aboutMe" placeholder="About Me" rows="3"></textarea>
+            <textarea
               name="describeNature"
               placeholder="Describe Nature"
-            />
-
+              rows="3"
+            ></textarea>
             <input
               type="text"
               name="preferredAgeRange"
@@ -553,32 +546,22 @@
               <option value="true">Yes</option>
               <option value="false">No</option>
             </select>
-            <input
-              type="text"
+            <textarea
               name="islamIsImportantToMeInfo"
               placeholder="Islam Is Important To Me Info"
-            />
-
-            <input
-              type="text"
+              rows="3"
+            ></textarea>
+            <textarea
               name="QualitiesThatYouCanBringToYourMarriage"
               placeholder="Qualities You Can Bring To Your Marriage (comma separated)"
-            />
-            <input
-              type="text"
-              name="hobbies"
-              placeholder="Hobbies (comma separated)"
-            />
-            <input
-              type="text"
-              name="qualitiesYouNeedInYourPartner"
-              placeholder="Qualities You Need In Your Partner (comma separated)"
-            />
-            <input
-              type="text"
+              rows="3"
+            ></textarea>
+            <textarea
               name="lookingForASpouseThatIs"
               placeholder="Looking For A Spouse That Is..."
-            />
+              rows="3"
+            ></textarea>
+
             <input
               type="number"
               name="siblings"
@@ -586,11 +569,16 @@
               min="0"
             />
             <input type="text" name="birthPlace" placeholder="Birth Place" />
-            <input
+            <!-- <input
               type="text"
               name="anySpecialInformationPeopleShouldKnow"
               placeholder="Any Special Information People Should Know"
-            />
+            /> -->
+            <textarea
+              name="anySpecialInformationPeopleShouldKnow"
+              placeholder="Any Special Information People Should Know"
+              rows="3"
+            ></textarea>
 
             <div id="children-section">
               <label style="display: block; margin-top: 16px"
@@ -603,6 +591,7 @@
               >
                 <option value="no" selected>No</option>
                 <option value="yes">Yes</option>
+                <option value="N/A">N/A</option>
               </select>
 
               <div id="children-inputs" style="display: none">
@@ -644,6 +633,60 @@
                 type="hidden"
                 name="children"
                 id="children-json"
+                value="[]"
+              />
+            </div>
+
+            <div id="education-section">
+              <label style="display: block; margin-top: 16px"
+                >Any Education?</label
+              >
+              <select
+                id="has-education"
+                name="hasEducation"
+                style="width: 100%; margin-bottom: 10px"
+              >
+                <option value="">Select</option>
+                <option value="N/A">N/A</option>
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+
+              <div id="education-inputs" style="display: none">
+                <div id="education-list"></div>
+                <div
+                  class="education-row"
+                  style="display: flex; gap: 8px; margin-bottom: 8px"
+                >
+                  <input
+                    type="text"
+                    id="education-title"
+                    placeholder="Degree/Title (e.g. BSc)"
+                  />
+                  <input
+                    type="text"
+                    id="education-institute"
+                    placeholder="Institute (e.g. Punjab University)"
+                  />
+                  <input
+                    type="number"
+                    id="education-year"
+                    placeholder="Year (e.g. 2022)"
+                  />
+                  <button
+                    type="button"
+                    id="add-education-btn"
+                    style="flex: 0 0 auto"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              <!-- Hidden input to store education array as JSON -->
+              <input
+                type="hidden"
+                name="education"
+                id="education-json"
                 value="[]"
               />
             </div>
@@ -715,6 +758,78 @@
                   childrenListDiv.appendChild(div);
                 });
               }
+
+              // Education dynamic logic
+              const hasEducationSelect =
+                document.getElementById("has-education");
+              const educationInputsDiv =
+                document.getElementById("education-inputs");
+              const addEducationBtn =
+                document.getElementById("add-education-btn");
+              const educationListDiv =
+                document.getElementById("education-list");
+              const educationJsonInput =
+                document.getElementById("education-json");
+              let educationArr = [];
+
+              hasEducationSelect.addEventListener("change", function () {
+                if (this.value === "yes") {
+                  educationInputsDiv.style.display = "";
+                } else {
+                  educationInputsDiv.style.display = "none";
+                  educationArr = [];
+                  educationListDiv.innerHTML = "";
+                  educationJsonInput.value = "[]";
+                }
+              });
+
+              addEducationBtn.addEventListener("click", function () {
+                const title = document
+                  .getElementById("education-title")
+                  .value.trim();
+                const institute = document
+                  .getElementById("education-institute")
+                  .value.trim();
+                const year = document
+                  .getElementById("education-year")
+                  .value.trim();
+
+                if (!title && !institute && !year) {
+                  alert("Please enter at least one education detail.");
+                  return;
+                }
+
+                educationArr.push({ title, institute, year });
+                educationJsonInput.value = JSON.stringify(educationArr);
+                renderEducationList();
+
+                // Clear inputs
+                document.getElementById("education-title").value = "";
+                document.getElementById("education-institute").value = "";
+                document.getElementById("education-year").value = "";
+              });
+
+              function renderEducationList() {
+                educationListDiv.innerHTML = "";
+                educationArr.forEach((edu, idx) => {
+                  const div = document.createElement("div");
+                  div.style.marginBottom = "4px";
+                  div.innerHTML = `
+                    <span>
+                      ${edu.title ? `<strong>${edu.title}</strong>` : ""}
+                      ${edu.institute ? `, ${edu.institute}` : ""}
+                      ${edu.year ? `, ${edu.year}` : ""}
+                    </span>
+                    <button type="button" data-idx="${idx}" style="margin-left:8px;">Remove</button>
+                  `;
+                  div.querySelector("button").onclick = function () {
+                    educationArr.splice(idx, 1);
+                    educationJsonInput.value = JSON.stringify(educationArr);
+                    renderEducationList();
+                  };
+                  educationListDiv.appendChild(div);
+                });
+              }
             </script>
           </div>
           <div class="admin-modal-actions" style="margin-top: 18px">
@@ -727,5 +842,27 @@
       </div>
     </div>
     <script src="/js/admin-dashboard.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        [
+          "aboutMe",
+          "describeNature",
+          "islamIsImportantToMeInfo",
+          "QualitiesThatYouCanBringToYourMarriage",
+          "lookingForASpouseThatIs",
+          "anySpecialInformationPeopleShouldKnow",
+        ].forEach(function (name) {
+          const ta = document.querySelector('textarea[name="' + name + '"]');
+          if (ta) {
+            ta.addEventListener("input", function () {
+              this.style.height = "auto";
+              this.style.height = this.scrollHeight + "px";
+            });
+            // Trigger once in case of pre-filled value
+            ta.dispatchEvent(new Event("input"));
+          }
+        });
+      });
+    </script>
   </body>
 </html>
