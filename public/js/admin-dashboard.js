@@ -483,20 +483,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   genderSelect.addEventListener("change", async function () {
     const gender = this.value;
-    if (!gender) {
+    if (!gender || gender === "N/A") {
       usernameInput.value = "";
       return;
     }
-    // Fetch the current count from the server
-    const res = await fetch(`/admin/usercount?gender=${gender}`);
+    // Use the same logic as registration: fetch from /generate-username
+    const res = await fetch(`/generate-username?gender=${gender}`);
     const data = await res.json();
-    if (gender === "male") {
-      usernameInput.value = `M${data.count + 1}`;
-    } else if (gender === "female") {
-      usernameInput.value = `F${data.count + 1}`;
-    } else {
-      usernameInput.value = `U${data.count + 1}`;
-    }
+    usernameInput.value = data.username || "";
   });
 
   // Disability field logic

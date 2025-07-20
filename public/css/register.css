@@ -79,6 +79,23 @@
   color: #aaa;
 }
 
+/* Style the select fields to match input fields */
+.form-group select {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  background: #fff;
+  color: #333;
+}
+
+/* .form-group select:focus {
+  outline: none;
+  border-color: #ff69b4;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.2);
+} */
+
 /* Override for number input to remove arrows */
 input[type="number"] {
   -moz-appearance: textfield;

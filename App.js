@@ -110,7 +110,7 @@ app.post("/register", async (req, res) => {
   // Check passcode
   if (passcode != process.env.PASSCODE) {
     return res.render("register", {
-      error: "Invalid passcode, please try again.",
+      error: "invalid credentials, please try again.",
     });
   }
 
@@ -661,15 +661,19 @@ app.post("/admin/user/add", async (req, res) => {
     return res.json({ error: "Gender and password required" });
 
   // Generate username
-  const count = await User.countDocuments({ gender });
-  let username = "";
-  if (gender === "male") {
-    username = `M${count + 1}`;
-  } else if (gender === "female") {
-    username = `F${count + 1}`;
-  } else {
-    username = `U${count + 1}`;
-  }
+  const prefix = gender === "male" ? "M" : gender === "female" ? "F" : "U";
+  const regex = new RegExp(`^${prefix}(\\d+)$`);
+  const users = await User.find({ username: { $regex: regex } }).select(
+    "username"
+  );
+  let maxNum = 0;
+  users.forEach((u) => {
+    const match = u.username.match(regex);
+    if (match && Number(match[1]) > maxNum) {
+      maxNum = Number(match[1]);
+    }
+  });
+  const username = `${prefix}${maxNum + 1}`;
 
   try {
     const existing = await User.findOne({ username });
@@ -817,11 +821,32 @@ app.get("/admin/user/:id", async (req, res) => {
     acceptedRequests,
   });
 });
-app.get("/admin/usercount", async (req, res) => {
-  const gender = req.query.gender;
-  if (!gender) return res.json({ count: 0 });
-  const count = await User.countDocuments({ gender });
-  res.json({ count });
+// app.get("/admin/usercount", async (req, res) => {
+//   const gender = req.query.gender;
+//   if (!gender) return res.json({ count: 0 });
+//   const count = await User.countDocuments({ gender });
+//   res.json({ count });
+// });
+app.get("/generate-username", async (req, res) => {
+  const { gender } = req.query;
+  if (!gender || (gender !== "male" && gender !== "female")) {
+    return res.json({ username: "" });
+  }
+  // Find the highest number for the gender prefix
+  const prefix = gender === "male" ? "M" : "F";
+  const regex = new RegExp(`^${prefix}(\\d+)$`);
+  const users = await User.find({ username: { $regex: regex } }).select(
+    "username"
+  );
+  let maxNum = 0;
+  users.forEach((u) => {
+    const match = u.username.match(regex);
+    if (match && Number(match[1]) > maxNum) {
+      maxNum = Number(match[1]);
+    }
+  });
+  const username = `${prefix}${maxNum + 1}`;
+  res.json({ username });
 });
 
 app.listen(port, (req, res) => {

@@ -38,62 +38,101 @@
         <div class="register-container">
           <h1>Create an Account</h1>
 
-          <div class="whatsapp-link">
-            <i class="fab fa-whatsapp"></i>
-            <a href="https://wa.me/923065896726" target="_blank">
-              Chat with us on WhatsApp to get the pass code
-            </a>
-          </div>
-
-          <!-- Error message display -->
           <% if (typeof error !== "undefined" && error) { %>
-          <div class="error-message">
-            <i class="fas fa-exclamation-circle"></i>
+          <div class="register-error" id="register-error">
+            <i class="fas fa-exclamation-triangle"></i>
             <%= error %>
           </div>
           <% } %>
 
-          <form action="/register" method="post" class="register-form">
+          <form
+            action="/register"
+            method="post"
+            class="register-form"
+            id="register-form"
+          >
             <div class="form-group">
-              <label for="username">Username</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Enter your username"
-                required
-              />
+              <label for="has-passcode"
+                >Do you have the passcode to get registered?</label
+              >
+              <select id="has-passcode" name="hasPasscode" required>
+                <option value="">Select</option>
+                <option value="yes">Yes</option>
+                <option value="no">No</option>
+              </select>
             </div>
 
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Create a password"
-                required
-              />
+            <div id="register-fields" style="display: none">
+              <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="username">Username (auto-generated)</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  placeholder="Username will be generated"
+                  readonly
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input
+                  type="password"
+                  id="password"
+                  name="password"
+                  placeholder="Create a password"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label for="passcode">Passcode</label>
+                <input
+                  type="number"
+                  id="passcode"
+                  name="passcode"
+                  placeholder="Enter registration passcode"
+                  required
+                />
+                <div class="remember-me">
+                  <input type="checkbox" id="remember" name="remember" />
+                  <label for="remember">Remember me</label>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-signup btn-full">
+                Register
+              </button>
             </div>
 
-            <div class="form-group">
-              <label for="passcode">Passcode</label>
-              <input
-                type="number"
-                id="passcode"
-                name="passcode"
-                placeholder="Enter registration passcode"
-                required
-              />
-              <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember" />
-                <label for="remember">Remember me</label>
+            <div
+              id="whatsapp-info"
+              style="display: none; text-align: center; margin: 30px 0"
+            >
+              <div
+                class="whatsapp-link"
+                style="
+                  font-size: 1.3em;
+                  font-weight: bold;
+                  justify-content: center;
+                "
+              >
+                <i class="fab fa-whatsapp"></i>
+                <a
+                  href="https://wa.me/923065896726"
+                  target="_blank"
+                  style="font-size: 1.2em"
+                >
+                  Chat with us on WhatsApp to get the pass code
+                </a>
               </div>
             </div>
-
-            <button type="submit" class="btn btn-signup btn-full">
-              Register
-            </button>
           </form>
 
           <div class="login-link">
@@ -154,6 +193,41 @@
             !errorBox.contains(e.target)
           ) {
             errorBox.style.display = "none";
+          }
+        });
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const hasPasscode = document.getElementById("has-passcode");
+        const registerFields = document.getElementById("register-fields");
+        const whatsappInfo = document.getElementById("whatsapp-info");
+        const genderSelect = document.getElementById("gender");
+        const usernameInput = document.getElementById("username");
+
+        // Hide/show fields based on passcode selection
+        hasPasscode.addEventListener("change", function () {
+          if (this.value === "yes") {
+            registerFields.style.display = "";
+            whatsappInfo.style.display = "none";
+          } else if (this.value === "no") {
+            registerFields.style.display = "none";
+            whatsappInfo.style.display = "";
+          } else {
+            registerFields.style.display = "none";
+            whatsappInfo.style.display = "none";
+          }
+        });
+
+        // Auto-generate username based on gender selection
+        genderSelect.addEventListener("change", function () {
+          if (this.value === "male" || this.value === "female") {
+            fetch(`/generate-username?gender=${this.value}`)
+              .then((res) => res.json())
+              .then((data) => {
+                usernameInput.value = data.username || "";
+              });
+          } else {
+            usernameInput.value = "";
           }
         });
       });
