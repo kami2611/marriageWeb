@@ -17,11 +17,10 @@
 }
 
 .add-user-fields {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px 18px;
-  justify-content: center;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
 }
 
 .add-user-fields input,
@@ -96,9 +95,100 @@
   border-color: #c0392b;
 }
 
+.add-user-section-heading {
+  grid-column: 1 / -1;
+  font-size: 1.3rem;
+  color: #145a8a;
+  margin: 32px 0 12px 0;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-bottom: 1.5px solid #e0e0e0;
+  padding-bottom: 4px;
+}
+
+.add-user-section {
+  display: grid;
+  grid-template-columns: 180px minmax(320px, 1fr) 1fr;
+  gap: 12px 18px;
+  margin-bottom: 24px;
+  width: 100%;
+  max-width: 650px;
+  background: #f8fafc;
+  border-radius: 8px;
+  padding: 24px 18px 12px 18px;
+  box-shadow: 0 1px 6px rgba(44, 62, 80, 0.04);
+}
+
+.add-user-section label {
+  grid-column: 1 / 2;
+  align-self: center;
+  font-weight: 500;
+  color: #2c3e50;
+  margin-bottom: 2px;
+  text-align: right;
+  padding-right: 10px;
+}
+
+.add-user-section input,
+.add-user-section select,
+.add-user-section textarea {
+  grid-column: 2 / 4;
+  width: 100%;
+  min-height: 44px;
+  font-size: 1.08rem;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  box-sizing: border-box;
+  border: 1px solid #dbeafe;
+  border-radius: 5px;
+  background: #fff;
+  transition: border 0.2s;
+}
+
+.add-user-section input:focus,
+.add-user-section select:focus,
+.add-user-section textarea:focus {
+  border: 1.5px solid #2980b9;
+  outline: none;
+  background: #f0f6fa;
+}
+
+/* Make larger fields for longer placeholders */
+.add-user-section input[type="text"][placeholder*="Address"],
+.add-user-section input[type="text"][placeholder*="Languages"],
+.add-user-section input[type="text"][placeholder*="Hobbies"],
+.add-user-section input[type="text"][placeholder*="Contact"],
+.add-user-section input[type="text"][placeholder*="Nationality"],
+.add-user-section input[type="text"][placeholder*="Profession"],
+.add-user-section input[type="text"][placeholder*="Qualities"],
+.add-user-section textarea,
+.add-user-section input[type="text"][placeholder*="Who Completed Profile"],
+.add-user-section input[type="text"][placeholder*="Living Location"] {
+  font-size: 1.13rem;
+  min-width: 350px;
+  max-width: 100%;
+  width: 100%;
+}
+
+.add-user-section textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+
+/* Responsive adjustments */
 @media (max-width: 900px) {
-  .add-user-fields {
-    grid-template-columns: repeat(2, 1fr);
+  .add-user-section {
+    grid-template-columns: 1fr;
+    max-width: 100%;
+    padding: 18px 8px 8px 8px;
+  }
+  .add-user-section label,
+  .add-user-section input,
+  .add-user-section select,
+  .add-user-section textarea {
+    grid-column: 1 / -1;
+    text-align: left;
+    padding-right: 0;
   }
 }
 @media (max-width: 600px) {
