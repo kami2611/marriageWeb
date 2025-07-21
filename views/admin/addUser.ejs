@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Add User - damourmuslim</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/styles.css" />
+    <link rel="stylesheet" href="/css/addUser.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <main>
+      <div class="add-user-container">
+        <h1 class="add-user-title">
+          <i class="fas fa-user-plus"></i> Add New User
+        </h1>
+        <form id="add-user-form" autocomplete="off">
+          <div class="add-user-fields">
+            <select name="gender" id="add-gender" required>
+              <option value="">Gender</option>
+              <option value="N/A">N/A</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+              <option value="rather not say">Rather not say</option>
+            </select>
+            <input
+              type="text"
+              id="add-username"
+              name="username"
+              placeholder="Username"
+              readonly
+              required
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Password"
+              required
+            />
+            <input type="text" name="name" placeholder="Name" required />
+            <input
+              type="number"
+              name="age"
+              placeholder="Age"
+              min="15"
+              max="75"
+              required
+            />
+
+            <select name="country" id="add-country" required>
+              <option value="">Country</option>
+              <option value="N/A">N/A</option>
+              <option value="Pakistan">Pakistan</option>
+              <option value="India">India</option>
+              <option value="UK">United Kingdom</option>
+            </select>
+            <select name="state" id="add-state" required disabled>
+              <option value="">State</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <select name="city" id="add-city" required disabled>
+              <option value="">City</option>
+              <option value="N/A">N/A</option>
+            </select>
+            <input type="text" name="contact" placeholder="Contact" required />
+            <select name="religion" id="add-religion" required>
+              <option value="">Religion</option>
+              <option value="N/A">N/A</option>
+              <option value="islam">Islam</option>
+              <option value="hinduism">Hinduism</option>
+              <option value="christianity">Christianity</option>
+              <option value="sikhism">Sikhism</option>
+              <option value="buddhism">Buddhism</option>
+              <option value="judaism">Judaism</option>
+              <option value="other">Other</option>
+            </select>
+            <select name="caste" id="add-caste" required>
+              <option value="">Caste</option>
+              <option value="N/A">N/A</option>
+              <option value="syed">Syed</option>
+              <option value="sheikh">Sheikh</option>
+              <option value="pathan">Pathan</option>
+              <option value="rajput">Rajput</option>
+              <option value="mughal">Mughal</option>
+              <option value="gujjar">Gujjar</option>
+              <option value="jutt">Jutt</option>
+              <option value="ansari">Ansari</option>
+              <option value="awwan">Awwan</option>
+              <option value="qureshi">Qureshi</option>
+              <option value="malik">Malik</option>
+              <option value="choudhary">Choudhary</option>
+              <option value="other">Other</option>
+            </select>
+            <input type="text" name="adress" placeholder="Address" required />
+            <select name="eyeColor" required>
+              <option value="">Eye Color</option>
+              <option value="N/A">N/A</option>
+              <option value="black">Black</option>
+              <option value="brown">Brown</option>
+              <option value="grey">Grey</option>
+              <option value="other">Other</option>
+            </select>
+            <select name="hairColor" required>
+              <option value="">Hair Color</option>
+              <option value="N/A">N/A</option>
+              <option value="black">Black</option>
+              <option value="brown">Brown</option>
+              <option value="blonde">Blonde</option>
+            </select>
+            <select name="complexion" required>
+              <option value="">Complexion</option>
+              <option value="N/A">N/A</option>
+              <option value="fair">Fair</option>
+              <option value="wheatish">Wheatish</option>
+              <option value="dark">Dark</option>
+            </select>
+            <select name="build" required>
+              <option value="">Build</option>
+              <option value="N/A">N/A</option>
+              <option value="slim">Slim</option>
+              <option value="average">Average</option>
+              <option value="athletic">Athletic</option>
+              <option value="heavy">Heavy</option>
+            </select>
+            <input
+              type="number"
+              name="height"
+              placeholder="Height (cm)"
+              min="50"
+              max="250"
+              required
+            />
+            <input
+              type="text"
+              name="languagesSpoken"
+              placeholder="Languages Spoken (comma separated)"
+              required
+            />
+            <input
+              type="text"
+              name="work"
+              placeholder="Work (Job/Profession)"
+            />
+            <input
+              type="text"
+              name="nationality"
+              placeholder="Nationality"
+              required
+            />
+            <select name="ethnicity" required>
+              <option value="">Ethnicity</option>
+              <option value="N/A">N/A</option>
+              <option value="asian">Asian</option>
+              <option value="african">African</option>
+              <option value="caucasian">Caucasian</option>
+              <option value="latino">Latino</option>
+              <option value="arab">Arab</option>
+              <option value="other">Other</option>
+            </select>
+            <select name="maritalStatus" required>
+              <option value="">Marital Status</option>
+              <option value="N/A">N/A</option>
+              <option value="false">Unmarried</option>
+              <option value="true">Married</option>
+            </select>
+            <select name="disability" required>
+              <option value="no">Disability</option>
+              <option value="N/A">N/A</option>
+              <option value="no">No</option>
+              <option value="yes">Yes</option>
+            </select>
+            <input
+              type="text"
+              name="disabilityDetail"
+              placeholder="If yes, specify disability"
+              style="margin-bottom: 8px"
+            />
+            <select name="smoker" required>
+              <option value="">Smoker</option>
+              <option value="N/A">N/A</option>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </select>
+            <select name="bornMuslim" required>
+              <option value="">Born Muslim</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <input
+              type="text"
+              name="islamicSect"
+              placeholder="Islamic Sect/Fiqh"
+              required
+            />
+
+            <input type="text" name="fatherName" placeholder="Father Name" />
+            <input type="text" name="motherName" placeholder="Mother Name" />
+            <input
+              type="text"
+              name="waliMyContactDetails"
+              placeholder="Wali's Contact Details"
+            />
+            <input
+              type="text"
+              name="whoCompletedProfile"
+              placeholder="Who Completed Profile (e.g. self, family member)"
+            />
+            <input
+              type="text"
+              name="fatherProfession"
+              placeholder="Father Profession"
+            />
+            <textarea name="aboutMe" placeholder="About Me" rows="3"></textarea>
+            <textarea
+              name="describeNature"
+              placeholder="Describe Nature"
+              rows="3"
+            ></textarea>
+            <input
+              type="text"
+              name="preferredAgeRange"
+              placeholder="Preferred Age Range (e.g. 25-30)"
+            />
+            <input
+              type="text"
+              name="preferredHeightRange"
+              placeholder="Preferred Height Range (e.g. 150-180 cm)"
+            />
+            <input
+              type="text"
+              name="preferredCaste"
+              placeholder="Preferred Caste"
+            />
+            <input
+              type="text"
+              name="preferredEthnicity"
+              placeholder="Preferred Ethnicity"
+            />
+
+            <select name="allowParnterToWork">
+              <option value="">Allow Partner To Work?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="allowPartnerToStudy">
+              <option value="">Allow Partner To Study?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="acceptSomeoneInOtherCountry">
+              <option value="">Accept Someone In Other Country?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="willingToRelocate">
+              <option value="">Willing To Relocate?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="willingToSharePhotosUponRequest">
+              <option value="">Willing To Share Photos Upon Request?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="willingToMeetUpOutside">
+              <option value="">Willing To Meet Up Outside?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <select name="acceptSomeoneWithChildren">
+              <option value="">Accept Someone With Children?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="acceptADivorcedPerson">
+              <option value="">Accept A Divorced Person?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="agreesWithPolygamy">
+              <option value="">Agrees With Polygamy?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="acceptAWidow">
+              <option value="">Accept A Widow?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="AcceptSomeoneWithBeard">
+              <option value="">Accept Someone With Beard?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="AcceptSomeoneWithHijab">
+              <option value="">Accept Someone With Hijab?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="ConsiderARevert">
+              <option value="">Consider A Revert?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+
+            <select name="livingArrangementsAfterMarriage">
+              <option value="">Living Arrangements After Marriage</option>
+              <option value="N/A">N/A</option>
+              <option value="live with parents">Live with parents</option>
+              <option value="live alone">Live alone</option>
+              <option value="live with spouse">Live with spouse</option>
+              <option value="other">Other</option>
+            </select>
+            <select name="futurePlans">
+              <option value="">Future Plans</option>
+              <option value="N/A">N/A</option>
+              <option value="settle abroad">Settle abroad</option>
+              <option value="stay in current country">
+                Stay in current country
+              </option>
+              <option value="other">Other</option>
+            </select>
+
+            <select name="prays">
+              <option value="">Prays?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="celebratesMilaad">
+              <option value="">Celebrates Milaad?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <select name="celebrateKhatams">
+              <option value="">Celebrate Khatams?</option>
+              <option value="N/A">N/A</option>
+              <option value="true">Yes</option>
+              <option value="false">No</option>
+            </select>
+            <textarea
+              name="islamIsImportantToMeInfo"
+              placeholder="Islam Is Important To Me Info"
+              rows="3"
+            ></textarea>
+            <textarea
+              name="QualitiesThatYouCanBringToYourMarriage"
+              placeholder="Qualities You Can Bring To Your Marriage (comma separated)"
+              rows="3"
+            ></textarea>
+            <textarea
+              name="lookingForASpouseThatIs"
+              placeholder="Looking For A Spouse That Is..."
+              rows="3"
+            ></textarea>
+
+            <input
+              type="number"
+              name="siblings"
+              placeholder="Number of Siblings"
+              min="0"
+            />
+            <input type="text" name="birthPlace" placeholder="Birth Place" />
+            <!-- <input
+              type="text"
+              name="anySpecialInformationPeopleShouldKnow"
+              placeholder="Any Special Information People Should Know"
+            /> -->
+            <textarea
+              name="anySpecialInformationPeopleShouldKnow"
+              placeholder="Any Special Information People Should Know"
+              rows="3"
+            ></textarea>
+
+            <div id="children-section">
+              <label style="display: block; margin-top: 16px"
+                >Any Children?</label
+              >
+              <select
+                id="has-children"
+                name="hasChildren"
+                style="width: 100%; margin-bottom: 10px"
+              >
+                <option value="no" selected>No</option>
+                <option value="yes">Yes</option>
+                <option value="N/A">N/A</option>
+              </select>
+
+              <div id="children-inputs" style="display: none">
+                <div id="children-list"></div>
+                <div
+                  class="children-row"
+                  style="display: flex; gap: 8px; margin-bottom: 8px"
+                >
+                  <input
+                    type="text"
+                    id="child-name"
+                    placeholder="Child Name"
+                    style="flex: 2"
+                  />
+                  <input
+                    type="number"
+                    id="child-age"
+                    placeholder="Age"
+                    min="0"
+                    style="flex: 1"
+                  />
+                  <input
+                    type="text"
+                    id="child-location"
+                    placeholder="Living Location"
+                    style="flex: 2"
+                  />
+                  <button
+                    type="button"
+                    id="add-child-btn"
+                    style="flex: 0 0 auto"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              <!-- Hidden input to store children array as JSON -->
+              <input
+                type="hidden"
+                name="children"
+                id="children-json"
+                value="[]"
+              />
+            </div>
+
+            <div id="education-section">
+              <label style="display: block; margin-top: 16px"
+                >Any Education?</label
+              >
+              <select
+                id="has-education"
+                name="hasEducation"
+                style="width: 100%; margin-bottom: 10px"
+              >
+                <option value="">Select</option>
+                <option value="N/A">N/A</option>
+                <option value="no">No</option>
+                <option value="yes">Yes</option>
+              </select>
+
+              <div id="education-inputs" style="display: none">
+                <div id="education-list"></div>
+                <div
+                  class="education-row"
+                  style="display: flex; gap: 8px; margin-bottom: 8px"
+                >
+                  <input
+                    type="text"
+                    id="education-title"
+                    placeholder="Degree/Title (e.g. BSc)"
+                  />
+                  <input
+                    type="text"
+                    id="education-institute"
+                    placeholder="Institute (e.g. Punjab University)"
+                  />
+                  <input
+                    type="number"
+                    id="education-year"
+                    placeholder="Year (e.g. 2022)"
+                  />
+                  <button
+                    type="button"
+                    id="add-education-btn"
+                    style="flex: 0 0 auto"
+                  >
+                    Add
+                  </button>
+                </div>
+              </div>
+              <!-- Hidden input to store education array as JSON -->
+              <input
+                type="hidden"
+                name="education"
+                id="education-json"
+                value="[]"
+              />
+            </div>
+          </div>
+          <div class="add-user-actions">
+            <a href="/admin/dashboard" class="add-user-cancel-btn">Cancel</a>
+            <button type="submit" class="add-user-save-btn">Add</button>
+          </div>
+        </form>
+      </div>
+    </main>
+    <script src="/js/addUser.js"></script>
+  </body>
+</html>

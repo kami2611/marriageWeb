@@ -534,6 +534,10 @@ app.get("/admin", (req, res) => {
   }
   res.render("admin/login");
 });
+app.get("/admin/addUser", (req, res) => {
+  if (!req.session.isAdmin) return res.redirect("/admin");
+  res.render("admin/addUser");
+});
 app.post("/admin/login", async (req, res) => {
   const username = req.body.username ? req.body.username.trim() : "";
   const password = req.body.password ? req.body.password.trim() : "";

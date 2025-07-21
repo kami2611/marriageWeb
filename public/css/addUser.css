@@ -1,0 +1,108 @@
+.add-user-container {
+  max-width: 900px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
+  padding: 32px 24px;
+}
+
+.add-user-title {
+  font-size: 2rem;
+  margin-bottom: 32px;
+  color: #2c3e50;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.add-user-fields {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px 18px;
+  justify-content: center;
+  align-items: start;
+}
+
+.add-user-fields input,
+.add-user-fields select,
+.add-user-fields textarea {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  font-size: 1.08rem;
+  padding: 8px 10px;
+}
+
+.add-user-fields textarea {
+  min-height: 60px;
+  resize: vertical;
+}
+
+.add-user-fields #children-section,
+.add-user-fields #children-section > label,
+.add-user-fields #children-section > select,
+.add-user-fields #children-section > div,
+.add-user-fields #children-section > input[type="hidden"],
+.add-user-fields #education-section,
+.add-user-fields #education-section > label,
+.add-user-fields #education-section > select,
+.add-user-fields #education-section > div,
+.add-user-fields #education-section > input[type="hidden"] {
+  grid-column: 1 / -1;
+  width: 100%;
+}
+
+.add-user-actions {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.add-user-save-btn {
+  background: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 22px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.add-user-save-btn:hover {
+  background: #145a8a;
+}
+
+.add-user-cancel-btn {
+  background: #fff0f0;
+  color: #c0392b;
+  border: 1px solid #ffd6d6;
+  border-radius: 4px;
+  padding: 10px 22px;
+  font-size: 1.1rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.add-user-cancel-btn:hover {
+  background: #c0392b;
+  color: #fff;
+  border-color: #c0392b;
+}
+
+@media (max-width: 900px) {
+  .add-user-fields {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 600px) {
+  .add-user-fields {
+    grid-template-columns: 1fr;
+  }
+}
