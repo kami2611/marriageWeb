@@ -529,6 +529,9 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
   });
 });
 app.get("/admin", (req, res) => {
+  if (req.session.isAdmin) {
+    return res.redirect("/admin/dashboard");
+  }
   res.render("admin/login");
 });
 app.post("/admin/login", async (req, res) => {

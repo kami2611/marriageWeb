@@ -34,9 +34,20 @@
               autocomplete="off"
             />
           </div>
-          <button id="admin-add-user-btn" class="admin-add-btn">
-            <i class="fas fa-user-plus"></i> Add User
-          </button>
+          <div style="display: flex; gap: 12px">
+            <button id="admin-add-user-btn" class="admin-add-btn">
+              <i class="fas fa-user-plus"></i> Add User
+            </button>
+            <form action="/logout" method="get" style="display: inline">
+              <button
+                type="submit"
+                class="admin-cancel-btn"
+                style="margin-right: 0"
+              >
+                <i class="fas fa-sign-out-alt"></i> Logout
+              </button>
+            </form>
+          </div>
         </div>
         <div class="admin-users-table-wrapper">
           <table class="admin-users-table">

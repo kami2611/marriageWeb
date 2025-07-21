@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
   },
   gender: {
     type: String,
-    enum: ["male", "female", "rather not say"],
+    enum: ["male", "female", "rather not say", "N/A"],
   },
   religion: {
     type: String,
@@ -68,19 +68,19 @@ const userSchema = new mongoose.Schema({
   },
   eyeColor: {
     type: String,
-    enum: ["black", "brown", "grey", "other"],
+    enum: ["black", "brown", "grey", "other", "N/A"],
   },
   hairColor: {
     type: String,
-    enum: ["black", "brown", "blonde"],
+    enum: ["black", "brown", "blonde", "N/A"],
   },
   complexion: {
     type: String,
-    enum: ["fair", "wheatish", "dark"],
+    enum: ["fair", "wheatish", "dark", "N/A"],
   },
   build: {
     type: String,
-    enum: ["slim", "average", "athletic", "heavy"],
+    enum: ["slim", "average", "athletic", "heavy", "N/A"],
   },
   height: {
     type: Number, // height in centimeters or your preferred unit
@@ -105,7 +105,7 @@ const userSchema = new mongoose.Schema({
   },
   ethnicity: {
     type: String,
-    enum: ["asian", "african", "caucasian", "latino", "arab", "other"],
+    enum: ["asian", "african", "caucasian", "latino", "arab", "other", "N/A"],
   },
   maritalStatus: {
     type: Boolean, // true = married, false = unmarried
@@ -158,11 +158,17 @@ const userSchema = new mongoose.Schema({
   },
   livingArrangementsAfterMarriage: {
     type: String,
-    enum: ["live with parents", "live alone", "live with spouse", "other"],
+    enum: [
+      "live with parents",
+      "live alone",
+      "live with spouse",
+      "other",
+      "N/A",
+    ],
   },
   futurePlans: {
     type: String,
-    enum: ["settle abroad", "stay in current country", "other"],
+    enum: ["settle abroad", "stay in current country", "other", "N/A"],
   },
   describeNature: {
     type: String,
