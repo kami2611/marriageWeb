@@ -1,713 +1,310 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Account Info - damourmuslim</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/css/account.css" />
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
-  <body>
-    <header class="header">
-      <div class="container">
-        <div class="logo">
-          <a href="/">
-            <img
-              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
-              alt="Company Logo"
-            />
-          </a>
-        </div>
-        <div class="auth-buttons">
-          <% if (user) { %>
-          <a href="/logout" class="btn btn-signup">Logout</a>
-          <% } else { %>
-          <a href="/register" class="btn btn-signup">Sign Up</a>
-          <a href="/login" class="btn btn-login">Login</a>
-          <% } %>
-        </div>
-        <div class="mobile-menu-toggle">
-          <i class="fas fa-bars"></i>
-        </div>
-      </div>
-    </header>
 
-    <main>
-      <div class="container">
-        <div class="account-container">
-          <div class="page-header">
-            <h1>Your Account</h1>
-            <p>View and manage your personal information</p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Info - damourmuslim</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/account.css" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <a href="/">
+          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
+        </a>
+      </div>
+      <div class="auth-buttons">
+        <% if (user) { %>
+        <a href="/logout" class="btn btn-signup">Logout</a>
+        <% } else { %>
+        <a href="/register" class="btn btn-signup">Sign Up</a>
+        <a href="/login" class="btn btn-login">Login</a>
+        <% } %>
+      </div>
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="account-container">
+        <div class="page-header">
+          <h1>Your Account</h1>
+          <p>View and manage your personal information</p>
+        </div>
+
+        <div class="account-card">
+          <div class="account-nav">
+            <a href="/account/info" class="nav-item active">
+              <i class="fas fa-user"></i> Account Info
+            </a>
+            <a href="/account/yourRequests" class="nav-item">
+              <i class="fas fa-paper-plane"></i> Your Requests
+            </a>
+            <a href="/account/pendingRequests" class="nav-item">
+              <i class="fas fa-clock"></i> Pending Requests
+            </a>
+            <a href="/account/acceptedRequests" class="nav-item">
+              <i class="fas fa-check-circle"></i> Accepted Requests
+            </a>
+            <a href="/account/edit" class="nav-item">
+              <i class="fas fa-edit"></i> Edit Profile
+            </a>
           </div>
 
-          <div class="account-card">
-            <div class="account-nav">
-              <a href="/account/info" class="nav-item active">
-                <i class="fas fa-user"></i> Account Info
-              </a>
-              <a href="/account/yourRequests" class="nav-item">
-                <i class="fas fa-paper-plane"></i> Your Requests
-              </a>
-              <a href="/account/pendingRequests" class="nav-item">
-                <i class="fas fa-clock"></i> Pending Requests
-              </a>
-              <a href="/account/acceptedRequests" class="nav-item">
-                <i class="fas fa-check-circle"></i> Accepted Requests
-              </a>
-              <a href="/account/edit" class="nav-item">
-                <i class="fas fa-edit"></i> Edit Profile
-              </a>
-            </div>
-
-            <div class="account-content">
-              <div class="account-info-container">
-                <div class="profile-header">
-                  <div class="profile-avatar">
-                    <% if (accountInfo.profilePic && accountInfo.profilePic.url)
+          <div class="account-content">
+            <div class="account-info-container">
+              <div class="profile-header">
+                <div class="profile-avatar">
+                  <% if (accountInfo.profilePic && accountInfo.profilePic.url)
                     { %>
-                    <img
-                      src="<%= accountInfo.profilePic.url %>"
-                      alt="<%= accountInfo.name %>'s profile picture"
-                      class="profile-image"
-                    />
-                    <% } else { %> <% if (accountInfo.gender &&
+                  <img src="<%= accountInfo.profilePic.url %>" alt="<%= accountInfo.name %>'s profile picture" class="profile-image" />
+                  <% } else { %> <% if (accountInfo.gender &&
                     accountInfo.gender.toLowerCase() === 'female') { %>
-                    <i class="fas fa-female"></i>
-                    <% } else { %>
-                    <i class="fas fa-male"></i>
-                    <% } %> <% } %>
-                  </div>
-                  <div class="profile-title">
-                    <h2><%= accountInfo.name %></h2>
-                    <span class="username">@<%= accountInfo.username %></span>
-                  </div>
+                  <i class="fas fa-female"></i>
+                  <% } else { %>
+                  <i class="fas fa-male"></i>
+                  <% } %> <% } %>
+                </div>
+                <div class="profile-title">
+                  <h2><%= accountInfo.name %></h2>
+                  <span class="username">@<%= accountInfo.username %></span>
+                </div>
+              </div>
+
+              <div class="info-section">
+                <!-- BASIC INFO -->
+                <h2 class="add-user-section-heading">Basic Info</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Name:</span> <span class="info-value"><%= accountInfo.name || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Gender:</span> <span class="info-value"><%= accountInfo.gender || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Age:</span> <span class="info-value"><%= accountInfo.age || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Contact:</span> <span class="info-value"><%= accountInfo.contact || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Work:</span> <span class="info-value"><%= accountInfo.work || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Nationality:</span> <span class="info-value"><%= accountInfo.nationality || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Marital Status:</span> <span class="info-value"><%= accountInfo.maritalStatus === true ? 'Married' : (accountInfo.maritalStatus === false ? 'Unmarried' : (accountInfo.maritalStatus || '-')) %></span></div>
                 </div>
 
-                <div class="info-section">
-                  <h3>Personal Information</h3>
+                <!-- ADDRESS INFORMATION -->
+                <h2 class="add-user-section-heading">Address Information</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Country:</span> <span class="info-value"><%= accountInfo.country || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">State/Province:</span> <span class="info-value"><%= accountInfo.state || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">City:</span> <span class="info-value"><%= accountInfo.city || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Address:</span> <span class="info-value"><%= accountInfo.adress || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Birth Place:</span> <span class="info-value"><%= accountInfo.birthPlace || '-' %></span></div>
+                </div>
 
-                  <div class="info-grid">
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user-shield"></i> Wali's Contact
-                        Details
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.waliMyContactDetails || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user-check"></i> Who Completed Profile
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.whoCompletedProfile || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-venus-mars"></i> Gender
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.gender || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-venus-mars"></i> age
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.age || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-venus-mars"></i> caste
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.caste || '-' %>
-                      </div>
-                    </div>
+                <!-- APPEARANCE -->
+                <h2 class="add-user-section-heading">Appearance</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Eye Color:</span> <span class="info-value"><%= accountInfo.eyeColor || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Hair Color:</span> <span class="info-value"><%= accountInfo.hairColor || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Complexion:</span> <span class="info-value"><%= accountInfo.complexion || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Build:</span> <span class="info-value"><%= accountInfo.build || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Height (cm):</span> <span class="info-value"><%= accountInfo.height || '-' %></span></div>
+                </div>
 
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-pray"></i> Religion
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.religion || '-' %>
-                      </div>
-                    </div>
+                <!-- RELIGION & CASTE -->
+                <h2 class="add-user-section-heading">Religion & Caste</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Religion:</span> <span class="info-value"><%= accountInfo.religion || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Caste:</span> <span class="info-value"><%= accountInfo.caste || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Ethnicity:</span> <span class="info-value"><%= accountInfo.ethnicity || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Islamic Sect/Fiqh:</span> <span class="info-value"><%= accountInfo.islamicSect || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Born Muslim:</span> <span class="info-value"><%= accountInfo.bornMuslim === true ? 'Yes' : (accountInfo.bornMuslim === false ? 'No' : (accountInfo.bornMuslim || '-')) %></span></div>
+                </div>
 
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-map-marker-alt"></i> City
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.city || '-' %>
-                      </div>
-                    </div>
-
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-home"></i> Address
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.adress || '-' %>
-                      </div>
-                    </div>
-
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-phone"></i> Contact
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.contact || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-eye"></i> Eye Color
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.eyeColor || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-paint-brush"></i> Hair Color
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.hairColor || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Complexion
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.complexion || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-dumbbell"></i> Build
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.build || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-ruler-vertical"></i> Height (cm)
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.height || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-language"></i> Languages Spoken
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.languagesSpoken &&
-                        accountInfo.languagesSpoken.length ?
-                        accountInfo.languagesSpoken.join(', ') : '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-graduation-cap"></i> Education
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.education || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-briefcase"></i> Work
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.work || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-flag"></i> Nationality
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.nationality || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-users"></i> Ethnicity
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.ethnicity || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-ring"></i> Marital Status
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.maritalStatus === true ? 'Married' :
-                        (accountInfo.maritalStatus === false ? 'Unmarried' :
-                        '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-wheelchair"></i> Disability
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.disability && accountInfo.disability !==
-                        'no' ? accountInfo.disability : 'No' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-smoking"></i> Smoker
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.smoker === true ? 'Yes' :
-                        (accountInfo.smoker === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-mosque"></i> Born Muslim
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.bornMuslim === true ? 'Yes' :
-                        (accountInfo.bornMuslim === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-pray"></i> Islamic Sect/Fiqh
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.islamicSect || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-pray"></i> Prays
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.prays === true ? 'Yes' :
-                        (accountInfo.prays === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-pray"></i> Celebrates Milaad
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.celebratesMilaad === true ? 'Yes' :
-                        (accountInfo.celebratesMilaad === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-pray"></i> Celebrate Khatams
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.celebrateKhatams === true ? 'Yes' :
-                        (accountInfo.celebrateKhatams === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-info-circle"></i> Islam Is Important To
-                        Me Info
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.islamIsImportantToMeInfo || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-child"></i> Accept Someone With
-                        Children
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.acceptSomeoneWithChildren === true ?
-                        'Yes' : (accountInfo.acceptSomeoneWithChildren === false
-                        ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user-times"></i> Accept A Divorced
-                        Person
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.acceptADivorcedPerson === true ? 'Yes' :
-                        (accountInfo.acceptADivorcedPerson === false ? 'No' :
-                        '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-users"></i> Agrees With Polygamy
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.agreesWithPolygamy === true ? 'Yes' :
-                        (accountInfo.agreesWithPolygamy === false ? 'No' : '-')
-                        %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user-slash"></i> Accept A Widow
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.acceptAWidow === true ? 'Yes' :
-                        (accountInfo.acceptAWidow === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Accept Someone With Beard
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.AcceptSomeoneWithBeard === true ? 'Yes'
-                        : (accountInfo.AcceptSomeoneWithBeard === false ? 'No' :
-                        '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Accept Someone With Hijab
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.AcceptSomeoneWithHijab === true ? 'Yes'
-                        : (accountInfo.AcceptSomeoneWithHijab === false ? 'No' :
-                        '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Consider A Revert
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.ConsiderARevert === true ? 'Yes' :
-                        (accountInfo.ConsiderARevert === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-home"></i> Living Arrangements After
-                        Marriage
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.livingArrangementsAfterMarriage || '-'
-                        %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-plane"></i> Future Plans
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.futurePlans || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-info-circle"></i> Describe Nature
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.describeNature || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Father Name
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.fatherName || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Mother Name
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.motherName || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-briefcase"></i> Father Profession
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.fatherProfession || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-info-circle"></i> About Me
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.aboutMe || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-heart"></i> Hobbies
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.hobbies && accountInfo.hobbies.length ?
-                        accountInfo.hobbies.join(', ') : '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-plane"></i> Willing To Relocate
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.willingToRelocate === true ? 'Yes' :
-                        (accountInfo.willingToRelocate === false ? 'No' : '-')
-                        %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Preferred Age Range
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.preferredAgeRange || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Preferred Height Range
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.preferredHeightRange || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Preferred Caste
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.preferredCaste || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Preferred Ethnicity
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.preferredEthnicity || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-briefcase"></i> Allow Partner To Work
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.allowParnterToWork === true ? 'Yes' :
-                        (accountInfo.allowParnterToWork === false ? 'No' : '-')
-                        %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-book"></i> Allow Partner To Study
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.allowPartnerToStudy === true ? 'Yes' :
-                        (accountInfo.allowPartnerToStudy === false ? 'No' : '-')
-                        %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-globe"></i> Accept Someone In Other
-                        Country
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.acceptSomeoneInOtherCountry === true ?
-                        'Yes' : (accountInfo.acceptSomeoneInOtherCountry ===
-                        false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-star"></i> Qualities You Need In Your
-                        Partner
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.qualitiesYouNeedInYourPartner &&
-                        accountInfo.qualitiesYouNeedInYourPartner.length ?
-                        accountInfo.qualitiesYouNeedInYourPartner.join(', ') :
-                        '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-heart"></i> Looking For A Spouse That
-                        Is
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.lookingForASpouseThatIs || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-image"></i> Willing To Share Photos
-                        Upon Request
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.willingToSharePhotosUponRequest === true
-                        ? 'Yes' : (accountInfo.willingToSharePhotosUponRequest
-                        === false ? 'No' : '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-users"></i> Willing To Meet Up Outside
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.willingToMeetUpOutside === true ? 'Yes'
-                        : (accountInfo.willingToMeetUpOutside === false ? 'No' :
-                        '-') %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-user"></i> Who Completed Profile
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.whoCompletedProfile || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-users"></i> Siblings
-                      </div>
-                      <div class="info-value">
-                        <%= typeof accountInfo.siblings !== 'undefined' ?
-                        accountInfo.siblings : '0' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-map-marker-alt"></i> Birth Place
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.birthPlace || '-' %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-child"></i> Children
-                      </div>
-                      <div class="info-value">
-                        <% if (accountInfo.children &&
-                        accountInfo.children.length) { %>
-                        <ul style="padding-left: 18px; margin: 0">
-                          <% accountInfo.children.forEach(function(child) { %>
-                          <li>
-                            <strong>Name:</strong> <%= child.name || '-' %>,
-                            <strong>Age:</strong> <%= child.age || '-' %>,
-                            <strong>Location:</strong> <%= child.livingLocation
-                            || '-' %>
-                          </li>
-                          <% }); %>
-                        </ul>
-                        <% } else { %> - <% } %>
-                      </div>
-                    </div>
-                    <div class="info-item">
-                      <div class="info-label">
-                        <i class="fas fa-info-circle"></i> Any Special
-                        Information People Should Know
-                      </div>
-                      <div class="info-value">
-                        <%= accountInfo.anySpecialInformationPeopleShouldKnow ||
-                        '-' %>
-                      </div>
-                    </div>
+                <!-- EDUCATION -->
+                <h2 class="add-user-section-heading">Education</h2>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">Education:</span>
+                    <span class="info-value">
+                      <% if (accountInfo.education && accountInfo.education.length) { %>
+                      <ul style="padding-left: 18px; margin: 0">
+                        <% accountInfo.education.forEach(function(edu) { %>
+                        <li>
+                          <%= edu.title || '' %>
+                          <% if (edu.institute) { %>, <%= edu.institute %><% } %>
+                          <% if (edu.year) { %>, <%= edu.year %><% } %>
+                        </li>
+                        <% }); %>
+                      </ul>
+                      <% } else { %>
+                      -
+                      <% } %>
+                    </span>
                   </div>
                 </div>
 
-                <div class="account-actions">
-                  <a href="/account/edit" class="btn btn-edit">
-                    <i class="fas fa-edit"></i> Edit Profile
-                  </a>
+                <!-- ABOUT -->
+                <h2 class="add-user-section-heading">About</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">About Me:</span> <span class="info-value"><%= accountInfo.aboutMe || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Describe Nature:</span> <span class="info-value"><%= accountInfo.describeNature || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Hobbies:</span> <span class="info-value"><%= accountInfo.hobbies && accountInfo.hobbies.length ? accountInfo.hobbies.join(', ') : '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Languages Spoken:</span> <span class="info-value"><%= accountInfo.languagesSpoken && accountInfo.languagesSpoken.length ? accountInfo.languagesSpoken.join(', ') : '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Any Special Information People Should Know:</span> <span class="info-value"><%= accountInfo.anySpecialInformationPeopleShouldKnow || '-' %></span></div>
                 </div>
+
+                <!-- FAMILY DETAILS -->
+                <h2 class="add-user-section-heading">Family Details</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Father's Name:</span> <span class="info-value"><%= accountInfo.fatherName || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Father's Profession:</span> <span class="info-value"><%= accountInfo.fatherProfession || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Mother's Name:</span> <span class="info-value"><%= accountInfo.motherName || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Number of Siblings:</span> <span class="info-value"><%= typeof accountInfo.siblings !== 'undefined' ? accountInfo.siblings : '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Wali's Contact Details:</span> <span class="info-value"><%= accountInfo.waliMyContactDetails || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Who Completed Profile:</span> <span class="info-value"><%= accountInfo.whoCompletedProfile || '-' %></span></div>
+                </div>
+
+                <!-- DISABILITY & HEALTH -->
+                <h2 class="add-user-section-heading">Disability & Health</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Disability:</span> <span class="info-value"><%= accountInfo.disability && accountInfo.disability !== 'no' ? accountInfo.disability : 'No' %></span></div>
+                  <div class="info-item"><span class="info-label">Smoker:</span> <span class="info-value"><%= accountInfo.smoker === true ? 'Yes' : (accountInfo.smoker === false ? 'No' : (accountInfo.smoker || '-')) %></span></div>
+                </div>
+
+                <!-- PERSONAL PREFERENCES -->
+                <h2 class="add-user-section-heading">Personal Preferences</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Preferred Age Range:</span> <span class="info-value"><%= accountInfo.preferredAgeRange || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Preferred Height Range:</span> <span class="info-value"><%= accountInfo.preferredHeightRange || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Preferred Caste:</span> <span class="info-value"><%= accountInfo.preferredCaste || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Preferred Ethnicity:</span> <span class="info-value"><%= accountInfo.preferredEthnicity || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Allow Partner To Work:</span> <span class="info-value"><%= accountInfo.allowParnterToWork === true ? 'Yes' : (accountInfo.allowParnterToWork === false ? 'No' : (accountInfo.allowParnterToWork || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Allow Partner To Study:</span> <span class="info-value"><%= accountInfo.allowPartnerToStudy === true ? 'Yes' : (accountInfo.allowPartnerToStudy === false ? 'No' : (accountInfo.allowPartnerToStudy || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Accept Someone In Other Country:</span> <span class="info-value"><%= accountInfo.acceptSomeoneInOtherCountry === true ? 'Yes' : (accountInfo.acceptSomeoneInOtherCountry === false ? 'No' : (accountInfo.acceptSomeoneInOtherCountry || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Willing To Relocate:</span> <span class="info-value"><%= accountInfo.willingToRelocate === true ? 'Yes' : (accountInfo.willingToRelocate === false ? 'No' : (accountInfo.willingToRelocate || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Willing To Share Photos Upon Request:</span> <span class="info-value"><%= accountInfo.willingToSharePhotosUponRequest === true ? 'Yes' : (accountInfo.willingToSharePhotosUponRequest === false ? 'No' : (accountInfo.willingToSharePhotosUponRequest || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Willing To Meet Up Outside:</span> <span class="info-value"><%= accountInfo.willingToMeetUpOutside === true ? 'Yes' : (accountInfo.willingToMeetUpOutside === false ? 'No' : (accountInfo.willingToMeetUpOutside || '-')) %></span></div>
+                </div>
+
+                <!-- PARTNER & RELIGIOUS PREFERENCES -->
+                <h2 class="add-user-section-heading">Partner & Religious Preferences</h2>
+                <div class="info-grid">
+                  <div class="info-item"><span class="info-label">Accept Someone With Children:</span> <span class="info-value"><%= accountInfo.acceptSomeoneWithChildren === true ? 'Yes' : (accountInfo.acceptSomeoneWithChildren === false ? 'No' : (accountInfo.acceptSomeoneWithChildren || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Accept A Divorced Person:</span> <span class="info-value"><%= accountInfo.acceptADivorcedPerson === true ? 'Yes' : (accountInfo.acceptADivorcedPerson === false ? 'No' : (accountInfo.acceptADivorcedPerson || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Agrees With Polygamy:</span> <span class="info-value"><%= accountInfo.agreesWithPolygamy === true ? 'Yes' : (accountInfo.agreesWithPolygamy === false ? 'No' : (accountInfo.agreesWithPolygamy || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Accept A Widow:</span> <span class="info-value"><%= accountInfo.acceptAWidow === true ? 'Yes' : (accountInfo.acceptAWidow === false ? 'No' : (accountInfo.acceptAWidow || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Accept Someone With Beard:</span> <span class="info-value"><%= accountInfo.AcceptSomeoneWithBeard === true ? 'Yes' : (accountInfo.AcceptSomeoneWithBeard === false ? 'No' : (accountInfo.AcceptSomeoneWithBeard || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Accept Someone With Hijab:</span> <span class="info-value"><%= accountInfo.AcceptSomeoneWithHijab === true ? 'Yes' : (accountInfo.AcceptSomeoneWithHijab === false ? 'No' : (accountInfo.AcceptSomeoneWithHijab || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Consider A Revert:</span> <span class="info-value"><%= accountInfo.ConsiderARevert === true ? 'Yes' : (accountInfo.ConsiderARevert === false ? 'No' : (accountInfo.ConsiderARevert || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Living Arrangements After Marriage:</span> <span class="info-value"><%= accountInfo.livingArrangementsAfterMarriage || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Future Plans:</span> <span class="info-value"><%= accountInfo.futurePlans || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Prays:</span> <span class="info-value"><%= accountInfo.prays === true ? 'Yes' : (accountInfo.prays === false ? 'No' : (accountInfo.prays || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Celebrates Milaad:</span> <span class="info-value"><%= accountInfo.celebratesMilaad === true ? 'Yes' : (accountInfo.celebratesMilaad === false ? 'No' : (accountInfo.celebratesMilaad || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Celebrate Khatams:</span> <span class="info-value"><%= accountInfo.celebrateKhatams === true ? 'Yes' : (accountInfo.celebrateKhatams === false ? 'No' : (accountInfo.celebrateKhatams || '-')) %></span></div>
+                  <div class="info-item"><span class="info-label">Islam Is Important To Me Info:</span> <span class="info-value"><%= accountInfo.islamIsImportantToMeInfo || '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Qualities You Can Bring To Your Marriage:</span> <span class="info-value"><%= accountInfo.QualitiesThatYouCanBringToYourMarriage && accountInfo.QualitiesThatYouCanBringToYourMarriage.length ? accountInfo.QualitiesThatYouCanBringToYourMarriage.join(', ') : '-' %></span></div>
+                  <div class="info-item"><span class="info-label">Looking For A Spouse That Is:</span> <span class="info-value"><%= accountInfo.lookingForASpouseThatIs || '-' %></span></div>
+                </div>
+
+                <!-- CHILDREN -->
+                <h2 class="add-user-section-heading">Children</h2>
+                <div class="info-grid">
+                  <div class="info-item">
+                    <span class="info-label">Children:</span>
+                    <span class="info-value">
+                      <% if (accountInfo.children && accountInfo.children.length) { %>
+                      <ul style="padding-left: 18px; margin: 0">
+                        <% accountInfo.children.forEach(function(child) { %>
+                        <li>
+                          <strong>Name:</strong> <%= child.name || '-' %>,
+                          <strong>Age:</strong> <%= child.age || '-' %>,
+                          <strong>Location:</strong> <%= child.livingLocation || '-' %>
+                        </li>
+                        <% }); %>
+                      </ul>
+                      <% } else { %>
+                      -
+                      <% } %>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="account-actions">
+                <a href="/account/edit" class="btn btn-edit">
+                  <i class="fas fa-edit"></i> Edit Profile
+                </a>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
+  </main>
 
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h3>About Us</h3>
-            <p>
-              We make knowing eachother secure that ever and find the perfect
-              match for you
-            </p>
-          </div>
-          <div class="footer-section">
-            <h3>Contact</h3>
-            <p>Email: damourmuslim@gmail.com</p>
-            <p>Phone: +447454516156</p>
-          </div>
-          <div class="footer-section">
-            <h3>Follow Us</h3>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-          </div>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <p>
+            We make knowing eachother secure that ever and find the perfect
+            match for you
+          </p>
         </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 damourmuslim. All rights reserved.</p>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: damourmuslim@gmail.com</p>
+          <p>Phone: +447454516156</p>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
         </div>
       </div>
-    </footer>
+      <div class="footer-bottom">
+        <p>&copy; 2025 damourmuslim. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Mobile menu toggle
-        const menuToggle = document.querySelector(".mobile-menu-toggle");
-        const authButtons = document.querySelector(".auth-buttons");
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Mobile menu toggle
+      const menuToggle = document.querySelector(".mobile-menu-toggle");
+      const authButtons = document.querySelector(".auth-buttons");
 
-        if (menuToggle && authButtons) {
-          menuToggle.addEventListener("click", function () {
-            authButtons.classList.toggle("active");
-          });
-        }
-
-        // Close menu when clicking outside
-        document.addEventListener("click", function (event) {
-          if (
-            !event.target.closest(".mobile-menu-toggle") &&
-            !event.target.closest(".auth-buttons") &&
-            authButtons &&
-            authButtons.classList.contains("active")
-          ) {
-            authButtons.classList.remove("active");
-          }
+      if (menuToggle && authButtons) {
+        menuToggle.addEventListener("click", function() {
+          authButtons.classList.toggle("active");
         });
+      }
+
+      // Close menu when clicking outside
+      document.addEventListener("click", function(event) {
+        if (
+          !event.target.closest(".mobile-menu-toggle") &&
+          !event.target.closest(".auth-buttons") &&
+          authButtons &&
+          authButtons.classList.contains("active")
+        ) {
+          authButtons.classList.remove("active");
+        }
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>

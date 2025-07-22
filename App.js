@@ -12,6 +12,7 @@ const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const MongoStore = require("connect-mongo");
+const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 const port = process.env.PORT;
 
@@ -37,9 +38,31 @@ cloudinary.config({
 });
 const storage = new CloudinaryStorage({
   cloudinary,
-  params: {
-    folder: "user_profiles",
-    allowed_formats: ["jpg", "jpeg", "png", "webp"],
+  params: async (req, file) => {
+    // Only for /account/edit, user is available as req.userData
+    let username = req.userData?.username || "unknown";
+    // Get next image number for this user
+    let nextImgNum = 1;
+    try {
+      const result = await cloudinary.search
+        .expression(`folder:user_profiles AND public_id:${username}imgs*`)
+        .sort_by("public_id", "desc")
+        .max_results(100)
+        .execute();
+      let maxNum = 0;
+      result.resources.forEach((img) => {
+        const match = img.public_id.match(new RegExp(username + "imgs(\\d+)$"));
+        if (match && Number(match[1]) > maxNum) {
+          maxNum = Number(match[1]);
+        }
+      });
+      nextImgNum = maxNum + 1;
+    } catch (e) {}
+    return {
+      folder: "user_profiles",
+      public_id: `${username}imgs${nextImgNum}`,
+      allowed_formats: ["jpg", "jpeg", "png", "webp"],
+    };
   },
 });
 const upload = multer({ storage });
@@ -218,6 +241,38 @@ app.post(
       birthPlace,
       children,
       anySpecialInformationPeopleShouldKnow,
+      hobbies,
+      prays,
+      celebratesMilaad,
+      celebrateKhatams,
+      islamIsImportantToMeInfo,
+      acceptSomeoneWithChildren,
+      acceptADivorcedPerson,
+      agreesWithPolygamy,
+      acceptAWidow,
+      AcceptSomeoneWithBeard,
+      AcceptSomeoneWithHijab,
+      ConsiderARevert,
+      livingArrangementsAfterMarriage,
+      futurePlans,
+      describeNature,
+      QualitiesThatYouCanBringToYourMarriage,
+      fatherName,
+      motherName,
+      fatherProfession,
+      aboutMe,
+      willingToRelocate,
+      preferredAgeRange,
+      preferredHeightRange,
+      preferredCaste,
+      preferredEthnicity,
+      allowParnterToWork,
+      allowPartnerToStudy,
+      acceptSomeoneInOtherCountry,
+      qualitiesYouNeedInYourPartner,
+      lookingForASpouseThatIs,
+      willingToSharePhotosUponRequest,
+      willingToMeetUpOutside,
     } = req.body;
     const user = req.userData;
     if (req.file) {
@@ -249,7 +304,8 @@ app.post(
     user.complexion = complexion || user.complexion;
     user.build = build || user.build;
     user.height = height || user.height;
-    // Handle languagesSpoken as array
+
+    // Arrays
     user.languagesSpoken = languagesSpoken
       ? Array.isArray(languagesSpoken)
         ? languagesSpoken
@@ -258,39 +314,40 @@ app.post(
             .map((l) => l.trim())
             .filter(Boolean)
       : [];
-    user.education = education || user.education;
-    user.nationality = nationality || user.nationality;
-    user.ethnicity = ethnicity || user.ethnicity;
-    // Boolean fields from select (string "true"/"false")
-    user.maritalStatus =
-      typeof maritalStatus !== "undefined" && maritalStatus !== ""
-        ? maritalStatus === "true"
-        : user.maritalStatus;
-    // Disability: if "yes", use detail, else "no"
-    user.disability =
-      disability === "yes"
-        ? disabilityDetail && disabilityDetail.trim()
-          ? disabilityDetail.trim()
-          : "yes"
-        : "no";
-    user.smoker =
-      typeof smoker !== "undefined" && smoker !== ""
-        ? smoker === "true"
-        : user.smoker;
-    user.bornMuslim =
-      typeof bornMuslim !== "undefined" && bornMuslim !== ""
-        ? bornMuslim === "true"
-        : user.bornMuslim;
-    user.islamicSect = islamicSect || user.islamicSect;
-    user.work = work || user.work;
-    user.waliMyContactDetails =
-      waliMyContactDetails || user.waliMyContactDetails;
-    user.whoCompletedProfile = whoCompletedProfile || user.whoCompletedProfile;
-    user.siblings =
-      typeof siblings !== "undefined" && siblings !== ""
-        ? Number(siblings)
-        : user.siblings;
-    user.birthPlace = birthPlace || user.birthPlace;
+
+    // Parse education JSON if present
+    if (education) {
+      try {
+        user.education =
+          typeof education === "string" ? JSON.parse(education) : [];
+      } catch (e) {
+        user.education = [];
+      }
+    }
+
+    // Parse hobbies as array
+    user.hobbies = hobbies
+      ? hobbies
+          .split(",")
+          .map((h) => h.trim())
+          .filter(Boolean)
+      : [];
+
+    // Parse QualitiesThatYouCanBringToYourMarriage as array
+    user.QualitiesThatYouCanBringToYourMarriage =
+      QualitiesThatYouCanBringToYourMarriage
+        ? QualitiesThatYouCanBringToYourMarriage.split(",")
+            .map((q) => q.trim())
+            .filter(Boolean)
+        : [];
+
+    // Parse qualitiesYouNeedInYourPartner as array
+    user.qualitiesYouNeedInYourPartner = qualitiesYouNeedInYourPartner
+      ? qualitiesYouNeedInYourPartner
+          .split(",")
+          .map((q) => q.trim())
+          .filter(Boolean)
+      : [];
 
     // Parse and update children array if present
     if (children) {
@@ -304,9 +361,135 @@ app.post(
       }
     }
 
+    user.nationality = nationality || user.nationality;
+    user.ethnicity = ethnicity || user.ethnicity;
+
+    // Boolean fields from select (string "true"/"false")
+    user.maritalStatus =
+      typeof maritalStatus !== "undefined" && maritalStatus !== ""
+        ? maritalStatus === "true"
+        : user.maritalStatus;
+
+    user.disability =
+      disability === "yes"
+        ? disabilityDetail && disabilityDetail.trim()
+          ? disabilityDetail.trim()
+          : "yes"
+        : "no";
+
+    user.smoker =
+      typeof smoker !== "undefined" && smoker !== ""
+        ? smoker === "true"
+        : user.smoker;
+
+    user.bornMuslim =
+      typeof bornMuslim !== "undefined" && bornMuslim !== ""
+        ? bornMuslim === "true"
+        : user.bornMuslim;
+
+    user.islamicSect = islamicSect || user.islamicSect;
+    user.work = work || user.work;
+    user.waliMyContactDetails =
+      waliMyContactDetails || user.waliMyContactDetails;
+    user.whoCompletedProfile = whoCompletedProfile || user.whoCompletedProfile;
+    user.siblings =
+      typeof siblings !== "undefined" && siblings !== ""
+        ? Number(siblings)
+        : user.siblings;
+    user.birthPlace = birthPlace || user.birthPlace;
+
+    // --- MISSING FIELDS ADDED BELOW ---
+    user.prays =
+      typeof prays !== "undefined" && prays !== ""
+        ? prays === "true"
+        : user.prays;
+    user.celebratesMilaad =
+      typeof celebratesMilaad !== "undefined" && celebratesMilaad !== ""
+        ? celebratesMilaad === "true"
+        : user.celebratesMilaad;
+    user.celebrateKhatams =
+      typeof celebrateKhatams !== "undefined" && celebrateKhatams !== ""
+        ? celebrateKhatams === "true"
+        : user.celebrateKhatams;
+    user.islamIsImportantToMeInfo =
+      islamIsImportantToMeInfo || user.islamIsImportantToMeInfo;
+    user.acceptSomeoneWithChildren =
+      typeof acceptSomeoneWithChildren !== "undefined" &&
+      acceptSomeoneWithChildren !== ""
+        ? acceptSomeoneWithChildren === "true"
+        : user.acceptSomeoneWithChildren;
+    user.acceptADivorcedPerson =
+      typeof acceptADivorcedPerson !== "undefined" &&
+      acceptADivorcedPerson !== ""
+        ? acceptADivorcedPerson === "true"
+        : user.acceptADivorcedPerson;
+    user.agreesWithPolygamy =
+      typeof agreesWithPolygamy !== "undefined" && agreesWithPolygamy !== ""
+        ? agreesWithPolygamy === "true"
+        : user.agreesWithPolygamy;
+    user.acceptAWidow =
+      typeof acceptAWidow !== "undefined" && acceptAWidow !== ""
+        ? acceptAWidow === "true"
+        : user.acceptAWidow;
+    user.AcceptSomeoneWithBeard =
+      typeof AcceptSomeoneWithBeard !== "undefined" &&
+      AcceptSomeoneWithBeard !== ""
+        ? AcceptSomeoneWithBeard === "true"
+        : user.AcceptSomeoneWithBeard;
+    user.AcceptSomeoneWithHijab =
+      typeof AcceptSomeoneWithHijab !== "undefined" &&
+      AcceptSomeoneWithHijab !== ""
+        ? AcceptSomeoneWithHijab === "true"
+        : user.AcceptSomeoneWithHijab;
+    user.ConsiderARevert =
+      typeof ConsiderARevert !== "undefined" && ConsiderARevert !== ""
+        ? ConsiderARevert === "true"
+        : user.ConsiderARevert;
+    user.livingArrangementsAfterMarriage =
+      livingArrangementsAfterMarriage || user.livingArrangementsAfterMarriage;
+    user.futurePlans = futurePlans || user.futurePlans;
+    user.describeNature = describeNature || user.describeNature;
+    user.preferredAgeRange = preferredAgeRange || user.preferredAgeRange;
+    user.preferredHeightRange =
+      preferredHeightRange || user.preferredHeightRange;
+    user.preferredCaste = preferredCaste || user.preferredCaste;
+    user.preferredEthnicity = preferredEthnicity || user.preferredEthnicity;
+    user.allowParnterToWork =
+      typeof allowParnterToWork !== "undefined" && allowParnterToWork !== ""
+        ? allowParnterToWork === "true"
+        : user.allowParnterToWork;
+    user.allowPartnerToStudy =
+      typeof allowPartnerToStudy !== "undefined" && allowPartnerToStudy !== ""
+        ? allowPartnerToStudy === "true"
+        : user.allowPartnerToStudy;
+    user.acceptSomeoneInOtherCountry =
+      typeof acceptSomeoneInOtherCountry !== "undefined" &&
+      acceptSomeoneInOtherCountry !== ""
+        ? acceptSomeoneInOtherCountry === "true"
+        : user.acceptSomeoneInOtherCountry;
+    user.lookingForASpouseThatIs =
+      lookingForASpouseThatIs || user.lookingForASpouseThatIs;
+    user.willingToSharePhotosUponRequest =
+      typeof willingToSharePhotosUponRequest !== "undefined" &&
+      willingToSharePhotosUponRequest !== ""
+        ? willingToSharePhotosUponRequest === "true"
+        : user.willingToSharePhotosUponRequest;
+    user.willingToMeetUpOutside =
+      typeof willingToMeetUpOutside !== "undefined" &&
+      willingToMeetUpOutside !== ""
+        ? willingToMeetUpOutside === "true"
+        : user.willingToMeetUpOutside;
+    user.aboutMe = aboutMe || user.aboutMe;
     user.anySpecialInformationPeopleShouldKnow =
       anySpecialInformationPeopleShouldKnow ||
       user.anySpecialInformationPeopleShouldKnow;
+    user.fatherName = fatherName || user.fatherName;
+    user.motherName = motherName || user.motherName;
+    user.fatherProfession = fatherProfession || user.fatherProfession;
+    user.willingToRelocate =
+      typeof willingToRelocate !== "undefined" && willingToRelocate !== ""
+        ? willingToRelocate === "true"
+        : user.willingToRelocate;
 
     await user.save();
     res.redirect("/account"); // or wherever you want to redirect
@@ -596,6 +779,7 @@ app.post("/admin/user/:id/delete", async (req, res) => {
 });
 app.post("/admin/user/add", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
+
   const {
     password,
     name,
@@ -735,6 +919,43 @@ app.post("/admin/user/add", async (req, res) => {
       }
     }
 
+    const { profilePicData } = req.body; // <-- get the base64 image string
+
+    let profilePic = undefined;
+    if (profilePicData && profilePicData.startsWith("data:image/")) {
+      try {
+        // Get next image number for this user
+        let nextImgNum = 1;
+        const result = await cloudinary.search
+          .expression(`folder:user_profiles AND public_id:${username}imgs*`)
+          .sort_by("public_id", "desc")
+          .max_results(100)
+          .execute();
+        let maxNum = 0;
+        result.resources.forEach((img) => {
+          const match = img.public_id.match(
+            new RegExp(username + "imgs(\\d+)$")
+          );
+          if (match && Number(match[1]) > maxNum) {
+            maxNum = Number(match[1]);
+          }
+        });
+        nextImgNum = maxNum + 1;
+
+        const uploadRes = await cloudinary.uploader.upload(profilePicData, {
+          folder: "user_profiles",
+          public_id: `${username}imgs${nextImgNum}`,
+          overwrite: true,
+        });
+        profilePic = {
+          url: uploadRes.secure_url,
+          filename: uploadRes.public_id,
+        };
+      } catch (err) {
+        console.error("Profile pic upload error:", err);
+      }
+    }
+
     const user = new User({
       username,
       password: hashedPassword,
@@ -810,6 +1031,7 @@ app.post("/admin/user/add", async (req, res) => {
       birthPlace: birthPlace || "", // <-- add this
       children: childrenArr,
       anySpecialInformationPeopleShouldKnow,
+      profilePic, // <-- add this line
     });
 
     await user.save();

@@ -307,6 +307,107 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  // --- Profile Picture Upload Logic ---
+  const profilePicChoice = document.getElementById("profilePicChoice");
+  const profilePicUploadBox = document.getElementById("profilePicUploadBox");
+  const profilePicUpload = document.getElementById("profilePicUpload");
+  const profilePicCircle = document.querySelector(".profile-pic-circle");
+  const profilePicCanvas = document.getElementById("profilePicCanvas");
+  const profilePicData = document.getElementById("profilePicData");
+  const profilePicResizeControls = document.getElementById(
+    "profilePicResizeControls"
+  );
+  const profilePicZoom = document.getElementById("profilePicZoom");
+  const profilePicPreviewText = document.getElementById(
+    "profilePicPreviewText"
+  );
+
+  let img = null;
+  let zoom = 1;
+
+  if (profilePicChoice) {
+    profilePicChoice.addEventListener("change", function () {
+      if (this.value === "yes") {
+        profilePicUploadBox.style.display = "";
+      } else {
+        profilePicUploadBox.style.display = "none";
+        profilePicData.value = "";
+        profilePicCanvas.style.display = "none";
+        profilePicResizeControls.style.display = "none";
+        profilePicPreviewText.textContent = "";
+        if (profilePicCircle) {
+          profilePicCircle.querySelector("i").style.display = "";
+        }
+      }
+    });
+  }
+
+  if (profilePicUpload && profilePicCircle) {
+    profilePicCircle.addEventListener("click", function () {
+      if (profilePicChoice.value === "yes") {
+        profilePicUpload.click();
+      }
+    });
+
+    profilePicUpload.addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (!file.type.startsWith("image/")) {
+        profilePicPreviewText.textContent = "Please select an image file.";
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (evt) {
+        img = new window.Image();
+        img.onload = function () {
+          zoom = 1;
+          drawProfilePic();
+          profilePicCanvas.style.display = "";
+          profilePicResizeControls.style.display = "";
+          profilePicCircle.querySelector("i").style.display = "none";
+          profilePicPreviewText.textContent =
+            "You can zoom and reposition the image.";
+        };
+        img.src = evt.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (profilePicZoom) {
+    profilePicZoom.addEventListener("input", function () {
+      zoom = parseFloat(this.value);
+      drawProfilePic();
+    });
+  }
+
+  function drawProfilePic() {
+    if (!img) return;
+    const size = 120;
+    profilePicCanvas.width = size;
+    profilePicCanvas.height = size;
+    const ctx = profilePicCanvas.getContext("2d");
+    ctx.clearRect(0, 0, size, size);
+
+    // Calculate zoomed image size and center
+    const minDim = Math.min(img.width, img.height);
+    const cropSize = minDim / zoom;
+    const sx = (img.width - cropSize) / 2;
+    const sy = (img.height - cropSize) / 2;
+
+    ctx.save();
+    ctx.beginPath();
+    ctx.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2, true);
+    ctx.closePath();
+    ctx.clip();
+
+    ctx.drawImage(img, sx, sy, cropSize, cropSize, 0, 0, size, size);
+    ctx.restore();
+
+    // Save as base64 for form submission
+    profilePicData.value = profilePicCanvas.toDataURL("image/jpeg", 0.92);
+  }
+
   // --- Add user form submit ---
   const addUserForm = document.getElementById("add-user-form");
   if (addUserForm) {

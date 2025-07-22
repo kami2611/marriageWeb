@@ -1,236 +1,202 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Register - damourmuslim</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/css/register.css" />
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
-  <body>
-    <header class="header">
-      <div class="container">
-        <div class="logo">
-          <a href="/">
-            <img
-              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
-              alt="Company Logo"
-            />
-          </a>
-        </div>
-        <div class="auth-buttons">
-          <a href="/register" class="btn btn-signup">Register</a>
-          <a href="/login" class="btn btn-login">Login</a>
-        </div>
-        <div class="mobile-menu-toggle">
-          <i class="fas fa-bars"></i>
-        </div>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - damourmuslim</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/register.css" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <a href="/">
+          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
+        </a>
       </div>
-    </header>
+      <div class="auth-buttons">
+        <a href="/register" class="btn btn-signup">Register</a>
+        <a href="/login" class="btn btn-login">Login</a>
+      </div>
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </header>
 
-    <main>
-      <div class="container">
-        <div class="register-container">
-          <h1>Create an Account</h1>
+  <main>
+    <div class="container">
+      <div class="register-container">
+        <h1>Create an Account</h1>
 
-          <% if (typeof error !== "undefined" && error) { %>
-          <div class="register-error" id="register-error">
-            <i class="fas fa-exclamation-triangle"></i>
-            <%= error %>
+        <% if (typeof error !== "undefined" && error) { %>
+        <div class="register-error" id="register-error">
+          <i class="fas fa-exclamation-triangle"></i>
+          <%= error %>
+        </div>
+        <% } %>
+
+        <form action="/register" method="post" class="register-form" id="register-form">
+          <div class="form-group">
+            <label for="has-passcode">Do you have the passcode to get registered?</label>
+            <select id="has-passcode" name="hasPasscode" required>
+              <option value="">Select</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
           </div>
-          <% } %>
 
-          <form
-            action="/register"
-            method="post"
-            class="register-form"
-            id="register-form"
-          >
+          <div id="register-fields" style="display: none">
             <div class="form-group">
-              <label for="has-passcode"
-                >Do you have the passcode to get registered?</label
-              >
-              <select id="has-passcode" name="hasPasscode" required>
-                <option value="">Select</option>
-                <option value="yes">Yes</option>
-                <option value="no">No</option>
+              <label for="gender">Gender</label>
+              <select id="gender" name="gender" required>
+                <option value="">Select Gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
               </select>
             </div>
-
-            <div id="register-fields" style="display: none">
-              <div class="form-group">
-                <label for="gender">Gender</label>
-                <select id="gender" name="gender" required>
-                  <option value="">Select Gender</option>
-                  <option value="male">Male</option>
-                  <option value="female">Female</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label for="username">Username (auto-generated)</label>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  placeholder="Username will be generated"
-                  readonly
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="password">Password</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Create a password"
-                  required
-                />
-              </div>
-              <div class="form-group">
-                <label for="passcode">Passcode</label>
-                <input
-                  type="number"
-                  id="passcode"
-                  name="passcode"
-                  placeholder="Enter registration passcode"
-                  required
-                />
-                <div class="remember-me">
-                  <input type="checkbox" id="remember" name="remember" />
-                  <label for="remember">Remember me</label>
-                </div>
-              </div>
-              <button type="submit" class="btn btn-signup btn-full">
-                Register
-              </button>
+            <div class="form-group">
+              <label for="username">Username (auto-generated)</label>
+              <input type="text" id="username" name="username" placeholder="Username will be generated" readonly required />
             </div>
+            <div class="form-group">
+              <label for="password">Password</label>
+              <input type="password" id="password" name="password" placeholder="Create a password" required />
+            </div>
+            <div class="form-group">
+              <label for="passcode">Passcode</label>
+              <input type="number" id="passcode" name="passcode" placeholder="Enter registration passcode" required />
+              <div class="remember-me">
+                <input type="checkbox" id="remember" name="remember" />
+                <label for="remember">Remember me</label>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-signup btn-full">
+              Register
+            </button>
+          </div>
 
-            <div
-              id="whatsapp-info"
-              style="display: none; text-align: center; margin: 30px 0"
-            >
-              <div
-                class="whatsapp-link"
-                style="
+          <div id="whatsapp-info" style="display: none; text-align: center; margin: 30px 0">
+            <div class="whatsapp-link" style="
                   font-size: 1.3em;
                   font-weight: bold;
                   justify-content: center;
-                "
-              >
-                <i class="fab fa-whatsapp"></i>
-                <a
-                  href="https://wa.me/923065896726"
-                  target="_blank"
-                  style="font-size: 1.2em"
-                >
-                  Chat with us on WhatsApp to get the pass code
-                </a>
-              </div>
+                ">
+              <i class="fab fa-whatsapp"></i>
+              <a href="https://wa.me/923065896726" target="_blank" style="font-size: 1.2em">
+                Chat with us on WhatsApp to get the pass code
+              </a>
             </div>
-          </form>
+          </div>
+        </form>
 
-          <div class="login-link">
-            Already have an account? <a href="/login">Login here</a>
+        <div class="login-link">
+          Already have an account? <a href="/login">Login here</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <p>
+            We make knowing eachother secure that ever and find the perfect
+            match for you
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: damourmuslim@gmail.com</p>
+          <p>Phone: +447454516156</p>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
           </div>
         </div>
       </div>
-    </main>
-
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h3>About Us</h3>
-            <p>
-              We make knowing eachother secure that ever and find the perfect
-              match for you
-            </p>
-          </div>
-          <div class="footer-section">
-            <h3>Contact</h3>
-            <p>Email: damourmuslim@gmail.com</p>
-            <p>Phone: +447454516156</p>
-          </div>
-          <div class="footer-section">
-            <h3>Follow Us</h3>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 damourmuslim App. All rights reserved.</p>
-        </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 damourmuslim App. All rights reserved.</p>
       </div>
-    </footer>
-    <script src="/js/main.js"></script>
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        const errorBox = document.getElementById("register-error");
-        if (!errorBox) return;
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const errorBox = document.getElementById("register-error");
+      if (!errorBox) return;
 
-        // Hide error when user types in any input
-        document.querySelectorAll(".register-form input").forEach((input) => {
-          input.addEventListener("input", () => {
-            errorBox.style.display = "none";
-          });
-        });
-
-        // Hide error when clicking outside the error box or form
-        document.addEventListener("mousedown", function (e) {
-          const form = document.querySelector(".register-form");
-          if (
-            errorBox.style.display !== "none" &&
-            !form.contains(e.target) &&
-            !errorBox.contains(e.target)
-          ) {
-            errorBox.style.display = "none";
-          }
+      // Hide error when user types in any input
+      document.querySelectorAll(".register-form input").forEach((input) => {
+        input.addEventListener("input", () => {
+          errorBox.style.display = "none";
         });
       });
 
-      document.addEventListener("DOMContentLoaded", function () {
-        const hasPasscode = document.getElementById("has-passcode");
-        const registerFields = document.getElementById("register-fields");
-        const whatsappInfo = document.getElementById("whatsapp-info");
-        const genderSelect = document.getElementById("gender");
-        const usernameInput = document.getElementById("username");
-
-        // Hide/show fields based on passcode selection
-        hasPasscode.addEventListener("change", function () {
-          if (this.value === "yes") {
-            registerFields.style.display = "";
-            whatsappInfo.style.display = "none";
-          } else if (this.value === "no") {
-            registerFields.style.display = "none";
-            whatsappInfo.style.display = "";
-          } else {
-            registerFields.style.display = "none";
-            whatsappInfo.style.display = "none";
-          }
-        });
-
-        // Auto-generate username based on gender selection
-        genderSelect.addEventListener("change", function () {
-          if (this.value === "male" || this.value === "female") {
-            fetch(`/generate-username?gender=${this.value}`)
-              .then((res) => res.json())
-              .then((data) => {
-                usernameInput.value = data.username || "";
-              });
-          } else {
-            usernameInput.value = "";
-          }
-        });
+      // Hide error when clicking outside the error box or form
+      document.addEventListener("mousedown", function(e) {
+        const form = document.querySelector(".register-form");
+        if (
+          errorBox.style.display !== "none" &&
+          !form.contains(e.target) &&
+          !errorBox.contains(e.target)
+        ) {
+          errorBox.style.display = "none";
+        }
       });
-    </script>
-  </body>
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      const hasPasscode = document.getElementById("has-passcode");
+      const registerFields = document.getElementById("register-fields");
+      const whatsappInfo = document.getElementById("whatsapp-info");
+      const genderSelect = document.getElementById("gender");
+      const usernameInput = document.getElementById("username");
+
+      // Hide/show fields based on passcode selection
+      hasPasscode.addEventListener("change", function() {
+        if (this.value === "yes") {
+          registerFields.style.display = "";
+          whatsappInfo.style.display = "none";
+        } else if (this.value === "no") {
+          registerFields.style.display = "none";
+          whatsappInfo.style.display = "";
+        } else {
+          registerFields.style.display = "none";
+          whatsappInfo.style.display = "none";
+        }
+      });
+
+      // Auto-generate username based on gender selection
+      genderSelect.addEventListener("change", function() {
+        if (this.value === "male" || this.value === "female") {
+          fetch(`/generate-username?gender=${this.value}`)
+            .then((res) => res.json())
+            .then((data) => {
+              usernameInput.value = data.username || "";
+            });
+        } else {
+          usernameInput.value = "";
+        }
+      });
+    });
+  </script>
+</body>
+
 </html>

@@ -1,263 +1,243 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Accepted Requests - damourmuslim</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/css/account.css" />
-    <link rel="stylesheet" href="/css/requests.css" />
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
-  <body>
-    <header class="header">
-      <div class="container">
-        <div class="logo">
-          <a href="/">
-            <img
-              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
-              alt="Company Logo"
-            />
-          </a>
-        </div>
-        <div class="auth-buttons">
-          <% if (user) { %>
-          <a href="/logout" class="btn btn-signup">Logout</a>
-          <% } else { %>
-          <a href="/register" class="btn btn-signup">Sign Up</a>
-          <a href="/login" class="btn btn-login">Login</a>
-          <% } %>
-        </div>
-        <div class="mobile-menu-toggle">
-          <i class="fas fa-bars"></i>
-        </div>
-      </div>
-    </header>
 
-    <main>
-      <div class="container">
-        <div class="account-container">
-          <div class="page-header">
-            <h1>Accepted Requests</h1>
-            <p>
-              People who sent you request and you accepted it (both are sharing
-              information with each other)
-            </p>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Accepted Requests - damourmuslim</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/account.css" />
+  <link rel="stylesheet" href="/css/requests.css" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <a href="/">
+          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
+        </a>
+      </div>
+      <div class="auth-buttons">
+        <% if (user) { %>
+        <a href="/logout" class="btn btn-signup">Logout</a>
+        <% } else { %>
+        <a href="/register" class="btn btn-signup">Sign Up</a>
+        <a href="/login" class="btn btn-login">Login</a>
+        <% } %>
+      </div>
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="account-container">
+        <div class="page-header">
+          <h1>Accepted Requests</h1>
+          <p>
+            People who sent you request and you accepted it (both are sharing
+            information with each other)
+          </p>
+        </div>
+
+        <div class="account-card">
+          <div class="account-nav">
+            <a href="/account/info" class="nav-item">
+              <i class="fas fa-user"></i> Account Info
+            </a>
+            <a href="/account/yourRequests" class="nav-item">
+              <i class="fas fa-paper-plane"></i> Your Requests
+            </a>
+            <a href="/account/pendingRequests" class="nav-item">
+              <i class="fas fa-clock"></i> Pending Requests
+            </a>
+            <a href="/account/acceptedRequests" class="nav-item active">
+              <i class="fas fa-check-circle"></i> Accepted Requests
+            </a>
+            <a href="/account/edit" class="nav-item">
+              <i class="fas fa-edit"></i> Edit Profile
+            </a>
           </div>
 
-          <div class="account-card">
-            <div class="account-nav">
-              <a href="/account/info" class="nav-item">
-                <i class="fas fa-user"></i> Account Info
-              </a>
-              <a href="/account/yourRequests" class="nav-item">
-                <i class="fas fa-paper-plane"></i> Your Requests
-              </a>
-              <a href="/account/pendingRequests" class="nav-item">
-                <i class="fas fa-clock"></i> Pending Requests
-              </a>
-              <a href="/account/acceptedRequests" class="nav-item active">
-                <i class="fas fa-check-circle"></i> Accepted Requests
-              </a>
-              <a href="/account/edit" class="nav-item">
-                <i class="fas fa-edit"></i> Edit Profile
-              </a>
-            </div>
-
-            <div class="account-content">
-              <div class="requests-container">
-                <% if (acceptedlikeRequests.length === 0) { %>
-                <div class="empty-state">
-                  <div class="empty-icon">
-                    <i class="fas fa-user-shield"></i>
-                  </div>
-                  <p>You haven't accepted any requests yet.</p>
+          <div class="account-content">
+            <div class="requests-container">
+              <% if (acceptedlikeRequests.length === 0) { %>
+              <div class="empty-state">
+                <div class="empty-icon">
+                  <i class="fas fa-user-shield"></i>
                 </div>
-                <% } else { %>
-                <div class="notification-box">
-                  <i class="fas fa-info-circle"></i>
-                  <p>
-                    These are people who can see your full profile information.
-                    You can revoke access at any time by clicking "Revoke
-                    Access".
-                  </p>
-                </div>
-
-                <div class="requests-list">
-                  <% acceptedlikeRequests.forEach((req) => { %>
-                  <div class="request-card">
-                    <div class="request-header">
-                      <div class="user-info">
-                        <div class="avatar">
-                          <% if (req.from.gender &&
-                          req.from.gender.toLowerCase() === 'female') { %>
-                          <i class="fas fa-female"></i>
-                          <% } else { %>
-                          <i class="fas fa-male"></i>
-                          <% } %>
-                        </div>
-                        <div>
-                          <a href="/profiles/<%=req.from._id%>">
-                            <h3><%= req.from.username %></h3>
-                          </a>
-
-                          <p class="location">
-                            <i class="fas fa-map-marker-alt"></i> <%=
-                            req.from.city %>
-                          </p>
-                        </div>
-                      </div>
-                      <div class="status-badge status-accepted">accepted</div>
-                    </div>
-
-                    <div class="request-details">
-                      <h4 class="details-title">Shared Information</h4>
-                      <div class="detail-row">
-                        <div class="detail-item">
-                          <span class="label"
-                            ><i class="fas fa-user"></i> Name</span
-                          >
-                          <span class="value"><%= req.from.name %></span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="label"
-                            ><i class="fas fa-user"></i> caste</span
-                          >
-                          <span class="value"><%= req.from.caste %></span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="label"
-                            ><i class="fas fa-user"></i> age</span
-                          >
-                          <span class="value"><%= req.from.age %></span>
-                        </div>
-                        <div class="detail-item">
-                          <span class="label"
-                            ><i class="fas fa-venus-mars"></i> Gender</span
-                          >
-                          <span class="value"><%= req.from.gender %></span>
-                        </div>
-                      </div>
-                      <div class="detail-row">
-                        <div class="detail-item">
-                          <span class="label"
-                            ><i class="fas fa-home"></i> Address</span
-                          >
-                          <span class="value"
-                            ><%= req.from.adress || 'Not provided' %></span
-                          >
-                        </div>
-                        <div class="detail-item">
-                          <span class="label"
-                            ><i class="fas fa-phone"></i> Contact</span
-                          >
-                          <span class="value"><%= req.from.contact %></span>
-                        </div>
-                      </div>
-                      <div class="detail-row">
-                        <div class="detail-item">
-                          <span class="label"
-                            ><i class="fas fa-pray"></i> Religion</span
-                          >
-                          <span class="value"
-                            ><%= req.from.religion || 'Not provided' %></span
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <div class="request-actions">
-                      <form
-                        action="/requests/<%= req._id %>/reject"
-                        method="POST"
-                        class="inline-form"
-                      >
-                        <button type="submit" class="btn btn-revoke">
-                          <i class="fas fa-user-slash"></i> Revoke Access
-                        </button>
-                      </form>
-                    </div>
-                  </div>
-                  <% }) %>
-                </div>
-                <% } %>
+                <p>You haven't accepted any requests yet.</p>
               </div>
+              <% } else { %>
+              <div class="notification-box">
+                <i class="fas fa-info-circle"></i>
+                <p>
+                  These are people who can see your full profile information.
+                  You can revoke access at any time by clicking "Revoke
+                  Access".
+                </p>
+              </div>
+
+              <div class="requests-list">
+                <% acceptedlikeRequests.forEach((req) => { %>
+                <div class="request-card">
+                  <div class="request-header">
+                    <div class="user-info">
+                      <div class="avatar">
+                        <% if (req.from.gender &&
+                          req.from.gender.toLowerCase() === 'female') { %>
+                        <i class="fas fa-female"></i>
+                        <% } else { %>
+                        <i class="fas fa-male"></i>
+                        <% } %>
+                      </div>
+                      <div>
+                        <a href="/profiles/<%=req.from._id%>">
+                          <h3><%= req.from.username %></h3>
+                        </a>
+
+                        <p class="location">
+                          <i class="fas fa-map-marker-alt"></i> <%=
+                            req.from.city %>
+                        </p>
+                      </div>
+                    </div>
+                    <div class="status-badge status-accepted">accepted</div>
+                  </div>
+
+                  <div class="request-details">
+                    <h4 class="details-title">Shared Information</h4>
+                    <div class="detail-row">
+                      <div class="detail-item">
+                        <span class="label"><i class="fas fa-user"></i> Name</span>
+                        <span class="value"><%= req.from.name %></span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="label"><i class="fas fa-user"></i> caste</span>
+                        <span class="value"><%= req.from.caste %></span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="label"><i class="fas fa-user"></i> age</span>
+                        <span class="value"><%= req.from.age %></span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="label"><i class="fas fa-venus-mars"></i> Gender</span>
+                        <span class="value"><%= req.from.gender %></span>
+                      </div>
+                    </div>
+                    <div class="detail-row">
+                      <div class="detail-item">
+                        <span class="label"><i class="fas fa-home"></i> Address</span>
+                        <span class="value"><%= req.from.adress || 'Not provided' %></span>
+                      </div>
+                      <div class="detail-item">
+                        <span class="label"><i class="fas fa-phone"></i> Contact</span>
+                        <span class="value"><%= req.from.contact %></span>
+                      </div>
+                    </div>
+                    <div class="detail-row">
+                      <div class="detail-item">
+                        <span class="label"><i class="fas fa-pray"></i> Religion</span>
+                        <span class="value"><%= req.from.religion || 'Not provided' %></span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="request-actions">
+                    <form action="/requests/<%= req._id %>/reject" method="POST" class="inline-form">
+                      <button type="submit" class="btn btn-revoke">
+                        <i class="fas fa-user-slash"></i> Revoke Access
+                      </button>
+                    </form>
+                  </div>
+                </div>
+                <% }) %>
+              </div>
+              <% } %>
             </div>
           </div>
         </div>
       </div>
-    </main>
+    </div>
+  </main>
 
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h3>About Us</h3>
-            <p>
-              We make knowing eachother secure that ever and find the perfect
-              match for you
-            </p>
-          </div>
-          <div class="footer-section">
-            <h3>Contact</h3>
-            <p>Email: damourmuslim@gmail.com</p>
-            <p>Phone: +447454516156</p>
-          </div>
-          <div class="footer-section">
-            <h3>Follow Us</h3>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-          </div>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <p>
+            We make knowing eachother secure that ever and find the perfect
+            match for you
+          </p>
         </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 damourmuslim. All rights reserved.</p>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: damourmuslim@gmail.com</p>
+          <p>Phone: +447454516156</p>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
+          </div>
         </div>
       </div>
-    </footer>
+      <div class="footer-bottom">
+        <p>&copy; 2025 damourmuslim. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
 
-    <script>
-      document.addEventListener("DOMContentLoaded", function () {
-        // Mobile menu toggle
-        const menuToggle = document.querySelector(".mobile-menu-toggle");
-        const authButtons = document.querySelector(".auth-buttons");
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      // Mobile menu toggle
+      const menuToggle = document.querySelector(".mobile-menu-toggle");
+      const authButtons = document.querySelector(".auth-buttons");
 
-        if (menuToggle && authButtons) {
-          menuToggle.addEventListener("click", function () {
-            authButtons.classList.toggle("active");
-          });
+      if (menuToggle && authButtons) {
+        menuToggle.addEventListener("click", function() {
+          authButtons.classList.toggle("active");
+        });
+      }
+
+      // Close menu when clicking outside
+      document.addEventListener("click", function(event) {
+        if (
+          !event.target.closest(".mobile-menu-toggle") &&
+          !event.target.closest(".auth-buttons") &&
+          authButtons &&
+          authButtons.classList.contains("active")
+        ) {
+          authButtons.classList.remove("active");
         }
+      });
 
-        // Close menu when clicking outside
-        document.addEventListener("click", function (event) {
-          if (
-            !event.target.closest(".mobile-menu-toggle") &&
-            !event.target.closest(".auth-buttons") &&
-            authButtons &&
-            authButtons.classList.contains("active")
-          ) {
-            authButtons.classList.remove("active");
+      // Add loading state to buttons when clicked
+      const forms = document.querySelectorAll("form");
+      forms.forEach((form) => {
+        form.addEventListener("submit", function() {
+          const button = this.querySelector("button");
+          if (button) {
+            button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Revoking...`;
+            button.disabled = true;
           }
         });
-
-        // Add loading state to buttons when clicked
-        const forms = document.querySelectorAll("form");
-        forms.forEach((form) => {
-          form.addEventListener("submit", function () {
-            const button = this.querySelector("button");
-            if (button) {
-              button.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Revoking...`;
-              button.disabled = true;
-            }
-          });
-        });
       });
-    </script>
-  </body>
+    });
+  </script>
+</body>
+
 </html>

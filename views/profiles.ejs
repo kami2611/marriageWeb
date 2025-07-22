@@ -1,268 +1,229 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Browse Profiles - Pink Match</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/css/profiles.css" />
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
-  <body>
-    <header class="header">
-      <div class="container">
-        <div class="logo">
-          <a href="/">
-            <img
-              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
-              alt="Company Logo"
-            />
-          </a>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Browse Profiles - damourmuslim</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/profiles.css" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <a href="/">
+          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
+        </a>
+      </div>
+      <div class="auth-buttons">
+        <% if (user) { %>
+        <div class="account-dropdown">
+          <button class="btn btn-account dropdown-toggle">
+            <i class="fas fa-user"></i> Account
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div class="dropdown-menu">
+            <a href="/account/info" class="dropdown-item">
+              <i class="fas fa-user-circle"></i> My Account
+            </a>
+            <a href="/logout" class="dropdown-item">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </a>
+          </div>
         </div>
-        <div class="auth-buttons">
-          <% if (user) { %>
-          <div class="account-dropdown">
-            <button class="btn btn-account dropdown-toggle">
-              <i class="fas fa-user"></i> Account
-              <i class="fas fa-chevron-down"></i>
-            </button>
-            <div class="dropdown-menu">
-              <a href="/account/info" class="dropdown-item">
-                <i class="fas fa-user-circle"></i> My Account
-              </a>
-              <a href="/logout" class="dropdown-item">
-                <i class="fas fa-sign-out-alt"></i> Logout
-              </a>
+        <% } else { %>
+        <a href="/register" class="btn btn-signup">Sign Up</a>
+        <a href="/login" class="btn btn-login">Login</a>
+        <% } %>
+      </div>
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="profiles-header">
+        <h1>Browse Profiles</h1>
+        <p>Discover people in our community</p>
+      </div>
+
+      <!-- Profiles container with sidebar and content -->
+      <div class="profiles-container">
+        <!-- Sidebar with filters -->
+        <!-- Sidebar with filters -->
+        <!-- /////side bar starts here -->
+
+        <!-- //////sidebar ends here -->
+        <!-- Profiles content -->
+        <div class="profiles-content">
+          <% if (filters && Object.keys(filters).some(key => filters[key])) {
+            %>
+          <div class="active-filters">
+            <% if (filters.gender) { %>
+            <div class="filter-tag" data-filter="gender">
+              Gender: <%= filters.gender %>
+              <button type="button" class="filter-remove" data-filter="gender" title="Remove">
+                ×
+              </button>
             </div>
+            <% } %> <% if (filters.minAge && filters.maxAge) { %>
+            <div class="filter-tag" data-filter="age">
+              Age: <%= filters.minAge %> - <%= filters.maxAge %>
+              <button type="button" class="filter-remove" data-filter="age" title="Remove">
+                ×
+              </button>
+            </div>
+            <% } %> <% if (filters.city) { %>
+            <div class="filter-tag" data-filter="city">
+              City: <%= filters.city %>
+              <button type="button" class="filter-remove" data-filter="city" title="Remove">
+                ×
+              </button>
+            </div>
+            <% } %> <% if (filters.religion) { %>
+            <div class="filter-tag" data-filter="religion">
+              Religion: <%= filters.religion %>
+              <button type="button" class="filter-remove" data-filter="religion" title="Remove">
+                ×
+              </button>
+            </div>
+            <% } %> <% if (filters.caste) { %>
+            <div class="filter-tag" data-filter="caste">
+              caste: <%= filters.caste %>
+              <button type="button" class="filter-remove" data-filter="caste" title="Remove">
+                ×
+              </button>
+            </div>
+            <% } %>
+            <a href="/profiles" class="clear-filters">Clear All Filters</a>
+          </div>
+          <% } %>
+
+          <!-- Layout switcher -->
+          <div class="layout-switcher">
+            <span>Layout:</span>
+            <div class="layout-options">
+              <button class="layout-btn active" data-columns="3">
+                <i class="fas fa-th-large"></i> 3 Columns
+              </button>
+              <button class="layout-btn" data-columns="4">
+                <i class="fas fa-th"></i> 4 Columns
+              </button>
+            </div>
+          </div>
+
+          <% if (profiles.length > 0) { %>
+          <div class="profiles-grid" data-current-layout="3">
+            <% for (let profile of profiles) { %>
+            <!-- This is just the part that needs to change in the profile card -->
+            <div class="profile-card">
+              <div class="profile-avatar">
+                <% if (profile.profilePic && profile.profilePic.url) { %>
+                <img src="<%= profile.profilePic.url %>" alt="<%= profile.name %>'s profile picture" class="profile-image" />
+                <% } else { %> <% if (profile.gender &&
+                  profile.gender.toLowerCase() === 'female') { %>
+                <i class="fas fa-female"></i>
+                <% } else { %>
+                <i class="fas fa-male"></i>
+                <% } %> <% } %>
+              </div>
+              <div class="profile-info">
+                <h3>
+                  <%= profile.username || 'No Name' %> <% if (profile.gender)
+                    { %>
+                  <span class="gender-icon">
+                    <% if (profile.gender.toLowerCase() === 'female') { %>
+                    <i class="fas fa-venus"></i>
+                    <% } else if (profile.gender.toLowerCase() === 'male') {
+                      %>
+                    <i class="fas fa-mars"></i>
+                    <% } else { %>
+                    <i class="fas fa-genderless"></i>
+                    <% } %>
+                  </span>
+                  <% } %>
+                  <span class="username">@<%= profile.username %></span>
+                </h3>
+                <div class="profile-details">
+                  <% if (profile.age) { %>
+                  <p>
+                    <i class="fas fa-birthday-cake"></i> <%= profile.age %>
+                    years
+                  </p>
+                  <% } %> <% if (profile.city) { %>
+                  <p>
+                    <i class="fas fa-map-marker-alt"></i> <%= profile.city %>
+                  </p>
+                  <% } %>
+                </div>
+                <a href="/profiles/<%= profile._id %>" class="profile-link">
+                  View Profile <i class="fas fa-arrow-right"></i>
+                </a>
+              </div>
+            </div>
+            <% } %>
           </div>
           <% } else { %>
-          <a href="/register" class="btn btn-signup">Sign Up</a>
-          <a href="/login" class="btn btn-login">Login</a>
+          <div class="no-results">
+            <i class="fas fa-users-slash"></i>
+            <h3>No profiles found</h3>
+            <p>Try adjusting your filters to see more results</p>
+            <a href="/profiles" class="btn-filter-apply">Clear All Filters</a>
+          </div>
+          <% } %> <% if (totalPages && totalPages > 1) { %>
+          <div class="pagination">
+            <% if (page > 1) { %>
+            <a class="pagination-btn" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page - 1 %>">&laquo; Prev</a>
+            <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
+            <a class="pagination-btn <%= i === page ? 'active' : '' %>" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= i %>"><%= i %></a>
+            <% } %> <% if (page < totalPages) { %>
+            <a class="pagination-btn" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page + 1 %>">Next &raquo;</a>
+            <% } %>
+          </div>
           <% } %>
         </div>
-        <div class="mobile-menu-toggle">
-          <i class="fas fa-bars"></i>
-        </div>
       </div>
-    </header>
+    </div>
+  </main>
 
-    <main>
-      <div class="container">
-        <div class="profiles-header">
-          <h1>Browse Profiles</h1>
-          <p>Discover people in our community</p>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <p>We help you find your perfect match.</p>
         </div>
-
-        <!-- Profiles container with sidebar and content -->
-        <div class="profiles-container">
-          <!-- Sidebar with filters -->
-          <!-- Sidebar with filters -->
-          <!-- /////side bar starts here -->
-
-          <!-- //////sidebar ends here -->
-          <!-- Profiles content -->
-          <div class="profiles-content">
-            <% if (filters && Object.keys(filters).some(key => filters[key])) {
-            %>
-            <div class="active-filters">
-              <% if (filters.gender) { %>
-              <div class="filter-tag" data-filter="gender">
-                Gender: <%= filters.gender %>
-                <button
-                  type="button"
-                  class="filter-remove"
-                  data-filter="gender"
-                  title="Remove"
-                >
-                  ×
-                </button>
-              </div>
-              <% } %> <% if (filters.minAge && filters.maxAge) { %>
-              <div class="filter-tag" data-filter="age">
-                Age: <%= filters.minAge %> - <%= filters.maxAge %>
-                <button
-                  type="button"
-                  class="filter-remove"
-                  data-filter="age"
-                  title="Remove"
-                >
-                  ×
-                </button>
-              </div>
-              <% } %> <% if (filters.city) { %>
-              <div class="filter-tag" data-filter="city">
-                City: <%= filters.city %>
-                <button
-                  type="button"
-                  class="filter-remove"
-                  data-filter="city"
-                  title="Remove"
-                >
-                  ×
-                </button>
-              </div>
-              <% } %> <% if (filters.religion) { %>
-              <div class="filter-tag" data-filter="religion">
-                Religion: <%= filters.religion %>
-                <button
-                  type="button"
-                  class="filter-remove"
-                  data-filter="religion"
-                  title="Remove"
-                >
-                  ×
-                </button>
-              </div>
-              <% } %> <% if (filters.caste) { %>
-              <div class="filter-tag" data-filter="caste">
-                caste: <%= filters.caste %>
-                <button
-                  type="button"
-                  class="filter-remove"
-                  data-filter="caste"
-                  title="Remove"
-                >
-                  ×
-                </button>
-              </div>
-              <% } %>
-              <a href="/profiles" class="clear-filters">Clear All Filters</a>
-            </div>
-            <% } %>
-
-            <!-- Layout switcher -->
-            <div class="layout-switcher">
-              <span>Layout:</span>
-              <div class="layout-options">
-                <button class="layout-btn active" data-columns="3">
-                  <i class="fas fa-th-large"></i> 3 Columns
-                </button>
-                <button class="layout-btn" data-columns="4">
-                  <i class="fas fa-th"></i> 4 Columns
-                </button>
-              </div>
-            </div>
-
-            <% if (profiles.length > 0) { %>
-            <div class="profiles-grid" data-current-layout="3">
-              <% for (let profile of profiles) { %>
-              <!-- This is just the part that needs to change in the profile card -->
-              <div class="profile-card">
-                <div class="profile-avatar">
-                  <% if (profile.profilePic && profile.profilePic.url) { %>
-                  <img
-                    src="<%= profile.profilePic.url %>"
-                    alt="<%= profile.name %>'s profile picture"
-                    class="profile-image"
-                  />
-                  <% } else { %> <% if (profile.gender &&
-                  profile.gender.toLowerCase() === 'female') { %>
-                  <i class="fas fa-female"></i>
-                  <% } else { %>
-                  <i class="fas fa-male"></i>
-                  <% } %> <% } %>
-                </div>
-                <div class="profile-info">
-                  <h3>
-                    <%= profile.username || 'No Name' %> <% if (profile.gender)
-                    { %>
-                    <span class="gender-icon">
-                      <% if (profile.gender.toLowerCase() === 'female') { %>
-                      <i class="fas fa-venus"></i>
-                      <% } else if (profile.gender.toLowerCase() === 'male') {
-                      %>
-                      <i class="fas fa-mars"></i>
-                      <% } else { %>
-                      <i class="fas fa-genderless"></i>
-                      <% } %>
-                    </span>
-                    <% } %>
-                    <span class="username">@<%= profile.username %></span>
-                  </h3>
-                  <div class="profile-details">
-                    <% if (profile.age) { %>
-                    <p>
-                      <i class="fas fa-birthday-cake"></i> <%= profile.age %>
-                      years
-                    </p>
-                    <% } %> <% if (profile.city) { %>
-                    <p>
-                      <i class="fas fa-map-marker-alt"></i> <%= profile.city %>
-                    </p>
-                    <% } %>
-                  </div>
-                  <a href="/profiles/<%= profile._id %>" class="profile-link">
-                    View Profile <i class="fas fa-arrow-right"></i>
-                  </a>
-                </div>
-              </div>
-              <% } %>
-            </div>
-            <% } else { %>
-            <div class="no-results">
-              <i class="fas fa-users-slash"></i>
-              <h3>No profiles found</h3>
-              <p>Try adjusting your filters to see more results</p>
-              <a href="/profiles" class="btn-filter-apply">Clear All Filters</a>
-            </div>
-            <% } %> <% if (totalPages && totalPages > 1) { %>
-            <div class="pagination">
-              <% if (page > 1) { %>
-              <a
-                class="pagination-btn"
-                href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page - 1 %>"
-                >&laquo; Prev</a
-              >
-              <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-              <a
-                class="pagination-btn <%= i === page ? 'active' : '' %>"
-                href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= i %>"
-                ><%= i %></a
-              >
-              <% } %> <% if (page < totalPages) { %>
-              <a
-                class="pagination-btn"
-                href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page + 1 %>"
-                >Next &raquo;</a
-              >
-              <% } %>
-            </div>
-            <% } %>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: damourmuslim@gmail.com</p>
+          <p>Phone: +447454516156</p>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
           </div>
         </div>
       </div>
-    </main>
-
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h3>About Us</h3>
-            <p>We help you find your perfect match.</p>
-          </div>
-          <div class="footer-section">
-            <h3>Contact</h3>
-            <p>Email: damourmuslim@gmail.com</p>
-            <p>Phone: +447454516156</p>
-          </div>
-          <div class="footer-section">
-            <h3>Follow Us</h3>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 Pink Match. All rights reserved.</p>
-        </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Pink Match. All rights reserved.</p>
       </div>
-    </footer>
-    <script src="/js/main.js"></script>
-  </body>
+    </div>
+  </footer>
+  <script src="/js/main.js"></script>
+</body>
+
 </html>

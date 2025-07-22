@@ -171,6 +171,24 @@
   box-shadow: 0 0 0 2px rgba(229, 57, 53, 0.1);
 }
 
+/* Make textareas visually consistent and larger */
+.edit-form textarea {
+  width: 100%;
+  min-height: 80px;
+  max-width: 100%;
+  font-size: 16px;
+  border-radius: 8px;
+  color: #444;
+  padding: 12px 14px;
+  resize: vertical;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.edit-form textarea:focus {
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.13);
+  outline: none;
+}
+
 /* Custom select styling */
 .select-styled {
   appearance: none;
@@ -250,6 +268,47 @@ input[type="number"]::-webkit-inner-spin-button {
   font-size: 14px;
 }
 
+/* Section headings for all form sections */
+.add-user-section-heading {
+  color: #ff69b4;
+  font-size: 20px;
+  font-weight: 600;
+  margin: 32px 0 18px 0;
+  letter-spacing: 0.5px;
+  text-align: left;
+  border-left: 5px solid #ff69b4;
+  padding-left: 14px;
+  border-radius: 6px;
+}
+
+/* Ensure select fields have pink focus and consistent style */
+.form-group select.select-styled {
+  color: #444;
+  font-size: 16px;
+  border-radius: 8px;
+  padding: 12px 15px;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.form-group select.select-styled:focus {
+  border-color: #ff69b4;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.15);
+  outline: none;
+}
+
+/* Optional: Make input fields in this section match the theme */
+.form-group input[type="text"],
+.form-group input[type="number"] {
+  color: #444;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="number"]:focus {
+  border-color: #ff69b4;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.15);
+  outline: none;
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {
@@ -312,6 +371,7 @@ input[type="number"]::-webkit-inner-spin-button {
     font-size: 14px;
   }
 }
+
 /* Custom File Input Styling */
 .custom-file-input {
   position: relative;
@@ -422,4 +482,125 @@ input[type="file"] {
   color: #faad14;
   margin-right: 8px;
   font-size: 18px;
+}
+
+/* Education & Children Section Styles */
+#education-section,
+#children-section {
+  border-radius: 10px;
+  padding: 22px 18px 18px 18px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 8px rgba(255, 105, 180, 0.06);
+}
+
+#education-section label,
+#children-section label {
+  color: #ff69b4;
+  font-weight: 600;
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+#education-section select,
+#children-section select {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 15px;
+  margin-bottom: 12px;
+  color: #444;
+}
+
+#education-section select:focus,
+#children-section select:focus {
+  border-color: 1px solid #ddd;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.13);
+}
+
+.education-row,
+.children-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.education-row input,
+.children-row input {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 15px;
+  color: #444;
+  transition: border 0.2s, box-shadow 0.2s;
+}
+
+.education-row input:focus,
+.children-row input:focus {
+  border-color: 1px solid #ddd;
+  box-shadow: 0 0 0 2px rgba(255, 105, 180, 0.13);
+}
+
+#add-education-btn,
+#add-child-btn {
+  background: #ff69b4;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 18px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+#add-education-btn:hover,
+#add-child-btn:hover {
+  background: #ff5ba7;
+  box-shadow: 0 2px 8px rgba(255, 105, 180, 0.13);
+}
+
+#education-list div,
+#children-list div {
+  background: #ffe4ef;
+  border-radius: 6px;
+  padding: 7px 12px;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 15px;
+}
+
+#education-list button,
+#children-list button {
+  color: #e53935;
+  border: 1px solid #e53935;
+  border-radius: 6px;
+  padding: 3px 12px;
+  font-size: 13px;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+#education-list button:hover,
+#children-list button:hover {
+  background: #ffeaea;
+  color: #b71c1c;
+  border-color: #b71c1c;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  #education-section,
+  #children-section {
+    padding: 14px 6px 10px 6px;
+  }
+  .education-row,
+  .children-row {
+    flex-direction: column;
+    gap: 6px;
+  }
 }

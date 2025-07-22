@@ -359,6 +359,73 @@
   background: #145a8a;
 }
 
+/* Modal styles */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(44, 62, 80, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+.admin-modal-box {
+  background: #fff;
+  border-radius: 10px;
+  padding: 32px 28px;
+  min-width: 320px;
+  box-shadow: 0 2px 16px rgba(44, 62, 80, 0.13);
+}
+
+/* Modal actions: center buttons and add spacing */
+.admin-modal-actions {
+  display: flex;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+/* Modal OK button style */
+.admin-modal-ok-btn {
+  background: #2980b9;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 22px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+.admin-modal-ok-btn:hover {
+  background: #145a8a;
+}
+
+/* Modal Cancel button style (reuse .admin-cancel-btn, but ensure specificity) */
+.admin-modal-actions .admin-cancel-btn {
+  background: #fff0f0;
+  color: #c0392b;
+  border: 1px solid #ffd6d6;
+  border-radius: 4px;
+  padding: 10px 22px;
+  font-size: 1.1rem;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+.admin-modal-actions .admin-cancel-btn:hover {
+  background: #c0392b;
+  color: #fff;
+  border-color: #c0392b;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .admin-profile-layout {

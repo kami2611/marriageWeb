@@ -5,6 +5,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Edit Account - damourmuslim</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
   <link rel="stylesheet" href="/css/styles.css" />
   <link rel="stylesheet" href="/css/edit-account.css" />
   <!-- Font Awesome for icons -->
@@ -16,10 +21,7 @@
     <div class="container">
       <div class="logo">
         <a href="/">
-          <img
-              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
-              alt="Company Logo"
-            />
+          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
         </a>
       </div>
       <div class="auth-buttons">
@@ -45,10 +47,10 @@
         </div>
 
         <% if (typeof msg !== "undefined" && msg) { %>
-          <div class="info-message">
-            <i class="fas fa-info-circle info-icon"></i>
-            <%= msg %>
-          </div>
+        <div class="info-message">
+          <i class="fas fa-info-circle info-icon"></i>
+          <%= msg %>
+        </div>
         <% } %>
 
         <div class="account-card">
@@ -64,34 +66,212 @@
           <div class="account-content">
             <form action="/account/edit" method="POST" enctype="multipart/form-data" class="edit-form">
               <div class="form-row">
-        <div class="form-group">
-          <label for="waliMyContactDetails"><i class="fas fa-user-shield"></i> Wali's Contact Details</label>
-          <input type="text" id="waliMyContactDetails" name="waliMyContactDetails" value="<%= userData.waliMyContactDetails || '' %>">
-        </div>
-      </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="name">
-                    <i class="fas fa-user"></i>Name <span style="color:red">*</span>
+                <!-- PROFILE PICTURE -->
+                <h2 class="add-user-section-heading" style="text-align:center;">Profile Picture</h2>
+                <div class="form-group" style="align-items:center;">
+                  <label for="profilePic" style="text-align:center;">
+                    <i class="fas fa-image"></i> Profile Image
                   </label>
-                  <input type="text" id="name" name="name" value="<%= userData.name %>" required />
+                  <div class="custom-file-input" style="margin: 0 auto;">
+                    <div class="file-input-button">
+                      <i class="fas fa-upload"></i> Choose Image
+                    </div>
+                    <input type="file" id="profilePic" name="profilePic" accept="image/*" style="display:none;" />
+                    <span class="file-name">No file chosen</span>
+                    <button type="button" id="removeImageBtn" style="display:none; margin-left:10px;">Remove</button>
+                  </div>
+                  <div id="imagePreview" style="margin-top:10px;">
+                    <% if (userData.profilePic && userData.profilePic.url) { %>
+                    <img src="<%= userData.profilePic.url %>" alt="Current Profile" style="max-width:120px; border-radius:8px;" id="currentProfileImg">
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- BASIC INFO -->
+              <h2 class="add-user-section-heading">Basic Info</h2>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="gender"><i class="fas fa-venus-mars"></i> Gender <span style="color:red">*</span></label>
+                  <select id="gender" name="gender" class="select-styled" required>
+                    <option value="">Gender</option>
+                    <option value="N/A" <%= userData.gender === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="male" <%= userData.gender === 'male' ? 'selected' : '' %>>Male</option>
+                    <option value="female" <%= userData.gender === 'female' ? 'selected' : '' %>>Female</option>
+                    <option value="rather not say" <%= userData.gender === 'rather not say' ? 'selected' : '' %>>Rather not say</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="name"><i class="fas fa-user"></i> Name <span style="color:red">*</span></label>
+                  <input type="text" id="name" name="name" value="<%= userData.name || '' %>" required />
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="age"><i class="fas fa-user"></i> Age <span style="color:red">*</span></label>
+                  <input type="number" id="age" name="age" min="15" max="75" value="<%= userData.age || '' %>" required />
+                </div>
+                <div class="form-group">
+                  <label for="contact"><i class="fas fa-phone"></i> Contact</label>
+                  <input type="number" id="contact" name="contact" value="<%= userData.contact || '' %>" required />
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="work"><i class="fas fa-briefcase"></i> Work (Job/Profession)</label>
+                  <input type="text" id="work" name="work" value="<%= userData.work || '' %>" />
+                </div>
+                <div class="form-group">
+                  <label for="nationality"><i class="fas fa-flag"></i> Nationality</label>
+                  <input type="text" id="nationality" name="nationality" value="<%= userData.nationality || '' %>" />
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="age">
-                    <i class="fas fa-user"></i>Age <span style="color:red">*</span> 
-                  </label>
-                  <input type="number" id="age" name="age" min="15" max="80" value="<%= userData.age %>" required />
+                  <label for="maritalStatus"><i class="fas fa-ring"></i> Marital Status</label>
+                  <select id="maritalStatus" name="maritalStatus" class="select-styled" required>
+                    <option value="">Marital Status</option>
+                    <option value="N/A" <%= userData.maritalStatus === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="false" <%= userData.maritalStatus === false ? 'selected' : '' %>>Unmarried</option>
+                    <option value="true" <%= userData.maritalStatus === true ? 'selected' : '' %>>Married</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- ADDRESS INFORMATION -->
+              <h2 class="add-user-section-heading">Address Information</h2>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="country"><i class="fas fa-globe"></i> Country <span style="color:red">*</span></label>
+                  <select id="country" name="country" class="select-styled" required data-selected="<%= userData.country || '' %>">
+                    <option value="">Country</option>
+                    <option value="N/A" <%= userData.country === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="Pakistan" <%= userData.country === 'Pakistan' ? 'selected' : '' %>>Pakistan</option>
+                    <option value="India" <%= userData.country === 'India' ? 'selected' : '' %>>India</option>
+                    <option value="UK" <%= userData.country === 'UK' ? 'selected' : '' %>>United Kingdom</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="state"><i class="fas fa-map"></i> State/Province <span style="color:red">*</span></label>
+                  <select id="state" name="state" class="select-styled" required data-selected="<%= userData.state || '' %>">
+                    <option value="">State</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="city"><i class="fas fa-map-marker-alt"></i> City <span style="color:red">*</span></label>
+                  <select id="city" name="city" class="select-styled" required data-selected="<%= userData.city || '' %>">
+                    <option value="">City</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="adress"><i class="fas fa-home"></i> Address <span style="color:red">*</span></label>
+                  <input type="text" id="adress" name="adress" value="<%= userData.adress || '' %>" required />
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="religion">
-                    <i class="fas fa-user"></i> Religion <span style="color:red">*</span>
-                  </label>
-                  <select id="religion" name="religion" class="select-styled" required>
-                    <option value="">Select Religion</option>
+                  <label for="birthPlace"><i class="fas fa-map-marker-alt"></i> Birth Place</label>
+                  <input type="text" id="birthPlace" name="birthPlace" value="<%= userData.birthPlace || '' %>">
+                </div>
+              </div>
+
+              <!-- APPEARANCE -->
+              <h2 class="add-user-section-heading">Appearance</h2>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="eyeColor"><i class="fas fa-eye"></i> Eye Color</label>
+                  <select id="eyeColor" name="eyeColor" class="select-styled" required>
+                    <option value="">Eye Color</option>
+                    <option value="N/A" <%= userData.eyeColor === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="black" <%= userData.eyeColor === 'black' ? 'selected' : '' %>>Black</option>
+                    <option value="brown" <%= userData.eyeColor === 'brown' ? 'selected' : '' %>>Brown</option>
+                    <option value="grey" <%= userData.eyeColor === 'grey' ? 'selected' : '' %>>Grey</option>
+                    <option value="other" <%= userData.eyeColor === 'other' ? 'selected' : '' %>>Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="hairColor"><i class="fas fa-paint-brush"></i> Hair Color</label>
+                  <select id="hairColor" name="hairColor" class="select-styled" required>
+                    <option value="">Hair Color</option>
+                    <option value="N/A" <%= userData.hairColor === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="black" <%= userData.hairColor === 'black' ? 'selected' : '' %>>Black</option>
+                    <option value="brown" <%= userData.hairColor === 'brown' ? 'selected' : '' %>>Brown</option>
+                    <option value="blonde" <%= userData.hairColor === 'blonde' ? 'selected' : '' %>>Blonde</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="complexion"><i class="fas fa-user"></i> Complexion</label>
+                  <select id="complexion" name="complexion" class="select-styled" required>
+                    <option value="">Complexion</option>
+                    <option value="N/A" <%= userData.complexion === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="fair" <%= userData.complexion === 'fair' ? 'selected' : '' %>>Fair</option>
+                    <option value="wheatish" <%= userData.complexion === 'wheatish' ? 'selected' : '' %>>Wheatish</option>
+                    <option value="dark" <%= userData.complexion === 'dark' ? 'selected' : '' %>>Dark</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="build"><i class="fas fa-dumbbell"></i> Build</label>
+                  <select id="build" name="build" class="select-styled" required>
+                    <option value="">Build</option>
+                    <option value="N/A" <%= userData.build === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="slim" <%= userData.build === 'slim' ? 'selected' : '' %>>Slim</option>
+                    <option value="average" <%= userData.build === 'average' ? 'selected' : '' %>>Average</option>
+                    <option value="athletic" <%= userData.build === 'athletic' ? 'selected' : '' %>>Athletic</option>
+                    <option value="heavy" <%= userData.build === 'heavy' ? 'selected' : '' %>>Heavy</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="height"><i class="fas fa-ruler-vertical"></i> Height</label>
+                  <select name="height" id="height" required>
+                    <option value="">Select Height</option>
+                    <option value="134" <%= userData.height == 134 ? 'selected' : '' %>>4ft 5in - 134cm</option>
+                    <option value="137" <%= userData.height == 137 ? 'selected' : '' %>>4ft 6in - 137cm</option>
+                    <option value="139" <%= userData.height == 139 ? 'selected' : '' %>>4ft 7in - 139cm</option>
+                    <option value="142" <%= userData.height == 142 ? 'selected' : '' %>>4ft 8in - 142cm</option>
+                    <option value="144" <%= userData.height == 144 ? 'selected' : '' %>>4ft 9in - 144cm</option>
+                    <option value="147" <%= userData.height == 147 ? 'selected' : '' %>>4ft 10in - 147cm</option>
+                    <option value="149" <%= userData.height == 149 ? 'selected' : '' %>>4ft 11in - 149cm</option>
+                    <option value="152" <%= userData.height == 152 ? 'selected' : '' %>>5ft - 152cm</option>
+                    <option value="154" <%= userData.height == 154 ? 'selected' : '' %>>5ft 1in - 154cm</option>
+                    <option value="157" <%= userData.height == 157 ? 'selected' : '' %>>5ft 2in - 157cm</option>
+                    <option value="160" <%= userData.height == 160 ? 'selected' : '' %>>5ft 3in - 160cm</option>
+                    <option value="162" <%= userData.height == 162 ? 'selected' : '' %>>5ft 4in - 162cm</option>
+                    <option value="165" <%= userData.height == 165 ? 'selected' : '' %>>5ft 5in - 165cm</option>
+                    <option value="167" <%= userData.height == 167 ? 'selected' : '' %>>5ft 6in - 167cm</option>
+                    <option value="170" <%= userData.height == 170 ? 'selected' : '' %>>5ft 7in - 170cm</option>
+                    <option value="172" <%= userData.height == 172 ? 'selected' : '' %>>5ft 8in - 172cm</option>
+                    <option value="175" <%= userData.height == 175 ? 'selected' : '' %>>5ft 9in - 175cm</option>
+                    <option value="177" <%= userData.height == 177 ? 'selected' : '' %>>5ft 10in - 177cm</option>
+                    <option value="180" <%= userData.height == 180 ? 'selected' : '' %>>5ft 11in - 180cm</option>
+                    <option value="182" <%= userData.height == 182 ? 'selected' : '' %>>6ft - 182cm</option>
+                    <option value="185" <%= userData.height == 185 ? 'selected' : '' %>>6ft 1in - 185cm</option>
+                    <option value="187" <%= userData.height == 187 ? 'selected' : '' %>>6ft 2in - 187cm</option>
+                    <option value="190" <%= userData.height == 190 ? 'selected' : '' %>>6ft 3in - 190cm</option>
+                    <option value="193" <%= userData.height == 193 ? 'selected' : '' %>>6ft 4in - 193cm</option>
+                    <option value="195" <%= userData.height == 195 ? 'selected' : '' %>>6ft 5in - 195cm</option>
+                    <option value="198" <%= userData.height == 198 ? 'selected' : '' %>>6ft 6in - 198cm</option>
+                    <option value="200" <%= userData.height == 200 ? 'selected' : '' %>>6ft 7in - 200cm</option>
+                    <option value="203" <%= userData.height == 203 ? 'selected' : '' %>>6ft 8in - 203cm</option>
+                    <option value="205" <%= userData.height == 205 ? 'selected' : '' %>>6ft 9in - 205cm</option>
+                    <option value="208" <%= userData.height == 208 ? 'selected' : '' %>>6ft 10in - 208cm</option>
+                    <option value="210" <%= userData.height == 210 ? 'selected' : '' %>>6ft 11in - 210cm</option>
+                    <option value="213" <%= userData.height == 213 ? 'selected' : '' %>>7ft - 213cm</option>
+                  </select>
+                </div>
+              </div>
+              <h2 class="add-user-section-heading">Religion & Caste</h2>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="religion">Religion</label>
+                  <select name="religion" id="religion" required>
+                    <option value="">Religion</option>
+                    <option value="N/A" <%= userData.religion === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="islam" <%= userData.religion === 'islam' ? 'selected' : '' %>>Islam</option>
                     <option value="hinduism" <%= userData.religion === 'hinduism' ? 'selected' : '' %>>Hinduism</option>
                     <option value="christianity" <%= userData.religion === 'christianity' ? 'selected' : '' %>>Christianity</option>
@@ -101,15 +281,11 @@
                     <option value="other" <%= userData.religion === 'other' ? 'selected' : '' %>>Other</option>
                   </select>
                 </div>
-              </div>
-
-              <div class="form-row">
                 <div class="form-group">
-                  <label for="caste">
-                    <i class="fas fa-user"></i> Caste <span style="color:red">*</span>
-                  </label>
-                  <select id="caste" name="caste" class="select-styled" required>
-                    <option value="">Select caste</option>
+                  <label for="caste">Caste</label>
+                  <select name="caste" id="caste" required>
+                    <option value="">Caste</option>
+                    <option value="N/A" <%= userData.caste === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="syed" <%= userData.caste === 'syed' ? 'selected' : '' %>>Syed</option>
                     <option value="sheikh" <%= userData.caste === 'sheikh' ? 'selected' : '' %>>Sheikh</option>
                     <option value="pathan" <%= userData.caste === 'pathan' ? 'selected' : '' %>>Pathan</option>
@@ -126,199 +302,12 @@
                   </select>
                 </div>
               </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="adress">
-                    <i class="fas fa-home"></i> Address <span style="color:red">*</span>
-                  </label>
-                  <input type="text" id="adress" name="adress" value="<%= userData.adress %>" required />
-                </div>
-              </div>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="country">
-                    <i class="fas fa-globe"></i> Country <span style="color:red">*</span>
-                  </label>
-                  <select id="country" name="country" class="select-styled" required data-selected="<%= userData.country || '' %>">
-                    <option value="">Select Country</option>
-                    <option value="Pakistan" <%= userData.country === 'Pakistan' ? 'selected' : '' %>>Pakistan</option>
-                    <option value="India" <%= userData.country === 'India' ? 'selected' : '' %>>India</option>
-                    <option value="UK" <%= userData.country === 'UK' ? 'selected' : '' %>>United Kingdom</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="state">
-                    <i class="fas fa-map"></i> State/Province <span style="color:red">*</span>
-                  </label>
-                  <select id="state" name="state" class="select-styled" required data-selected="<%= userData.state || '' %>">
-                    <option value="">Select State</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="city">
-                    <i class="fas fa-map-marker-alt"></i> City <span style="color:red">*</span>
-                  </label>
-                  <select id="city" name="city" class="select-styled" required data-selected="<%= userData.city || '' %>">
-                    <option value="">Select City</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="contact">
-                    <i class="fas fa-phone"></i> Contact 
-                  </label>
-                  <div style="display: flex; align-items: center;">
-                    <span id="countryCode" style="margin-right: 6px; min-width: 38px; font-weight: bold;">
-                      <% if (userData.country === 'Pakistan') { %>+92
-                      <% } else if (userData.country === 'India') { %>+91
-                      <% } else if (userData.country === 'UK') { %>+44
-                      <% } else { %>+92
-                      <% } %>
-                    </span>
-                    <input type="number" id="contact" name="contact" value="<%= userData.contact %>" style="flex:1;"/>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- New fields for siblings and birth place -->
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="siblings"><i class="fas fa-users"></i> Siblings</label>
-                  <input type="number" id="siblings" name="siblings" min="0" value="<%= typeof userData.siblings !== 'undefined' ? userData.siblings : 0 %>">
-                </div>
-                <div class="form-group">
-                  <label for="birthPlace"><i class="fas fa-map-marker-alt"></i> Birth Place</label>
-                  <input type="text" id="birthPlace" name="birthPlace" value="<%= userData.birthPlace || '' %>">
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="gender">
-                    <i class="fas fa-venus-mars"></i> Gender <span style="color:red">*</span>
-                  </label>
-                  <select id="gender" name="gender" class="select-styled" required>
-                    <option value="male" <%= userData.gender === "male" ? "selected" : "" %>>Male</option>
-                    <option value="female" <%= userData.gender === "female" ? "selected" : "" %>>Female</option>
-                    <option value="rather not say" <%= userData.gender === "rather not say" ? "selected" : "" %>>Rather not say</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-row">
-
-                <div class="form-group">
-                  <label for="profilePic">
-                    <i class="fas fa-image"></i> Profile Image
-                  </label>
-                  <div class="custom-file-input">
-                    <div class="file-input-button">
-                      <i class="fas fa-upload"></i> Choose Image
-                    </div>
-                    <input type="file" id="profilePic" name="profilePic" accept="image/*" style="display:none;" />
-                    <span class="file-name">No file chosen</span>
-                    <button type="button" id="removeImageBtn" style="display:none; margin-left:10px;">Remove</button>
-                  </div>
-                  <div id="imagePreview" style="margin-top:10px;">
-                    <% if (userData.profilePic && userData.profilePic.url) { %>
-                    <img src="<%= userData.profilePic.url %>" alt="Current Profile" style="max-width:120px; border-radius:8px;" id="currentProfileImg">
-                    <% } %>
-                  </div>
-                </div>
-              </div>
-              
-              <!-- Additional fields for physical attributes, education, and other details -->
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="eyeColor">
-                    <i class="fas fa-eye"></i> Eye Color
-                  </label>
-                  <select id="eyeColor" name="eyeColor" class="select-styled">
-                    <option value="">Select Eye Color</option>
-                    <option value="black" <%= userData.eyeColor === 'black' ? 'selected' : '' %>>Black</option>
-                    <option value="brown" <%= userData.eyeColor === 'brown' ? 'selected' : '' %>>Brown</option>
-                    <option value="grey" <%= userData.eyeColor === 'grey' ? 'selected' : '' %>>Grey</option>
-                    <option value="other" <%= userData.eyeColor === 'other' ? 'selected' : '' %>>Other</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="hairColor">
-                    <i class="fas fa-paint-brush"></i> Hair Color
-                  </label>
-                  <select id="hairColor" name="hairColor" class="select-styled">
-                    <option value="">Select Hair Color</option>
-                    <option value="black" <%= userData.hairColor === 'black' ? 'selected' : '' %>>Black</option>
-                    <option value="brown" <%= userData.hairColor === 'brown' ? 'selected' : '' %>>Brown</option>
-                    <option value="blonde" <%= userData.hairColor === 'blonde' ? 'selected' : '' %>>Blonde</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="complexion">
-                    <i class="fas fa-user"></i> Complexion
-                  </label>
-                  <select id="complexion" name="complexion" class="select-styled">
-                    <option value="">Select Complexion</option>
-                    <option value="fair" <%= userData.complexion === 'fair' ? 'selected' : '' %>>Fair</option>
-                    <option value="wheatish" <%= userData.complexion === 'wheatish' ? 'selected' : '' %>>Wheatish</option>
-                    <option value="dark" <%= userData.complexion === 'dark' ? 'selected' : '' %>>Dark</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="build">
-                    <i class="fas fa-dumbbell"></i> Build
-                  </label>
-                  <select id="build" name="build" class="select-styled">
-                    <option value="">Select Build</option>
-                    <option value="slim" <%= userData.build === 'slim' ? 'selected' : '' %>>Slim</option>
-                    <option value="average" <%= userData.build === 'average' ? 'selected' : '' %>>Average</option>
-                    <option value="athletic" <%= userData.build === 'athletic' ? 'selected' : '' %>>Athletic</option>
-                    <option value="heavy" <%= userData.build === 'heavy' ? 'selected' : '' %>>Heavy</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="height">
-                    <i class="fas fa-ruler-vertical"></i> Height (cm)
-                  </label>
-                  <input type="number" id="height" name="height" min="50" max="250" value="<%= userData.height || '' %>">
-                </div>
-                <div class="form-group">
-                  <label for="languagesSpoken">
-                    <i class="fas fa-language"></i> Languages Spoken
-                  </label>
-                  <input type="text" id="languagesSpoken" name="languagesSpoken" value="<%= userData.languagesSpoken ? userData.languagesSpoken.join(', ') : '' %>" placeholder="e.g. Urdu, English, Arabic">
-                  <small>Comma separated</small>
-                </div>
-              </div>
-
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="education">
-                    <i class="fas fa-graduation-cap"></i> Education
-                  </label>
-                  <input type="text" id="education" name="education" value="<%= userData.education || '' %>">
-                </div>
-                <div class="form-group">
-                  <label for="nationality">
-                    <i class="fas fa-flag"></i> Nationality
-                  </label>
-                  <input type="text" id="nationality" name="nationality" value="<%= userData.nationality || '' %>">
-                </div>
-              </div>
-
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="ethnicity">
-                    <i class="fas fa-users"></i> Ethnicity
-                  </label>
-                  <select id="ethnicity" name="ethnicity" class="select-styled">
-                    <option value="">Select Ethnicity</option>
+                  <label for="ethnicity">Ethnicity</label>
+                  <select name="ethnicity" id="ethnicity" required>
+                    <option value="">Ethnicity</option>
+                    <option value="N/A" <%= userData.ethnicity === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="asian" <%= userData.ethnicity === 'asian' ? 'selected' : '' %>>Asian</option>
                     <option value="african" <%= userData.ethnicity === 'african' ? 'selected' : '' %>>African</option>
                     <option value="caucasian" <%= userData.ethnicity === 'caucasian' ? 'selected' : '' %>>Caucasian</option>
@@ -328,123 +317,168 @@
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="maritalStatus">
-                    <i class="fas fa-ring"></i> Marital Status
-                  </label>
-                  <select id="maritalStatus" name="maritalStatus" class="select-styled">
-                    <option value="">Select Status</option>
-                    <option value="false" <%= userData.maritalStatus === false ? 'selected' : '' %>>Unmarried</option>
-                    <option value="true" <%= userData.maritalStatus === true ? 'selected' : '' %>>Married</option>
+                  <label for="islamicSect">Islamic Sect/Fiqh</label>
+                  <input type="text" name="islamicSect" id="islamicSect" value="<%= userData.islamicSect || '' %>" required />
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="bornMuslim">Born Muslim</label>
+                  <select name="bornMuslim" id="bornMuslim" required>
+                    <option value="">Born Muslim</option>
+                    <option value="N/A" <%= userData.bornMuslim === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="true" <%= userData.bornMuslim === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.bornMuslim === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
               </div>
 
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="disability">
-                    <i class="fas fa-wheelchair"></i> Disability
-                  </label>
-                  <select id="disability" name="disability" class="select-styled">
-                    <option value="no" <%= userData.disability === 'no' ? 'selected' : '' %>>No</option>
-                    <option value="yes" <%= userData.disability !== 'no' && userData.disability ? 'selected' : '' %>>Yes</option>
+              <!-- EDUCATION -->
+              <h2 class="add-user-section-heading">Education</h2>
+              <div class="form-row">
+                <div id="education-section">
+                  <label style="display: block; margin-top: 0">Any Education?</label>
+                  <select id="has-education" name="hasEducation" style="width: 100%; margin-bottom: 10px">
+                    <option value="">Select</option>
+                    <option value="N/A" <%= userData.hasEducation === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="no" <%= userData.hasEducation === 'no' ? 'selected' : '' %>>No</option>
+                    <option value="yes" <%= userData.hasEducation === 'yes' ? 'selected' : '' %>>Yes</option>
                   </select>
-                  <input type="text" id="disabilityDetail" name="disabilityDetail" placeholder="If yes, specify" value="<%= userData.disability !== 'no' ? userData.disability : '' %>" style="margin-top:8px; display:<%= userData.disability !== 'no' && userData.disability ? 'block' : 'none' %>;">
+                  <div id="education-inputs" style="display: none">
+                    <div id="education-list"></div>
+                    <div class="education-row" style="display: flex; gap: 8px; margin-bottom: 8px">
+                      <input type="text" id="education-title" placeholder="Degree/Title (e.g. BSc)" />
+                      <input type="text" id="education-institute" placeholder="Institute (e.g. Punjab University)" />
+                      <input type="number" id="education-year" placeholder="Year (e.g. 2022)" />
+                      <button type="button" id="add-education-btn" style="flex: 0 0 auto">Add</button>
+                    </div>
+                  </div>
+                  <input type="hidden" name="education" id="education-json" value='<%= JSON.stringify(userData.education || []) %>' />
+                </div>
+              </div>
+
+              <!-- ABOUT -->
+              <h2 class="add-user-section-heading">About</h2>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="aboutMe">About Me</label>
+                  <textarea name="aboutMe" id="aboutMe" rows="3"><%= userData.aboutMe || '' %></textarea>
                 </div>
                 <div class="form-group">
-                  <label for="smoker">
-                    <i class="fas fa-smoking"></i> Smoker
-                  </label>
-                  <select id="smoker" name="smoker" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="describeNature">Describe Nature</label>
+                  <textarea name="describeNature" id="describeNature" rows="3"><%= userData.describeNature || '' %></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="hobbies">Hobbies</label>
+                  <input type="text" name="hobbies" id="hobbies" value="<%= (userData.hobbies || []).join(', ') %>" placeholder="Hobbies (comma separated)" />
+                </div>
+                <div class="form-group">
+                  <label for="languagesSpoken">Languages Spoken</label>
+                  <input type="text" name="languagesSpoken" id="languagesSpoken" value="<%= (userData.languagesSpoken || []).join(', ') %>" placeholder="Languages Spoken (comma separated)" required />
+                </div>
+                <div class="form-group">
+                  <label for="anySpecialInformationPeopleShouldKnow">Any Special Information People Should Know</label>
+                  <textarea name="anySpecialInformationPeopleShouldKnow" id="anySpecialInformationPeopleShouldKnow" rows="3"><%= userData.anySpecialInformationPeopleShouldKnow || '' %></textarea>
+                </div>
+              </div>
+
+              <!-- FAMILY DETAILS -->
+              <h2 class="add-user-section-heading">Family Details</h2>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="fatherName">Father's Name</label>
+                  <input type="text" name="fatherName" id="fatherName" value="<%= userData.fatherName || '' %>" />
+                </div>
+                <div class="form-group">
+                  <label for="fatherProfession">Father's Profession</label>
+                  <input type="text" name="fatherProfession" id="fatherProfession" value="<%= userData.fatherProfession || '' %>" />
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="motherName">Mother's Name</label>
+                  <input type="text" name="motherName" id="motherName" value="<%= userData.motherName || '' %>" />
+                </div>
+                <div class="form-group">
+                  <label for="siblings">Number of Siblings</label>
+                  <input type="number" name="siblings" id="siblings" min="0" value="<%= userData.siblings || '' %>" />
+                </div>
+              </div>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="waliMyContactDetails">Wali's Contact Details</label>
+                  <input type="text" name="waliMyContactDetails" id="waliMyContactDetails" value="<%= userData.waliMyContactDetails || '' %>" />
+                </div>
+                <div class="form-group">
+                  <label for="whoCompletedProfile">Who Completed Profile</label>
+                  <input type="text" name="whoCompletedProfile" id="whoCompletedProfile" value="<%= userData.whoCompletedProfile || '' %>" />
+                </div>
+              </div>
+              <!-- DISABILITY & HEALTH -->
+              <h2 class="add-user-section-heading">Disability & Health</h2>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="disability">Disability</label>
+                  <select name="disability" id="disability" required>
+                    <option value="no" <%= userData.disability === 'no' ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= userData.disability === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="yes" <%= userData.disability === 'yes' ? 'selected' : '' %>>Yes</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="disabilityDetail">Disability Detail</label>
+                  <input type="text" name="disabilityDetail" id="disabilityDetail" placeholder="If yes, specify disability" value="<%= userData.disabilityDetail || '' %>" />
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="smoker">Smoker</label>
+                  <select name="smoker" id="smoker" required>
+                    <option value="">Smoker</option>
+                    <option value="N/A" <%= userData.smoker === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="false" <%= userData.smoker === false ? 'selected' : '' %>>No</option>
                     <option value="true" <%= userData.smoker === true ? 'selected' : '' %>>Yes</option>
                   </select>
                 </div>
               </div>
 
+              <!-- PERSONAL PREFERENCES -->
+              <h2 class="add-user-section-heading">Personal Preferences</h2>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="bornMuslim">
-                    <i class="fas fa-mosque"></i> Born Muslim
-                  </label>
-                  <select id="bornMuslim" name="bornMuslim" class="select-styled">
-                    <option value="">Select</option>
-                    <option value="true" <%= userData.bornMuslim === true ? 'selected' : '' %>>Yes</option>
-                    <option value="false" <%= userData.bornMuslim === false ? 'selected' : '' %>>No</option>
-                  </select>
+                  <label for="preferredAgeRange">Preferred Age Range</label>
+                  <input type="text" name="preferredAgeRange" id="preferredAgeRange" placeholder="Preferred Age Range (e.g. 25-30)" value="<%= userData.preferredAgeRange || '' %>" />
                 </div>
                 <div class="form-group">
-                  <label for="islamicSect">
-                    <i class="fas fa-pray"></i> Islamic Sect/Fiqh
-                  </label>
-                  <input type="text" id="islamicSect" name="islamicSect" value="<%= userData.islamicSect || '' %>">
-                </div>
-              </div>
-              
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="fatherName"><i class="fas fa-user"></i> Father Name</label>
-                  <input type="text" id="fatherName" name="fatherName" value="<%= userData.fatherName || '' %>">
-                </div>
-                <div class="form-group">
-                  <label for="motherName"><i class="fas fa-user"></i> Mother Name</label>
-                  <input type="text" id="motherName" name="motherName" value="<%= userData.motherName || '' %>">
-                </div>
-              </div>
-              
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="fatherProfession"><i class="fas fa-briefcase"></i> Father Profession</label>
-                  <input type="text" id="fatherProfession" name="fatherProfession" value="<%= userData.fatherProfession || '' %>">
-                </div>
-                <div class="form-group">
-                  <label for="aboutMe"><i class="fas fa-info-circle"></i> About Me</label>
-                  <input type="text" id="aboutMe" name="aboutMe" value="<%= userData.aboutMe || '' %>">
+                  <label for="preferredHeightRange">Preferred Height Range</label>
+                  <input type="text" name="preferredHeightRange" id="preferredHeightRange" placeholder="Preferred Height Range (e.g. 150-180 cm)" value="<%= userData.preferredHeightRange || '' %>" />
                 </div>
               </div>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="describeNature"><i class="fas fa-info-circle"></i> Describe Nature</label>
-                  <input type="text" id="describeNature" name="describeNature" value="<%= userData.describeNature || '' %>">
+                  <label for="preferredCaste">Preferred Caste</label>
+                  <input type="text" name="preferredCaste" id="preferredCaste" placeholder="Preferred Caste" value="<%= userData.preferredCaste || '' %>" />
                 </div>
                 <div class="form-group">
-                  <label for="whoCompletedProfile"><i class="fas fa-user"></i> Who Completed Profile</label>
-                  <input type="text" id="whoCompletedProfile" name="whoCompletedProfile" value="<%= userData.whoCompletedProfile || '' %>">
-                </div>
-              </div>
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="preferredAgeRange"><i class="fas fa-user"></i> Preferred Age Range</label>
-                  <input type="text" id="preferredAgeRange" name="preferredAgeRange" value="<%= userData.preferredAgeRange || '' %>">
-                </div>
-                <div class="form-group">
-                  <label for="preferredHeightRange"><i class="fas fa-user"></i> Preferred Height Range</label>
-                  <input type="text" id="preferredHeightRange" name="preferredHeightRange" value="<%= userData.preferredHeightRange || '' %>">
+                  <label for="preferredEthnicity">Preferred Ethnicity</label>
+                  <input type="text" name="preferredEthnicity" id="preferredEthnicity" placeholder="Preferred Ethnicity" value="<%= userData.preferredEthnicity || '' %>" />
                 </div>
               </div>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="preferredCaste"><i class="fas fa-user"></i> Preferred Caste</label>
-                  <input type="text" id="preferredCaste" name="preferredCaste" value="<%= userData.preferredCaste || '' %>">
-                </div>
-                <div class="form-group">
-                  <label for="preferredEthnicity"><i class="fas fa-user"></i> Preferred Ethnicity</label>
-                  <input type="text" id="preferredEthnicity" name="preferredEthnicity" value="<%= userData.preferredEthnicity || '' %>">
-                </div>
-              </div>
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="allowParnterToWork"><i class="fas fa-briefcase"></i> Allow Partner To Work</label>
-                  <select id="allowParnterToWork" name="allowParnterToWork" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="allowParnterToWork">Allow Partner To Work?</label>
+                  <select name="allowParnterToWork" id="allowParnterToWork">
+                    <option value="">Allow Partner To Work?</option>
+                    <option value="N/A" <%= userData.allowParnterToWork === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.allowParnterToWork === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.allowParnterToWork === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="allowPartnerToStudy"><i class="fas fa-book"></i> Allow Partner To Study</label>
-                  <select id="allowPartnerToStudy" name="allowPartnerToStudy" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="allowPartnerToStudy">Allow Partner To Study?</label>
+                  <select name="allowPartnerToStudy" id="allowPartnerToStudy">
+                    <option value="">Allow Partner To Study?</option>
+                    <option value="N/A" <%= userData.allowPartnerToStudy === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.allowPartnerToStudy === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.allowPartnerToStudy === false ? 'selected' : '' %>>No</option>
                   </select>
@@ -452,59 +486,62 @@
               </div>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="acceptSomeoneInOtherCountry"><i class="fas fa-globe"></i> Accept Someone In Other Country</label>
-                  <select id="acceptSomeoneInOtherCountry" name="acceptSomeoneInOtherCountry" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="acceptSomeoneInOtherCountry">Accept Someone In Other Country?</label>
+                  <select name="acceptSomeoneInOtherCountry" id="acceptSomeoneInOtherCountry">
+                    <option value="">Accept Someone In Other Country?</option>
+                    <option value="N/A" <%= userData.acceptSomeoneInOtherCountry === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.acceptSomeoneInOtherCountry === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.acceptSomeoneInOtherCountry === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="willingToRelocate"><i class="fas fa-plane"></i> Willing To Relocate</label>
-                  <select id="willingToRelocate" name="willingToRelocate" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="willingToRelocate">Willing To Relocate?</label>
+                  <select name="willingToRelocate" id="willingToRelocate">
+                    <option value="">Willing To Relocate?</option>
+                    <option value="N/A" <%= userData.willingToRelocate === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.willingToRelocate === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.willingToRelocate === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
               </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="QualitiesThatYouCanBringToYourMarriage"><i class="fas fa-star"></i> Qualities That You Can Bring To Your Marriage</label>
-                  <input type="text" id="QualitiesThatYouCanBringToYourMarriage" name="QualitiesThatYouCanBringToYourMarriage" value="<%= userData.QualitiesThatYouCanBringToYourMarriage && userData.QualitiesThatYouCanBringToYourMarriage.length ? userData.QualitiesThatYouCanBringToYourMarriage.join(', ') : '' %>" placeholder="Comma separated">
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="hobbies"><i class="fas fa-heart"></i> Hobbies</label>
-                  <input type="text" id="hobbies" name="hobbies" value="<%= userData.hobbies && userData.hobbies.length ? userData.hobbies.join(', ') : '' %>" placeholder="Comma separated">
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="qualitiesYouNeedInYourPartner"><i class="fas fa-star"></i> Qualities You Need In Your Partner</label>
-                  <input type="text" id="qualitiesYouNeedInYourPartner" name="qualitiesYouNeedInYourPartner" value="<%= userData.qualitiesYouNeedInYourPartner && userData.qualitiesYouNeedInYourPartner.length ? userData.qualitiesYouNeedInYourPartner.join(', ') : '' %>" placeholder="Comma separated">
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="lookingForASpouseThatIs"><i class="fas fa-heart"></i> Looking For A Spouse That Is</label>
-                  <input type="text" id="lookingForASpouseThatIs" name="lookingForASpouseThatIs" value="<%= userData.lookingForASpouseThatIs || '' %>">
-                </div>
-              </div>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="acceptSomeoneWithChildren"><i class="fas fa-child"></i> Accept Someone With Children</label>
-                  <select id="acceptSomeoneWithChildren" name="acceptSomeoneWithChildren" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="willingToSharePhotosUponRequest">Willing To Share Photos Upon Request?</label>
+                  <select name="willingToSharePhotosUponRequest" id="willingToSharePhotosUponRequest">
+                    <option value="">Willing To Share Photos Upon Request?</option>
+                    <option value="N/A" <%= userData.willingToSharePhotosUponRequest === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="true" <%= userData.willingToSharePhotosUponRequest === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.willingToSharePhotosUponRequest === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="willingToMeetUpOutside">Willing To Meet Up Outside?</label>
+                  <select name="willingToMeetUpOutside" id="willingToMeetUpOutside">
+                    <option value="">Willing To Meet Up Outside?</option>
+                    <option value="N/A" <%= userData.willingToMeetUpOutside === 'N/A' ? 'selected' : '' %>>N/A</option>
+                    <option value="true" <%= userData.willingToMeetUpOutside === true ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= userData.willingToMeetUpOutside === false ? 'selected' : '' %>>No</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- PARTNER & RELIGIOUS PREFERENCES -->
+              <h2 class="add-user-section-heading">Partner & Religious Preferences</h2>
+              <div class="form-row two-columns">
+                <div class="form-group">
+                  <label for="acceptSomeoneWithChildren">Accept Someone With Children?</label>
+                  <select name="acceptSomeoneWithChildren" id="acceptSomeoneWithChildren">
+                    <option value="">Accept Someone With Children?</option>
+                    <option value="N/A" <%= userData.acceptSomeoneWithChildren === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.acceptSomeoneWithChildren === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.acceptSomeoneWithChildren === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="acceptADivorcedPerson"><i class="fas fa-user-times"></i> Accept A Divorced Person</label>
-                  <select id="acceptADivorcedPerson" name="acceptADivorcedPerson" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="acceptADivorcedPerson">Accept A Divorced Person?</label>
+                  <select name="acceptADivorcedPerson" id="acceptADivorcedPerson">
+                    <option value="">Accept A Divorced Person?</option>
+                    <option value="N/A" <%= userData.acceptADivorcedPerson === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.acceptADivorcedPerson === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.acceptADivorcedPerson === false ? 'selected' : '' %>>No</option>
                   </select>
@@ -512,17 +549,19 @@
               </div>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="agreesWithPolygamy"><i class="fas fa-users"></i> Agrees With Polygamy</label>
-                  <select id="agreesWithPolygamy" name="agreesWithPolygamy" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="agreesWithPolygamy">Agrees With Polygamy?</label>
+                  <select name="agreesWithPolygamy" id="agreesWithPolygamy">
+                    <option value="">Agrees With Polygamy?</option>
+                    <option value="N/A" <%= userData.agreesWithPolygamy === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.agreesWithPolygamy === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.agreesWithPolygamy === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="acceptAWidow"><i class="fas fa-user-slash"></i> Accept A Widow</label>
-                  <select id="acceptAWidow" name="acceptAWidow" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="acceptAWidow">Accept A Widow?</label>
+                  <select name="acceptAWidow" id="acceptAWidow">
+                    <option value="">Accept A Widow?</option>
+                    <option value="N/A" <%= userData.acceptAWidow === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.acceptAWidow === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.acceptAWidow === false ? 'selected' : '' %>>No</option>
                   </select>
@@ -530,37 +569,39 @@
               </div>
               <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="AcceptSomeoneWithBeard"><i class="fas fa-user"></i> Accept Someone With Beard</label>
-                  <select id="AcceptSomeoneWithBeard" name="AcceptSomeoneWithBeard" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="AcceptSomeoneWithBeard">Accept Someone With Beard?</label>
+                  <select name="AcceptSomeoneWithBeard" id="AcceptSomeoneWithBeard">
+                    <option value="">Accept Someone With Beard?</option>
+                    <option value="N/A" <%= userData.AcceptSomeoneWithBeard === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.AcceptSomeoneWithBeard === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.AcceptSomeoneWithBeard === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
                 <div class="form-group">
-                  <label for="AcceptSomeoneWithHijab"><i class="fas fa-user"></i> Accept Someone With Hijab</label>
-                  <select id="AcceptSomeoneWithHijab" name="AcceptSomeoneWithHijab" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="AcceptSomeoneWithHijab">Accept Someone With Hijab?</label>
+                  <select name="AcceptSomeoneWithHijab" id="AcceptSomeoneWithHijab">
+                    <option value="">Accept Someone With Hijab?</option>
+                    <option value="N/A" <%= userData.AcceptSomeoneWithHijab === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.AcceptSomeoneWithHijab === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.AcceptSomeoneWithHijab === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
               </div>
-              <div class="form-row">
+              <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="ConsiderARevert"><i class="fas fa-user"></i> Consider A Revert</label>
-                  <select id="ConsiderARevert" name="ConsiderARevert" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="ConsiderARevert">Consider A Revert?</label>
+                  <select name="ConsiderARevert" id="ConsiderARevert">
+                    <option value="">Consider A Revert?</option>
+                    <option value="N/A" <%= userData.ConsiderARevert === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.ConsiderARevert === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.ConsiderARevert === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
-              </div>
-              <div class="form-row">
                 <div class="form-group">
-                  <label for="livingArrangementsAfterMarriage"><i class="fas fa-home"></i> Living Arrangements After Marriage</label>
-                  <select id="livingArrangementsAfterMarriage" name="livingArrangementsAfterMarriage" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="livingArrangementsAfterMarriage">Living Arrangements After Marriage</label>
+                  <select name="livingArrangementsAfterMarriage" id="livingArrangementsAfterMarriage">
+                    <option value="">Living Arrangements After Marriage</option>
+                    <option value="N/A" <%= userData.livingArrangementsAfterMarriage === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="live with parents" <%= userData.livingArrangementsAfterMarriage === 'live with parents' ? 'selected' : '' %>>Live with parents</option>
                     <option value="live alone" <%= userData.livingArrangementsAfterMarriage === 'live alone' ? 'selected' : '' %>>Live alone</option>
                     <option value="live with spouse" <%= userData.livingArrangementsAfterMarriage === 'live with spouse' ? 'selected' : '' %>>Live with spouse</option>
@@ -568,89 +609,91 @@
                   </select>
                 </div>
               </div>
-              <div class="form-row">
+              <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="futurePlans"><i class="fas fa-plane"></i> Future Plans</label>
-                  <select id="futurePlans" name="futurePlans" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="futurePlans">Future Plans</label>
+                  <select name="futurePlans" id="futurePlans">
+                    <option value="">Future Plans</option>
+                    <option value="N/A" <%= userData.futurePlans === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="settle abroad" <%= userData.futurePlans === 'settle abroad' ? 'selected' : '' %>>Settle abroad</option>
                     <option value="stay in current country" <%= userData.futurePlans === 'stay in current country' ? 'selected' : '' %>>Stay in current country</option>
                     <option value="other" <%= userData.futurePlans === 'other' ? 'selected' : '' %>>Other</option>
                   </select>
                 </div>
-              </div>
-              <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="prays"><i class="fas fa-pray"></i> Prays</label>
-                  <select id="prays" name="prays" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="prays">Prays?</label>
+                  <select name="prays" id="prays">
+                    <option value="">Prays?</option>
+                    <option value="N/A" <%= userData.prays === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.prays === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.prays === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
+              </div>
+              <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="celebratesMilaad"><i class="fas fa-pray"></i> Celebrates Milaad</label>
-                  <select id="celebratesMilaad" name="celebratesMilaad" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="celebratesMilaad">Celebrates Milaad?</label>
+                  <select name="celebratesMilaad" id="celebratesMilaad">
+                    <option value="">Celebrates Milaad?</option>
+                    <option value="N/A" <%= userData.celebratesMilaad === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.celebratesMilaad === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.celebratesMilaad === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
-              </div>
-              <div class="form-row two-columns">
                 <div class="form-group">
-                  <label for="celebrateKhatams"><i class="fas fa-pray"></i> Celebrate Khatams</label>
-                  <select id="celebrateKhatams" name="celebrateKhatams" class="select-styled">
-                    <option value="">Select</option>
+                  <label for="celebrateKhatams">Celebrate Khatams?</label>
+                  <select name="celebrateKhatams" id="celebrateKhatams">
+                    <option value="">Celebrate Khatams?</option>
+                    <option value="N/A" <%= userData.celebrateKhatams === 'N/A' ? 'selected' : '' %>>N/A</option>
                     <option value="true" <%= userData.celebrateKhatams === true ? 'selected' : '' %>>Yes</option>
                     <option value="false" <%= userData.celebrateKhatams === false ? 'selected' : '' %>>No</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="islamIsImportantToMeInfo"><i class="fas fa-info-circle"></i> Islam Is Important To Me Info</label>
-                  <input type="text" id="islamIsImportantToMeInfo" name="islamIsImportantToMeInfo" value="<%= userData.islamIsImportantToMeInfo || '' %>">
-                </div>
-              </div>
-              <div class="form-row two-columns">
-                <div class="form-group">
-                  <label for="willingToSharePhotosUponRequest"><i class="fas fa-image"></i> Willing To Share Photos Upon Request</label>
-                  <select id="willingToSharePhotosUponRequest" name="willingToSharePhotosUponRequest" class="select-styled">
-                    <option value="">Select</option>
-                    <option value="true" <%= userData.willingToSharePhotosUponRequest === true ? 'selected' : '' %>>Yes</option>
-                    <option value="false" <%= userData.willingToSharePhotosUponRequest === false ? 'selected' : '' %>>No</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label for="willingToMeetUpOutside"><i class="fas fa-users"></i> Willing To Meet Up Outside</label>
-                  <select id="willingToMeetUpOutside" name="willingToMeetUpOutside" class="select-styled">
-                    <option value="">Select</option>
-                    <option value="true" <%= userData.willingToMeetUpOutside === true ? 'selected' : '' %>>Yes</option>
-                    <option value="false" <%= userData.willingToMeetUpOutside === false ? 'selected' : '' %>>No</option>
                   </select>
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-group">
-                  <label for="work"><i class="fas fa-briefcase"></i> Work</label>
-                  <input type="text" id="work" name="work" value="<%= userData.work || '' %>">
+                  <label for="islamIsImportantToMeInfo">Islam Is Important To Me Info</label>
+                  <textarea name="islamIsImportantToMeInfo" id="islamIsImportantToMeInfo" rows="3"><%= userData.islamIsImportantToMeInfo || '' %></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="QualitiesThatYouCanBringToYourMarriage">Qualities You Can Bring To Your Marriage</label>
+                  <textarea name="QualitiesThatYouCanBringToYourMarriage" id="QualitiesThatYouCanBringToYourMarriage" rows="3"><%= (userData.QualitiesThatYouCanBringToYourMarriage || []).join(', ') %></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="lookingForASpouseThatIs">Looking For A Spouse That Is...</label>
+                  <textarea name="lookingForASpouseThatIs" id="lookingForASpouseThatIs" rows="3"><%= userData.lookingForASpouseThatIs || '' %></textarea>
                 </div>
               </div>
-              
-              <!-- Add these fields before the form-actions, after your other fields -->
 
-<div class="form-row">
-  <div class="form-group">
-    <label for="children"><i class="fas fa-child"></i> Children</label>
-    <textarea id="children" name="children" rows="3" placeholder='Example: [{"name":"Ali","age":5,"livingLocation":"Lahore"}]'><%= userData.children && userData.children.length ? JSON.stringify(userData.children) : "" %></textarea>
-    <small>Enter as JSON array. Each child: name, age, livingLocation.</small>
-  </div>
-</div>
-<div class="form-row">
-  <div class="form-group">
-    <label for="anySpecialInformationPeopleShouldKnow"><i class="fas fa-info-circle"></i> Any Special Information People Should Know</label>
-    <input type="text" id="anySpecialInformationPeopleShouldKnow" name="anySpecialInformationPeopleShouldKnow" value="<%= userData.anySpecialInformationPeopleShouldKnow || '' %>">
-  </div>
-</div>
+              <!-- CHILDREN -->
+              <h2 class="add-user-section-heading">Children</h2>
+              <div class="form-row">
+                <div id="children-section">
+                  <label>Any Children?</label>
+                  <select id="has-children" name="hasChildren" style="width: 100%; margin-bottom: 10px">
+                    <option value="no" <%= userData.hasChildren === 'no' ? 'selected' : '' %>>No</option>
+                    <option value="yes" <%= userData.hasChildren === 'yes' ? 'selected' : '' %>>Yes</option>
+                    <option value="N/A" <%= userData.hasChildren === 'N/A' ? 'selected' : '' %>>N/A</option>
+                  </select>
+                  <div id="children-inputs" style="display: none">
+                    <div id="children-list"></div>
+                    <div class="children-row" style="display: flex; gap: 8px; margin-bottom: 8px">
+                      <input type="text" id="child-name" placeholder="Child Name" style="flex: 2" />
+                      <input type="number" id="child-age" placeholder="Age" min="0" style="flex: 1" />
+                      <input type="text" id="child-location" placeholder="Living Location" style="flex: 2" />
+                      <button type="button" id="add-child-btn" style="flex: 0 0 auto">Add</button>
+                    </div>
+                  </div>
+                  <input type="hidden" name="children" id="children-json" value='<%= JSON.stringify(userData.children || []) %>' />
+                </div>
+              </div>
+
+              <!-- Continue with all other sections from addUser.ejs in the same order and style... -->
+              <!-- RELIGION & CASTE, EDUCATION, ABOUT, FAMILY, DISABILITY & HEALTH, PERSONAL PREFERENCES, PARTNER & RELIGIOUS PREFERENCES, CHILDREN -->
+              <!-- Use the same field structure and order as in addUser.ejs, using userData for values -->
+
+              <!-- ... (repeat for all other fields as in addUser.ejs, using userData for values) ... -->
+
               <div class="form-actions">
                 <a href="/account" class="btn btn-cancel">Cancel</a>
                 <button type="submit" class="btn btn-save">
@@ -891,22 +934,183 @@
       countrySelect.addEventListener('change', updateCountryCode);
     });
 
-   
-  document.addEventListener('DOMContentLoaded', function() {
-    const disabilitySelect = document.getElementById('disability');
-    const disabilityDetail = document.getElementById('disabilityDetail');
-    if (disabilitySelect && disabilityDetail) {
-      disabilitySelect.addEventListener('change', function() {
-        if (this.value === 'yes') {
-          disabilityDetail.style.display = 'block';
-        } else {
-          disabilityDetail.style.display = 'none';
-          disabilityDetail.value = '';
-        }
-      });
-    }
-  });
 
+    document.addEventListener('DOMContentLoaded', function() {
+      const disabilitySelect = document.getElementById('disability');
+      const disabilityDetail = document.getElementById('disabilityDetail');
+      if (disabilitySelect && disabilityDetail) {
+        disabilitySelect.addEventListener('change', function() {
+          if (this.value === 'yes') {
+            disabilityDetail.style.display = 'block';
+          } else {
+            disabilityDetail.style.display = 'none';
+            disabilityDetail.value = '';
+          }
+        });
+      }
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      // --- Education dynamic logic ---
+      const hasEducationSelect = document.getElementById("has-education");
+      const educationInputsDiv = document.getElementById("education-inputs");
+      const addEducationBtn = document.getElementById("add-education-btn");
+      const educationListDiv = document.getElementById("education-list");
+      const educationJsonInput = document.getElementById("education-json");
+      let educationArr = [];
+      try {
+        educationArr = JSON.parse(educationJsonInput.value) || [];
+      } catch {
+        educationArr = [];
+      }
+
+      function renderEducationList() {
+        educationListDiv.innerHTML = "";
+        educationArr.forEach((edu, idx) => {
+          const div = document.createElement("div");
+          div.style.marginBottom = "4px";
+          div.innerHTML = `
+        <span>
+          ${edu.title ? `<strong>${edu.title}</strong>` : ""}
+          ${edu.institute ? `, ${edu.institute}` : ""}
+          ${edu.year ? `, ${edu.year}` : ""}
+        </span>
+        <button type="button" data-idx="${idx}" style="margin-left:8px;">Remove</button>
+      `;
+          div.querySelector("button").onclick = function() {
+            educationArr.splice(idx, 1);
+            educationJsonInput.value = JSON.stringify(educationArr);
+            renderEducationList();
+          };
+          educationListDiv.appendChild(div);
+        });
+      }
+
+      if (hasEducationSelect) {
+        hasEducationSelect.addEventListener("change", function() {
+          if (this.value === "yes") {
+            educationInputsDiv.style.display = "";
+          } else {
+            educationInputsDiv.style.display = "none";
+            educationArr = [];
+            educationListDiv.innerHTML = "";
+            educationJsonInput.value = "[]";
+          }
+        });
+        // Show inputs if editing and hasEducation is yes
+        if (hasEducationSelect.value === "yes") {
+          educationInputsDiv.style.display = "";
+          renderEducationList();
+        }
+      }
+      if (addEducationBtn) {
+        addEducationBtn.addEventListener("click", function() {
+          const title = document.getElementById("education-title").value.trim();
+          const institute = document.getElementById("education-institute").value.trim();
+          const year = document.getElementById("education-year").value.trim();
+          if (!title && !institute && !year) {
+            alert("Please enter at least one education detail.");
+            return;
+          }
+          educationArr.push({
+            title,
+            institute,
+            year
+          });
+          educationJsonInput.value = JSON.stringify(educationArr);
+          renderEducationList();
+          document.getElementById("education-title").value = "";
+          document.getElementById("education-institute").value = "";
+          document.getElementById("education-year").value = "";
+        });
+      }
+      // Render on page load if editing
+      renderEducationList();
+
+      // --- Children dynamic logic ---
+      const hasChildrenSelect = document.getElementById("has-children");
+      const childrenInputsDiv = document.getElementById("children-inputs");
+      const addChildBtn = document.getElementById("add-child-btn");
+      const childrenListDiv = document.getElementById("children-list");
+      const childrenJsonInput = document.getElementById("children-json");
+      let childrenArr = [];
+      try {
+        childrenArr = JSON.parse(childrenJsonInput.value) || [];
+      } catch {
+        childrenArr = [];
+      }
+
+      function renderChildrenList() {
+        childrenListDiv.innerHTML = "";
+        childrenArr.forEach((child, idx) => {
+          const div = document.createElement("div");
+          div.style.marginBottom = "4px";
+          div.innerHTML = `
+        <span>${child.name}, Age: ${child.age}, Location: ${child.livingLocation}</span>
+        <button type="button" data-idx="${idx}" style="margin-left:8px;">Remove</button>
+      `;
+          div.querySelector("button").onclick = function() {
+            childrenArr.splice(idx, 1);
+            childrenJsonInput.value = JSON.stringify(childrenArr);
+            renderChildrenList();
+          };
+          childrenListDiv.appendChild(div);
+        });
+      }
+
+      if (hasChildrenSelect) {
+        hasChildrenSelect.addEventListener("change", function() {
+          if (this.value === "yes") {
+            childrenInputsDiv.style.display = "";
+          } else {
+            childrenInputsDiv.style.display = "none";
+            childrenArr = [];
+            childrenListDiv.innerHTML = "";
+            childrenJsonInput.value = "[]";
+          }
+        });
+        // Show inputs if editing and hasChildren is yes
+        if (hasChildrenSelect.value === "yes") {
+          childrenInputsDiv.style.display = "";
+          renderChildrenList();
+        }
+      }
+      if (addChildBtn) {
+        addChildBtn.addEventListener("click", function() {
+          const name = document.getElementById("child-name").value.trim();
+          const age = parseInt(document.getElementById("child-age").value, 10);
+          const livingLocation = document.getElementById("child-location").value.trim();
+          if (!name || isNaN(age) || !livingLocation) {
+            alert("Please fill all child fields.");
+            return;
+          }
+          childrenArr.push({
+            name,
+            age,
+            livingLocation
+          });
+          childrenJsonInput.value = JSON.stringify(childrenArr);
+          renderChildrenList();
+          document.getElementById("child-name").value = "";
+          document.getElementById("child-age").value = "";
+          document.getElementById("child-location").value = "";
+        });
+      }
+      // Render on page load if editing
+      renderChildrenList();
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+      document.querySelectorAll('.edit-form textarea').forEach(function(textarea) {
+        function autoResize() {
+          this.style.height = 'auto';
+          this.style.height = (this.scrollHeight) + 'px';
+        }
+        textarea.addEventListener('input', autoResize, false);
+        // Initial resize
+        autoResize.call(textarea);
+      });
+    });
   </script>
 </body>
 

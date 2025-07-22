@@ -1,131 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - damourmuslim</title>
-    <link rel="stylesheet" href="/css/styles.css" />
-    <link rel="stylesheet" href="/css/login.css" />
-    <!-- Font Awesome for icons -->
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
-  <body>
-    <header class="header">
-      <div class="container">
-        <div class="logo">
-          <a href="/">
-            <img
-              src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg"
-              alt="Company Logo"
-            />
-          </a>
-        </div>
-        <div class="auth-buttons">
-          <a href="/register" class="btn btn-signup">Sign Up</a>
-          <a href="/login" class="btn btn-login">Login</a>
-        </div>
-        <div class="mobile-menu-toggle">
-          <i class="fas fa-bars"></i>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login - damourmuslim</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/login.css" />
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <a href="/">
+          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
+        </a>
+      </div>
+      <div class="auth-buttons">
+        <a href="/register" class="btn btn-signup">Sign Up</a>
+        <a href="/login" class="btn btn-login">Login</a>
+      </div>
+      <div class="mobile-menu-toggle">
+        <i class="fas fa-bars"></i>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="login-container">
+        <h1>Welcome Back</h1>
+
+        <!-- Error message container -->
+        <div id="error-message" class="error-message"></div>
+
+        <form id="login-form" action="/login" method="post" class="login-form">
+          <div class="form-group">
+            <label for="username">Username</label>
+            <div class="input-with-icon">
+              <i class="fas fa-user"></i>
+              <input type="text" id="username" name="username" placeholder="Enter your username" required />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-with-icon">
+              <i class="fas fa-lock"></i>
+              <input type="password" id="password" name="password" placeholder="Enter your password" required />
+            </div>
+          </div>
+
+          <div class="form-options">
+            <div class="remember-me">
+              <input type="checkbox" id="remember" name="remember" />
+              <label for="remember">Remember me</label>
+            </div>
+            <a href="/forgot-password" class="forgot-password">Forgot password?</a>
+          </div>
+
+          <button type="submit" class="btn btn-login btn-full">Login</button>
+        </form>
+
+        <div class="register-link">
+          Don't have an account? <a href="/register">Register here</a>
         </div>
       </div>
-    </header>
+    </div>
+  </main>
 
-    <main>
-      <div class="container">
-        <div class="login-container">
-          <h1>Welcome Back</h1>
-
-          <!-- Error message container -->
-          <div id="error-message" class="error-message"></div>
-
-          <form
-            id="login-form"
-            action="/login"
-            method="post"
-            class="login-form"
-          >
-            <div class="form-group">
-              <label for="username">Username</label>
-              <div class="input-with-icon">
-                <i class="fas fa-user"></i>
-                <input
-                  type="text"
-                  id="username"
-                  name="username"
-                  placeholder="Enter your username"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label for="password">Password</label>
-              <div class="input-with-icon">
-                <i class="fas fa-lock"></i>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  placeholder="Enter your password"
-                  required
-                />
-              </div>
-            </div>
-
-            <div class="form-options">
-              <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember" />
-                <label for="remember">Remember me</label>
-              </div>
-              <a href="/forgot-password" class="forgot-password"
-                >Forgot password?</a
-              >
-            </div>
-
-            <button type="submit" class="btn btn-login btn-full">Login</button>
-          </form>
-
-          <div class="register-link">
-            Don't have an account? <a href="/register">Register here</a>
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About Us</h3>
+          <p>
+            We make knowing eachother secure that ever and find the perfect
+            match for you
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p>Email: damourmuslim@gmail.com</p>
+          <p>Phone: +447454516156</p>
+        </div>
+        <div class="footer-section">
+          <h3>Follow Us</h3>
+          <div class="social-icons">
+            <a href="#"><i class="fab fa-facebook"></i></a>
+            <a href="#"><i class="fab fa-instagram"></i></a>
+            <a href="#"><i class="fab fa-twitter"></i></a>
           </div>
         </div>
       </div>
-    </main>
-
-    <footer class="footer">
-      <div class="container">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h3>About Us</h3>
-            <p>
-              We make knowing eachother secure that ever and find the perfect
-              match for you
-            </p>
-          </div>
-          <div class="footer-section">
-            <h3>Contact</h3>
-            <p>Email: damourmuslim@gmail.com</p>
-            <p>Phone: +447454516156</p>
-          </div>
-          <div class="footer-section">
-            <h3>Follow Us</h3>
-            <div class="social-icons">
-              <a href="#"><i class="fab fa-facebook"></i></a>
-              <a href="#"><i class="fab fa-instagram"></i></a>
-              <a href="#"><i class="fab fa-twitter"></i></a>
-            </div>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p>&copy; 2025 damourmuslim. All rights reserved.</p>
-        </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 damourmuslim. All rights reserved.</p>
       </div>
-    </footer>
+    </div>
+  </footer>
 
-    <script src="/js/main.js"></script>
-    <script src="/js/login.js"></script>
-  </body>
+  <script src="/js/main.js"></script>
+  <script src="/js/login.js"></script>
+</body>
+
 </html>
