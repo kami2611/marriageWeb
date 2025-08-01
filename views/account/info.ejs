@@ -1152,7 +1152,7 @@
         </div>
       </div>
       <div class="border-t border-white border-opacity-20 pt-8 text-center">
-        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
+        <p class="text-pink-100">&copy; 2025 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
   </footer>
@@ -1691,7 +1691,7 @@
   </script>
 
   <!-- SEPARATE DATA LOADING SCRIPT -->
-  <script id="data-loading">
+  <!-- <script id="data-loading">
     function loadUserData() {
       <% if (accountInfo) { %>
       const userData = {
@@ -1892,8 +1892,189 @@
         }
       }
     }
-  </script>
+  </script> -->
+  <script id="data-loading">
+    function loadUserData() {
+      <% if (accountInfo) { %>
+      const userData = {
+        // Basic Info
+        username: '<%= accountInfo.username || "" %>',
+        name: '<%= accountInfo.name || "" %>',
+        age: '<%= accountInfo.age || "" %>',
+        gender: '<%= accountInfo.gender || "" %>',
+        maritalStatus: '<%= accountInfo.maritalStatus %>',
+        work: '<%= accountInfo.work || "" %>',
+        aboutMe: `<%= (accountInfo.aboutMe || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
+        hobbies: '<%= (accountInfo.hobbies && accountInfo.hobbies.join(", ")) || "" %>',
 
+        // Contact & Location
+        contact: '<%= accountInfo.contact || "" %>',
+        waliMyContactDetails: '<%= accountInfo.waliMyContactDetails || "" %>',
+        adress: '<%= accountInfo.adress || "" %>',
+        city: '<%= accountInfo.city || "" %>',
+        state: '<%= accountInfo.state || "" %>',
+        country: '<%= accountInfo.country || "" %>',
+        nationality: '<%= accountInfo.nationality || "" %>',
+        birthPlace: '<%= accountInfo.birthPlace || "" %>',
+        willingToRelocate: '<%= accountInfo.willingToRelocate %>',
+        languagesSpoken: '<%= (accountInfo.languagesSpoken && accountInfo.languagesSpoken.join(", ")) || "" %>',
+
+        // Physical Appearance
+        height: '<%= accountInfo.height || "" %>',
+        build: '<%= accountInfo.build || "" %>',
+        eyeColor: '<%= accountInfo.eyeColor || "" %>',
+        hairColor: '<%= accountInfo.hairColor || "" %>',
+        complexion: '<%= accountInfo.complexion || "" %>',
+        ethnicity: '<%= accountInfo.ethnicity || "" %>',
+        disability: '<%= accountInfo.disability || "no" %>',
+        smoker: '<%= accountInfo.smoker %>',
+
+        // Religion & Faith
+        religion: '<%= accountInfo.religion || "" %>',
+        caste: '<%= accountInfo.caste || "" %>',
+        islamicSect: '<%= accountInfo.islamicSect || "" %>',
+        bornMuslim: '<%= accountInfo.bornMuslim %>',
+        prays: '<%= accountInfo.prays %>',
+        celebratesMilaad: '<%= accountInfo.celebratesMilaad %>',
+        celebrateKhatams: '<%= accountInfo.celebrateKhatams %>',
+        islamIsImportantToMeInfo: `<%= (accountInfo.islamIsImportantToMeInfo || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
+
+        // Family & Background
+        fatherName: '<%= accountInfo.fatherName || "" %>',
+        motherName: '<%= accountInfo.motherName || "" %>',
+        fatherProfession: '<%= accountInfo.fatherProfession || "" %>',
+        siblings: '<%= accountInfo.siblings || "" %>',
+        livingArrangementsAfterMarriage: '<%= accountInfo.livingArrangementsAfterMarriage || "" %>',
+        futurePlans: '<%= accountInfo.futurePlans || "" %>',
+        whoCompletedProfile: '<%= accountInfo.whoCompletedProfile || "" %>',
+        describeNature: `<%= (accountInfo.describeNature || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
+        QualitiesThatYouCanBringToYourMarriage: '<%= (accountInfo.QualitiesThatYouCanBringToYourMarriage && accountInfo.QualitiesThatYouCanBringToYourMarriage.join(", ")) || "" %>',
+        anySpecialInformationPeopleShouldKnow: `<%= (accountInfo.anySpecialInformationPeopleShouldKnow || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
+
+        // Partner Preferences
+        preferredAgeRange: '<%= accountInfo.preferredAgeRange || "" %>',
+        preferredHeightRange: '<%= accountInfo.preferredHeightRange || "" %>',
+        preferredCaste: '<%= accountInfo.preferredCaste || "" %>',
+        preferredEthnicity: '<%= accountInfo.preferredEthnicity || "" %>',
+        allowParnterToWork: '<%= accountInfo.allowParnterToWork %>',
+        allowPartnerToStudy: '<%= accountInfo.allowPartnerToStudy %>',
+        acceptSomeoneWithChildren: '<%= accountInfo.acceptSomeoneWithChildren %>',
+        acceptADivorcedPerson: '<%= accountInfo.acceptADivorcedPerson %>',
+        acceptAWidow: '<%= accountInfo.acceptAWidow %>',
+        agreesWithPolygamy: '<%= accountInfo.agreesWithPolygamy %>',
+        AcceptSomeoneWithBeard: '<%= accountInfo.AcceptSomeoneWithBeard %>',
+        AcceptSomeoneWithHijab: '<%= accountInfo.AcceptSomeoneWithHijab %>',
+        ConsiderARevert: '<%= accountInfo.ConsiderARevert %>',
+        acceptSomeoneInOtherCountry: '<%= accountInfo.acceptSomeoneInOtherCountry %>',
+        willingToSharePhotosUponRequest: '<%= accountInfo.willingToSharePhotosUponRequest %>',
+        willingToMeetUpOutside: '<%= accountInfo.willingToMeetUpOutside %>',
+        willingToConsiderANonUkCitizen: '<%= accountInfo.willingToConsiderANonUkCitizen !== undefined ? accountInfo.willingToConsiderANonUkCitizen.toString() : '' %>',
+        lookingForASpouseThatIs: '<%= accountInfo.lookingForASpouseThatIs || "" %>',
+        qualitiesYouNeedInYourPartner: '<%= (accountInfo.qualitiesYouNeedInYourPartner && accountInfo.qualitiesYouNeedInYourPartner.join(", ")) || "" %>',
+
+        // Arrays for dynamic content
+        education: <%-JSON.stringify(accountInfo.education || [])%>,
+        children: <%-JSON.stringify(accountInfo.children || [])%>
+      };
+
+      // Populate regular form fields (except location fields)
+      Object.keys(userData).forEach(key => {
+        if (key === 'education' || key === 'children' || key === 'country' || key === 'state' || key === 'city') return;
+
+        const field = document.querySelector(`[name="${key}"]`);
+        if (field) {
+          if (field.type === 'radio') {
+            const radioGroup = document.querySelectorAll(`[name="${key}"]`);
+            radioGroup.forEach(radio => {
+              if (radio.value === userData[key]) {
+                radio.checked = true;
+              }
+            });
+          } else if (field.type === 'checkbox') {
+            field.checked = userData[key] === 'true' || userData[key] === true;
+          } else {
+            field.value = userData[key] || '';
+          }
+        }
+      });
+
+      // Handle location fields separately after dropdown script is loaded
+      setTimeout(() => {
+        if (window.setLocationValues) {
+          window.setLocationValues(userData.country, userData.state, userData.city);
+        }
+      }, 100);
+
+      // Populate education
+      if (userData.education && userData.education.length > 0) {
+        let educationCount = 0;
+        userData.education.forEach((edu, index) => {
+          educationCount++;
+          if (index > 0) {
+            const educationHtml = `
+        <div class="education-item" data-index="${educationCount}">
+          <div class="flex justify-between items-center mb-4">
+            <h4 class="font-medium text-gray-900">Education ${educationCount}</h4>
+            <button type="button" class="remove-education text-red-500 hover:text-red-700">
+              <i class="ri-delete-bin-line"></i>
+            </button>
+          </div>
+          <div class="grid md:grid-cols-3 gap-4">
+            <input type="text" name="education[${educationCount}][title]" placeholder="Degree/Title" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+            <input type="text" name="education[${educationCount}][institute]" placeholder="Institute/University" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+            <input type="text" name="education[${educationCount}][year]" placeholder="Year" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+          </div>
+        </div>
+      `;
+            document.getElementById('educationContainer').insertAdjacentHTML('beforeend', educationHtml);
+          }
+
+          // Fill the education data
+          const titleField = document.querySelector(`[name="education[${educationCount}][title]"]`);
+          const instituteField = document.querySelector(`[name="education[${educationCount}][institute]"]`);
+          const yearField = document.querySelector(`[name="education[${educationCount}][year]"]`);
+
+          if (titleField) titleField.value = edu.title || '';
+          if (instituteField) instituteField.value = edu.institute || '';
+          if (yearField) yearField.value = edu.year || '';
+        });
+      }
+
+      // Populate children
+      if (userData.children && userData.children.length > 0) {
+        let childrenCount = 0;
+        userData.children.forEach((child, index) => {
+          childrenCount++;
+          const childHtml = `
+      <div class="child-item" data-index="${childrenCount}">
+        <div class="flex justify-between items-center mb-4">
+          <h4 class="font-medium text-gray-900">Child ${childrenCount}</h4>
+          <button type="button" class="remove-child text-red-500 hover:text-red-700">
+            <i class="ri-delete-bin-line"></i>
+          </button>
+        </div>
+        <div class="grid md:grid-cols-3 gap-4">
+          <input type="text" name="children[${childrenCount}][name]" placeholder="Child's Name" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+          <input type="number" name="children[${childrenCount}][age]" placeholder="Age" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+          <input type="text" name="children[${childrenCount}][livingLocation]" placeholder="Living Location" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+        </div>
+      </div>
+    `;
+          document.getElementById('childrenContainer').insertAdjacentHTML('beforeend', childHtml);
+
+          // Fill the children data
+          const nameField = document.querySelector(`[name="children[${childrenCount}][name]"]`);
+          const ageField = document.querySelector(`[name="children[${childrenCount}][age]"]`);
+          const locationField = document.querySelector(`[name="children[${childrenCount}][livingLocation]"]`);
+
+          if (nameField) nameField.value = child.name || '';
+          if (ageField) ageField.value = child.age || '';
+          if (locationField) locationField.value = child.livingLocation || '';
+        });
+      }
+      <% } %>
+    }
+  </script>
   <!-- SEPARATE FORM SUBMISSION SCRIPT -->
   <script id="form-submission">
     document.addEventListener('DOMContentLoaded', function() {
@@ -2077,7 +2258,7 @@
       }
     });
   </script>
-  <script id="info-location-dropdowns">
+  <!-- <script id="info-location-dropdowns">
     document.addEventListener('DOMContentLoaded', function() {
       const countrySelect = document.getElementById('country');
       const stateSelect = document.getElementById('state');
@@ -2191,6 +2372,147 @@
           citySelect.innerHTML = '<option value="">Select State/Province First</option>';
         }
       });
+    });
+  </script> -->
+  <script id="info-location-dropdowns">
+    document.addEventListener('DOMContentLoaded', function() {
+      const countrySelect = document.getElementById('country');
+      const stateSelect = document.getElementById('state');
+      const citySelect = document.getElementById('city');
+
+      // Updated location data to match your backend format
+      const locationData = {
+        uk: {
+          states: {
+            'england': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Sheffield', 'Bristol', 'Nottingham', 'Leicester', 'Coventry', 'Bradford', 'Stoke-on-Trent', 'Wolverhampton', 'Plymouth', 'Derby', 'Southampton', 'Portsmouth', 'Newcastle', 'Brighton', 'Reading'],
+            'scotland': ['Glasgow', 'Edinburgh', 'Aberdeen', 'Dundee', 'Stirling', 'Perth', 'Inverness', 'Falkirk', 'Paisley', 'Hamilton'],
+            'wales': ['Cardiff', 'Swansea', 'Newport', 'Wrexham', 'Barry', 'Rhondda', 'Caerphilly', 'Bridgend', 'Neath', 'Port Talbot'],
+            'northern-ireland': ['Belfast', 'Derry', 'Lisburn', 'Newtownabbey', 'Bangor', 'Craigavon', 'Castlereagh', 'Ballymena', 'Newtownards', 'Carrickfergus']
+          }
+        },
+        pakistan: {
+          states: {
+            'punjab': ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan', 'Gujranwala', 'Sialkot', 'Bahawalpur', 'Sargodha', 'Sheikhupura', 'Jhang'],
+            'sindh': ['Karachi', 'Hyderabad', 'Sukkur', 'Larkana', 'Nawabshah', 'Mirpurkhas', 'Jacobabad', 'Shikarpur'],
+            'khyber-pakhtunkhwa': ['Peshawar', 'Mardan', 'Mingora', 'Kohat', 'Dera Ismail Khan', 'Bannu', 'Swabi'],
+            'balochistan': ['Quetta', 'Turbat', 'Khuzdar', 'Hub', 'Chaman', 'Gwadar', 'Zhob'],
+            'islamabad': ['Islamabad']
+          }
+        },
+        bangladesh: {
+          states: {
+            'dhaka': ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur'],
+            'chittagong': ['Chittagong', 'Bandarban', 'Brahmanbaria', 'Chandpur', 'Comilla', 'Coxs Bazar'],
+            'khulna': ['Khulna', 'Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Kushtia']
+          }
+        },
+        other: {
+          states: {
+            'other-state': ['Other City']
+          }
+        }
+      };
+
+      // Country change handler
+      countrySelect.addEventListener('change', function() {
+        const selectedCountry = this.value;
+        populateStates(selectedCountry);
+      });
+
+      // State change handler
+      stateSelect.addEventListener('change', function() {
+        const selectedCountry = countrySelect.value;
+        const selectedState = this.value;
+        populateCities(selectedCountry, selectedState);
+      });
+
+      function populateStates(country) {
+        // Reset state and city
+        stateSelect.innerHTML = '<option value="">Select State/Province</option>';
+        citySelect.innerHTML = '<option value="">Select State/Province First</option>';
+        citySelect.disabled = true;
+
+        if (country && locationData[country]) {
+          stateSelect.disabled = false;
+          const states = locationData[country].states;
+
+          Object.keys(states).forEach(state => {
+            const option = document.createElement('option');
+            option.value = state;
+            option.textContent = state.charAt(0).toUpperCase() + state.slice(1).replace(/-/g, ' ');
+            stateSelect.appendChild(option);
+          });
+
+          // Add Other option
+          const otherOption = document.createElement('option');
+          otherOption.value = 'other';
+          otherOption.textContent = 'Other';
+          stateSelect.appendChild(otherOption);
+        } else if (country === 'other') {
+          stateSelect.disabled = false;
+          stateSelect.innerHTML = '<option value="">Select State/Province</option><option value="other">Other</option>';
+        } else {
+          stateSelect.disabled = true;
+          stateSelect.innerHTML = '<option value="">Select Country First</option>';
+        }
+      }
+
+      function populateCities(country, state) {
+        citySelect.innerHTML = '<option value="">Select City</option>';
+
+        if (country && state && locationData[country] && locationData[country].states[state]) {
+          citySelect.disabled = false;
+          const cities = locationData[country].states[state];
+
+          cities.forEach(city => {
+            const option = document.createElement('option');
+            option.value = city;
+            option.textContent = city;
+            citySelect.appendChild(option);
+          });
+
+          // Add Other option
+          const otherOption = document.createElement('option');
+          otherOption.value = 'other';
+          otherOption.textContent = 'Other';
+          citySelect.appendChild(otherOption);
+        } else if (state === 'other') {
+          citySelect.disabled = false;
+          citySelect.innerHTML = '<option value="">Select City</option><option value="other">Other</option>';
+        } else {
+          citySelect.disabled = true;
+          citySelect.innerHTML = '<option value="">Select State/Province First</option>';
+        }
+      }
+
+      // Function to set location values (called after data is loaded)
+      window.setLocationValues = function(country, state, city) {
+        console.log('Setting location values:', {
+          country,
+          state,
+          city
+        });
+
+        if (country) {
+          countrySelect.value = country;
+          populateStates(country);
+
+          // Wait for states to populate, then set state
+          setTimeout(() => {
+            if (state) {
+              stateSelect.value = state;
+              populateCities(country, state);
+
+              // Wait for cities to populate, then set city
+              setTimeout(() => {
+                if (city) {
+                  citySelect.value = city;
+                }
+              }, 50);
+            }
+          }, 50);
+        }
+      };
     });
   </script>
 </body>

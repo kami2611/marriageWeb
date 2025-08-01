@@ -971,13 +971,13 @@
         </div>
       </div>
       <div class="border-t border-white border-opacity-20 pt-8 text-center">
-        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
+        <p class="text-pink-100">&copy; 2025 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
   </footer>
 
   <!-- Updated JavaScript -->
-  <script id="profile-interactions">
+  <!-- <script id="profile-interactions">
     document.addEventListener('DOMContentLoaded', function() {
       // Request access button
       const requestAccessBtn = document.getElementById('requestAccessBtn');
@@ -1064,7 +1064,140 @@
         });
       }
     });
+  </script> -->
+  <!-- ...existing code... -->
+
+  <script id="profile-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Request access button
+      const requestAccessBtn = document.getElementById('requestAccessBtn');
+      if (requestAccessBtn) {
+        requestAccessBtn.addEventListener('click', function() {
+          const profileId = this.getAttribute('data-profile-id');
+          const button = this;
+
+          // Disable button and show loading
+          button.disabled = true;
+          button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Sending Request...';
+
+          // Send request
+          fetch(`/interested/${profileId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.error === "incomplete_profile") {
+                // Show special notification for incomplete profile
+                showIncompleteProfileNotification();
+
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = '<i class="ri-profile-line mr-2"></i>Request Profile Sharing';
+              } else if (data.message) {
+                // Show success notification
+                showNotification('Request Sent!', "We'll notify you when they respond", 'success');
+
+                // Update button to show request sent
+                button.innerHTML = '<i class="ri-time-line mr-2"></i>Request Pending';
+                button.className = 'inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-button';
+              } else {
+                throw new Error(data.error || 'Failed to send request');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              showNotification('Request Failed', 'Please try again later', 'error');
+
+              // Reset button
+              button.disabled = false;
+              button.innerHTML = '<i class="ri-profile-line mr-2"></i>Request Profile Sharing';
+            });
+        });
+      }
+
+      // Special notification for incomplete profile
+      function showIncompleteProfileNotification() {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 bg-orange-500 text-white rounded-xl p-6 material-shadow-elevated transform translate-y-0 opacity-100 transition-all duration-300 z-50 max-w-sm`;
+        notification.innerHTML = `
+      <div class="flex items-start gap-3">
+        <i class="ri-error-warning-line text-2xl mt-1"></i>
+        <div class="flex-1">
+          <p class="font-semibold mb-2">Complete Your Profile First</p>
+          <p class="text-sm opacity-90 mb-3">You must complete your profile before sending requests to others.</p>
+          <a href="/account/info" class="inline-flex items-center gap-2 bg-white text-orange-500 px-4 py-2 rounded-lg text-sm font-medium hover:bg-orange-50 transition-colors">
+            <i class="ri-edit-line"></i>
+            Complete Profile
+          </a>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-orange-200 transition-colors">
+          <i class="ri-close-line text-xl"></i>
+        </button>
+      </div>
+    `;
+
+        document.body.appendChild(notification);
+
+        // Auto remove after 8 seconds
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.style.transform = 'translateY(100%)';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+              if (notification.parentElement) notification.remove();
+            }, 300);
+          }
+        }, 8000);
+      }
+
+      // Regular notification function
+      function showNotification(title, message, type = 'info') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'error' ? 'ri-error-warning-line' : 'ri-information-line';
+
+        notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
+        notification.innerHTML = `
+      <i class="${icon} text-xl"></i>
+      <div>
+        <p class="font-medium">${title}</p>
+        <p class="text-sm opacity-90">${message}</p>
+      </div>
+    `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.transform = 'translateY(100%)';
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Dropdown interactions for header
+      const dropdownButton = document.getElementById('accountDropdown');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+
+      if (dropdownButton && dropdownMenu) {
+        dropdownButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdownMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function() {
+          dropdownMenu.classList.add('hidden');
+        });
+
+        dropdownMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+    });
   </script>
+  <!-- ...existing code... -->
 </body>
 
 </html>

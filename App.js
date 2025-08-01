@@ -199,7 +199,13 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
     if (formData.anySpecialInformationPeopleShouldKnow)
       user.anySpecialInformationPeopleShouldKnow =
         formData.anySpecialInformationPeopleShouldKnow;
-
+    if (
+      formData.qualitiesYouNeedInYourPartner &&
+      Array.isArray(formData.qualitiesYouNeedInYourPartner)
+    ) {
+      user.qualitiesYouNeedInYourPartner =
+        formData.qualitiesYouNeedInYourPartner;
+    }
     // Handle qualities as array
     if (
       formData.QualitiesThatYouCanBringToYourMarriage &&
@@ -298,24 +304,24 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
   }
 });
 
-app.use((req, res, next) => {
-  const openPaths = [
-    "/account/info",
-    "/logout",
-    "/register",
-    "/login",
-    "/account/update",
-  ];
-  if (
-    openPaths.includes(req.path) ||
-    req.path.startsWith("/css") ||
-    req.path.startsWith("/js") ||
-    req.path.startsWith("/imgs")
-  ) {
-    return next();
-  }
-  requireProfileComplete(req, res, next);
-});
+// app.use((req, res, next) => {
+//   const openPaths = [
+//     "/account/info",
+//     "/logout",
+//     "/register",
+//     "/login",
+//     "/account/update",
+//   ];
+//   if (
+//     openPaths.includes(req.path) ||
+//     req.path.startsWith("/css") ||
+//     req.path.startsWith("/js") ||
+//     req.path.startsWith("/imgs")
+//   ) {
+//     return next();
+//   }
+//   requireProfileComplete(req, res, next);
+// });
 
 app.post("/register", async (req, res) => {
   console.log("Register request body:", req.body); // Debug log
@@ -796,10 +802,142 @@ app.get("/profiles/:id", async (req, res) => {
   }
 });
 
+// app.post("/interested/:id", isLoggedIn, async (req, res) => {
+//   try {
+//     const beinglikeduserId = req.params.id; // receiver
+//     const likeUserId = req.session.userId; // sender
+
+//     // Check if target user exists
+//     const beingLikedUser = await User.findById(beinglikeduserId);
+//     if (!beingLikedUser) {
+//       return res.status(404).json({ error: "User not found" });
+//     }
+
+//     // Check if request already exists
+//     const existingRequest = await Request.findOne({
+//       from: likeUserId,
+//       to: beinglikeduserId,
+//       status: "pending",
+//     });
+
+//     if (existingRequest) {
+//       return res.json({ error: "Request already sent" });
+//     }
+
+//     // ONLY grant access to sender's profile to receiver
+//     // (Receiver can see sender's info to make decision)
+//     if (!beingLikedUser.canAccessFullProfileOf.includes(likeUserId)) {
+//       beingLikedUser.canAccessFullProfileOf.push(likeUserId);
+//     }
+
+//     // Create new request
+//     const newRequest = new Request({
+//       from: likeUserId,
+//       to: beinglikeduserId,
+//       status: "pending", // explicitly set as pending
+//     });
+
+//     await newRequest.save();
+
+//     // Add request to receiver's list
+//     if (!beingLikedUser.likeRequests.includes(newRequest._id)) {
+//       beingLikedUser.likeRequests.push(newRequest);
+//     }
+
+//     await beingLikedUser.save();
+
+//     return res.json({
+//       message: "Successfully sent your like request",
+//     });
+//   } catch (error) {
+//     console.error("Error sending request:", error);
+//     return res.status(500).json({
+//       error: "Failed to send request. Please try again.",
+//     });
+//   }
+// });
+// ...existing code...
+
 app.post("/interested/:id", isLoggedIn, async (req, res) => {
   try {
     const beinglikeduserId = req.params.id; // receiver
     const likeUserId = req.session.userId; // sender
+
+    // Check if sender's profile is complete BEFORE sending request
+    const senderUser = await User.findById(likeUserId);
+
+    // Use the same profile completion logic from requireProfileComplete.js
+    const isProfileComplete =
+      senderUser &&
+      senderUser.age &&
+      senderUser.name &&
+      senderUser.gender &&
+      senderUser.religion &&
+      senderUser.nationality &&
+      senderUser.country &&
+      senderUser.state &&
+      senderUser.city &&
+      senderUser.contact &&
+      senderUser.adress &&
+      senderUser.height &&
+      senderUser.complexion &&
+      senderUser.build &&
+      senderUser.eyeColor &&
+      senderUser.hairColor &&
+      senderUser.ethnicity &&
+      senderUser.maritalStatus &&
+      senderUser.work &&
+      senderUser.islamicSect &&
+      senderUser.smoker !== undefined &&
+      senderUser.bornMuslim !== undefined &&
+      senderUser.prays !== undefined &&
+      senderUser.celebratesMilaad !== undefined &&
+      senderUser.celebrateKhatams !== undefined &&
+      senderUser.livingArrangementsAfterMarriage &&
+      senderUser.futurePlans &&
+      senderUser.fatherName &&
+      senderUser.motherName &&
+      senderUser.fatherProfession &&
+      senderUser.aboutMe &&
+      senderUser.willingToRelocate !== undefined &&
+      senderUser.preferredAgeRange &&
+      senderUser.preferredHeightRange &&
+      senderUser.preferredCaste &&
+      senderUser.preferredEthnicity &&
+      senderUser.allowParnterToWork !== undefined &&
+      senderUser.allowPartnerToStudy !== undefined &&
+      senderUser.acceptSomeoneInOtherCountry !== undefined &&
+      senderUser.lookingForASpouseThatIs &&
+      senderUser.willingToSharePhotosUponRequest !== undefined &&
+      senderUser.willingToMeetUpOutside !== undefined &&
+      senderUser.whoCompletedProfile &&
+      senderUser.birthPlace &&
+      senderUser.siblings !== undefined &&
+      senderUser.describeNature &&
+      senderUser.acceptSomeoneWithChildren !== undefined &&
+      senderUser.acceptADivorcedPerson !== undefined &&
+      senderUser.agreesWithPolygamy !== undefined &&
+      senderUser.acceptAWidow !== undefined &&
+      senderUser.AcceptSomeoneWithBeard !== undefined &&
+      senderUser.AcceptSomeoneWithHijab !== undefined &&
+      senderUser.ConsiderARevert !== undefined &&
+      senderUser.willingToConsiderANonUkCitizen !== undefined &&
+      senderUser.languagesSpoken &&
+      senderUser.languagesSpoken.length > 0 &&
+      senderUser.hobbies &&
+      senderUser.hobbies.length > 0 &&
+      senderUser.QualitiesThatYouCanBringToYourMarriage &&
+      senderUser.QualitiesThatYouCanBringToYourMarriage.length > 0 &&
+      senderUser.qualitiesYouNeedInYourPartner &&
+      senderUser.qualitiesYouNeedInYourPartner.length > 0;
+
+    if (!isProfileComplete) {
+      return res.status(400).json({
+        error: "incomplete_profile",
+        message:
+          "You must complete your profile before sending requests to others.",
+      });
+    }
 
     // Check if target user exists
     const beingLikedUser = await User.findById(beinglikeduserId);
@@ -850,6 +988,8 @@ app.post("/interested/:id", isLoggedIn, async (req, res) => {
     });
   }
 });
+
+// ...existing code...
 app.get("/admin", (req, res) => {
   if (req.session.isAdmin) {
     return res.redirect("/admin/dashboard");
@@ -868,7 +1008,7 @@ app.get("/admin/dashboard", async (req, res) => {
 
   try {
     // Get all users
-    const users = await User.find({}).sort({ createdAt: -1 });
+    const users = await User.find({}).sort({ createdAt: -1, _id: -1 });
 
     // Calculate stats
     const totalUsers = users.length;
