@@ -107,14 +107,204 @@ app.get("/login", (req, res) => {
 });
 
 // Place this after session and before your protected routes
+app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
+  console.log("Account update request body:", req.body);
+
+  try {
+    const user = req.userData;
+    const formData = req.body;
+
+    // Basic Info Tab
+    if (formData.name) user.name = formData.name;
+    if (formData.age !== undefined)
+      user.age = parseInt(formData.age) || user.age;
+    if (formData.gender) user.gender = formData.gender;
+    if (formData.maritalStatus && formData.maritalStatus !== "N/A") {
+      user.maritalStatus = formData.maritalStatus; // Handle as string enum
+    }
+    if (formData.work) user.work = formData.work;
+    if (formData.aboutMe) user.aboutMe = formData.aboutMe;
+
+    // Handle hobbies as comma-separated array
+    if (formData.hobbies && Array.isArray(formData.hobbies)) {
+      user.hobbies = formData.hobbies;
+    }
+
+    // Contact & Location Tab
+    if (formData.contact) user.contact = formData.contact;
+    if (formData.waliMyContactDetails)
+      user.waliMyContactDetails = formData.waliMyContactDetails;
+    if (formData.adress) user.adress = formData.adress;
+    if (formData.city) user.city = formData.city;
+    if (formData.state) user.state = formData.state;
+    if (formData.country) user.country = formData.country;
+    if (formData.nationality) user.nationality = formData.nationality;
+    if (formData.birthPlace) user.birthPlace = formData.birthPlace;
+    if (formData.willingToRelocate !== undefined)
+      user.willingToRelocate =
+        formData.willingToRelocate === true ||
+        formData.willingToRelocate === "true";
+
+    // Handle languages as array
+    if (formData.languagesSpoken && Array.isArray(formData.languagesSpoken)) {
+      user.languagesSpoken = formData.languagesSpoken;
+    }
+
+    // Physical Appearance Tab
+    if (formData.height !== undefined)
+      user.height = parseInt(formData.height) || user.height;
+    if (formData.build) user.build = formData.build;
+    if (formData.eyeColor) user.eyeColor = formData.eyeColor;
+    if (formData.hairColor) user.hairColor = formData.hairColor;
+    if (formData.complexion) user.complexion = formData.complexion;
+    if (formData.ethnicity) user.ethnicity = formData.ethnicity;
+    if (formData.disability) user.disability = formData.disability;
+    if (formData.smoker !== undefined)
+      user.smoker = formData.smoker === true || formData.smoker === "true";
+
+    // Religion & Faith Tab
+    if (formData.religion) user.religion = formData.religion;
+    if (formData.caste) user.caste = formData.caste;
+    if (formData.islamicSect) user.islamicSect = formData.islamicSect;
+    if (formData.bornMuslim !== undefined)
+      user.bornMuslim =
+        formData.bornMuslim === true || formData.bornMuslim === "true";
+    if (formData.prays !== undefined)
+      user.prays = formData.prays === true || formData.prays === "true";
+    if (formData.celebratesMilaad !== undefined)
+      user.celebratesMilaad =
+        formData.celebratesMilaad === true ||
+        formData.celebratesMilaad === "true";
+    if (formData.celebrateKhatams !== undefined)
+      user.celebrateKhatams =
+        formData.celebrateKhatams === true ||
+        formData.celebrateKhatams === "true";
+    if (formData.islamIsImportantToMeInfo)
+      user.islamIsImportantToMeInfo = formData.islamIsImportantToMeInfo;
+
+    // Family & Background Tab
+    if (formData.fatherName) user.fatherName = formData.fatherName;
+    if (formData.motherName) user.motherName = formData.motherName;
+    if (formData.fatherProfession)
+      user.fatherProfession = formData.fatherProfession;
+    if (formData.siblings !== undefined)
+      user.siblings = parseInt(formData.siblings) || user.siblings;
+    if (formData.livingArrangementsAfterMarriage)
+      user.livingArrangementsAfterMarriage =
+        formData.livingArrangementsAfterMarriage;
+    if (formData.futurePlans) user.futurePlans = formData.futurePlans;
+    if (formData.whoCompletedProfile)
+      user.whoCompletedProfile = formData.whoCompletedProfile;
+    if (formData.describeNature) user.describeNature = formData.describeNature;
+    if (formData.anySpecialInformationPeopleShouldKnow)
+      user.anySpecialInformationPeopleShouldKnow =
+        formData.anySpecialInformationPeopleShouldKnow;
+
+    // Handle qualities as array
+    if (
+      formData.QualitiesThatYouCanBringToYourMarriage &&
+      Array.isArray(formData.QualitiesThatYouCanBringToYourMarriage)
+    ) {
+      user.QualitiesThatYouCanBringToYourMarriage =
+        formData.QualitiesThatYouCanBringToYourMarriage;
+    }
+
+    // Handle dynamic education array
+    if (formData.education && Array.isArray(formData.education)) {
+      user.education = formData.education.filter(
+        (edu) => edu && (edu.title || edu.institute || edu.year)
+      );
+    }
+
+    // Handle dynamic children array
+    if (formData.children && Array.isArray(formData.children)) {
+      user.children = formData.children.filter(
+        (child) => child && (child.name || child.age || child.livingLocation)
+      );
+    }
+
+    // Partner Preferences Tab
+    if (formData.preferredAgeRange)
+      user.preferredAgeRange = formData.preferredAgeRange;
+    if (formData.preferredHeightRange)
+      user.preferredHeightRange = formData.preferredHeightRange;
+    if (formData.preferredCaste) user.preferredCaste = formData.preferredCaste;
+    if (formData.preferredEthnicity)
+      user.preferredEthnicity = formData.preferredEthnicity;
+    if (formData.allowParnterToWork !== undefined)
+      user.allowParnterToWork =
+        formData.allowParnterToWork === true ||
+        formData.allowParnterToWork === "true";
+    if (formData.allowPartnerToStudy !== undefined)
+      user.allowPartnerToStudy =
+        formData.allowPartnerToStudy === true ||
+        formData.allowPartnerToStudy === "true";
+
+    // Acceptance preferences
+    if (formData.acceptSomeoneWithChildren !== undefined)
+      user.acceptSomeoneWithChildren =
+        formData.acceptSomeoneWithChildren === true ||
+        formData.acceptSomeoneWithChildren === "true";
+    if (formData.acceptADivorcedPerson !== undefined)
+      user.acceptADivorcedPerson =
+        formData.acceptADivorcedPerson === true ||
+        formData.acceptADivorcedPerson === "true";
+    if (formData.acceptAWidow !== undefined)
+      user.acceptAWidow =
+        formData.acceptAWidow === true || formData.acceptAWidow === "true";
+    if (formData.agreesWithPolygamy !== undefined)
+      user.agreesWithPolygamy =
+        formData.agreesWithPolygamy === true ||
+        formData.agreesWithPolygamy === "true";
+    if (formData.AcceptSomeoneWithBeard !== undefined)
+      user.AcceptSomeoneWithBeard =
+        formData.AcceptSomeoneWithBeard === true ||
+        formData.AcceptSomeoneWithBeard === "true";
+    if (formData.AcceptSomeoneWithHijab !== undefined)
+      user.AcceptSomeoneWithHijab =
+        formData.AcceptSomeoneWithHijab === true ||
+        formData.AcceptSomeoneWithHijab === "true";
+    if (formData.ConsiderARevert !== undefined)
+      user.ConsiderARevert =
+        formData.ConsiderARevert === true ||
+        formData.ConsiderARevert === "true";
+    if (formData.acceptSomeoneInOtherCountry !== undefined)
+      user.acceptSomeoneInOtherCountry =
+        formData.acceptSomeoneInOtherCountry === true ||
+        formData.acceptSomeoneInOtherCountry === "true";
+    if (formData.willingToSharePhotosUponRequest !== undefined)
+      user.willingToSharePhotosUponRequest =
+        formData.willingToSharePhotosUponRequest === true ||
+        formData.willingToSharePhotosUponRequest === "true";
+    if (formData.willingToMeetUpOutside !== undefined)
+      user.willingToMeetUpOutside =
+        formData.willingToMeetUpOutside === true ||
+        formData.willingToMeetUpOutside === "true";
+    if (formData.willingToConsiderANonUkCitizen !== undefined)
+      user.willingToConsiderANonUkCitizen =
+        formData.willingToConsiderANonUkCitizen === true ||
+        formData.willingToConsiderANonUkCitizen === "true";
+    // Save the updated user
+    await user.save();
+
+    // Update session user data
+    req.session.user = user;
+
+    console.log("User profile updated successfully:", user.username);
+    res.json({ success: true, message: "Profile updated successfully!" });
+  } catch (error) {
+    console.error("Account update error:", error);
+    res.json({ error: `Failed to update profile: ${error.message}` });
+  }
+});
+
 app.use((req, res, next) => {
   const openPaths = [
-    "/account/edit",
+    "/account/info",
     "/logout",
     "/register",
     "/login",
-    "/",
-    "/home",
+    "/account/update",
   ];
   if (
     openPaths.includes(req.path) ||
@@ -128,12 +318,21 @@ app.use((req, res, next) => {
 });
 
 app.post("/register", async (req, res) => {
-  const { username, password, passcode } = req.body;
+  console.log("Register request body:", req.body); // Debug log
+
+  const { username, password, passcode, gender } = req.body;
+
+  // Check if required fields are present
+  if (!username || !password || !passcode || !gender) {
+    return res.render("register", {
+      error: "All fields are required. Please fill out the form completely.",
+    });
+  }
 
   // Check passcode
   if (passcode != process.env.PASSCODE) {
     return res.render("register", {
-      error: "invalid credentials, please try again.",
+      error: "Invalid passcode, please try again.",
     });
   }
 
@@ -144,361 +343,117 @@ app.post("/register", async (req, res) => {
     });
   }
 
-  // Check unique username
+  // Check if gender is valid
+  if (gender !== "male" && gender !== "female") {
+    return res.render("register", {
+      error: "Please select a valid gender.",
+    });
+  }
+
+  // Check unique username (should be auto-generated, but double check)
   const existingUser = await User.findOne({ username });
   if (existingUser) {
     return res.render("register", {
-      error: "Username already exists. Please choose another or Login.",
+      error: "Username already exists. Please refresh and try again.",
     });
   }
 
   // All good, proceed with registration
-  const hashedPassword = await bcrypt.hash(password, 12);
-  const newUser = new User({ username, password: hashedPassword });
-  await newUser.save();
-  req.session.userId = newUser._id;
-  req.session.user = newUser;
-  return res.redirect(
-    "/account/edit?msg=Please complete your profile to continue."
-  );
+  try {
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+      gender, // Save the gender immediately
+    });
+    await newUser.save();
+    req.session.userId = newUser._id;
+    req.session.user = newUser;
+    return res.redirect(
+      "/account/info?msg=Please complete your profile to continue."
+    );
+  } catch (error) {
+    console.error("Registration error:", error);
+    return res.render("register", {
+      error: "Registration failed. Please try again.",
+    });
+  }
 });
 app.post("/login", async (req, res) => {
   const { username, password, remember } = req.body;
+  console.log("received");
+
+  // Check if it's admin login first
+  if (
+    username === process.env.ADMIN_USERNAME &&
+    password === process.env.ADMIN_PASSWORD
+  ) {
+    req.session.isAdmin = true;
+    req.session.adminUsername = username;
+    // Create a user object for admin with isAdmin flag
+    req.session.user = {
+      username: username,
+      isAdmin: true,
+    };
+
+    if (remember === "true" || remember === true) {
+      req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
+    } else {
+      req.session.cookie.expires = false; // Session cookie
+    }
+
+    return res.json({ success: true, redirect: "/admin/dashboard" });
+  }
+
+  // If not admin, try user login
   const foundUser = await User.findOne({ username: username });
   if (!foundUser) {
     return res.json({ error: "username or password is incorrect" });
   }
+
   const isMatch = await bcrypt.compare(password, foundUser.password);
   if (isMatch) {
-    req.session.userId = foundUser._id; // create session
-    req.session.user = foundUser;
+    req.session.userId = foundUser._id;
+    // Ensure user object has isAdmin flag
+    const userObj = foundUser.toObject();
+    userObj.isAdmin = false; // Regular users are not admin
+    req.session.user = userObj;
+
     if (remember === "true" || remember === true) {
       req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
     } else {
       req.session.cookie.expires = false; // Session cookie (browser closes = logout)
     }
+
     const redirectUrl = req.session.returnTo || "/home";
     delete req.session.returnTo;
-    // return res.json("Login successful");
+
     return res.json({ success: true, redirect: redirectUrl });
   } else {
     return res.json({ error: "username or password is incorrect" });
   }
 });
 app.get("/logout", (req, res) => {
+  const wasAdmin = req.session.isAdmin;
+
   req.session.destroy((err) => {
     if (err) {
       return res.send("error logging out");
     }
     res.clearCookie("connect.sid");
-    res.redirect("/home");
+
+    // Redirect to appropriate page based on user type
+    if (wasAdmin) {
+      res.redirect("/login"); // or "/admin" if you want
+    } else {
+      res.redirect("/home");
+    }
   });
 });
 
-app.get("/account/edit", isLoggedIn, findUser, (req, res) => {
-  const userData = req.userData;
-  // Get message from query param if present
-  const msg = req.query.msg || null;
-  res.render("account/edit", { userData, msg });
-});
-app.post(
-  "/account/edit",
-  isLoggedIn,
-  findUser,
-  upload.single("profilePic"),
-  async (req, res) => {
-    console.log("req.body", req.body);
-    const {
-      name,
-      adress,
-      city,
-      state,
-      country,
-      contact,
-      gender,
-      religion,
-      caste,
-      age,
-      eyeColor,
-      hairColor,
-      complexion,
-      build,
-      height,
-      languagesSpoken,
-      education,
-      nationality,
-      ethnicity,
-      maritalStatus,
-      disability,
-      disabilityDetail,
-      smoker,
-      bornMuslim,
-      islamicSect,
-      work,
-      waliMyContactDetails,
-      whoCompletedProfile,
-      siblings,
-      birthPlace,
-      children,
-      anySpecialInformationPeopleShouldKnow,
-      hobbies,
-      prays,
-      celebratesMilaad,
-      celebrateKhatams,
-      islamIsImportantToMeInfo,
-      acceptSomeoneWithChildren,
-      acceptADivorcedPerson,
-      agreesWithPolygamy,
-      acceptAWidow,
-      AcceptSomeoneWithBeard,
-      AcceptSomeoneWithHijab,
-      ConsiderARevert,
-      livingArrangementsAfterMarriage,
-      futurePlans,
-      describeNature,
-      QualitiesThatYouCanBringToYourMarriage,
-      fatherName,
-      motherName,
-      fatherProfession,
-      aboutMe,
-      willingToRelocate,
-      preferredAgeRange,
-      preferredHeightRange,
-      preferredCaste,
-      preferredEthnicity,
-      allowParnterToWork,
-      allowPartnerToStudy,
-      acceptSomeoneInOtherCountry,
-      qualitiesYouNeedInYourPartner,
-      lookingForASpouseThatIs,
-      willingToSharePhotosUponRequest,
-      willingToMeetUpOutside,
-    } = req.body;
-    const user = req.userData;
-    if (req.file) {
-      if (user.profilePic?.public_id) {
-        await cloudinary.uploader.destroy(user.profilePic.public_id);
-      }
-
-      user.profilePic = {
-        url: req.file.path,
-        public_id: req.file.filename,
-      };
-    }
-
-    // Update fields if they exist
-    user.name = name || user.name;
-    user.adress = adress || user.adress;
-    user.state = state || user.state;
-    user.country = country || user.country;
-    user.city = city || user.city;
-    user.contact = contact || user.contact;
-    user.gender = gender || user.gender;
-    user.religion = religion || user.religion;
-    user.age = age || user.age;
-    user.caste = caste || user.caste;
-
-    // New fields
-    user.eyeColor = eyeColor || user.eyeColor;
-    user.hairColor = hairColor || user.hairColor;
-    user.complexion = complexion || user.complexion;
-    user.build = build || user.build;
-    user.height = height || user.height;
-
-    // Arrays
-    user.languagesSpoken = languagesSpoken
-      ? Array.isArray(languagesSpoken)
-        ? languagesSpoken
-        : languagesSpoken
-            .split(",")
-            .map((l) => l.trim())
-            .filter(Boolean)
-      : [];
-
-    // Parse education JSON if present
-    if (education) {
-      try {
-        user.education =
-          typeof education === "string" ? JSON.parse(education) : [];
-      } catch (e) {
-        user.education = [];
-      }
-    }
-
-    // Parse hobbies as array
-    user.hobbies = hobbies
-      ? hobbies
-          .split(",")
-          .map((h) => h.trim())
-          .filter(Boolean)
-      : [];
-
-    // Parse QualitiesThatYouCanBringToYourMarriage as array
-    user.QualitiesThatYouCanBringToYourMarriage =
-      QualitiesThatYouCanBringToYourMarriage
-        ? QualitiesThatYouCanBringToYourMarriage.split(",")
-            .map((q) => q.trim())
-            .filter(Boolean)
-        : [];
-
-    // Parse qualitiesYouNeedInYourPartner as array
-    user.qualitiesYouNeedInYourPartner = qualitiesYouNeedInYourPartner
-      ? qualitiesYouNeedInYourPartner
-          .split(",")
-          .map((q) => q.trim())
-          .filter(Boolean)
-      : [];
-
-    // Parse and update children array if present
-    if (children) {
-      try {
-        user.children =
-          typeof children === "string" && children.trim() !== ""
-            ? JSON.parse(children)
-            : [];
-      } catch (e) {
-        user.children = [];
-      }
-    }
-
-    user.nationality = nationality || user.nationality;
-    user.ethnicity = ethnicity || user.ethnicity;
-
-    // Boolean fields from select (string "true"/"false")
-    user.maritalStatus =
-      typeof maritalStatus !== "undefined" && maritalStatus !== ""
-        ? maritalStatus === "true"
-        : user.maritalStatus;
-
-    user.disability =
-      disability === "yes"
-        ? disabilityDetail && disabilityDetail.trim()
-          ? disabilityDetail.trim()
-          : "yes"
-        : "no";
-
-    user.smoker =
-      typeof smoker !== "undefined" && smoker !== ""
-        ? smoker === "true"
-        : user.smoker;
-
-    user.bornMuslim =
-      typeof bornMuslim !== "undefined" && bornMuslim !== ""
-        ? bornMuslim === "true"
-        : user.bornMuslim;
-
-    user.islamicSect = islamicSect || user.islamicSect;
-    user.work = work || user.work;
-    user.waliMyContactDetails =
-      waliMyContactDetails || user.waliMyContactDetails;
-    user.whoCompletedProfile = whoCompletedProfile || user.whoCompletedProfile;
-    user.siblings =
-      typeof siblings !== "undefined" && siblings !== ""
-        ? Number(siblings)
-        : user.siblings;
-    user.birthPlace = birthPlace || user.birthPlace;
-
-    // --- MISSING FIELDS ADDED BELOW ---
-    user.prays =
-      typeof prays !== "undefined" && prays !== ""
-        ? prays === "true"
-        : user.prays;
-    user.celebratesMilaad =
-      typeof celebratesMilaad !== "undefined" && celebratesMilaad !== ""
-        ? celebratesMilaad === "true"
-        : user.celebratesMilaad;
-    user.celebrateKhatams =
-      typeof celebrateKhatams !== "undefined" && celebrateKhatams !== ""
-        ? celebrateKhatams === "true"
-        : user.celebrateKhatams;
-    user.islamIsImportantToMeInfo =
-      islamIsImportantToMeInfo || user.islamIsImportantToMeInfo;
-    user.acceptSomeoneWithChildren =
-      typeof acceptSomeoneWithChildren !== "undefined" &&
-      acceptSomeoneWithChildren !== ""
-        ? acceptSomeoneWithChildren === "true"
-        : user.acceptSomeoneWithChildren;
-    user.acceptADivorcedPerson =
-      typeof acceptADivorcedPerson !== "undefined" &&
-      acceptADivorcedPerson !== ""
-        ? acceptADivorcedPerson === "true"
-        : user.acceptADivorcedPerson;
-    user.agreesWithPolygamy =
-      typeof agreesWithPolygamy !== "undefined" && agreesWithPolygamy !== ""
-        ? agreesWithPolygamy === "true"
-        : user.agreesWithPolygamy;
-    user.acceptAWidow =
-      typeof acceptAWidow !== "undefined" && acceptAWidow !== ""
-        ? acceptAWidow === "true"
-        : user.acceptAWidow;
-    user.AcceptSomeoneWithBeard =
-      typeof AcceptSomeoneWithBeard !== "undefined" &&
-      AcceptSomeoneWithBeard !== ""
-        ? AcceptSomeoneWithBeard === "true"
-        : user.AcceptSomeoneWithBeard;
-    user.AcceptSomeoneWithHijab =
-      typeof AcceptSomeoneWithHijab !== "undefined" &&
-      AcceptSomeoneWithHijab !== ""
-        ? AcceptSomeoneWithHijab === "true"
-        : user.AcceptSomeoneWithHijab;
-    user.ConsiderARevert =
-      typeof ConsiderARevert !== "undefined" && ConsiderARevert !== ""
-        ? ConsiderARevert === "true"
-        : user.ConsiderARevert;
-    user.livingArrangementsAfterMarriage =
-      livingArrangementsAfterMarriage || user.livingArrangementsAfterMarriage;
-    user.futurePlans = futurePlans || user.futurePlans;
-    user.describeNature = describeNature || user.describeNature;
-    user.preferredAgeRange = preferredAgeRange || user.preferredAgeRange;
-    user.preferredHeightRange =
-      preferredHeightRange || user.preferredHeightRange;
-    user.preferredCaste = preferredCaste || user.preferredCaste;
-    user.preferredEthnicity = preferredEthnicity || user.preferredEthnicity;
-    user.allowParnterToWork =
-      typeof allowParnterToWork !== "undefined" && allowParnterToWork !== ""
-        ? allowParnterToWork === "true"
-        : user.allowParnterToWork;
-    user.allowPartnerToStudy =
-      typeof allowPartnerToStudy !== "undefined" && allowPartnerToStudy !== ""
-        ? allowPartnerToStudy === "true"
-        : user.allowPartnerToStudy;
-    user.acceptSomeoneInOtherCountry =
-      typeof acceptSomeoneInOtherCountry !== "undefined" &&
-      acceptSomeoneInOtherCountry !== ""
-        ? acceptSomeoneInOtherCountry === "true"
-        : user.acceptSomeoneInOtherCountry;
-    user.lookingForASpouseThatIs =
-      lookingForASpouseThatIs || user.lookingForASpouseThatIs;
-    user.willingToSharePhotosUponRequest =
-      typeof willingToSharePhotosUponRequest !== "undefined" &&
-      willingToSharePhotosUponRequest !== ""
-        ? willingToSharePhotosUponRequest === "true"
-        : user.willingToSharePhotosUponRequest;
-    user.willingToMeetUpOutside =
-      typeof willingToMeetUpOutside !== "undefined" &&
-      willingToMeetUpOutside !== ""
-        ? willingToMeetUpOutside === "true"
-        : user.willingToMeetUpOutside;
-    user.aboutMe = aboutMe || user.aboutMe;
-    user.anySpecialInformationPeopleShouldKnow =
-      anySpecialInformationPeopleShouldKnow ||
-      user.anySpecialInformationPeopleShouldKnow;
-    user.fatherName = fatherName || user.fatherName;
-    user.motherName = motherName || user.motherName;
-    user.fatherProfession = fatherProfession || user.fatherProfession;
-    user.willingToRelocate =
-      typeof willingToRelocate !== "undefined" && willingToRelocate !== ""
-        ? willingToRelocate === "true"
-        : user.willingToRelocate;
-
-    await user.save();
-    res.redirect("/account"); // or wherever you want to redirect
-  }
-);
-
 app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
   const accountInfo = req.userData;
-  res.render("account/accountInfo", { accountInfo });
+  res.render("account/info", { accountInfo });
 });
 
 app.get("/account/pendingRequests", isLoggedIn, async (req, res) => {
@@ -530,65 +485,183 @@ app.get("/account/yourRequests", isLoggedIn, async (req, res) => {
 });
 
 app.post("/requests/:id/accept", isLoggedIn, async (req, res) => {
-  const requestId = req.params.id;
-  const request = await Request.findById(requestId);
-  request.status = "accepted";
-  await request.save();
-  const requestFromUser = await User.findById(request.from);
-  const requestToUser = await User.findById(request.to);
-  requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
-  requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
-  await requestFromUser.save();
-  await requestToUser.save();
-  return res.redirect("/account/pendingRequests");
-  // res.json({ message: "request accepted" });
-});
-app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
-  const requestId = req.params.id;
-  const request = await Request.findById(requestId);
-  request.status = "rejected";
-  await request.save();
-  const loggedUser = await User.findById(req.session.userId);
-  loggedUser.canAccessFullProfileOf.pull(request.from);
-  const requestFromUser = await User.findById(request.from);
   try {
-    requestFromUser.canAccessFullProfileOf.pull(req.session.userId);
+    const requestId = req.params.id;
+
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: "Request not found" });
+    }
+
+    // Check if current user is the recipient
+    if (request.to.toString() !== req.session.userId) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    // Update request status
+    request.status = "accepted";
+    await request.save();
+
+    // Get both users
+    const requestFromUser = await User.findById(request.from);
+    const requestToUser = await User.findById(request.to);
+
+    // Grant MUTUAL access (both users can see each other's full profiles)
+    if (!requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)) {
+      requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
+    }
+
+    if (!requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)) {
+      requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
+    }
+
+    await requestFromUser.save();
+    await requestToUser.save();
+
+    return res.redirect("/account/pendingRequests");
   } catch (error) {
-    res.send(
-      "maybe the other user doesnt has currently access to your profule",
-      error
-    );
+    console.error("Error accepting request:", error);
+    return res.status(500).json({ error: "Failed to accept request" });
   }
-  await requestFromUser.save();
-  await loggedUser.save();
-  // res.json({ message: "request rejected" });
-  res.redirect("/account/acceptedRequests");
+});
+// Replace the existing /requests/:id/reject route
+app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
+  try {
+    const requestId = req.params.id;
+
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res.status(404).json({ error: "Request not found" });
+    }
+
+    // Check if current user is the recipient
+    if (request.to.toString() !== req.session.userId) {
+      return res.status(403).json({ error: "Unauthorized" });
+    }
+
+    // Update request status
+    request.status = "rejected";
+    await request.save();
+
+    // Remove sender's access to receiver's profile
+    // (Receiver had granted access for sender to be seen during decision)
+    const requestToUser = await User.findById(request.to);
+    const requestFromUser = await User.findById(request.from);
+
+    // Remove sender from receiver's access list
+    requestToUser.canAccessFullProfileOf.pull(request.from);
+
+    await requestToUser.save();
+    await requestFromUser.save();
+
+    return res.redirect("/account/pendingRequests");
+  } catch (error) {
+    console.error("Error rejecting request:", error);
+    return res.status(500).json({ error: "Failed to reject request" });
+  }
 });
 
-app.post("/requests/:id/cancel", isLoggedIn, async (req, res) => {
-  const requestId = req.params.id;
-  const requestToCancel = await Request.findById(requestId);
-  if (!requestToCancel) {
-    return res.status(404).json({ message: "Request not found" });
+// Update the existing /requests/:id/cancel route
+// app.post("api/requests/:id/cancel", isLoggedIn, async (req, res) => {
+//   try {
+//     const requestId = req.params.id;
+//     const requestToCancel = await Request.findById(requestId);
+//     console.log("request to cancel: ", requestToCancel);
+
+//     if (!requestToCancel) {
+//       return res
+//         .status(404)
+//         .json({ success: false, error: "Request not found" });
+//     }
+
+//     // Check if current user is the sender
+//     if (requestToCancel.from.toString() !== req.session.userId) {
+//       return res.status(403).json({ success: false, error: "Unauthorized" });
+//     }
+
+//     const fromUserId = requestToCancel.from.toString();
+//     const toUserId = requestToCancel.to.toString();
+
+//     const fromUser = await User.findById(fromUserId);
+//     const toUser = await User.findById(toUserId);
+
+//     // Remove each other from access lists
+//     if (fromUser) {
+//       fromUser.canAccessFullProfileOf.pull(toUserId);
+//       await fromUser.save();
+//     }
+
+//     if (toUser) {
+//       toUser.canAccessFullProfileOf.pull(fromUserId);
+//       toUser.likeRequests.pull(requestId); // Remove from receiver's request list
+//       await toUser.save();
+//     }
+
+//     // Delete the request
+//     await Request.findByIdAndDelete(requestId);
+
+//     res.json({
+//       success: true,
+//       message: "Request cancelled and access revoked from both sides.",
+//     });
+//   } catch (error) {
+//     console.error("Error cancelling request:", error);
+//     res.status(500).json({
+//       success: false,
+//       error: "Failed to cancel request",
+//     });
+//   }
+// });
+// Add this new API route for cancelling requests
+app.post("/api/requests/:requestId/cancel", isLoggedIn, async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const requestToCancel = await Request.findById(requestId);
+
+    if (!requestToCancel) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Request not found" });
+    }
+
+    // Check if current user is the sender
+    if (requestToCancel.from.toString() !== req.session.userId) {
+      return res.status(403).json({ success: false, error: "Unauthorized" });
+    }
+
+    const fromUserId = requestToCancel.from.toString();
+    const toUserId = requestToCancel.to.toString();
+
+    const fromUser = await User.findById(fromUserId);
+    const toUser = await User.findById(toUserId);
+
+    // Remove each other from access lists
+    if (fromUser) {
+      fromUser.canAccessFullProfileOf.pull(toUserId);
+      await fromUser.save();
+    }
+
+    if (toUser) {
+      toUser.canAccessFullProfileOf.pull(fromUserId);
+      toUser.likeRequests.pull(requestId);
+      await toUser.save();
+    }
+
+    // Delete the request
+    await Request.findByIdAndDelete(requestId);
+
+    res.json({
+      success: true,
+      message: "Request cancelled successfully",
+    });
+  } catch (error) {
+    console.error("Error cancelling request:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to cancel request",
+    });
   }
-
-  const fromUserId = requestToCancel.from.toString();
-  const toUserId = requestToCancel.to.toString();
-
-  const fromUser = await User.findById(fromUserId);
-  const toUser = await User.findById(toUserId);
-
-  // Remove each other from access lists
-  fromUser.canAccessFullProfileOf.pull(toUserId);
-  toUser.canAccessFullProfileOf.pull(fromUserId);
-
-  await fromUser.save();
-  await toUser.save();
-  await Request.findByIdAndDelete(requestId);
-
-  res.json({ message: "Request canceled and access revoked from both sides." });
 });
-
 app.get("/profiles", async (req, res) => {
   // Pagination params
   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
@@ -596,22 +669,49 @@ app.get("/profiles", async (req, res) => {
   const skip = (page - 1) * limit;
 
   // Extract filter parameters
-  const { gender, minAge, maxAge, city, religion, caste } = req.query;
+  const { gender, minAge, maxAge, minHeight, maxHeight, city, nationality } =
+    req.query;
 
   // Build filter object
   const filter = {};
   if (req.session.userId) {
     filter._id = { $ne: req.session.userId };
   }
+
   if (gender) filter.gender = gender;
   if (city) filter.city = { $regex: new RegExp(city, "i") };
-  if (religion) filter.religion = religion;
-  if (caste) filter.caste = { $regex: new RegExp(caste, "i") };
+  if (nationality) filter.nationality = nationality;
+
+  // Age range filter
   if (minAge || maxAge) {
     filter.age = {};
     if (minAge) filter.age.$gte = parseInt(minAge);
     if (maxAge) filter.age.$lte = parseInt(maxAge);
   }
+
+  // Height range filter - FIXED VERSION
+  if (minHeight || maxHeight) {
+    filter.height = {};
+    if (minHeight) {
+      const minHeightNum = parseFloat(minHeight);
+      if (!isNaN(minHeightNum)) {
+        filter.height.$gte = minHeightNum;
+      }
+    }
+    if (maxHeight) {
+      const maxHeightNum = parseFloat(maxHeight);
+      if (!isNaN(maxHeightNum)) {
+        filter.height.$lte = maxHeightNum;
+      }
+    }
+  }
+
+  // Debug log to check filters
+  console.log("Height filters applied:", {
+    minHeight,
+    maxHeight,
+    heightFilter: filter.height,
+  });
 
   try {
     const totalProfiles = await User.countDocuments(filter);
@@ -621,9 +721,10 @@ app.get("/profiles", async (req, res) => {
       gender,
       minAge,
       maxAge,
+      minHeight,
+      maxHeight,
       city,
-      religion,
-      caste,
+      nationality,
     };
 
     const totalPages = Math.ceil(totalProfiles / limit);
@@ -662,6 +763,7 @@ app.get("/profiles/:id", async (req, res) => {
     } else if (req.session.userId) {
       const loggedUser = await User.findById(req.session.userId);
 
+      // Check if current user can access this profile's private information
       if (
         loggedUser.canAccessFullProfileOf.some((userId) =>
           userId.equals(foundProfile._id)
@@ -670,6 +772,7 @@ app.get("/profiles/:id", async (req, res) => {
         canAccessFullProfile = true;
       }
 
+      // Check if user has already sent a pending request
       const existingRequest = await Request.findOne({
         from: req.session.userId,
         to: id,
@@ -685,8 +788,8 @@ app.get("/profiles/:id", async (req, res) => {
       profile: foundProfile,
       canAccessFullProfile,
       hasalreadysentrequest,
-      user: req.session.user, // if you use it
-      isAdmin: req.session.isAdmin, // <-- add this
+      user: req.session.user,
+      isAdmin: req.session.isAdmin,
     });
   } catch (err) {
     res.status(500).send("Server error");
@@ -694,51 +797,115 @@ app.get("/profiles/:id", async (req, res) => {
 });
 
 app.post("/interested/:id", isLoggedIn, async (req, res) => {
-  const beinglikeduserId = req.params.id; //beingliked
-  const beingLikedUser = await User.findById(beinglikeduserId);
-  const likeUserId = req.session.userId; //whoisliking
-  beingLikedUser.canAccessFullProfileOf.push(likeUserId); //pushing your id to the liked person access full profile list.
-  await beingLikedUser.save();
-  const newRequest = new Request({
-    from: likeUserId,
-    to: beinglikeduserId,
-  });
-  await newRequest.save();
+  try {
+    const beinglikeduserId = req.params.id; // receiver
+    const likeUserId = req.session.userId; // sender
 
-  beingLikedUser.likeRequests.push(newRequest);
-  await beingLikedUser.save();
-  return res.json({
-    message: `successully sent your like request`,
-  });
+    // Check if target user exists
+    const beingLikedUser = await User.findById(beinglikeduserId);
+    if (!beingLikedUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Check if request already exists
+    const existingRequest = await Request.findOne({
+      from: likeUserId,
+      to: beinglikeduserId,
+      status: "pending",
+    });
+
+    if (existingRequest) {
+      return res.json({ error: "Request already sent" });
+    }
+
+    // ONLY grant access to sender's profile to receiver
+    // (Receiver can see sender's info to make decision)
+    if (!beingLikedUser.canAccessFullProfileOf.includes(likeUserId)) {
+      beingLikedUser.canAccessFullProfileOf.push(likeUserId);
+    }
+
+    // Create new request
+    const newRequest = new Request({
+      from: likeUserId,
+      to: beinglikeduserId,
+      status: "pending", // explicitly set as pending
+    });
+
+    await newRequest.save();
+
+    // Add request to receiver's list
+    if (!beingLikedUser.likeRequests.includes(newRequest._id)) {
+      beingLikedUser.likeRequests.push(newRequest);
+    }
+
+    await beingLikedUser.save();
+
+    return res.json({
+      message: "Successfully sent your like request",
+    });
+  } catch (error) {
+    console.error("Error sending request:", error);
+    return res.status(500).json({
+      error: "Failed to send request. Please try again.",
+    });
+  }
 });
 app.get("/admin", (req, res) => {
   if (req.session.isAdmin) {
     return res.redirect("/admin/dashboard");
   }
-  res.render("admin/login");
+  // Redirect to main login page instead of rendering separate admin login
+  res.redirect("/login");
 });
 app.get("/admin/addUser", (req, res) => {
   if (!req.session.isAdmin) return res.redirect("/admin");
   res.render("admin/addUser");
 });
-app.post("/admin/login", async (req, res) => {
-  const username = req.body.username ? req.body.username.trim() : "";
-  const password = req.body.password ? req.body.password.trim() : "";
-  if (
-    username == process.env.ADMIN_USERNAME &&
-    password == process.env.ADMIN_PASSWORD
-  ) {
-    req.session.isAdmin = true;
-    return res.json({ success: true, redirect: "/admin/dashboard" });
-  }
-  return res.json({ error: "Invalid credentials" });
-});
 app.get("/admin/dashboard", async (req, res) => {
   if (!req.session.isAdmin) {
     return res.redirect("/admin");
   }
-  const users = await User.find({});
-  res.render("admin/dashboard", { users });
+
+  try {
+    // Get all users
+    const users = await User.find({}).sort({ createdAt: -1 });
+
+    // Calculate stats
+    const totalUsers = users.length;
+    const activeUsers = users.filter(
+      (user) =>
+        user.name && user.age && user.city && (user.contact || user.aboutMe)
+    ).length;
+
+    // Count users created this month
+    const startOfMonth = new Date();
+    startOfMonth.setDate(1);
+    startOfMonth.setHours(0, 0, 0, 0);
+    const newThisMonth = users.filter(
+      (user) => user.createdAt && new Date(user.createdAt) >= startOfMonth
+    ).length;
+
+    // Count accepted requests (matches)
+    const acceptedRequests = await Request.countDocuments({
+      status: "accepted",
+    });
+    const matchesMade = Math.floor(acceptedRequests / 2); // Each match involves 2 people
+
+    const stats = {
+      totalUsers,
+      activeUsers,
+      matchesMade,
+      newThisMonth,
+    };
+
+    res.render("admin/dashboard", { users, stats });
+  } catch (error) {
+    console.error("Dashboard error:", error);
+    res.render("admin/dashboard", {
+      users: [],
+      stats: { totalUsers: 0, activeUsers: 0, matchesMade: 0, newThisMonth: 0 },
+    });
+  }
 });
 app.post("/admin/user/:id/edit", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
@@ -780,8 +947,12 @@ app.post("/admin/user/:id/delete", async (req, res) => {
 app.post("/admin/user/add", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
+  console.log("Received user data:", req.body); // Debug log
+
   const {
+    username, // This should come from frontend now
     password,
+    willingToConsiderANonUkCitizen,
     name,
     work,
     age,
@@ -792,7 +963,7 @@ app.post("/admin/user/add", async (req, res) => {
     contact,
     religion,
     caste,
-    adress,
+    adress, // Note: using 'adress' to match your schema
     eyeColor,
     hairColor,
     complexion,
@@ -804,7 +975,6 @@ app.post("/admin/user/add", async (req, res) => {
     ethnicity,
     maritalStatus,
     disability,
-    disabilityDetail,
     smoker,
     bornMuslim,
     islamicSect,
@@ -842,203 +1012,189 @@ app.post("/admin/user/add", async (req, res) => {
     willingToMeetUpOutside,
     whoCompletedProfile,
     waliMyContactDetails,
-    siblings, // <-- add this
-    birthPlace, // <-- add this
+    siblings,
+    birthPlace,
     children,
     anySpecialInformationPeopleShouldKnow,
   } = req.body;
 
-  if (!gender || !password)
-    return res.json({ error: "Gender and password required" });
+  // Validate required fields
+  if (!password) {
+    return res.json({ error: "Password is required" });
+  }
 
-  // Generate username
-  const prefix = gender === "male" ? "M" : gender === "female" ? "F" : "U";
-  const regex = new RegExp(`^${prefix}(\\d+)$`);
-  const users = await User.find({ username: { $regex: regex } }).select(
-    "username"
-  );
-  let maxNum = 0;
-  users.forEach((u) => {
-    const match = u.username.match(regex);
-    if (match && Number(match[1]) > maxNum) {
-      maxNum = Number(match[1]);
-    }
-  });
-  const username = `${prefix}${maxNum + 1}`;
+  if (!username) {
+    return res.json({
+      error: "Username is required (should be auto-generated)",
+    });
+  }
 
   try {
+    // Check if username already exists
     const existing = await User.findOne({ username });
-    if (existing) return res.json({ error: "Username already exists" });
+    if (existing) {
+      return res.json({ error: "Username already exists" });
+    }
+
+    // Hash password
     const hashedPassword = await bcrypt.hash(password, 12);
 
-    // Parse/convert fields as needed
-    const langs = languagesSpoken
-      ? Array.isArray(languagesSpoken)
-        ? languagesSpoken
-        : languagesSpoken
-            .split(",")
-            .map((l) => l.trim())
-            .filter(Boolean)
+    // Process arrays (they should already be arrays from frontend)
+    const languagesSpokenArr = Array.isArray(languagesSpoken)
+      ? languagesSpoken
       : [];
-    const qualities = QualitiesThatYouCanBringToYourMarriage
-      ? QualitiesThatYouCanBringToYourMarriage.split(",")
-          .map((q) => q.trim())
-          .filter(Boolean)
+    const qualitiesArr = Array.isArray(QualitiesThatYouCanBringToYourMarriage)
+      ? QualitiesThatYouCanBringToYourMarriage
       : [];
-    const hobbiesArr = hobbies
-      ? hobbies
-          .split(",")
-          .map((h) => h.trim())
-          .filter(Boolean)
-      : [];
-    const qualitiesNeeded = qualitiesYouNeedInYourPartner
+    const hobbiesArr = Array.isArray(hobbies) ? hobbies : [];
+    const qualitiesNeededArr = Array.isArray(qualitiesYouNeedInYourPartner)
       ? qualitiesYouNeedInYourPartner
-          .split(",")
-          .map((q) => q.trim())
-          .filter(Boolean)
       : [];
 
-    // Parse children JSON if present
-    let childrenArr = [];
-    if (children) {
-      try {
-        childrenArr = typeof children === "string" ? JSON.parse(children) : [];
-      } catch (e) {
-        childrenArr = [];
-      }
-    }
+    // Process education and children arrays (they should already be properly formatted)
+    const educationArr = Array.isArray(education) ? education : [];
+    const childrenArr = Array.isArray(children) ? children : [];
 
-    // Parse education JSON if present
-    let educationArr = [];
-    if (education) {
-      try {
-        educationArr =
-          typeof education === "string" ? JSON.parse(education) : [];
-      } catch (e) {
-        educationArr = [];
-      }
-    }
-
-    const { profilePicData } = req.body; // <-- get the base64 image string
-
-    let profilePic = undefined;
-    if (profilePicData && profilePicData.startsWith("data:image/")) {
-      try {
-        // Get next image number for this user
-        let nextImgNum = 1;
-        const result = await cloudinary.search
-          .expression(`folder:user_profiles AND public_id:${username}imgs*`)
-          .sort_by("public_id", "desc")
-          .max_results(100)
-          .execute();
-        let maxNum = 0;
-        result.resources.forEach((img) => {
-          const match = img.public_id.match(
-            new RegExp(username + "imgs(\\d+)$")
-          );
-          if (match && Number(match[1]) > maxNum) {
-            maxNum = Number(match[1]);
-          }
-        });
-        nextImgNum = maxNum + 1;
-
-        const uploadRes = await cloudinary.uploader.upload(profilePicData, {
-          folder: "user_profiles",
-          public_id: `${username}imgs${nextImgNum}`,
-          overwrite: true,
-        });
-        profilePic = {
-          url: uploadRes.secure_url,
-          filename: uploadRes.public_id,
-        };
-      } catch (err) {
-        console.error("Profile pic upload error:", err);
-      }
-    }
-
-    const user = new User({
+    // Create new user object
+    const userData = {
       username,
       password: hashedPassword,
-      name,
-      work,
-      age,
       gender,
-      country,
-      state,
-      city,
-      contact,
-      religion,
-      caste,
-      adress,
-      eyeColor,
-      hairColor,
-      complexion,
-      build,
-      height,
-      languagesSpoken: langs,
-      education: educationArr,
-      nationality,
-      ethnicity,
-      maritalStatus: maritalStatus === "true",
-      disability:
-        disability === "yes"
-          ? disabilityDetail && disabilityDetail.trim()
-            ? disabilityDetail.trim()
-            : "yes"
-          : "no",
-      smoker: smoker === "true",
-      bornMuslim: bornMuslim === "true",
-      islamicSect,
-      prays: prays === "true",
-      celebratesMilaad: celebratesMilaad === "true",
-      celebrateKhatams: celebrateKhatams === "true",
-      islamIsImportantToMeInfo,
-      acceptSomeoneWithChildren: acceptSomeoneWithChildren === "true",
-      acceptADivorcedPerson: acceptADivorcedPerson === "true",
-      agreesWithPolygamy: agreesWithPolygamy === "true",
-      acceptAWidow: acceptAWidow === "true",
-      AcceptSomeoneWithBeard: AcceptSomeoneWithBeard === "true",
-      AcceptSomeoneWithHijab: AcceptSomeoneWithHijab === "true",
-      ConsiderARevert: ConsiderARevert === "true",
-      livingArrangementsAfterMarriage,
-      futurePlans,
-      describeNature,
-      QualitiesThatYouCanBringToYourMarriage: qualities,
-      fatherName,
-      motherName,
-      fatherProfession,
-      aboutMe,
-      hobbies: hobbiesArr,
-      willingToRelocate: willingToRelocate === "true",
-      preferredAgeRange,
-      preferredHeightRange,
-      preferredCaste,
-      preferredEthnicity,
-      allowParnterToWork: allowParnterToWork === "true",
-      allowPartnerToStudy: allowPartnerToStudy === "true",
-      acceptSomeoneInOtherCountry: acceptSomeoneInOtherCountry === "true",
-      qualitiesYouNeedInYourPartner: qualitiesNeeded,
-      lookingForASpouseThatIs,
-      willingToSharePhotosUponRequest:
-        willingToSharePhotosUponRequest === "true",
-      willingToMeetUpOutside: willingToMeetUpOutside === "true",
-      whoCompletedProfile,
-      waliMyContactDetails,
-      siblings:
-        typeof siblings !== "undefined" && siblings !== ""
-          ? Number(siblings)
-          : 0, // <-- add this
-      birthPlace: birthPlace || "", // <-- add this
-      children: childrenArr,
-      anySpecialInformationPeopleShouldKnow,
-      profilePic, // <-- add this line
-    });
+    };
 
+    // Add optional fields only if they exist and are not empty
+    if (name) userData.name = name;
+    if (work) userData.work = work;
+    if (age) userData.age = parseInt(age);
+    if (country) userData.country = country;
+    if (state) userData.state = state;
+    if (city) userData.city = city;
+    if (contact) userData.contact = contact;
+    if (religion) userData.religion = religion;
+    if (caste) userData.caste = caste;
+    if (adress) userData.adress = adress;
+    if (eyeColor) userData.eyeColor = eyeColor;
+    if (hairColor) userData.hairColor = hairColor;
+    if (complexion) userData.complexion = complexion;
+    if (build) userData.build = build;
+    if (height) userData.height = parseInt(height);
+    if (nationality) userData.nationality = nationality;
+    if (ethnicity) userData.ethnicity = ethnicity;
+    if (islamicSect) userData.islamicSect = islamicSect;
+    if (islamIsImportantToMeInfo)
+      userData.islamIsImportantToMeInfo = islamIsImportantToMeInfo;
+    if (livingArrangementsAfterMarriage)
+      userData.livingArrangementsAfterMarriage =
+        livingArrangementsAfterMarriage;
+    if (futurePlans) userData.futurePlans = futurePlans;
+    if (describeNature) userData.describeNature = describeNature;
+    if (fatherName) userData.fatherName = fatherName;
+    if (motherName) userData.motherName = motherName;
+    if (fatherProfession) userData.fatherProfession = fatherProfession;
+    if (aboutMe) userData.aboutMe = aboutMe;
+    if (preferredAgeRange) userData.preferredAgeRange = preferredAgeRange;
+    if (preferredHeightRange)
+      userData.preferredHeightRange = preferredHeightRange;
+    if (preferredCaste) userData.preferredCaste = preferredCaste;
+    if (preferredEthnicity) userData.preferredEthnicity = preferredEthnicity;
+    if (lookingForASpouseThatIs)
+      userData.lookingForASpouseThatIs = lookingForASpouseThatIs;
+    if (whoCompletedProfile) userData.whoCompletedProfile = whoCompletedProfile;
+    if (waliMyContactDetails)
+      userData.waliMyContactDetails = waliMyContactDetails;
+    if (birthPlace) userData.birthPlace = birthPlace;
+    if (anySpecialInformationPeopleShouldKnow)
+      userData.anySpecialInformationPeopleShouldKnow =
+        anySpecialInformationPeopleShouldKnow;
+    if (disability && disability !== "no") userData.disability = disability;
+
+    // Handle numeric fields
+    if (siblings !== undefined && siblings !== "")
+      userData.siblings = parseInt(siblings) || 0;
+
+    // Handle boolean fields - convert properly
+    if (maritalStatus && maritalStatus !== "N/A") {
+      userData.maritalStatus = maritalStatus;
+    }
+    if (smoker !== undefined)
+      userData.smoker = smoker === true || smoker === "true";
+    if (bornMuslim !== undefined)
+      userData.bornMuslim = bornMuslim === true || bornMuslim === "true";
+    if (prays !== undefined)
+      userData.prays = prays === true || prays === "true";
+    if (celebratesMilaad !== undefined)
+      userData.celebratesMilaad =
+        celebratesMilaad === true || celebratesMilaad === "true";
+    if (celebrateKhatams !== undefined)
+      userData.celebrateKhatams =
+        celebrateKhatams === true || celebrateKhatams === "true";
+    if (willingToRelocate !== undefined)
+      userData.willingToRelocate =
+        willingToRelocate === true || willingToRelocate === "true";
+    if (allowParnterToWork !== undefined)
+      userData.allowParnterToWork =
+        allowParnterToWork === true || allowParnterToWork === "true";
+    if (allowPartnerToStudy !== undefined)
+      userData.allowPartnerToStudy =
+        allowPartnerToStudy === true || allowPartnerToStudy === "true";
+    if (acceptSomeoneWithChildren !== undefined)
+      userData.acceptSomeoneWithChildren =
+        acceptSomeoneWithChildren === true ||
+        acceptSomeoneWithChildren === "true";
+    if (acceptADivorcedPerson !== undefined)
+      userData.acceptADivorcedPerson =
+        acceptADivorcedPerson === true || acceptADivorcedPerson === "true";
+    if (agreesWithPolygamy !== undefined)
+      userData.agreesWithPolygamy =
+        agreesWithPolygamy === true || agreesWithPolygamy === "true";
+    if (acceptAWidow !== undefined)
+      userData.acceptAWidow = acceptAWidow === true || acceptAWidow === "true";
+    if (AcceptSomeoneWithBeard !== undefined)
+      userData.AcceptSomeoneWithBeard =
+        AcceptSomeoneWithBeard === true || AcceptSomeoneWithBeard === "true";
+    if (AcceptSomeoneWithHijab !== undefined)
+      userData.AcceptSomeoneWithHijab =
+        AcceptSomeoneWithHijab === true || AcceptSomeoneWithHijab === "true";
+    if (ConsiderARevert !== undefined)
+      userData.ConsiderARevert =
+        ConsiderARevert === true || ConsiderARevert === "true";
+    if (acceptSomeoneInOtherCountry !== undefined)
+      userData.acceptSomeoneInOtherCountry =
+        acceptSomeoneInOtherCountry === true ||
+        acceptSomeoneInOtherCountry === "true";
+    if (willingToSharePhotosUponRequest !== undefined)
+      userData.willingToSharePhotosUponRequest =
+        willingToSharePhotosUponRequest === true ||
+        willingToSharePhotosUponRequest === "true";
+    if (willingToMeetUpOutside !== undefined)
+      userData.willingToMeetUpOutside =
+        willingToMeetUpOutside === true || willingToMeetUpOutside === "true";
+    if (willingToConsiderANonUkCitizen !== undefined)
+      userData.willingToConsiderANonUkCitizen =
+        willingToConsiderANonUkCitizen === true ||
+        willingToConsiderANonUkCitizen === "true";
+    // Handle arrays
+    if (languagesSpokenArr.length > 0)
+      userData.languagesSpoken = languagesSpokenArr;
+    if (qualitiesArr.length > 0)
+      userData.QualitiesThatYouCanBringToYourMarriage = qualitiesArr;
+    if (hobbiesArr.length > 0) userData.hobbies = hobbiesArr;
+    if (qualitiesNeededArr.length > 0)
+      userData.qualitiesYouNeedInYourPartner = qualitiesNeededArr;
+    if (educationArr.length > 0) userData.education = educationArr;
+    if (childrenArr.length > 0) userData.children = childrenArr;
+
+    console.log("Creating user with data:", userData); // Debug log
+
+    // Create and save user
+    const user = new User(userData);
     await user.save();
-    res.json({ success: true });
+
+    console.log("User created successfully:", user.username); // Debug log
+    res.json({ success: true, message: "User created successfully" });
   } catch (err) {
     console.error("Add user error:", err);
-    res.json({ error: "Failed to add user" });
+    res.json({ error: `Failed to add user: ${err.message}` });
   }
 });
 app.get("/admin/user/:id", async (req, res) => {
@@ -1087,6 +1243,186 @@ app.get("/generate-username", async (req, res) => {
   });
   const username = `${prefix}${maxNum + 1}`;
   res.json({ username });
+});
+
+// Add these routes after your existing admin routes (around line 385, after the generate-username route)
+
+// Edit User Page Route
+app.get("/admin/edit-user/:id", async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.redirect("/admin");
+  }
+
+  try {
+    const userId = req.params.id;
+    const userToEdit = await User.findById(userId);
+
+    if (!userToEdit) {
+      return res.status(404).send("User not found");
+    }
+
+    res.render("admin/editUser", { userToEdit });
+  } catch (error) {
+    console.error("Admin edit user error:", error);
+    res.redirect("/admin/dashboard");
+  }
+});
+
+// Update User Route
+app.post("/admin/user/update", async (req, res) => {
+  if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
+
+  try {
+    const { userId, ...updateData } = req.body;
+
+    if (!userId) {
+      return res.json({ error: "User ID is required" });
+    }
+
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ error: "User not found" });
+    }
+
+    // Update all fields that are provided
+    Object.keys(updateData).forEach((key) => {
+      if (updateData[key] !== undefined && updateData[key] !== "") {
+        // Handle boolean fields properly
+        if (
+          typeof updateData[key] === "boolean" ||
+          updateData[key] === "true" ||
+          updateData[key] === "false"
+        ) {
+          user[key] = updateData[key] === true || updateData[key] === "true";
+        }
+        // Handle numeric fields
+        else if (key === "age" || key === "height" || key === "siblings") {
+          const num = parseInt(updateData[key]);
+          if (!isNaN(num)) user[key] = num;
+        }
+        // Handle arrays
+        else if (Array.isArray(updateData[key])) {
+          user[key] = updateData[key];
+        }
+        // Handle regular fields
+        else {
+          user[key] = updateData[key];
+        }
+      }
+    });
+
+    await user.save();
+
+    console.log(`User ${user.username} updated successfully by admin`);
+    res.json({ success: true, message: "User updated successfully" });
+  } catch (error) {
+    console.error("Admin update user error:", error);
+    res.json({ error: `Failed to update user: ${error.message}` });
+  }
+});
+
+// Add this new route for account info updates
+
+// Add these routes in App.js after your existing routes
+
+// Get sent requests
+app.get("/api/requests/sent", isLoggedIn, async (req, res) => {
+  try {
+    const requests = await Request.find({ from: req.session.userId })
+      .populate("to", "username city profilePicture age country state")
+      .sort({ createdAt: -1 });
+    res.json({ success: true, requests });
+  } catch (error) {
+    console.error("Error fetching sent requests:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch requests" });
+  }
+});
+
+// Get received requests
+app.get("/api/requests/received", isLoggedIn, async (req, res) => {
+  try {
+    const requests = await Request.find({ to: req.session.userId })
+      .populate("from", "username profilePicture city age")
+      .sort({ createdAt: -1 });
+    console.log("received requests are: ", requests);
+    res.json({ success: true, requests });
+  } catch (error) {
+    console.error("Error fetching received requests:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch requests" });
+  }
+});
+
+// Respond to request
+// Replace your existing /api/requests/:requestId/respond route
+app.post("/api/requests/:requestId/respond", isLoggedIn, async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const { action } = req.body;
+
+    if (!["accepted", "rejected"].includes(action)) {
+      return res.status(400).json({ success: false, error: "Invalid action" });
+    }
+
+    const request = await Request.findById(requestId);
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Request not found" });
+    }
+
+    // Check if user is the recipient
+    if (request.to.toString() !== req.session.userId) {
+      return res.status(403).json({ success: false, error: "Unauthorized" });
+    }
+
+    request.status = action;
+    await request.save();
+
+    if (action === "accepted") {
+      // Grant mutual access
+      const requestFromUser = await User.findById(request.from);
+      const requestToUser = await User.findById(request.to);
+
+      if (!requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)) {
+        requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
+      }
+
+      if (!requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)) {
+        requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
+      }
+
+      await requestFromUser.save();
+      await requestToUser.save();
+    } else if (action === "rejected") {
+      // Remove access
+      const requestToUser = await User.findById(request.to);
+      requestToUser.canAccessFullProfileOf.pull(request.from);
+      await requestToUser.save();
+    }
+
+    res.json({ success: true, message: `Request ${action} successfully` });
+  } catch (error) {
+    console.error("Error responding to request:", error);
+    res.status(500).json({ success: false, error: "Failed to update request" });
+  }
+});
+// Add this temporary route to clean up invalid marital status values
+// Alternative bulk update approach
+
+app.get("/allusersmaritalstatus", async (req, res) => {
+  try {
+    const users = await User.find({}).select("username maritalStatus");
+    const maritalStatusCounts = users.reduce((acc, user) => {
+      const status = user.maritalStatus || "unknown";
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+
+    res.json(maritalStatusCounts);
+  } catch (error) {
+    console.error("Error fetching marital status counts:", error);
+    res.status(500).json({ error: "Failed to fetch marital status counts" });
+  }
 });
 
 app.listen(port, (req, res) => {

@@ -2,290 +2,571 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Your Requests - damourmuslim</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/account.css" />
-  <link rel="stylesheet" href="/css/requests.css" />
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D'amour Muslim - Your Requests</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'none': '0px',
+            'sm': '4px',
+            DEFAULT: '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '32px',
+            'full': '9999px',
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .material-shadow-elevated {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .ripple:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+
+    .status-pending {
+      background-color: #FEF3C7;
+      color: #92400E;
+      border-color: #F59E0B;
+    }
+
+    .status-accepted {
+      background-color: #D1FAE5;
+      color: #065F46;
+      border-color: #10B981;
+    }
+
+    .status-rejected {
+      background-color: #FEE2E2;
+      color: #991B1B;
+      border-color: #EF4444;
+    }
+
+    .request-card {
+      transition: all 0.3s ease;
+    }
+
+    .request-card:hover {
+      transform: translateY(-2px);
+    }
+
+    .filter-dropdown {
+      min-width: 180px;
+    }
+  </style>
 </head>
 
-<body>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <a href="/">
-          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
-        </a>
+<body class="bg-gray-50 font-['Roboto']">
+  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+            D'amour Muslim
+          </a>
+        </h1>
       </div>
-      <div class="auth-buttons">
-        <% if (user) { %>
-        <a href="/logout" class="btn btn-signup">Logout</a>
-        <% } else { %>
-        <a href="/register" class="btn btn-signup">Sign Up</a>
-        <a href="/login" class="btn btn-login">Login</a>
-        <% } %>
-      </div>
-      <div class="mobile-menu-toggle">
-        <i class="fas fa-bars"></i>
+      <div class="flex items-center gap-4">
+        <button class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
+          Login
+        </button>
+        <button class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+          Sign Up
+        </button>
       </div>
     </div>
   </header>
 
-  <main>
-    <div class="container">
-      <div class="account-container">
-        <div class="page-header">
-          <h1>Your Requests</h1>
-          <p>Manage the requests you've sent to others</p>
-        </div>
+  <main class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-6xl mx-auto px-6">
+      <div class="text-center mb-8">
+        <h2 class="text-3xl font-bold text-gray-800 mb-3 font-['Playfair_Display']">Your Requests</h2>
+        <p class="text-gray-600">Manage and track the requests you've sent to other users</p>
+      </div>
 
-        <div class="account-card">
-          <div class="account-nav">
-            <a href="/account/info" class="nav-item">
-              <i class="fas fa-user"></i> Account Info
-            </a>
-            <a href="/account/yourRequests" class="nav-item active">
-              <i class="fas fa-paper-plane"></i> Your Requests
-            </a>
-            <a href="/account/pendingRequests" class="nav-item">
-              <i class="fas fa-clock"></i> Pending Requests
-            </a>
-            <a href="/account/acceptedRequests" class="nav-item">
-              <i class="fas fa-check-circle"></i> Accepted Requests
-            </a>
-            <a href="/account/edit" class="nav-item">
-              <i class="fas fa-edit"></i> Edit Profile
-            </a>
-          </div>
-
-          <div class="account-content">
-            <div class="requests-container">
-              <div class="filter-container">
-                <label for="statusFilter" class="filter-label">
-                  <i class="fas fa-filter"></i> Filter by status:
-                </label>
-                <select id="statusFilter" class="filter-select" onchange="filterRequests()">
-                  <option value="all">All Requests</option>
-                  <option value="pending">Pending</option>
-                  <option value="accepted">Accepted</option>
-                </select>
+      <!-- Filter and Stats Section -->
+      <div class="bg-white rounded-2xl p-6 material-shadow mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <!-- Filter Dropdown -->
+          <div class="flex items-center gap-4">
+            <label for="statusFilter" class="text-sm font-medium text-gray-700">Filter by Status:</label>
+            <div class="relative">
+              <select id="statusFilter" class="filter-dropdown px-4 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white appearance-none">
+                <option value="all">All Requests</option>
+                <option value="pending">Pending</option>
+                <option value="accepted">Accepted</option>
+                <option value="rejected">Rejected</option>
+              </select>
+              <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                <i class="ri-arrow-down-s-line text-gray-400"></i>
               </div>
-
-              <% if (requestsSentByYou.length === 0) { %>
-
-              <div class="empty-state">
-                <div class="empty-icon">
-                  <i class="fas fa-paper-plane"></i>
-                </div>
-                <p>You haven't sent any requests yet.</p>
-                <a href="/profiles" class="btn btn-primary">Browse Profiles</a>
-              </div>
-              <% } else { %>
-              <div class="requests-list" id="requestList">
-                <% requestsSentByYou.forEach(req => { %>
-                <div class="request-card" data-status="<%= req.status %>">
-                  <div class="request-header">
-                    <div class="user-info">
-                      <div class="avatar">
-                        <% if (req.to.gender && req.to.gender.toLowerCase()
-                          === 'female') { %>
-                        <i class="fas fa-female"></i>
-                        <% } else { %>
-                        <i class="fas fa-male"></i>
-                        <% } %>
-                      </div>
-                      <div>
-                        <a href="/profiles/<%=req.to._id  %>">
-                          <h3><%= req.to.username %></h3>
-                        </a>
-
-                        <p class="location">
-                          <i class="fas fa-map-marker-alt"></i> <%=
-                            req.to.city %>
-                        </p>
-                      </div>
-                    </div>
-                    <div class="status-badge status-<%= req.status %>">
-                      <%= req.status %>
-                    </div>
-                  </div>
-
-                  <% if (req.status === 'accepted') { %>
-                  <div class="request-details">
-                    <div class="detail-row">
-                      <div class="detail-item">
-                        <span class="label"><i class="fas fa-user"></i> Name</span>
-                        <span class="value"><%= req.to.name %></span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="label"><i class="fas fa-venus-mars"></i> Gender</span>
-                        <span class="value"><%= req.to.gender %></span>
-                      </div>
-                    </div>
-                    <div class="detail-row">
-                      <div class="detail-item">
-                        <span class="label"><i class="fas fa-home"></i> Address</span>
-                        <span class="value"><%= req.to.adress || 'Not provided' %></span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="label"><i class="fas fa-phone"></i> Contact</span>
-                        <span class="value"><%= req.to.contact %></span>
-                      </div>
-                    </div>
-                    <div class="detail-row">
-                      <div class="detail-item">
-                        <span class="label"><i class="fas fa-pray"></i> Religion</span>
-                        <span class="value"><%= req.to.religion || 'Not provided' %></span>
-                      </div>
-                      <div class="detail-item">
-                        <span class="label"><i class="fas fa-pray"></i> age</span>
-                        <span class="value"><%= req.to.age || 'Not provided' %></span>
-                      </div>
-                    </div>
-                    <div class="detail-row">
-                      <div class="detail-item">
-                        <span class="label"><i class="fas fa-pray"></i> caste</span>
-                        <span class="value"><%= req.to.caste || 'Not provided' %></span>
-                      </div>
-                    </div>
-                  </div>
-                  <% } %>
-
-                  <div class="request-actions">
-                    <% if (req.status === 'pending' || req.status ===
-                      'accepted') { %>
-                    <button class="btn btn-cancel" onclick="handleRequestCancel(this)" data-request_id="<%= req._id %>">
-                      <i class="fas fa-times"></i> Cancel Request
-                    </button>
-                    <% } %>
-                  </div>
-                </div>
-                <% }) %>
-              </div>
-              <% } %>
             </div>
           </div>
+
+          <!-- Request Stats -->
+          <div class="flex items-center gap-6 text-sm">
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-yellow-400 rounded-full"></div>
+              <span class="text-gray-600">Pending: <span id="pendingCount" class="font-medium text-gray-900">0</span></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-green-400 rounded-full"></div>
+              <span class="text-gray-600">Accepted: <span id="acceptedCount" class="font-medium text-gray-900">0</span></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <div class="w-3 h-3 bg-red-400 rounded-full"></div>
+              <span class="text-gray-600">Rejected: <span id="rejectedCount" class="font-medium text-gray-900">0</span></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests Container -->
+      <div id="requestsContainer" class="space-y-4">
+        <!-- Request cards will be dynamically inserted here -->
+      </div>
+
+      <!-- Empty State -->
+      <div id="emptyState" class="text-center py-16 hidden">
+        <div class="max-w-md mx-auto">
+          <div class="mb-6">
+            <div class="w-24 h-24 bg-gray-100 rounded-full flex items-center justify-center mx-auto">
+              <i class="ri-mail-send-line text-4xl text-gray-400"></i>
+            </div>
+          </div>
+          <h3 class="text-xl font-semibold text-gray-800 mb-3 font-['Playfair_Display']">No Requests Found</h3>
+          <p class="text-gray-600 mb-6">You haven't sent any requests yet, or no requests match your current filter.</p>
+          <button class="px-6 py-2.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+            <i class="ri-search-line mr-2"></i>Browse Profiles
+          </button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loadingState" class="text-center py-16">
+        <div class="max-w-md mx-auto">
+          <div class="mb-6">
+            <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto"></div>
+          </div>
+          <p class="text-gray-600">Loading your requests...</p>
         </div>
       </div>
     </div>
   </main>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>About Us</h3>
-          <p>
-            We make knowing eachother secure that ever and find the perfect
-            match for you
-          </p>
+  <footer class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-facebook-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-instagram-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-twitter-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-youtube-fill ri-lg"></i>
+            </a>
+          </div>
         </div>
-        <div class="footer-section">
-          <h3>Contact</h3>
-          <p>Email: damourmuslim@gmail.com</p>
-          <p>Phone: +447454516156</p>
+
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-mail-line"></i>
+              </div>
+              <span>damourmuslim@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-phone-line"></i>
+              </div>
+              <span>+447454516156</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center pointer-events-none">
+                <i class="ri-map-pin-line"></i>
+              </div>
+              <span>London, UK</span>
+            </div>
+          </div>
         </div>
-        <div class="footer-section">
-          <h3>Follow Us</h3>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
+
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
+          <div class="space-y-2">
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 damourmuslim. All rights reserved.</p>
+
+      <div class="border-t border-white border-opacity-20 pt-8 text-center">
+        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
   </footer>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Mobile menu toggle
-      const menuToggle = document.querySelector(".mobile-menu-toggle");
-      const authButtons = document.querySelector(".auth-buttons");
-
-      if (menuToggle && authButtons) {
-        menuToggle.addEventListener("click", function() {
-          authButtons.classList.toggle("active");
+  <script id="ripple-effects">
+    document.addEventListener('DOMContentLoaded', function() {
+      const rippleButtons = document.querySelectorAll('.ripple');
+      rippleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('absolute', 'bg-white', 'bg-opacity-30', 'rounded-full', 'animate-ping');
+          this.appendChild(ripple);
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
         });
-      }
-
-      // Close menu when clicking outside
-      document.addEventListener("click", function(event) {
-        if (
-          !event.target.closest(".mobile-menu-toggle") &&
-          !event.target.closest(".auth-buttons") &&
-          authButtons &&
-          authButtons.classList.contains("active")
-        ) {
-          authButtons.classList.remove("active");
-        }
       });
     });
+  </script>
 
-    function filterRequests() {
-      const selected = document.getElementById("statusFilter").value;
-      const requests = document.querySelectorAll(".request-card");
+  <script id="requests-functionality">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Sample request data - in a real app, this would come from your backend
+      const sampleRequests = [{
+          id: 1,
+          username: 'amina_sarah',
+          location: 'London, UK',
+          status: 'pending',
+          sentDate: '2024-01-20',
+          profileImage: 'https://readdy.ai/api/search-image?query=Beautiful%20Muslim%20woman%20in%20elegant%20modest%20hijab%20portrait%2C%20professional%20headshot&width=100&height=100&seq=profile001'
+        },
+        {
+          id: 2,
+          username: 'fatima_k',
+          location: 'Toronto, Canada',
+          status: 'accepted',
+          sentDate: '2024-01-18',
+          profileImage: 'https://readdy.ai/api/search-image?query=Beautiful%20Muslim%20woman%20professional%20portrait%2C%20modest%20dress&width=100&height=100&seq=profile002'
+        },
+        {
+          id: 3,
+          username: 'zainab_ahmad',
+          location: 'Dubai, UAE',
+          status: 'rejected',
+          sentDate: '2024-01-15',
+          profileImage: 'https://readdy.ai/api/search-image?query=Beautiful%20Muslim%20woman%20with%20hijab%2C%20elegant%20portrait&width=100&height=100&seq=profile003'
+        },
+        {
+          id: 4,
+          username: 'mariam_hassan',
+          location: 'Cairo, Egypt',
+          status: 'pending',
+          sentDate: '2024-01-22',
+          profileImage: 'https://readdy.ai/api/search-image?query=Beautiful%20Muslim%20woman%20modest%20hijab%20professional%20photo&width=100&height=100&seq=profile004'
+        },
+        {
+          id: 5,
+          username: 'aisha_rahman',
+          location: 'Karachi, Pakistan',
+          status: 'accepted',
+          sentDate: '2024-01-16',
+          profileImage: 'https://readdy.ai/api/search-image?query=Beautiful%20Muslim%20woman%20elegant%20hijab%20portrait&width=100&height=100&seq=profile005'
+        },
+        {
+          id: 6,
+          username: 'khadija_ali',
+          location: 'Istanbul, Turkey',
+          status: 'pending',
+          sentDate: '2024-01-19',
+          profileImage: 'https://readdy.ai/api/search-image?query=Beautiful%20Muslim%20woman%20professional%20modest%20dress&width=100&height=100&seq=profile006'
+        }
+      ];
 
-      requests.forEach((req) => {
-        const status = req.dataset.status;
-        if (selected === "all" || status === selected) {
-          req.style.display = "block";
+      let currentRequests = [...sampleRequests];
+      let filteredRequests = [...sampleRequests];
+
+      const requestsContainer = document.getElementById('requestsContainer');
+      const statusFilter = document.getElementById('statusFilter');
+      const emptyState = document.getElementById('emptyState');
+      const loadingState = document.getElementById('loadingState');
+
+      // Initialize the page
+      function init() {
+        setTimeout(() => {
+          loadingState.classList.add('hidden');
+          renderRequests();
+          updateStats();
+        }, 1000); // Simulate loading time
+      }
+
+      // Render request cards
+      function renderRequests() {
+        requestsContainer.innerHTML = '';
+
+        if (filteredRequests.length === 0) {
+          emptyState.classList.remove('hidden');
+          return;
+        }
+
+        emptyState.classList.add('hidden');
+
+        filteredRequests.forEach(request => {
+          const requestCard = createRequestCard(request);
+          requestsContainer.appendChild(requestCard);
+        });
+      }
+
+      // Create individual request card
+      function createRequestCard(request) {
+        const card = document.createElement('div');
+        card.className = 'request-card bg-white rounded-2xl p-6 material-shadow hover:material-shadow-hover';
+        card.setAttribute('data-request-id', request.id);
+
+        const statusClass = `status-${request.status}`;
+        const statusIcon = getStatusIcon(request.status);
+        const statusText = request.status.charAt(0).toUpperCase() + request.status.slice(1);
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+              <!-- Profile Image -->
+              <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
+                <img src="${request.profileImage}" alt="${request.username}" class="w-full h-full object-cover" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCA2NCA2NCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMzIiIGN5PSIzMiIgcj0iMzIiIGZpbGw9IiNGM0Y0RjYiLz4KPHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4PSIxNiIgeT0iMTYiPgo8cGF0aCBkPSJNMTYgMTZDMTguMjA5MSAxNiAyMCAxNC4yMDkxIDIwIDEyQzIwIDkuNzkwODYgMTguMjA5MSA4IDE2IDhDMTMuNzkwOSA4IDEyIDkuNzkwODYgMTIgMTJDMTIgMTQuMjA5MSAxMy43OTA5IDE2IDE2IDE2WiIgZmlsbD0iIzlDQTNBRiIvPgo8cGF0aCBkPSJNMTYgMThDMTEuNTgxNyAxOCA4IDIxLjU4MTcgOCAyNlYyOEgyNFYyNkMyNCAyMS41ODE3IDIwLjQxODMgMTggMTYgMThaIiBmaWxsPSIjOUNBM0FGIi8+Cjwvc3ZnPgo8L3N2Zz4K'">
+              </div>
+
+              <!-- User Info -->
+              <div class="flex-1">
+                <div class="flex items-center gap-3 mb-2">
+                  <h3 class="text-lg font-semibold text-gray-900 font-['Playfair_Display']">@${request.username}</h3>
+                  <span class="px-3 py-1 rounded-full text-xs font-medium border ${statusClass}">
+                    <i class="${statusIcon} mr-1"></i>${statusText}
+                  </span>
+                </div>
+                <div class="flex items-center gap-4 text-sm text-gray-600">
+                  <div class="flex items-center gap-1">
+                    <i class="ri-map-pin-line text-gray-400"></i>
+                    <span>${request.location}</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <i class="ri-calendar-line text-gray-400"></i>
+                    <span>Sent ${formatDate(request.sentDate)}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex items-center gap-3">
+              ${request.status === 'accepted' ? `
+                <button class="px-4 py-2 bg-green-500 text-white hover:bg-green-600 transition-all duration-300 !rounded-button text-sm ripple">
+                  <i class="ri-message-line mr-1"></i>Message
+                </button>
+              ` : ''}
+              
+              ${request.status === 'pending' ? `
+                <button class="cancel-request px-4 py-2 border border-red-300 text-red-600 hover:bg-red-50 transition-all duration-300 !rounded-button text-sm ripple" data-request-id="${request.id}">
+                  <i class="ri-close-line mr-1"></i>Cancel
+                </button>
+              ` : ''}
+
+              <button class="view-profile px-4 py-2 border border-gray-300 text-gray-600 hover:bg-gray-50 transition-all duration-300 !rounded-button text-sm ripple" data-username="${request.username}">
+                <i class="ri-user-line mr-1"></i>View Profile
+              </button>
+            </div>
+          </div>
+        `;
+
+        return card;
+      }
+
+      // Get status icon
+      function getStatusIcon(status) {
+        switch (status) {
+          case 'pending':
+            return 'ri-time-line';
+          case 'accepted':
+            return 'ri-check-line';
+          case 'rejected':
+            return 'ri-close-line';
+          default:
+            return 'ri-question-line';
+        }
+      }
+
+      // Format date
+      function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffTime = Math.abs(now - date);
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 0) return 'today';
+        if (diffDays === 1) return 'yesterday';
+        if (diffDays < 7) return `${diffDays} days ago`;
+
+        return date.toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
+        });
+      }
+
+      // Update statistics
+      function updateStats() {
+        const pending = currentRequests.filter(r => r.status === 'pending').length;
+        const accepted = currentRequests.filter(r => r.status === 'accepted').length;
+        const rejected = currentRequests.filter(r => r.status === 'rejected').length;
+
+        document.getElementById('pendingCount').textContent = pending;
+        document.getElementById('acceptedCount').textContent = accepted;
+        document.getElementById('rejectedCount').textContent = rejected;
+      }
+
+      // Filter functionality
+      statusFilter.addEventListener('change', function() {
+        const selectedStatus = this.value;
+
+        if (selectedStatus === 'all') {
+          filteredRequests = [...currentRequests];
         } else {
-          req.style.display = "none";
+          filteredRequests = currentRequests.filter(request => request.status === selectedStatus);
+        }
+
+        renderRequests();
+      });
+
+      // Handle cancel request
+      document.addEventListener('click', function(e) {
+        if (e.target.closest('.cancel-request')) {
+          const requestId = parseInt(e.target.closest('.cancel-request').getAttribute('data-request-id'));
+          cancelRequest(requestId);
+        }
+
+        if (e.target.closest('.view-profile')) {
+          const username = e.target.closest('.view-profile').getAttribute('data-username');
+          viewProfile(username);
         }
       });
-    }
 
-    async function handleRequestCancel(button) {
-      button.innerHTML =
-        '<i class="fas fa-spinner fa-spin"></i> Canceling...';
-      button.disabled = true;
+      // Cancel request function
+      function cancelRequest(requestId) {
+        if (confirm('Are you sure you want to cancel this request?')) {
+          // Remove from current requests
+          currentRequests = currentRequests.filter(request => request.id !== requestId);
 
-      const requestId = button.dataset.request_id;
-      try {
-        const res = await fetch(`/requests/${requestId}/cancel`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+          // Update filtered requests based on current filter
+          const selectedStatus = statusFilter.value;
+          if (selectedStatus === 'all') {
+            filteredRequests = [...currentRequests];
+          } else {
+            filteredRequests = currentRequests.filter(request => request.status === selectedStatus);
+          }
 
-        if (res.ok) {
-          button.innerHTML = '<i class="fas fa-check"></i> Canceled';
-          button.classList.remove("btn-cancel");
-          button.classList.add("btn-disabled");
-
-          // Update the status badge
-          const card = button.closest(".request-card");
-          const statusBadge = card.querySelector(".status-badge");
-          statusBadge.className = "status-badge status-canceled";
-          statusBadge.textContent = "canceled";
-
-          // Update the data-status attribute for filtering
-          card.dataset.status = "canceled";
-        } else {
-          button.innerHTML = '<i class="fas fa-times"></i> Cancel Request';
-          button.disabled = false;
-          alert("Failed to cancel request. Please try again.");
+          renderRequests();
+          updateStats();
+          showNotification('Request Cancelled', 'Your request has been cancelled successfully.', 'info');
         }
-      } catch (error) {
-        console.error("Error:", error);
-        button.innerHTML = '<i class="fas fa-times"></i> Cancel Request';
-        button.disabled = false;
-        alert("An error occurred. Please try again.");
       }
-    }
+
+      // View profile function
+      function viewProfile(username) {
+        console.log(`Viewing profile for: ${username}`);
+        showNotification('Profile View', `Opening profile for @${username}`, 'info');
+        // Here you would typically navigate to the user's profile page
+      }
+
+      // Notification function
+      function showNotification(title, message, type = 'info') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-blue-500' : 'bg-red-500';
+        const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'info' ? 'ri-information-line' : 'ri-error-warning-line';
+
+        notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
+        notification.innerHTML = `
+          <i class="${icon} text-xl"></i>
+          <div>
+            <p class="font-medium">${title}</p>
+            <p class="text-sm opacity-90">${message}</p>
+          </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.transform = 'translateY(100%)';
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Initialize the application
+      init();
+    });
   </script>
 </body>
 

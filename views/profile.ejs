@@ -2,530 +2,1069 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title><%= profile.name %>'s Profile - damourmuslim</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/profile.css" />
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D'amour Muslim - Login</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'none': '0px',
+            'sm': '4px',
+            DEFAULT: '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '32px',
+            'full': '9999px',
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .material-shadow-elevated {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .ripple:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+  </style>
 </head>
 
-<body>
-  <% if (isAdmin) { %>
-  <div class="admin-profile-header">
-    <h2>Admin</h2>
-  </div>
-  <% } else { %>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <a href="/">
-          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
-        </a>
+<body class="bg-gray-50 font-['Roboto']">
+  <!-- Header remains the same -->
+  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+            D'amour Muslim
+          </a>
+        </h1>
       </div>
-      <div class="auth-buttons">
+      <div class="flex items-center gap-4">
         <% if (user) { %>
-        <div class="account-dropdown">
-          <button class="btn btn-account dropdown-toggle">
-            <i class="fas fa-user"></i> Account
-            <i class="fas fa-chevron-down"></i>
+        <!-- Logged in user dropdown -->
+        <div class="relative">
+          <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
+            <i class="ri-user-line"></i>
+            <span>Account</span>
+            <i class="ri-arrow-down-s-line"></i>
           </button>
-          <div class="dropdown-menu">
-            <a href="/account/info" class="dropdown-item">
-              <i class="fas fa-user-circle"></i> My Account
+          <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
+            <% if (user.isAdmin) { %>
+            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-dashboard-line text-primary"></i>
+              <span>Dashboard</span>
             </a>
-            <a href="/logout" class="dropdown-item">
-              <i class="fas fa-sign-out-alt"></i> Logout
+            <% } else { %>
+            <a href="/account" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-user-settings-line text-primary"></i>
+              <span>My Account</span>
+            </a>
+            <% } %>
+            <hr class="my-2 border-gray-100">
+            <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+              <i class="ri-logout-box-line"></i>
+              <span>Logout</span>
             </a>
           </div>
         </div>
         <% } else { %>
-        <a href="/register" class="btn btn-signup">Sign Up</a>
-        <a href="/login" class="btn btn-login">Login</a>
+        <!-- Not logged in - show login/signup buttons -->
+        <a href="/login" class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
+          Login
+        </a>
+        <a href="/register" class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+          Sign Up
+        </a>
         <% } %>
-      </div>
-      <div class="mobile-menu-toggle">
-        <i class="fas fa-bars"></i>
       </div>
     </div>
   </header>
-  <% } %>
 
-  <main>
-    <div class="container">
-      <div class="profile-container">
-        <div class="profile-header">
-          <a href="/profiles" class="back-link">
-            <i class="fas fa-arrow-left"></i> Back to Profiles
-          </a>
-          <h1>Profile Details</h1>
+  <main class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-3xl mx-auto px-6">
+      <div class="bg-white rounded-2xl overflow-hidden material-shadow mb-6">
+        <!-- Cover Photo -->
+        <div class="aspect-[3/2] relative overflow-hidden">
+          <% if (profile.profilePic && profile.profilePic.url) { %>
+          <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Cover">
+          <% } else { %>
+          <!-- Default cover image based on gender -->
+          <% if (profile.gender === 'male') { %>
+          <div class="w-full h-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
+            <i class="ri-user-line text-8xl text-white opacity-30"></i>
+          </div>
+          <% } else { %>
+          <div class="w-full h-full bg-gradient-to-br from-pink-400 to-pink-600 flex items-center justify-center">
+            <i class="ri-user-3-line text-8xl text-white opacity-30"></i>
+          </div>
+          <% } %>
+          <% } %>
+          <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/60 to-transparent"></div>
         </div>
 
-        <div class="profile-card">
-          <div class="profile-banner">
-            <div class="profile-avatar">
-              <% if (profile.profilePic && profile.profilePic.url) { %>
-              <img src="<%= profile.profilePic.url %>" alt="<%= profile.name %>'s profile picture" class="profile-image" />
-              <% } else { %> <% if (profile.gender &&
-                profile.gender.toLowerCase() === 'female') { %>
-              <i class="fas fa-female"></i>
-              <% } else { %>
-              <i class="fas fa-male"></i>
-              <% } %> <% } %>
-            </div>
+        <!-- Profile Content -->
+        <div class="relative -mt-24 px-8 pb-8">
+          <!-- Profile Picture -->
+          <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white material-shadow mx-auto mb-6">
+            <% if (profile.profilePic && profile.profilePic.url) { %>
+            <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+            <% } else { %>
+            <!-- Default avatar based on gender -->
+            <% if (profile.gender === 'male') { %>
+            <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+            <% } else { %>
+            <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+            <% } %>
+            <% } %>
           </div>
 
-          <div class="profile-content">
-            <div class="profile-basic-info">
-              <h2><%= profile.username %></h2>
-              <span class="profile-gender">
-                <% if (profile.gender && profile.gender.toLowerCase() ===
-                  'female') { %>
-                <i class="fas fa-venus"></i>
-                <% } else if (profile.gender && profile.gender.toLowerCase()
-                  === 'male') { %>
-                <i class="fas fa-mars"></i>
-                <% } else { %>
-                <i class="fas fa-venus-mars"></i>
-                <% } %> <%= profile.gender %>
-              </span>
-            </div>
+          <!-- Name and Verification -->
+          <div class="text-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 mb-2 font-['Playfair_Display']">
+              <%=  profile.username %>
+            </h1>
+            <p class="text-gray-600 flex items-center justify-center gap-2">
+              <i class="ri-verified-badge-fill text-primary"></i>
+              <span>@<%= profile.username %></span>
+            </p>
+          </div>
 
-            <!-- Basic info visible to all users -->
-            <div class="profile-details">
-              <div class="detail-group">
-                <!-- Public Information -->
-                <div class="detail-item">
-                  <i class="fas fa-birthday-cake"></i>
-                  <div>
-                    <span class="label">Age</span>
-                    <span class="value"><%= profile.age || 'Not Provided' %></span>
+          <!-- Public Information (Always Visible) -->
+          <div class="space-y-8">
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h2 class="text-xl font-semibold text-gray-900 mb-6 font-['Playfair_Display']">Public Information</h2>
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                  <% if (profile.gender) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="<%= profile.gender === 'male' ? 'ri-user-line' : 'ri-user-3-line' %>"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Gender</p>
+                      <p class="text-gray-900 capitalize"><%= profile.gender %></p>
+                    </div>
                   </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-map-marker-alt"></i>
-                  <div>
-                    <span class="label">Location</span>
-                    <span class="value">
-                      <%= [profile.city, profile.state,
-                        profile.country].filter(Boolean).join(', ') || '-' %>
-                    </span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-flag"></i>
-                  <div>
-                    <span class="label">Nationality</span>
-                    <span class="value"><%= profile.nationality || '-' %></span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-venus-mars"></i>
-                  <div>
-                    <span class="label">Gender</span>
-                    <span class="value"><%= profile.gender || '-' %></span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-ruler-vertical"></i>
-                  <div>
-                    <span class="label">Height</span>
-                    <span class="value"><%= profile.height ? profile.height + ' cm' : '-'
-                        %></span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-graduation-cap"></i>
-                  <div>
-                    <span class="label">Education</span>
-                    <span class="value">
-                      <ul style="padding-left: 18px; margin: 0">
-                        <% profile.education.forEach(function(edu) { %>
-                        <li>
-                          <%= edu.title ? edu.title : '' %> <%= edu.institute
-                            ? ', ' + edu.institute : '' %> <%= edu.year ? ', ' +
-                            edu.year : '' %>
-                        </li>
-                        <% }); %>
-                      </ul>
-                    </span>
-                  </div>
-                </div>
-                <div class="detail-item">
-                  <i class="fas fa-briefcase"></i>
-                  <div>
-                    <span class="label">Work</span>
-                    <span class="value"><%= profile.fatherProfession || '-' %></span>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  <% } %>
 
-            <!-- Full access section -->
-            <% if (canAccessFullProfile) { %>
-            <div class="access-section">
-              <div class="extended-details">
-                <div class="detail-group">
-                  <% if (profile.username) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-user"></i>
+                  <% if (profile.age) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="ri-calendar-line"></i>
+                    </div>
                     <div>
-                      <span class="label">Username</span>
-                      <span class="value"><%= profile.username %></span>
+                      <p class="text-sm text-gray-500">Age</p>
+                      <p class="text-gray-900"><%= profile.age %> years</p>
                     </div>
                   </div>
-                  <% } %> <% if (profile.email) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-envelope"></i>
+                  <% } %>
+
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="ri-map-pin-line"></i>
+                    </div>
                     <div>
-                      <span class="label">Email</span>
-                      <span class="value"><%= profile.email %></span>
+                      <p class="text-sm text-gray-500">Location</p>
+                      <p class="text-gray-900">
+                        <% if (profile.city && profile.country) { %>
+                        <%= profile.city %>, <%= profile.country %>
+                        <% } else if (profile.city) { %>
+                        <%= profile.city %>
+                        <% } else if (profile.country) { %>
+                        <%= profile.country %>
+                        <% } else { %>
+                        Location not specified
+                        <% } %>
+                      </p>
                     </div>
                   </div>
-                  <% } %> <% if (profile.contact) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-phone"></i>
+
+                  <% if (profile.nationality) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="ri-flag-line"></i>
+                    </div>
                     <div>
-                      <span class="label">Contact</span>
-                      <span class="value"><%= profile.contact %></span>
+                      <p class="text-sm text-gray-500">Nationality</p>
+                      <p class="text-gray-900"><%= profile.nationality %></p>
                     </div>
                   </div>
-                  <% } %> <% if (profile.caste) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-users"></i>
+                  <% } %>
+                </div>
+
+                <div class="space-y-4">
+                  <% if (profile.height) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="ri-ruler-line"></i>
+                    </div>
                     <div>
-                      <span class="label">Caste</span>
-                      <span class="value"><%= profile.caste %></span>
+                      <p class="text-sm text-gray-500">Height</p>
+                      <p class="text-gray-900"><%= (profile.height / 30.48).toFixed(1) %> ft</p>
                     </div>
                   </div>
-                  <% } %> <% if (profile.religion) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-pray"></i>
+                  <% } %>
+
+                  <% if (profile.education && profile.education.length > 0) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="ri-graduation-cap-line"></i>
+                    </div>
                     <div>
-                      <span class="label">Religion</span>
-                      <span class="value"><%= profile.religion %></span>
+                      <p class="text-sm text-gray-500">Education</p>
+                      <p class="text-gray-900"><%= profile.education[0].title || 'Education details available' %></p>
                     </div>
                   </div>
-                  <% } %> <% if (profile.country) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-flag"></i>
-                    <div>
-                      <span class="label">Country</span>
-                      <span class="value"><%= profile.country %></span>
+                  <% } %>
+
+                  <% if (profile.work) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="ri-briefcase-4-line"></i>
                     </div>
-                  </div>
-                  <% } %> <% if (profile.state) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-map"></i>
                     <div>
-                      <span class="label">State</span>
-                      <span class="value"><%= profile.state %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.city) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-city"></i>
-                    <div>
-                      <span class="label">City</span>
-                      <span class="value"><%= profile.city %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.adress) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-home"></i>
-                    <div>
-                      <span class="label">Address</span>
-                      <span class="value"><%= profile.adress %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.aboutMe) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-user"></i>
-                    <div>
-                      <span class="label">About Me</span>
-                      <span class="value"><%= profile.aboutMe %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.islamIsImportantToMeInfo) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-mosque"></i>
-                    <div>
-                      <span class="label">Islam Is Important To Me Info</span>
-                      <span class="value"><%= profile.islamIsImportantToMeInfo %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.hobbies && profile.hobbies.length) {
-                    %>
-                  <div class="detail-item">
-                    <i class="fas fa-heart"></i>
-                    <div>
-                      <span class="label">Hobbies</span>
-                      <span class="value"><%= profile.hobbies.join(', ') %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.describeNature) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-info-circle"></i>
-                    <div>
-                      <span class="label">Describe Nature</span>
-                      <span class="value"><%= profile.describeNature %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.lookingForASpouseThatIs) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-search"></i>
-                    <div>
-                      <span class="label">Looking For A Spouse That Is</span>
-                      <span class="value"><%= profile.lookingForASpouseThatIs %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.siblings !== undefined) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-users"></i>
-                    <div>
-                      <span class="label">Siblings</span>
-                      <span class="value"><%= profile.siblings %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.birthPlace) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <div>
-                      <span class="label">Birth Place</span>
-                      <span class="value"><%= profile.birthPlace %></span>
-                    </div>
-                  </div>
-                  <% } %> <% if (profile.children && profile.children.length)
-                    { %>
-                  <div class="detail-item">
-                    <i class="fas fa-child"></i>
-                    <div>
-                      <span class="label">Children</span>
-                      <span class="value">
-                        <ul style="padding-left: 18px; margin: 0">
-                          <% profile.children.forEach(function(child) { %>
-                          <li>
-                            <strong>Name:</strong> <%= child.name || '-' %>,
-                            <strong>Age:</strong> <%= child.age || '-' %>,
-                            <strong>Location:</strong> <%=
-                              child.livingLocation || '-' %>
-                          </li>
-                          <% }); %>
-                        </ul>
-                      </span>
-                    </div>
-                  </div>
-                  <% } %> <% if
-                    (profile.anySpecialInformationPeopleShouldKnow) { %>
-                  <div class="detail-item">
-                    <i class="fas fa-info-circle"></i>
-                    <div>
-                      <span class="label">Any Special Information</span>
-                      <span class="value"><%= profile.anySpecialInformationPeopleShouldKnow
-                          %></span>
+                      <p class="text-sm text-gray-500">Work</p>
+                      <p class="text-gray-900"><%= profile.work %></p>
                     </div>
                   </div>
                   <% } %>
                 </div>
               </div>
+
+              <!-- About Me Section (Public) -->
+              <% if (profile.aboutMe) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">About Me</h3>
+                <p class="text-gray-700 leading-relaxed"><%= profile.aboutMe %></p>
+              </div>
+              <% } %>
+
+              <!-- Full Education Details (Public) -->
+              <% if (profile.education && profile.education.length > 0) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Education Background</h3>
+                <div class="space-y-3">
+                  <% profile.education.forEach(edu => { %>
+                  <div class="bg-white rounded-lg p-4 border border-gray-200">
+                    <h4 class="font-medium text-gray-900"><%= edu.title || 'Education' %></h4>
+                    <% if (edu.institute) { %><p class="text-gray-600"><%= edu.institute %></p><% } %>
+                    <% if (edu.year) { %><p class="text-sm text-gray-500"><%= edu.year %></p><% } %>
+                  </div>
+                  <% }) %>
+                </div>
+              </div>
+              <% } %>
             </div>
-            <% } else { %>
-            <!-- Request access section -->
-            <div class="access-section limited">
-              <div class="access-divider">
-                <span>Private Information</span>
+
+            <!-- Private Information Section -->
+            <div class="bg-gray-50 rounded-xl p-6">
+              <h2 class="text-xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">
+                Private Information
+              </h2>
+
+              <% if (canAccessFullProfile) { %>
+              <!-- Show ALL private information for admin or users with access -->
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                  <!-- Basic Contact & Personal -->
+                  <% if (profile.contact) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                      <i class="ri-phone-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Contact</p>
+                      <p class="text-gray-900"><%= profile.contact %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.religion) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <i class="ri-book-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Religion</p>
+                      <p class="text-gray-900">
+                        <%= profile.religion %>
+                        <% if (profile.caste) { %> - <%= profile.caste %><% } %>
+                      </p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.maritalStatus && profile.maritalStatus !== 'N/A') { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                      <i class="ri-heart-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Marital Status</p>
+                      <p class="text-gray-900 capitalize"><%= profile.maritalStatus %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <!-- Address Information -->
+                  <% if (profile.adress) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
+                      <i class="ri-home-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Address</p>
+                      <p class="text-gray-900"><%= profile.adress %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.state) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
+                      <i class="ri-map-2-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">State</p>
+                      <p class="text-gray-900"><%= profile.state %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <!-- Physical Characteristics -->
+                  <% if (profile.eyeColor && profile.eyeColor !== 'N/A') { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100 text-purple-600">
+                      <i class="ri-eye-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Eye Color</p>
+                      <p class="text-gray-900 capitalize"><%= profile.eyeColor %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.hairColor && profile.hairColor !== 'N/A') { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+                      <i class="ri-scissors-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Hair Color</p>
+                      <p class="text-gray-900 capitalize"><%= profile.hairColor %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.complexion && profile.complexion !== 'N/A') { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                      <i class="ri-palette-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Complexion</p>
+                      <p class="text-gray-900 capitalize"><%= profile.complexion %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.build && profile.build !== 'N/A') { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+                      <i class="ri-body-scan-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Build</p>
+                      <p class="text-gray-900 capitalize"><%= profile.build %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.ethnicity && profile.ethnicity !== 'N/A') { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-teal-100 text-teal-600">
+                      <i class="ri-global-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Ethnicity</p>
+                      <p class="text-gray-900 capitalize"><%= profile.ethnicity %></p>
+                    </div>
+                  </div>
+                  <% } %>
+                </div>
+
+                <div class="space-y-4">
+                  <!-- Languages -->
+                  <% if (profile.languagesSpoken && profile.languagesSpoken.length > 0) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                      <i class="ri-translate-2"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Languages</p>
+                      <p class="text-gray-900"><%= profile.languagesSpoken.join(', ') %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <!-- Health & Lifestyle -->
+                  <% if (profile.disability && profile.disability !== 'no') { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-red-100 text-red-600">
+                      <i class="ri-wheelchair-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Disability</p>
+                      <p class="text-gray-900"><%= profile.disability %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.smoker !== undefined) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600">
+                      <i class="ri-smoking-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Smoker</p>
+                      <p class="text-gray-900"><%= profile.smoker ? 'Yes' : 'No' %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <!-- Religious Information -->
+                  <% if (profile.bornMuslim !== undefined) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+                      <i class="ri-user-heart-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Born Muslim</p>
+                      <p class="text-gray-900"><%= profile.bornMuslim ? 'Yes' : 'No' %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.islamicSect) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-teal-100 text-teal-600">
+                      <i class="ri-book-open-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Islamic Sect</p>
+                      <p class="text-gray-900"><%= profile.islamicSect %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.prays !== undefined) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-purple-100 text-purple-600">
+                      <i class="ri-time-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Prays Regularly</p>
+                      <p class="text-gray-900"><%= profile.prays ? 'Yes' : 'No' %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.celebratesMilaad !== undefined) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-pink-100 text-pink-600">
+                      <i class="ri-calendar-event-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Celebrates Milaad</p>
+                      <p class="text-gray-900"><%= profile.celebratesMilaad ? 'Yes' : 'No' %></p>
+                    </div>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.celebrateKhatams !== undefined) { %>
+                  <div class="flex items-center gap-4">
+                    <div class="w-10 h-10 flex items-center justify-center rounded-full bg-indigo-100 text-indigo-600">
+                      <i class="ri-book-read-line"></i>
+                    </div>
+                    <div>
+                      <p class="text-sm text-gray-500">Celebrates Khatams</p>
+                      <p class="text-gray-900"><%= profile.celebrateKhatams ? 'Yes' : 'No' %></p>
+                    </div>
+                  </div>
+                  <% } %>
+                </div>
               </div>
 
-              <div class="limited-access">
-                <div class="lock-icon">
-                  <i class="fas fa-lock"></i>
-                </div>
+              <!-- Extended Sections -->
 
-                <% if (hasalreadysentrequest) { %>
-                <div class="request-pending">
-                  <h3>Request Pending</h3>
-                  <p>
-                    You've already sent a request. Please wait for their
-                    response.
-                    <br />
-                    You can cancel your request in your account page
-                    <a style="color: #ff69b4" href="/account/yourRequests">Here</a>
-                  </p>
-                  <div class="status-indicator">
-                    <div class="spinner"></div>
-                    <span>Awaiting response</span>
+              <!-- Hobbies Section -->
+              <% if (profile.hobbies && profile.hobbies.length > 0) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Hobbies & Interests</h3>
+                <div class="flex flex-wrap gap-2">
+                  <% profile.hobbies.forEach(hobby => { %>
+                  <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm"><%= hobby %></span>
+                  <% }) %>
+                </div>
+              </div>
+              <% } %>
+
+              <!-- Family Information -->
+              <% if (profile.fatherName || profile.motherName || profile.fatherProfession || profile.siblings || profile.birthPlace) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Family Information</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="space-y-3">
+                    <% if (profile.fatherName) { %>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                      <p class="text-sm text-gray-500">Father's Name</p>
+                      <p class="text-gray-900"><%= profile.fatherName %></p>
+                    </div>
+                    <% } %>
+
+                    <% if (profile.motherName) { %>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                      <p class="text-sm text-gray-500">Mother's Name</p>
+                      <p class="text-gray-900"><%= profile.motherName %></p>
+                    </div>
+                    <% } %>
+
+                    <% if (profile.fatherProfession) { %>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                      <p class="text-sm text-gray-500">Father's Profession</p>
+                      <p class="text-gray-900"><%= profile.fatherProfession %></p>
+                    </div>
+                    <% } %>
+                  </div>
+
+                  <div class="space-y-3">
+                    <% if (profile.siblings !== undefined) { %>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                      <p class="text-sm text-gray-500">Siblings</p>
+                      <p class="text-gray-900"><%= profile.siblings %></p>
+                    </div>
+                    <% } %>
+
+                    <% if (profile.birthPlace) { %>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                      <p class="text-sm text-gray-500">Birth Place</p>
+                      <p class="text-gray-900"><%= profile.birthPlace %></p>
+                    </div>
+                    <% } %>
+
+                    <% if (profile.children && profile.children.length > 0) { %>
+                    <div class="bg-white rounded-lg p-3 border border-gray-200">
+                      <p class="text-sm text-gray-500">Children</p>
+                      <% profile.children.forEach(child => { %>
+                      <div class="mt-1">
+                        <p class="text-gray-900"><%= child.name %> (Age: <%= child.age %>)</p>
+                        <% if (child.livingLocation) { %>
+                        <p class="text-sm text-gray-600">Lives in: <%= child.livingLocation %></p>
+                        <% } %>
+                      </div>
+                      <% }) %>
+                    </div>
+                    <% } %>
                   </div>
                 </div>
-                <% } else { %>
-                <div class="request-access">
-                  <h3>Request Full Profile Access</h3>
-                  <p>
-                    You will be sharing all your information with this person
-                    (e.g., contact number etc). If they accept your request,
-                    they will start sharing their full data too.
-                  </p>
-                  <button id="requestAccessBtn" class="request-btn" onclick="handleInterestClick(this)" data-id="<%= profile._id %>">
-                    <i class="fas fa-key"></i> Request Full Access
-                  </button>
+              </div>
+              <% } %>
+
+              <!-- Islamic Values & Beliefs -->
+              <% if (profile.islamIsImportantToMeInfo || profile.acceptSomeoneWithChildren !== undefined || profile.acceptADivorcedPerson !== undefined || profile.agreesWithPolygamy !== undefined || profile.acceptAWidow !== undefined || profile.AcceptSomeoneWithBeard !== undefined || profile.AcceptSomeoneWithHijab !== undefined || profile.ConsiderARevert !== undefined) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Islamic Values & Preferences</h3>
+
+                <% if (profile.islamIsImportantToMeInfo) { %>
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                  <p class="text-sm text-gray-500 mb-2">Why Islam is Important to Me</p>
+                  <p class="text-gray-900"><%= profile.islamIsImportantToMeInfo %></p>
+                </div>
+                <% } %>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                  <% if (profile.acceptSomeoneWithChildren !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Accept Someone With Children</p>
+                    <p class="text-gray-900"><%= profile.acceptSomeoneWithChildren ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.acceptADivorcedPerson !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Accept Divorced Person</p>
+                    <p class="text-gray-900"><%= profile.acceptADivorcedPerson ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.agreesWithPolygamy !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Agrees With Polygamy</p>
+                    <p class="text-gray-900"><%= profile.agreesWithPolygamy ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.acceptAWidow !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Accept Widow</p>
+                    <p class="text-gray-900"><%= profile.acceptAWidow ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.AcceptSomeoneWithBeard !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Accept Someone With Beard</p>
+                    <p class="text-gray-900"><%= profile.AcceptSomeoneWithBeard ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.AcceptSomeoneWithHijab !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Accept Someone With Hijab</p>
+                    <p class="text-gray-900"><%= profile.AcceptSomeoneWithHijab ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.ConsiderARevert !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Consider A Revert</p>
+                    <p class="text-gray-900"><%= profile.ConsiderARevert ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+              <% } %>
+
+              <!-- Future Plans & Lifestyle -->
+              <% if (profile.livingArrangementsAfterMarriage || profile.futurePlans || profile.describeNature || profile.willingToRelocate !== undefined) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Future Plans & Lifestyle</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                  <% if (profile.livingArrangementsAfterMarriage && profile.livingArrangementsAfterMarriage !== 'N/A') { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Living Arrangements After Marriage</p>
+                    <p class="text-gray-900 capitalize"><%= profile.livingArrangementsAfterMarriage %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.futurePlans && profile.futurePlans !== 'N/A') { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Future Plans</p>
+                    <p class="text-gray-900 capitalize"><%= profile.futurePlans %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.willingToRelocate !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Willing to Relocate</p>
+                    <p class="text-gray-900"><%= profile.willingToRelocate ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+                </div>
+
+                <% if (profile.describeNature) { %>
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mt-4">
+                  <p class="text-sm text-gray-500 mb-2">Describe Your Nature</p>
+                  <p class="text-gray-900"><%= profile.describeNature %></p>
                 </div>
                 <% } %>
               </div>
+              <% } %>
+
+              <!-- Qualities & Partner Preferences -->
+              <% if (profile.QualitiesThatYouCanBringToYourMarriage || profile.preferredAgeRange || profile.preferredHeightRange || profile.preferredCaste || profile.preferredEthnicity || profile.allowParnterToWork !== undefined || profile.allowPartnerToStudy !== undefined || profile.acceptSomeoneInOtherCountry !== undefined || profile.qualitiesYouNeedInYourPartner || profile.lookingForASpouseThatIs) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Partner Preferences & Qualities</h3>
+
+                <% if (profile.QualitiesThatYouCanBringToYourMarriage && profile.QualitiesThatYouCanBringToYourMarriage.length > 0) { %>
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                  <p class="text-sm text-gray-500 mb-2">Qualities I Can Bring to Marriage</p>
+                  <div class="flex flex-wrap gap-2">
+                    <% profile.QualitiesThatYouCanBringToYourMarriage.forEach(quality => { %>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm"><%= quality %></span>
+                    <% }) %>
+                  </div>
+                </div>
+                <% } %>
+
+                <% if (profile.qualitiesYouNeedInYourPartner && profile.qualitiesYouNeedInYourPartner.length > 0) { %>
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                  <p class="text-sm text-gray-500 mb-2">Qualities I Need in My Partner</p>
+                  <div class="flex flex-wrap gap-2">
+                    <% profile.qualitiesYouNeedInYourPartner.forEach(quality => { %>
+                    <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm"><%= quality %></span>
+                    <% }) %>
+                  </div>
+                </div>
+                <% } %>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                  <% if (profile.preferredAgeRange) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Preferred Age Range</p>
+                    <p class="text-gray-900"><%= profile.preferredAgeRange %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.preferredHeightRange) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Preferred Height Range</p>
+                    <p class="text-gray-900"><%= profile.preferredHeightRange %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.preferredCaste) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Preferred Caste</p>
+                    <p class="text-gray-900"><%= profile.preferredCaste %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.preferredEthnicity) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Preferred Ethnicity</p>
+                    <p class="text-gray-900"><%= profile.preferredEthnicity %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.allowParnterToWork !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Allow Partner to Work</p>
+                    <p class="text-gray-900"><%= profile.allowParnterToWork ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.allowPartnerToStudy !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Allow Partner to Study</p>
+                    <p class="text-gray-900"><%= profile.allowPartnerToStudy ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.acceptSomeoneInOtherCountry !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Accept Someone in Other Country</p>
+                    <p class="text-gray-900"><%= profile.acceptSomeoneInOtherCountry ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.lookingForASpouseThatIs) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Looking for Spouse That Is</p>
+                    <p class="text-gray-900"><%= profile.lookingForASpouseThatIs %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.willingToConsiderANonUkCitizen !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Willing to Consider Non-UK Citizen</p>
+                    <p class="text-gray-900"><%= profile.willingToConsiderANonUkCitizen ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+                </div>
+              </div>
+              <% } %>
+
+              <!-- Additional Information & Contact -->
+              <% if (profile.willingToSharePhotosUponRequest !== undefined || profile.willingToMeetUpOutside !== undefined || profile.waliMyContactDetails || profile.whoCompletedProfile || profile.anySpecialInformationPeopleShouldKnow) { %>
+              <div class="mt-6 pt-6 border-t border-gray-200">
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Additional Information</h3>
+
+                <div class="grid md:grid-cols-2 gap-4 mb-4">
+                  <% if (profile.willingToSharePhotosUponRequest !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Willing to Share Photos Upon Request</p>
+                    <p class="text-gray-900"><%= profile.willingToSharePhotosUponRequest ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.willingToMeetUpOutside !== undefined) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Willing to Meet Up Outside</p>
+                    <p class="text-gray-900"><%= profile.willingToMeetUpOutside ? 'Yes' : 'No' %></p>
+                  </div>
+                  <% } %>
+
+                  <% if (profile.whoCompletedProfile) { %>
+                  <div class="bg-white rounded-lg p-3 border border-gray-200">
+                    <p class="text-sm text-gray-500">Profile Completed By</p>
+                    <p class="text-gray-900"><%= profile.whoCompletedProfile %></p>
+                  </div>
+                  <% } %>
+                </div>
+
+                <% if (profile.waliMyContactDetails) { %>
+                <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
+                  <p class="text-sm text-gray-500 mb-2">Wali Contact Details</p>
+                  <p class="text-gray-900"><%= profile.waliMyContactDetails %></p>
+                </div>
+                <% } %>
+
+                <% if (profile.anySpecialInformationPeopleShouldKnow) { %>
+                <div class="bg-white rounded-lg p-4 border border-gray-200">
+                  <p class="text-sm text-gray-500 mb-2">Special Information</p>
+                  <p class="text-gray-900"><%= profile.anySpecialInformationPeopleShouldKnow %></p>
+                </div>
+                <% } %>
+              </div>
+              <% } %>
+
+              <% } else { %>
+              <!-- Request access to private profile information -->
+              <div class="text-center space-y-4">
+                <div class="flex items-center justify-center gap-2 text-gray-600 mb-4">
+                  <i class="ri-lock-line"></i>
+                  <p>Detailed private information is protected</p>
+                </div>
+
+                <div class="bg-blue-50 rounded-lg p-4 mb-6">
+                  <div class="flex items-start gap-3">
+                    <i class="ri-information-line text-blue-600 text-xl mt-0.5"></i>
+                    <div class="text-left">
+                      <h4 class="font-medium text-blue-900 mb-1">How Profile Sharing Works</h4>
+                      <p class="text-sm text-blue-700">When you request access, your private information will be shared with this person. If they accept your request, you'll both be able to see each other's complete profiles including contact details, family information, religious preferences, and partner expectations.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <% if (!hasalreadysentrequest && user && !user.isAdmin) { %>
+                <button id="requestAccessBtn" data-profile-id="<%= profile._id %>" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+                  <i class="ri-profile-line"></i>
+                  <span>Request Profile Sharing</span>
+                </button>
+                <p class="text-sm text-gray-500 mt-2">By clicking this button, you agree to share your private information with this person</p>
+                <% } else if (hasalreadysentrequest) { %>
+                <div class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-button">
+                  <i class="ri-time-line"></i>
+                  <span>Profile Sharing Request Pending</span>
+                </div>
+                <p class="text-sm text-gray-500 mt-2">Your request is pending. You'll be notified when they respond.</p>
+                <% } else if (!user) { %>
+                <a href="/login" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+                  <i class="ri-login-box-line"></i>
+                  <span>Login to View Full Profile</span>
+                </a>
+                <% } %>
+              </div>
+              <% } %>
             </div>
-            <% } %>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- Only show registration form if user is not logged in -->
+    <% if (!user) { %>
+    <!-- Registration form section -->
+    <div class="max-w-md mx-auto px-6">
+      <!-- ... existing registration form ... -->
+    </div>
+    <% } %>
+
   </main>
 
-  <% if (!isAdmin) { %>
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>About Us</h3>
-          <p>
-            We make knowing eachother secure that ever and find the perfect
-            match for you
-          </p>
+  <!-- Footer remains the same -->
+  <footer class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-facebook-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-instagram-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-twitter-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-youtube-fill ri-lg"></i>
+            </a>
+          </div>
         </div>
-        <div class="footer-section">
-          <h3>Contact</h3>
-          <p>Email: damourmuslim@gmail.com</p>
-          <p>Phone: +447454516156</p>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-mail-line"></i>
+              </div>
+              <span>damourmuslim@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-phone-line"></i>
+              </div>
+              <span>+447454516156</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-map-pin-line"></i>
+              </div>
+              <span>London, UK</span>
+            </div>
+          </div>
         </div>
-        <div class="footer-section">
-          <h3>Follow Us</h3>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
+          <div class="space-y-2">
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 damourmuslim. All rights reserved.</p>
+      <div class="border-t border-white border-opacity-20 pt-8 text-center">
+        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
   </footer>
-  <% } %>
-  <script src="/js/main.js"></script>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      // Mobile menu toggle
-      const menuToggle = document.querySelector(".mobile-menu-toggle");
-      const authButtons = document.querySelector(".auth-buttons");
+  <!-- Updated JavaScript -->
+  <script id="profile-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Request access button
+      const requestAccessBtn = document.getElementById('requestAccessBtn');
+      if (requestAccessBtn) {
+        requestAccessBtn.addEventListener('click', function() {
+          const profileId = this.getAttribute('data-profile-id');
+          const button = this;
 
-      if (menuToggle && authButtons) {
-        menuToggle.addEventListener("click", function() {
-          authButtons.classList.toggle("active");
+          // Disable button and show loading
+          button.disabled = true;
+          button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Sending Request...';
+
+          // Send request
+          fetch(`/interested/${profileId}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.message) {
+                // Show success notification
+                showNotification('Request Sent!', "We'll notify you when they respond", 'success');
+
+                // Update button to show request sent
+                button.innerHTML = '<i class="ri-time-line mr-2"></i>Request Pending';
+                button.className = 'inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-button';
+              } else {
+                throw new Error('Failed to send request');
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              showNotification('Request Failed', 'Please try again later', 'error');
+
+              // Reset button
+              button.disabled = false;
+              button.innerHTML = '<i class="ri-profile-line mr-2"></i>Request Full Profile Access';
+            });
         });
       }
 
-      // Close menu when clicking outside
-      document.addEventListener("click", function(event) {
-        if (
-          !event.target.closest(".mobile-menu-toggle") &&
-          !event.target.closest(".auth-buttons") &&
-          authButtons &&
-          authButtons.classList.contains("active")
-        ) {
-          authButtons.classList.remove("active");
-        }
-      });
+      // Notification function
+      function showNotification(title, message, type = 'info') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'error' ? 'bg-red-500' : 'bg-blue-500';
+        const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'error' ? 'ri-error-warning-line' : 'ri-information-line';
+
+        notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
+        notification.innerHTML = `
+          <i class="${icon} text-xl"></i>
+          <div>
+            <p class="font-medium">${title}</p>
+            <p class="text-sm opacity-90">${message}</p>
+          </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.transform = 'translateY(100%)';
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Dropdown interactions for header
+      const dropdownButton = document.getElementById('accountDropdown');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+
+      if (dropdownButton && dropdownMenu) {
+        dropdownButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdownMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function() {
+          dropdownMenu.classList.add('hidden');
+        });
+
+        dropdownMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
     });
-
-    function showToast(message, duration = 3000) {
-      const toast = document.getElementById("toast");
-      if (!toast) return;
-      toast.textContent = message;
-      toast.classList.add("show");
-
-      // Hide on click outside or after duration
-      function hideToast() {
-        toast.classList.remove("show");
-        document.removeEventListener("mousedown", outsideClickListener);
-      }
-      const outsideClickListener = (event) => {
-        if (!toast.contains(event.target)) {
-          hideToast();
-        }
-      };
-      document.addEventListener("mousedown", outsideClickListener);
-
-      setTimeout(hideToast, duration);
-    }
-
-    async function handleInterestClick(button) {
-      // Show loading state
-      const originalText = button.innerHTML;
-      button.innerHTML =
-        '<i class="fas fa-spinner fa-spin"></i> Sending Request...';
-      button.disabled = true;
-      button.classList.add("loading");
-
-      const profileId = button.dataset.id;
-
-      try {
-        const res = await fetch(`/interested/${profileId}`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            returnTo: window.location.pathname, // send current page path
-          }),
-        });
-
-        const data = await res.json();
-
-        if (!res.ok) {
-          alert(data.message);
-          // Reset button
-          button.innerHTML = originalText;
-          button.disabled = false;
-          button.classList.remove("loading");
-          return;
-        }
-
-        // Success state
-        button.innerHTML = '<i class="fas fa-check"></i> Request Sent';
-        button.classList.remove("loading");
-        button.classList.add("success");
-
-        // Show success message
-        const requestAccess = document.querySelector(".request-access");
-        if (requestAccess) {
-          requestAccess.innerHTML = `
-              <h3>Request Sent</h3>
-              <p>${data.message}</p>
-              <div class="status-indicator">
-                <div class="spinner"></div>
-                <span>Awaiting response</span>
-              </div>
-            `;
-        }
-
-        // Show toast notification
-        showToast("Request sent successfully!");
-      } catch (error) {
-        showToast("You must be logged in to request full access.");
-        console.log("error", error);
-        // Reset button
-        button.innerHTML = originalText;
-        button.disabled = false;
-        button.classList.remove("loading");
-      }
-    }
   </script>
-  <div id="toast" class="toast"></div>
 </body>
 
 </html>

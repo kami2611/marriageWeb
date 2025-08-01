@@ -2,113 +2,334 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Login - damourmuslim</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/login.css" />
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D'amour Muslim - Login</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'none': '0px',
+            'sm': '4px',
+            DEFAULT: '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '32px',
+            'full': '9999px',
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .material-shadow-elevated {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .ripple:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+  </style>
 </head>
 
-<body>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <a href="/">
-          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
+<body class="bg-gray-50 font-['Roboto']">
+  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+            D'amour Muslim
+          </a>
+        </h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <% if (user) { %>
+        <!-- Logged in user dropdown -->
+        <div class="relative">
+          <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
+            <i class="ri-user-line"></i>
+            <span>Account</span>
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+          <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
+            <% if (user.isAdmin) { %>
+            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-dashboard-line text-primary"></i>
+              <span>Dashboard</span>
+            </a>
+            <% } else { %>
+            <a href="/account" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-user-settings-line text-primary"></i>
+              <span>My Account</span>
+            </a>
+            <% } %>
+            <hr class="my-2 border-gray-100">
+            <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+              <i class="ri-logout-box-line"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+        <% } else { %>
+        <!-- Not logged in - show login/signup buttons -->
+        <a href="/login" class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
+          Login
         </a>
-      </div>
-      <div class="auth-buttons">
-        <a href="/register" class="btn btn-signup">Sign Up</a>
-        <a href="/login" class="btn btn-login">Login</a>
-      </div>
-      <div class="mobile-menu-toggle">
-        <i class="fas fa-bars"></i>
+        <a href="/register" class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+          Sign Up
+        </a>
+        <% } %>
       </div>
     </div>
   </header>
-
-  <main>
-    <div class="container">
-      <div class="login-container">
-        <h1>Welcome Back</h1>
-
-        <!-- Error message container -->
-        <div id="error-message" class="error-message"></div>
-
-        <form id="login-form" action="/login" method="post" class="login-form">
-          <div class="form-group">
-            <label for="username">Username</label>
-            <div class="input-with-icon">
-              <i class="fas fa-user"></i>
-              <input type="text" id="username" name="username" placeholder="Enter your username" required />
+  <main class="pt-24 pb-16 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md px-6">
+      <div class="bg-white rounded-2xl p-8 material-shadow">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-800 mb-3 font-['Playfair_Display']">Welcome Back</h2>
+          <p class="text-gray-600">Sign in to continue your journey</p>
+        </div>
+        <form class="space-y-6">
+          <div class="space-y-2">
+            <label for="username" class="block text-sm font-medium text-gray-700">Username</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="ri-user-line text-gray-400"></i>
+              </div>
+              <input type="text" id="username" name="username" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your username">
             </div>
           </div>
-
-          <div class="form-group">
-            <label for="password">Password</label>
-            <div class="input-with-icon">
-              <i class="fas fa-lock"></i>
-              <input type="password" id="password" name="password" placeholder="Enter your password" required />
+          <div class="space-y-2">
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="ri-lock-line text-gray-400"></i>
+              </div>
+              <input type="password" id="password" name="password" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your password">
             </div>
           </div>
-
-          <div class="form-options">
-            <div class="remember-me">
-              <input type="checkbox" id="remember" name="remember" />
-              <label for="remember">Remember me</label>
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <input type="checkbox" id="remember-me" name="remember-me" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+              <label for="remember-me" class="ml-2 block text-sm text-gray-700">Remember me</label>
             </div>
-            <a href="/forgot-password" class="forgot-password">Forgot password?</a>
+            <a href="#" class="text-sm font-medium text-primary hover:text-pink-600 transition-colors duration-300">Forgot password?</a>
           </div>
-
-          <button type="submit" class="btn btn-login btn-full">Login</button>
+          <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 ripple material-shadow">
+            Sign in
+          </button>
+          <div class="text-center text-sm">
+            <span class="text-gray-600">Don't have an account?</span>
+            <a href="/register" class="font-medium text-primary hover:text-pink-600 transition-colors duration-300 ml-1">Register here</a>
+          </div>
         </form>
-
-        <div class="register-link">
-          Don't have an account? <a href="/register">Register here</a>
+      </div>
+      <div class="text-center mt-8">
+        <div class="inline-flex items-center gap-6 text-gray-500 text-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-5 h-5 flex items-center justify-center text-primary">
+              <i class="ri-shield-check-line"></i>
+            </div>
+            <span>Secure Login</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-5 h-5 flex items-center justify-center text-primary">
+              <i class="ri-lock-line"></i>
+            </div>
+            <span>Private & Protected</span>
+          </div>
         </div>
       </div>
     </div>
   </main>
-
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>About Us</h3>
-          <p>
-            We make knowing eachother secure that ever and find the perfect
-            match for you
-          </p>
+  <footer class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-facebook-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-instagram-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-twitter-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-youtube-fill ri-lg"></i>
+            </a>
+          </div>
         </div>
-        <div class="footer-section">
-          <h3>Contact</h3>
-          <p>Email: damourmuslim@gmail.com</p>
-          <p>Phone: +447454516156</p>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-mail-line"></i>
+              </div>
+              <span>damourmuslim@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-phone-line"></i>
+              </div>
+              <span>+447454516156</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-map-pin-line"></i>
+              </div>
+              <span>London, UK</span>
+            </div>
+          </div>
         </div>
-        <div class="footer-section">
-          <h3>Follow Us</h3>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
+          <div class="space-y-2">
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 damourmuslim. All rights reserved.</p>
+      <div class="border-t border-white border-opacity-20 pt-8 text-center">
+        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
   </footer>
+  <script id="ripple-effects">
+    document.addEventListener('DOMContentLoaded', function() {
+      const rippleButtons = document.querySelectorAll('.ripple');
+      rippleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('absolute', 'bg-white', 'bg-opacity-30', 'rounded-full', 'animate-ping');
+          this.appendChild(ripple);
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+    });
+  </script>
+  <script id="form-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
 
-  <script src="/js/main.js"></script>
-  <script src="/js/login.js"></script>
+          const submitButton = form.querySelector('button[type="submit"]');
+          const originalText = submitButton.textContent;
+
+          // Get form data
+          const username = document.getElementById('username').value.trim();
+          const password = document.getElementById('password').value;
+          const rememberMe = document.getElementById('remember-me').checked;
+
+          // Basic validation
+          if (!username || !password) {
+            alert('Please fill in all fields');
+            return;
+          }
+
+          // Disable button and show loading state
+          submitButton.disabled = true;
+          submitButton.textContent = 'Signing in...';
+
+          // Send POST request to backend
+          fetch('/login', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                username: username,
+                password: password,
+                remember: rememberMe
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Redirect on successful login
+                window.location.href = data.redirect || '/home';
+              } else if (data.error) {
+                // Show error message
+                alert(data.error);
+                submitButton.disabled = false;
+                submitButton.textContent = originalText;
+              }
+            })
+            .catch(error => {
+              console.error('Login error:', error);
+              alert('Login failed. Please try again.');
+              submitButton.disabled = false;
+              submitButton.textContent = originalText;
+            });
+        });
+      }
+    });
+  </script>
 </body>
 
 </html>

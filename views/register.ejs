@@ -2,199 +2,421 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Register - damourmuslim</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/register.css" />
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D'amour Muslim - Register</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'none': '0px',
+            'sm': '4px',
+            DEFAULT: '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '32px',
+            'full': '9999px',
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .material-shadow-elevated {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .ripple:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+  </style>
 </head>
 
-<body>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <a href="/">
-          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
+<body class="bg-gray-50 font-['Roboto']">
+  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+            D'amour Muslim
+          </a>
+        </h1>
+      </div>
+      <div class="flex items-center gap-4">
+        <% if (user) { %>
+        <!-- Logged in user dropdown -->
+        <div class="relative">
+          <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
+            <i class="ri-user-line"></i>
+            <span>Account</span>
+            <i class="ri-arrow-down-s-line"></i>
+          </button>
+          <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
+            <% if (user.isAdmin) { %>
+            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-dashboard-line text-primary"></i>
+              <span>Dashboard</span>
+            </a>
+            <% } else { %>
+            <a href="/account" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-user-settings-line text-primary"></i>
+              <span>My Account</span>
+            </a>
+            <% } %>
+            <hr class="my-2 border-gray-100">
+            <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+              <i class="ri-logout-box-line"></i>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+        <% } else { %>
+        <!-- Not logged in - show login/signup buttons -->
+        <a href="/login" class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
+          Login
         </a>
-      </div>
-      <div class="auth-buttons">
-        <a href="/register" class="btn btn-signup">Register</a>
-        <a href="/login" class="btn btn-login">Login</a>
-      </div>
-      <div class="mobile-menu-toggle">
-        <i class="fas fa-bars"></i>
+        <a href="/register" class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+          Sign Up
+        </a>
+        <% } %>
       </div>
     </div>
   </header>
-
-  <main>
-    <div class="container">
-      <div class="register-container">
-        <h1>Create an Account</h1>
-
-        <% if (typeof error !== "undefined" && error) { %>
-        <div class="register-error" id="register-error">
-          <i class="fas fa-exclamation-triangle"></i>
-          <%= error %>
+  <main class="pt-24 pb-16 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-md px-6">
+      <div class="bg-white rounded-2xl p-8 material-shadow">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-800 mb-3 font-['Playfair_Display']">Create Account</h2>
+          <p class="text-gray-600">Join our community of Muslim singles</p>
         </div>
-        <% } %>
-
-        <form action="/register" method="post" class="register-form" id="register-form">
-          <div class="form-group">
-            <label for="has-passcode">Do you have the passcode to get registered?</label>
-            <select id="has-passcode" name="hasPasscode" required>
-              <option value="">Select</option>
-              <option value="yes">Yes</option>
-              <option value="no">No</option>
-            </select>
+        <form class="space-y-6" method="POST" action="/register">
+          <div class="space-y-4">
+            <p class="text-sm font-medium text-gray-700">Do you have the passcode to get registered?</p>
+            <div class="flex gap-4">
+              <button type="button" id="hasPasscodeYes" class="flex-1 py-2.5 px-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">Yes</button>
+              <button type="button" id="hasPasscodeNo" class="flex-1 py-2.5 px-4 border-2 border-gray-300 text-gray-500 hover:border-primary hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple">No</button>
+            </div>
           </div>
-
-          <div id="register-fields" style="display: none">
-            <div class="form-group">
-              <label for="gender">Gender</label>
-              <select id="gender" name="gender" required>
-                <option value="">Select Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="username">Username (auto-generated)</label>
-              <input type="text" id="username" name="username" placeholder="Username will be generated" readonly required />
-            </div>
-            <div class="form-group">
-              <label for="password">Password</label>
-              <input type="password" id="password" name="password" placeholder="Create a password" required />
-            </div>
-            <div class="form-group">
-              <label for="passcode">Passcode</label>
-              <input type="number" id="passcode" name="passcode" placeholder="Enter registration passcode" required />
-              <div class="remember-me">
-                <input type="checkbox" id="remember" name="remember" />
-                <label for="remember">Remember me</label>
+          <div id="registrationForm" class="space-y-6 hidden">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Gender</label>
+              <div class="flex gap-4">
+                <label class="flex items-center">
+                  <input type="radio" name="gender" value="male" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" required>
+                  <span class="ml-2 text-sm text-gray-700">Male</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="gender" value="female" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" required>
+                  <span class="ml-2 text-sm text-gray-700">Female</span>
+                </label>
               </div>
             </div>
-            <button type="submit" class="btn btn-signup btn-full">
-              Register
+            <div class="space-y-2">
+              <label for="generated-username" class="block text-sm font-medium text-gray-700">Your Username</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-user-line text-gray-400"></i>
+                </div>
+                <input type="text" id="generated-username" name="username" readonly class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button bg-gray-50 text-gray-900" placeholder="Select gender to generate username">
+              </div>
+              <p class="text-xs text-gray-500">Username is automatically generated based on your gender</p>
+            </div>
+            <div class="space-y-2">
+              <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-lock-line text-gray-400"></i>
+                </div>
+                <input type="password" id="signup-password" name="password" required minlength="5" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Create a password (min 5 characters)">
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label for="passcode" class="block text-sm font-medium text-gray-700">Passcode</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-key-line text-gray-400"></i>
+                </div>
+                <input type="text" id="passcode" name="passcode" required class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your passcode">
+              </div>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="signup-remember-me" name="remember" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+              <label for="signup-remember-me" class="ml-2 block text-sm text-gray-700">Remember me</label>
+            </div>
+            <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 ripple material-shadow">
+              Create Account
             </button>
           </div>
-
-          <div id="whatsapp-info" style="display: none; text-align: center; margin: 30px 0">
-            <div class="whatsapp-link" style="
-                  font-size: 1.3em;
-                  font-weight: bold;
-                  justify-content: center;
-                ">
-              <i class="fab fa-whatsapp"></i>
-              <a href="https://wa.me/923065896726" target="_blank" style="font-size: 1.2em">
-                Chat with us on WhatsApp to get the pass code
-              </a>
-            </div>
+          <div id="whatsappLink" class="hidden text-center">
+            <a href="https://wa.me/+447454516156" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors duration-300">
+              <i class="ri-whatsapp-line text-xl"></i>
+              <span>Chat with us on WhatsApp to get the passcode</span>
+            </a>
+          </div>
+          <div class="text-center text-sm mt-6">
+            <span class="text-gray-600">Already have an account?</span>
+            <a href="/login" class="font-medium text-primary hover:text-pink-600 transition-colors duration-300 ml-1">Login here</a>
           </div>
         </form>
-
-        <div class="login-link">
-          Already have an account? <a href="/login">Login here</a>
-        </div>
       </div>
     </div>
   </main>
-
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>About Us</h3>
-          <p>
-            We make knowing eachother secure that ever and find the perfect
-            match for you
-          </p>
+  <div class="text-center mt-8">
+    <div class="inline-flex items-center gap-6 text-gray-500 text-sm">
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 flex items-center justify-center text-primary">
+          <i class="ri-shield-check-line"></i>
         </div>
-        <div class="footer-section">
-          <h3>Contact</h3>
-          <p>Email: damourmuslim@gmail.com</p>
-          <p>Phone: +447454516156</p>
+        <span>Secure Login</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-5 h-5 flex items-center justify-center text-primary">
+          <i class="ri-lock-line"></i>
         </div>
-        <div class="footer-section">
-          <h3>Follow Us</h3>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
+        <span>Private & Protected</span>
+      </div>
+    </div>
+  </div>
+  </div>
+  </main>
+  <footer class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-facebook-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-instagram-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-twitter-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-youtube-fill ri-lg"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-mail-line"></i>
+              </div>
+              <span>damourmuslim@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-phone-line"></i>
+              </div>
+              <span>+447454516156</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-map-pin-line"></i>
+              </div>
+              <span>London, UK</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
+          <div class="space-y-2">
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 damourmuslim App. All rights reserved.</p>
+      <div class="border-t border-white border-opacity-20 pt-8 text-center">
+        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
   </footer>
-  <script src="/js/main.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const errorBox = document.getElementById("register-error");
-      if (!errorBox) return;
+  <script id="ripple-effects">
+    document.addEventListener('DOMContentLoaded', function() {
+      const rippleButtons = document.querySelectorAll('.ripple');
+      rippleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('absolute', 'bg-white', 'bg-opacity-30', 'rounded-full', 'animate-ping');
+          this.appendChild(ripple);
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+    });
+  </script>
+  <script id="form-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      const form = document.querySelector('form');
+      const registrationForm = document.getElementById('registrationForm');
+      const whatsappLink = document.getElementById('whatsappLink');
+      const hasPasscodeYes = document.getElementById('hasPasscodeYes');
+      const hasPasscodeNo = document.getElementById('hasPasscodeNo');
+      const genderInputs = document.querySelectorAll('input[name="gender"]');
+      const usernameField = document.getElementById('generated-username');
 
-      // Hide error when user types in any input
-      document.querySelectorAll(".register-form input").forEach((input) => {
-        input.addEventListener("input", () => {
-          errorBox.style.display = "none";
+      function resetPasscodeButtons() {
+        hasPasscodeYes.classList.remove('bg-primary', 'text-white');
+        hasPasscodeYes.classList.add('text-primary');
+        hasPasscodeNo.classList.remove('bg-primary', 'text-white');
+        hasPasscodeNo.classList.add('text-gray-500');
+      }
+
+      hasPasscodeYes.addEventListener('click', function() {
+        resetPasscodeButtons();
+        this.classList.remove('text-primary');
+        this.classList.add('bg-primary', 'text-white');
+        registrationForm.classList.remove('hidden');
+        whatsappLink.classList.add('hidden');
+      });
+
+      hasPasscodeNo.addEventListener('click', function() {
+        resetPasscodeButtons();
+        this.classList.remove('text-gray-500');
+        this.classList.add('bg-primary', 'text-white');
+        registrationForm.classList.add('hidden');
+        whatsappLink.classList.remove('hidden');
+      });
+
+      // Generate username when gender is selected
+      genderInputs.forEach(input => {
+        input.addEventListener('change', async function() {
+          if (this.checked) {
+            try {
+              const response = await fetch(`/generate-username?gender=${this.value}`);
+              const data = await response.json();
+              usernameField.value = data.username;
+            } catch (error) {
+              console.error('Error generating username:', error);
+              usernameField.value = '';
+            }
+          }
         });
       });
 
-      // Hide error when clicking outside the error box or form
-      document.addEventListener("mousedown", function(e) {
-        const form = document.querySelector(".register-form");
-        if (
-          errorBox.style.display !== "none" &&
-          !form.contains(e.target) &&
-          !errorBox.contains(e.target)
-        ) {
-          errorBox.style.display = "none";
-        }
-      });
-    });
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
 
-    document.addEventListener("DOMContentLoaded", function() {
-      const hasPasscode = document.getElementById("has-passcode");
-      const registerFields = document.getElementById("register-fields");
-      const whatsappInfo = document.getElementById("whatsapp-info");
-      const genderSelect = document.getElementById("gender");
-      const usernameInput = document.getElementById("username");
+          const submitButton = form.querySelector('button[type="submit"]');
+          const originalText = submitButton.textContent;
 
-      // Hide/show fields based on passcode selection
-      hasPasscode.addEventListener("change", function() {
-        if (this.value === "yes") {
-          registerFields.style.display = "";
-          whatsappInfo.style.display = "none";
-        } else if (this.value === "no") {
-          registerFields.style.display = "none";
-          whatsappInfo.style.display = "";
-        } else {
-          registerFields.style.display = "none";
-          whatsappInfo.style.display = "none";
-        }
-      });
+          // Disable button and show loading state
+          submitButton.disabled = true;
+          submitButton.textContent = 'Creating Account...';
 
-      // Auto-generate username based on gender selection
-      genderSelect.addEventListener("change", function() {
-        if (this.value === "male" || this.value === "female") {
-          fetch(`/generate-username?gender=${this.value}`)
-            .then((res) => res.json())
-            .then((data) => {
-              usernameInput.value = data.username || "";
+          // Create URLSearchParams instead of FormData for better compatibility
+          const formData = new URLSearchParams();
+          const formElements = form.querySelectorAll('input, select, textarea');
+
+          formElements.forEach(element => {
+            if (element.type === 'radio' && !element.checked) return;
+            if (element.type === 'checkbox' && !element.checked) return;
+            if (element.name && element.value) {
+              formData.append(element.name, element.value);
+            }
+          });
+
+          fetch('/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: formData
+            })
+            .then(response => {
+              if (response.redirected) {
+                // Handle successful registration with redirect
+                window.location.href = response.url;
+                return;
+              }
+              return response.text();
+            })
+            .then(html => {
+              if (html && (html.includes('error') || html.includes('register'))) {
+                // Error occurred, re-render the page
+                document.body.innerHTML = html;
+                // Re-run this script since the page was replaced
+                const script = document.getElementById('form-interactions');
+                if (script) {
+                  eval(script.innerHTML);
+                }
+              }
+            })
+            .catch(error => {
+              console.error('Registration error:', error);
+              alert('Registration failed. Please try again.');
+            })
+            .finally(() => {
+              // Re-enable button
+              submitButton.disabled = false;
+              submitButton.textContent = originalText;
             });
-        } else {
-          usernameInput.value = "";
-        }
-      });
+        });
+      }
     });
   </script>
 </body>

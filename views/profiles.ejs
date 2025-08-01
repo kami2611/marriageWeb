@@ -2,228 +2,1162 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Browse Profiles - damourmuslim</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/profiles.css" />
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D'amour Muslim - Login</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'none': '0px',
+            'sm': '4px',
+            DEFAULT: '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '32px',
+            'full': '9999px',
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .material-shadow-elevated {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    #mobileFilterPanel {
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Backdrop blur effect (optional) */
+    #mobileFilterOverlay {
+      backdrop-filter: blur(2px);
+    }
+
+    /* Ensure smooth transitions */
+    #mobileFilterOverlay,
+    #mobileFilterPanel {
+      will-change: transform, opacity;
+    }
+
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .ripple:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+  </style>
 </head>
 
-<body>
-  <header class="header">
-    <div class="container">
-      <div class="logo">
-        <a href="/">
-          <img src="https://res.cloudinary.com/dhuc2plh0/image/upload/v1752814079/logo_golden_final_company_u9acij.svg" alt="Company Logo" />
-        </a>
+<body class="bg-gray-50 font-['Roboto']">
+  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+            D'amour Muslim
+          </a>
+        </h1>
       </div>
-      <div class="auth-buttons">
+      <div class="flex items-center gap-4">
         <% if (user) { %>
-        <div class="account-dropdown">
-          <button class="btn btn-account dropdown-toggle">
-            <i class="fas fa-user"></i> Account
-            <i class="fas fa-chevron-down"></i>
+        <!-- Logged in user dropdown -->
+        <div class="relative">
+          <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
+            <i class="ri-user-line"></i>
+            <span>Account</span>
+            <i class="ri-arrow-down-s-line"></i>
           </button>
-          <div class="dropdown-menu">
-            <a href="/account/info" class="dropdown-item">
-              <i class="fas fa-user-circle"></i> My Account
+          <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
+            <% if (user.isAdmin) { %>
+            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-dashboard-line text-primary"></i>
+              <span>Dashboard</span>
             </a>
-            <a href="/logout" class="dropdown-item">
-              <i class="fas fa-sign-out-alt"></i> Logout
+            <% } else { %>
+            <a href="/account" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+              <i class="ri-user-settings-line text-primary"></i>
+              <span>My Account</span>
+            </a>
+            <% } %>
+            <hr class="my-2 border-gray-100">
+            <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+              <i class="ri-logout-box-line"></i>
+              <span>Logout</span>
             </a>
           </div>
         </div>
         <% } else { %>
-        <a href="/register" class="btn btn-signup">Sign Up</a>
-        <a href="/login" class="btn btn-login">Login</a>
+        <!-- Not logged in - show login/signup buttons -->
+        <a href="/login" class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
+          Login
+        </a>
+        <a href="/register" class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+          Sign Up
+        </a>
         <% } %>
-      </div>
-      <div class="mobile-menu-toggle">
-        <i class="fas fa-bars"></i>
       </div>
     </div>
   </header>
+  <main class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="flex gap-8">
+        <!-- Filter Sidebar -->
+        <div class="w-80 flex-shrink-0 hidden lg:block">
+          <%- include('partials/profilesFilter') %>
+        </div>
 
-  <main>
-    <div class="container">
-      <div class="profiles-header">
-        <h1>Browse Profiles</h1>
-        <p>Discover people in our community</p>
-      </div>
+        <!-- Main Content -->
+        <div class="flex-1">
+          <!-- Grid Controls -->
+          <div class="flex justify-between items-center mb-8">
+            <!-- Mobile Filter Button -->
+            <button id="mobileFilterBtn" class="lg:hidden px-4 py-2 border border-gray-300 rounded-button text-gray-700 hover:border-primary hover:text-primary transition-all duration-300">
+              <i class="ri-filter-line mr-2"></i>Filters
+            </button>
 
-      <!-- Profiles container with sidebar and content -->
-      <div class="profiles-container">
-        <!-- Sidebar with filters -->
-        <!-- Sidebar with filters -->
-        <!-- /////side bar starts here -->
-
-        <!-- //////sidebar ends here -->
-        <!-- Profiles content -->
-        <div class="profiles-content">
-          <% if (filters && Object.keys(filters).some(key => filters[key])) {
-            %>
-          <div class="active-filters">
-            <% if (filters.gender) { %>
-            <div class="filter-tag" data-filter="gender">
-              Gender: <%= filters.gender %>
-              <button type="button" class="filter-remove" data-filter="gender" title="Remove">
-                ×
-              </button>
-            </div>
-            <% } %> <% if (filters.minAge && filters.maxAge) { %>
-            <div class="filter-tag" data-filter="age">
-              Age: <%= filters.minAge %> - <%= filters.maxAge %>
-              <button type="button" class="filter-remove" data-filter="age" title="Remove">
-                ×
-              </button>
-            </div>
-            <% } %> <% if (filters.city) { %>
-            <div class="filter-tag" data-filter="city">
-              City: <%= filters.city %>
-              <button type="button" class="filter-remove" data-filter="city" title="Remove">
-                ×
-              </button>
-            </div>
-            <% } %> <% if (filters.religion) { %>
-            <div class="filter-tag" data-filter="religion">
-              Religion: <%= filters.religion %>
-              <button type="button" class="filter-remove" data-filter="religion" title="Remove">
-                ×
-              </button>
-            </div>
-            <% } %> <% if (filters.caste) { %>
-            <div class="filter-tag" data-filter="caste">
-              caste: <%= filters.caste %>
-              <button type="button" class="filter-remove" data-filter="caste" title="Remove">
-                ×
-              </button>
-            </div>
-            <% } %>
-            <a href="/profiles" class="clear-filters">Clear All Filters</a>
-          </div>
-          <% } %>
-
-          <!-- Layout switcher -->
-          <div class="layout-switcher">
-            <span>Layout:</span>
-            <div class="layout-options">
-              <button class="layout-btn active" data-columns="3">
-                <i class="fas fa-th-large"></i> 3 Columns
-              </button>
-              <button class="layout-btn" data-columns="4">
-                <i class="fas fa-th"></i> 4 Columns
-              </button>
-            </div>
-          </div>
-
-          <% if (profiles.length > 0) { %>
-          <div class="profiles-grid" data-current-layout="3">
-            <% for (let profile of profiles) { %>
-            <!-- This is just the part that needs to change in the profile card -->
-            <div class="profile-card">
-              <div class="profile-avatar">
-                <% if (profile.profilePic && profile.profilePic.url) { %>
-                <img src="<%= profile.profilePic.url %>" alt="<%= profile.name %>'s profile picture" class="profile-image" />
-                <% } else { %> <% if (profile.gender &&
-                  profile.gender.toLowerCase() === 'female') { %>
-                <i class="fas fa-female"></i>
-                <% } else { %>
-                <i class="fas fa-male"></i>
-                <% } %> <% } %>
+            <!-- Results Count and Active Filters - RESPONSIVE VERSION -->
+            <div class="flex-1 min-w-0">
+              <% if (totalProfiles > 0) { %>
+              <div class="mb-3">
+                <span class=" ml-3 text-gray-600">
+                  Showing <%= totalProfiles %> <%= totalProfiles === 1 ? 'profile' : 'profiles' %>
+                  <% if (filters && Object.values(filters).some(f => f)) { %>
+                  filtered
+                  <% } %>
+                </span>
               </div>
-              <div class="profile-info">
-                <h3>
-                  <%= profile.username || 'No Name' %> <% if (profile.gender)
-                    { %>
-                  <span class="gender-icon">
-                    <% if (profile.gender.toLowerCase() === 'female') { %>
-                    <i class="fas fa-venus"></i>
-                    <% } else if (profile.gender.toLowerCase() === 'male') {
-                      %>
-                    <i class="fas fa-mars"></i>
-                    <% } else { %>
-                    <i class="fas fa-genderless"></i>
-                    <% } %>
+
+              <!-- Active Filters Display - MOBILE OPTIMIZED -->
+              <% if (filters && Object.values(filters).some(f => f)) { %>
+              <div class="mb-4">
+                <!-- Mobile: Stack filters vertically with proper spacing -->
+                <div class="flex ml-3 flex-wrap gap-1.5 sm:gap-2">
+                  <% if (filters.gender) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary bg-opacity-10 text-primary rounded text-xs sm:text-sm border border-primary border-opacity-20 whitespace-nowrap">
+                    <span class="hidden sm:inline">Gender: </span><%= filters.gender.charAt(0).toUpperCase() + filters.gender.slice(1) %>
+                    <button onclick="removeFilter('gender')" class="ml-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      <i class="ri-close-line text-xs"></i>
+                    </button>
                   </span>
                   <% } %>
-                  <span class="username">@<%= profile.username %></span>
-                </h3>
-                <div class="profile-details">
-                  <% if (profile.age) { %>
-                  <p>
-                    <i class="fas fa-birthday-cake"></i> <%= profile.age %>
-                    years
-                  </p>
-                  <% } %> <% if (profile.city) { %>
-                  <p>
-                    <i class="fas fa-map-marker-alt"></i> <%= profile.city %>
-                  </p>
+
+                  <% if (filters.minAge) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary bg-opacity-10 text-primary rounded text-xs sm:text-sm border border-primary border-opacity-20 whitespace-nowrap">
+                    <span class="hidden sm:inline">Min Age: </span><%= filters.minAge %>+
+                    <button onclick="removeFilter('minAge')" class="ml-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      <i class="ri-close-line text-xs"></i>
+                    </button>
+                  </span>
                   <% } %>
+
+                  <% if (filters.maxAge) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary bg-opacity-10 text-primary rounded text-xs sm:text-sm border border-primary border-opacity-20 whitespace-nowrap">
+                    <span class="hidden sm:inline">Max Age: </span><%= filters.maxAge %>
+                    <button onclick="removeFilter('maxAge')" class="ml-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      <i class="ri-close-line text-xs"></i>
+                    </button>
+                  </span>
+                  <% } %>
+
+                  <% if (filters.minHeight) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary bg-opacity-10 text-primary rounded text-xs sm:text-sm border border-primary border-opacity-20 whitespace-nowrap">
+                    <span class="hidden sm:inline">Min: </span><%= 
+                      filters.minHeight == 152 ? "5'0\"" :
+                      filters.minHeight == 155 ? "5'1\"" :
+                      filters.minHeight == 157 ? "5'2\"" :
+                      filters.minHeight == 160 ? "5'3\"" :
+                      filters.minHeight == 163 ? "5'4\"" :
+                      filters.minHeight == 165 ? "5'5\"" :
+                      filters.minHeight == 168 ? "5'6\"" :
+                      filters.minHeight == 170 ? "5'7\"" :
+                      filters.minHeight == 173 ? "5'8\"" :
+                      filters.minHeight == 175 ? "5'9\"" :
+                      filters.minHeight == 178 ? "5'10\"" :
+                      filters.minHeight == 180 ? "5'11\"" :
+                      filters.minHeight == 183 ? "6'0\"" :
+                      filters.minHeight == 185 ? "6'1\"" :
+                      filters.minHeight == 188 ? "6'2\"" :
+                      filters.minHeight == 191 ? "6'3\"" :
+                      filters.minHeight == 193 ? "6'4\"" :
+                      filters.minHeight == 196 ? "6'5\"" :
+                      filters.minHeight == 198 ? "6'6\"" :
+                      filters.minHeight == 201 ? "6'7\"" :
+                      filters.minHeight + "cm"
+                    %>
+                    <button onclick="removeFilter('minHeight')" class="ml-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      <i class="ri-close-line text-xs"></i>
+                    </button>
+                  </span>
+                  <% } %>
+
+                  <% if (filters.maxHeight) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary bg-opacity-10 text-primary rounded text-xs sm:text-sm border border-primary border-opacity-20 whitespace-nowrap">
+                    <span class="hidden sm:inline">Max: </span><%= 
+                      filters.maxHeight == 152 ? "5'0\"" :
+                      filters.maxHeight == 155 ? "5'1\"" :
+                      filters.maxHeight == 157 ? "5'2\"" :
+                      filters.maxHeight == 160 ? "5'3\"" :
+                      filters.maxHeight == 163 ? "5'4\"" :
+                      filters.maxHeight == 165 ? "5'5\"" :
+                      filters.maxHeight == 168 ? "5'6\"" :
+                      filters.maxHeight == 170 ? "5'7\"" :
+                      filters.maxHeight == 173 ? "5'8\"" :
+                      filters.maxHeight == 175 ? "5'9\"" :
+                      filters.maxHeight == 178 ? "5'10\"" :
+                      filters.maxHeight == 180 ? "5'11\"" :
+                      filters.maxHeight == 183 ? "6'0\"" :
+                      filters.maxHeight == 185 ? "6'1\"" :
+                      filters.maxHeight == 188 ? "6'2\"" :
+                      filters.maxHeight == 191 ? "6'3\"" :
+                      filters.maxHeight == 193 ? "6'4\"" :
+                      filters.maxHeight == 196 ? "6'5\"" :
+                      filters.maxHeight == 198 ? "6'6\"" :
+                      filters.maxHeight == 201 ? "6'7\"" :
+                      filters.maxHeight + "cm"
+                    %>
+                    <button onclick="removeFilter('maxHeight')" class="ml-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      <i class="ri-close-line text-xs"></i>
+                    </button>
+                  </span>
+                  <% } %>
+
+                  <% if (filters.city) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary bg-opacity-10 text-primary rounded text-xs sm:text-sm border border-primary border-opacity-20 max-w-xs">
+                    <span class="hidden sm:inline">Location: </span>
+                    <span class="truncate"><%= filters.city %></span>
+                    <button onclick="removeFilter('city')" class="ml-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      <i class="ri-close-line text-xs"></i>
+                    </button>
+                  </span>
+                  <% } %>
+
+                  <% if (filters.nationality) { %>
+                  <span class="inline-flex items-center gap-1 px-2 py-1 bg-primary bg-opacity-10 text-primary rounded text-xs sm:text-sm border border-primary border-opacity-20 max-w-xs">
+                    <span class="hidden sm:inline">Nationality: </span>
+                    <span class="truncate"><%= filters.nationality %></span>
+                    <button onclick="removeFilter('nationality')" class="ml-1 text-red-500 hover:text-red-700 transition-colors flex-shrink-0">
+                      <i class="ri-close-line text-xs"></i>
+                    </button>
+                  </span>
+                  <% } %>
+
+                  <!-- Clear All Filters Button - Mobile Optimized -->
+                  <button onclick="clearAllFilters()" class="inline-flex items-center gap-1 px-2 py-1 bg-red-50 text-red-600 hover:bg-red-100 rounded text-xs sm:text-sm border border-red-200 transition-colors whitespace-nowrap">
+                    <i class="ri-close-circle-line"></i>
+                    <span class="hidden sm:inline">Clear All</span>
+                    <span class="sm:hidden">Clear</span>
+                  </button>
                 </div>
-                <a href="/profiles/<%= profile._id %>" class="profile-link">
-                  View Profile <i class="fas fa-arrow-right"></i>
+              </div>
+              <% } %>
+              <% } %>
+            </div>
+
+            <!-- Grid Layout Controls -->
+            <div class="hidden md:flex gap-2">
+              <button id="threeCol" class="w-10 h-10 flex items-center justify-center rounded-button border-2 border-gray-300 text-gray-500 hover:border-primary hover:text-primary transition-all duration-300 relative group">
+                <i class="ri-layout-row-line text-lg"></i>
+                <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Large Cards
+                </div>
+              </button>
+              <button id="fourCol" class="w-10 h-10 flex items-center justify-center rounded-button border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 active relative group">
+                <i class="ri-layout-grid-line text-lg"></i>
+                <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Compact Cards
+                </div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Profiles Grid -->
+          <div id="profileGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <% if (profiles && profiles.length > 0) { %>
+            <% profiles.forEach(profile => { %>
+            <a href="/profiles/<%= profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
+              <div class="aspect-[4/5] overflow-hidden">
+                <% if (profile.profilePic && profile.profilePic.url) { %>
+                <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+                <% } else { %>
+                <!-- Default placeholder based on gender -->
+                <% if (profile.gender === 'male') { %>
+                <img src="/images/boyavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.name || profile.username %>'s Profile">
+                <% } else { %>
+                <img src="/images/girlavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.name || profile.username %>'s Profile">
+                <% } %>
+                <% } %>
+              </div>
+              <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  <%= profile.username %>
+                </h3>
+                <div class="flex items-center text-gray-600 mb-2">
+                  <i class="ri-map-pin-line mr-2"></i>
+                  <span>
+                    <% if (profile.city && profile.country) { %>
+                    <%= profile.city %>, <%= profile.country %>
+                    <% } else if (profile.city) { %>
+                    <%= profile.city %>
+                    <% } else if (profile.country) { %>
+                    <%= profile.country %>
+                    <% } else { %>
+                    Location not specified
+                    <% } %>
+                  </span>
+                </div>
+                <% if (profile.age) { %>
+                <div class="flex items-center text-gray-600 mb-2">
+                  <i class="ri-calendar-line mr-2"></i>
+                  <span><%= profile.age %> years old</span>
+                </div>
+                <% } %>
+              </div>
+            </a>
+            <% }) %>
+            <% } else { %>
+            <!-- No profiles found message -->
+            <div class="col-span-3 text-center py-16">
+              <div class="max-w-md mx-auto">
+                <div class="mb-4">
+                  <i class="ri-user-search-line text-6xl text-gray-300"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-600 mb-2">No Profiles Found</h3>
+                <p class="text-gray-500 mb-6">
+                  <% if (filters) { %>
+                  No profiles match your current filters. Try adjusting your search criteria.
+                  <% } else { %>
+                  There are currently no profiles to display.
+                  <% } %>
+                </p>
+                <% if (filters) { %>
+                <a href="/profiles" class="inline-flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-button hover:bg-pink-600 transition-all duration-300">
+                  <i class="ri-refresh-line"></i>
+                  <span>Clear Filters</span>
                 </a>
+                <% } %>
               </div>
             </div>
             <% } %>
           </div>
-          <% } else { %>
-          <div class="no-results">
-            <i class="fas fa-users-slash"></i>
-            <h3>No profiles found</h3>
-            <p>Try adjusting your filters to see more results</p>
-            <a href="/profiles" class="btn-filter-apply">Clear All Filters</a>
-          </div>
-          <% } %> <% if (totalPages && totalPages > 1) { %>
-          <div class="pagination">
+
+          <!-- Pagination -->
+          <% if (profiles && profiles.length > 0 && totalPages > 1) { %>
+          <div class="flex justify-center items-center gap-4 mt-12">
             <% if (page > 1) { %>
-            <a class="pagination-btn" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page - 1 %>">&laquo; Prev</a>
-            <% } %> <% for (let i = 1; i <= totalPages; i++) { %>
-            <a class="pagination-btn <%= i === page ? 'active' : '' %>" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= i %>"><%= i %></a>
-            <% } %> <% if (page < totalPages) { %>
-            <a class="pagination-btn" href="?<%= Object.entries(filters || {}).map(([k,v]) => v ? `${k}=${encodeURIComponent(v)}` : '').filter(Boolean).join('&') %>&page=<%= page + 1 %>">Next &raquo;</a>
+            <a href="/profiles?page=<%= page - 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
+              <i class="ri-arrow-left-line"></i>
+              <span>Previous</span>
+            </a>
             <% } %>
+
+            <div class="flex items-center gap-2">
+              <% for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) { %>
+              <% if (i === page) { %>
+              <span class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-button">
+                <%= i %>
+              </span>
+              <% } else { %>
+              <a href="/profiles?page=<%= i %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %>" class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
+                <%= i %>
+              </a>
+              <% } %>
+              <% } %>
+            </div>
+
+            <% if (page < totalPages) { %>
+            <a href="/profiles?page=<%= page + 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
+              <span>Next</span>
+              <i class="ri-arrow-right-line"></i>
+            </a>
+            <% } %>
+          </div>
+
+          <div class="text-center text-gray-500 text-sm mt-4">
+            Showing <%= (page - 1) * 10 + 1 %> to <%= Math.min(page * 10, totalProfiles) %> of <%= totalProfiles %> profiles
           </div>
           <% } %>
         </div>
       </div>
     </div>
-  </main>
 
-  <footer class="footer">
-    <div class="container">
-      <div class="footer-content">
-        <div class="footer-section">
-          <h3>About Us</h3>
-          <p>We help you find your perfect match.</p>
+    <!-- Create Account Section - Updated with Username Generation -->
+    <% if (!user) { %>
+    <!-- Only show create account section if user is not logged in -->
+    <div class="max-w-md mx-auto mt-12 px-6">
+      <div class="bg-white rounded-2xl p-8 material-shadow">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-800 mb-3 font-['Playfair_Display']">Create Account</h2>
+          <p class="text-gray-600">Join our community of Muslim singles</p>
         </div>
-        <div class="footer-section">
-          <h3>Contact</h3>
-          <p>Email: damourmuslim@gmail.com</p>
-          <p>Phone: +447454516156</p>
-        </div>
-        <div class="footer-section">
-          <h3>Follow Us</h3>
-          <div class="social-icons">
-            <a href="#"><i class="fab fa-facebook"></i></a>
-            <a href="#"><i class="fab fa-instagram"></i></a>
-            <a href="#"><i class="fab fa-twitter"></i></a>
+        <form class="space-y-6" method="POST" action="/register">
+          <div class="space-y-4">
+            <p class="text-sm font-medium text-gray-700">Do you have the passcode to get registered?</p>
+            <div class="flex gap-4">
+              <button type="button" id="hasPasscodeYes" class="flex-1 py-2.5 px-4 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">Yes</button>
+              <button type="button" id="hasPasscodeNo" class="flex-1 py-2.5 px-4 border-2 border-gray-300 text-gray-500 hover:border-primary hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple">No</button>
+            </div>
+          </div>
+          <div id="registrationForm" class="space-y-6 hidden">
+            <div class="space-y-2">
+              <label class="block text-sm font-medium text-gray-700">Gender</label>
+              <div class="flex gap-4">
+                <label class="flex items-center">
+                  <input type="radio" name="gender" value="male" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" required>
+                  <span class="ml-2 text-sm text-gray-700">Male</span>
+                </label>
+                <label class="flex items-center">
+                  <input type="radio" name="gender" value="female" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" required>
+                  <span class="ml-2 text-sm text-gray-700">Female</span>
+                </label>
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label for="generated-username" class="block text-sm font-medium text-gray-700">Your Username</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-user-line text-gray-400"></i>
+                </div>
+                <input type="text" id="generated-username" name="username" readonly class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button bg-gray-50 text-gray-900" placeholder="Select gender to generate username">
+              </div>
+              <p class="text-xs text-gray-500">Username is automatically generated based on your gender</p>
+            </div>
+            <div class="space-y-2">
+              <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-lock-line text-gray-400"></i>
+                </div>
+                <input type="password" id="signup-password" name="password" required minlength="5" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Create a password (min 5 characters)">
+              </div>
+            </div>
+            <div class="space-y-2">
+              <label for="passcode" class="block text-sm font-medium text-gray-700">Passcode</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-key-line text-gray-400"></i>
+                </div>
+                <input type="text" id="passcode" name="passcode" required class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your passcode">
+              </div>
+            </div>
+            <div class="flex items-center">
+              <input type="checkbox" id="signup-remember-me" name="remember" class="h-4 w-4 text-primary focus:ring-primary border-gray-300 rounded">
+              <label for="signup-remember-me" class="ml-2 block text-sm text-gray-700">Remember me</label>
+            </div>
+            <button type="submit" class="w-full flex justify-center py-2.5 px-4 border border-transparent rounded-button shadow-sm text-sm font-medium text-white bg-primary hover:bg-pink-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all duration-300 ripple material-shadow">
+              Create Account
+            </button>
+          </div>
+          <div id="whatsappLink" class="hidden text-center">
+            <a href="https://wa.me/+447454516156" class="inline-flex items-center gap-2 text-green-600 hover:text-green-700 transition-colors duration-300">
+              <i class="ri-whatsapp-line text-xl"></i>
+              <span>Chat with us on WhatsApp to get the passcode</span>
+            </a>
+          </div>
+          <div class="text-center text-sm mt-6">
+            <span class="text-gray-600">Already have an account?</span>
+            <a href="/login" class="font-medium text-primary hover:text-pink-600 transition-colors duration-300 ml-1">Login here</a>
+          </div>
+        </form>
+      </div>
+
+      <div class="text-center mt-8">
+        <div class="inline-flex items-center gap-6 text-gray-500 text-sm">
+          <div class="flex items-center gap-2">
+            <div class="w-5 h-5 flex items-center justify-center text-primary">
+              <i class="ri-shield-check-line"></i>
+            </div>
+            <span>Secure Login</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <div class="w-5 h-5 flex items-center justify-center text-primary">
+              <i class="ri-lock-line"></i>
+            </div>
+            <span>Private & Protected</span>
           </div>
         </div>
       </div>
-      <div class="footer-bottom">
-        <p>&copy; 2025 Pink Match. All rights reserved.</p>
+    </div>
+    <% } %>
+
+  </main>
+
+  <!-- Mobile Filter Overlay -->
+  <!-- Mobile Filter Overlay - Replace the existing one -->
+  <div id="mobileFilterOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden lg:hidden transition-opacity duration-300 opacity-0">
+    <div id="mobileFilterPanel" class="fixed left-0 top-0 h-full w-80 bg-white overflow-y-auto transform -translate-x-full transition-transform duration-300 ease-in-out">
+      <div class="p-6">
+        <div class="flex items-center justify-between mb-6">
+          <h3 class="text-lg font-semibold text-gray-900 font-['Playfair_Display']">Filter Profiles</h3>
+          <button id="closeMobileFilter" class="text-gray-500 hover:text-gray-700 transition-colors duration-200">
+            <i class="ri-close-line text-xl"></i>
+          </button>
+        </div>
+        <!-- Include the same filter content -->
+        <div class="bg-white rounded-2xl p-6">
+          <form id="mobileFilterForm" class="space-y-6">
+            <!-- Gender Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">Gender</label>
+              <div class="space-y-2">
+                <label class="flex items-center cursor-pointer">
+                  <input type="radio" name="gender" value="" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" <%= !filters?.gender ? 'checked' : '' %>>
+                  <span class="ml-2 text-sm text-gray-700">All</span>
+                </label>
+                <label class="flex items-center cursor-pointer">
+                  <input type="radio" name="gender" value="male" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" <%= filters?.gender === 'male' ? 'checked' : '' %>>
+                  <span class="ml-2 text-sm text-gray-700">Male</span>
+                </label>
+                <label class="flex items-center cursor-pointer">
+                  <input type="radio" name="gender" value="female" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" <%= filters?.gender === 'female' ? 'checked' : '' %>>
+                  <span class="ml-2 text-sm text-gray-700">Female</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Age Range Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">Age Range</label>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <input type="number" name="minAge" placeholder="Min Age" min="18" max="70" value="<%= filters?.minAge || '' %>" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+                </div>
+                <div>
+                  <input type="number" name="maxAge" placeholder="Max Age" min="18" max="70" value="<%= filters?.maxAge || '' %>" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+                </div>
+              </div>
+            </div>
+
+            <!-- Height Range Filter -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-3">Height Range</label>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <select name="minHeight" id="mobileMinHeight" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm">
+                    <option value="">Min Height</option>
+                    <% 
+                    const mobileHeights = [
+                      { cm: 152, display: "5'0\"" },
+                      { cm: 155, display: "5'1\"" },
+                      { cm: 157, display: "5'2\"" },
+                      { cm: 160, display: "5'3\"" },
+                      { cm: 163, display: "5'4\"" },
+                      { cm: 165, display: "5'5\"" },
+                      { cm: 168, display: "5'6\"" },
+                      { cm: 170, display: "5'7\"" },
+                      { cm: 173, display: "5'8\"" },
+                      { cm: 175, display: "5'9\"" },
+                      { cm: 178, display: "5'10\"" },
+                      { cm: 180, display: "5'11\"" },
+                      { cm: 183, display: "6'0\"" },
+                      { cm: 185, display: "6'1\"" },
+                      { cm: 188, display: "6'2\"" },
+                      { cm: 191, display: "6'3\"" },
+                      { cm: 193, display: "6'4\"" },
+                      { cm: 196, display: "6'5\"" },
+                      { cm: 198, display: "6'6\"" },
+                      { cm: 201, display: "6'7\"" }
+                    ];
+                    %>
+                    <% mobileHeights.forEach(height => { %>
+                    <option value="<%= height.cm %>" <%= filters?.minHeight == height.cm ? 'selected' : '' %>>
+                      <%= height.display %>
+                    </option>
+                    <% }) %>
+                  </select>
+                </div>
+                <div>
+                  <select name="maxHeight" id="mobileMaxHeight" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm">
+                    <option value="">Max Height</option>
+                    <% mobileHeights.forEach(height => { %>
+                    <option value="<%= height.cm %>" <%= filters?.maxHeight == height.cm ? 'selected' : '' %>>
+                      <%= height.display %>
+                    </option>
+                    <% }) %>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location Filter -->
+            <div>
+              <label for="mobile-city" class="block text-sm font-medium text-gray-700 mb-3">Location</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-map-pin-line text-gray-400"></i>
+                </div>
+                <input type="text" name="city" id="mobile-city" placeholder="Enter city or location" value="<%= filters?.city || '' %>" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+              </div>
+            </div>
+
+            <!-- Nationality Filter -->
+            <div>
+              <label for="mobile-nationality" class="block text-sm font-medium text-gray-700 mb-3">Nationality</label>
+              <div class="relative">
+                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <i class="ri-earth-line text-gray-400"></i>
+                </div>
+                <select name="nationality" id="mobile-nationality" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none">
+                  <option value="">All Nationalities</option>
+                  <option value="British" <%= filters?.nationality === 'British' ? 'selected' : '' %>>British</option>
+                  <option value="Pakistani" <%= filters?.nationality === 'Pakistani' ? 'selected' : '' %>>Pakistani</option>
+                  <option value="Bangladeshi" <%= filters?.nationality === 'Bangladeshi' ? 'selected' : '' %>>Bangladeshi</option>
+                  <option value="Other" <%= filters?.nationality === 'Other' ? 'selected' : '' %>>Other</option>
+                </select>
+                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <i class="ri-arrow-down-s-line text-gray-400"></i>
+                </div>
+              </div>
+            </div>
+            <!-- Apply Filters Button -->
+            <button type="submit" class="w-full py-2.5 px-4 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button ripple material-shadow">
+              <i class="ri-search-line mr-2"></i>Apply Filters
+            </button>
+
+            <!-- Clear Filters Button -->
+            <button type="button" id="mobileClearFilters" class="w-full py-2.5 px-4 border-2 border-gray-300 text-gray-500 hover:border-primary hover:text-primary transition-all duration-300 !rounded-button">
+              <i class="ri-refresh-line mr-2"></i>Clear All Filters
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-facebook-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-instagram-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-twitter-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-youtube-fill ri-lg"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-mail-line"></i>
+              </div>
+              <span>damourmuslim@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-phone-line"></i>
+              </div>
+              <span>+447454516156</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-map-pin-line"></i>
+              </div>
+              <span>London, UK</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
+          <div class="space-y-2">
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
+          </div>
+        </div>
+      </div>
+      <div class="border-t border-white border-opacity-20 pt-8 text-center">
+        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
   </footer>
-  <script src="/js/main.js"></script>
+  <script id="ripple-effects">
+    document.addEventListener('DOMContentLoaded', function() {
+      const rippleButtons = document.querySelectorAll('.ripple');
+      rippleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('absolute', 'bg-white', 'bg-opacity-30', 'rounded-full', 'animate-ping');
+          this.appendChild(ripple);
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+    });
+  </script>
+  <script id="grid-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      const threeColBtn = document.getElementById('threeCol');
+      const fourColBtn = document.getElementById('fourCol');
+      const profileGrid = document.getElementById('profileGrid');
+
+      // Only run grid interactions on medium screens and up
+      if (window.innerWidth >= 768) {
+        // Helper function to reset grid classes
+        function resetGridClasses() {
+          const gridClasses = [
+            'grid-cols-1', 'grid-cols-2', 'grid-cols-3', 'grid-cols-4',
+            'md:grid-cols-1', 'md:grid-cols-2', 'md:grid-cols-3', 'md:grid-cols-4',
+            'lg:grid-cols-1', 'lg:grid-cols-2', 'lg:grid-cols-3', 'lg:grid-cols-4',
+            'xl:grid-cols-1', 'xl:grid-cols-2', 'xl:grid-cols-3', 'xl:grid-cols-4'
+          ];
+
+          gridClasses.forEach(cls => profileGrid.classList.remove(cls));
+        }
+
+        // Helper function to update button states
+        function updateButtonStates(activeBtn, inactiveBtn) {
+          // Active button
+          activeBtn.classList.remove('border-gray-300', 'text-gray-500');
+          activeBtn.classList.add('border-primary', 'text-primary', 'active');
+
+          // Inactive button
+          inactiveBtn.classList.remove('border-primary', 'text-primary', 'active');
+          inactiveBtn.classList.add('border-gray-300', 'text-gray-500');
+        }
+
+        // Set initial state (4-column active)
+        if (fourColBtn && threeColBtn) {
+          updateButtonStates(fourColBtn, threeColBtn);
+
+          // 3-column layout (Large cards)
+          threeColBtn.addEventListener('click', function() {
+            resetGridClasses();
+
+            // Add classes for large cards (fewer per row)
+            profileGrid.classList.add(
+              'grid-cols-1', // 1 column on mobile
+              'md:grid-cols-2', // 2 columns on medium screens
+              'lg:grid-cols-2', // 2 columns on large screens (with sidebar)
+              'xl:grid-cols-3' // 3 columns on extra large screens
+            );
+
+            updateButtonStates(threeColBtn, fourColBtn);
+            console.log('Switched to 3-column layout (Large cards)');
+          });
+
+          // 4-column layout (Compact cards)
+          fourColBtn.addEventListener('click', function() {
+            resetGridClasses();
+
+            // Add classes for compact cards (more per row)
+            profileGrid.classList.add(
+              'grid-cols-1', // 1 column on mobile
+              'md:grid-cols-2', // 2 columns on medium screens
+              'lg:grid-cols-3', // 3 columns on large screens (with sidebar)
+              'xl:grid-cols-4' // 4 columns on extra large screens
+            );
+
+            updateButtonStates(fourColBtn, threeColBtn);
+            console.log('Switched to 4-column layout (Compact cards)');
+          });
+        }
+      }
+
+      // Handle window resize
+      window.addEventListener('resize', function() {
+        if (window.innerWidth < 768) {
+          // On small screens, ensure single column
+          profileGrid.className = profileGrid.className.replace(/md:grid-cols-\d+|lg:grid-cols-\d+|xl:grid-cols-\d+/g, '');
+          profileGrid.classList.add('grid-cols-1');
+        }
+      });
+    });
+  </script>
+
+  <script id="dropdown-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      const dropdownButton = document.getElementById('accountDropdown');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+
+      if (dropdownButton && dropdownMenu) {
+        dropdownButton.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdownMenu.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function() {
+          dropdownMenu.classList.add('hidden');
+        });
+
+        // Prevent dropdown from closing when clicking inside it
+        dropdownMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+    });
+  </script>
+
+  <script id="form-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Only run form interactions if user is not logged in
+      <% if (!user) { %>
+      const form = document.querySelector('form[action="/register"]');
+      const registrationForm = document.getElementById('registrationForm');
+      const whatsappLink = document.getElementById('whatsappLink');
+      const hasPasscodeYes = document.getElementById('hasPasscodeYes');
+      const hasPasscodeNo = document.getElementById('hasPasscodeNo');
+      const genderInputs = document.querySelectorAll('input[name="gender"]');
+      const usernameField = document.getElementById('generated-username');
+
+      function resetPasscodeButtons() {
+        hasPasscodeYes.classList.remove('bg-primary', 'text-white');
+        hasPasscodeYes.classList.add('text-primary');
+        hasPasscodeNo.classList.remove('bg-primary', 'text-white');
+        hasPasscodeNo.classList.add('text-gray-500');
+      }
+
+      hasPasscodeYes.addEventListener('click', function() {
+        resetPasscodeButtons();
+        this.classList.remove('text-primary');
+        this.classList.add('bg-primary', 'text-white');
+        registrationForm.classList.remove('hidden');
+        whatsappLink.classList.add('hidden');
+      });
+
+      hasPasscodeNo.addEventListener('click', function() {
+        resetPasscodeButtons();
+        this.classList.remove('text-gray-500');
+        this.classList.add('bg-primary', 'text-white');
+        registrationForm.classList.add('hidden');
+        whatsappLink.classList.remove('hidden');
+      });
+
+      // Generate username when gender is selected
+      genderInputs.forEach(input => {
+        input.addEventListener('change', async function() {
+          if (this.checked) {
+            try {
+              usernameField.value = 'Generating...';
+              const response = await fetch(`/generate-username?gender=${this.value}`);
+              const data = await response.json();
+
+              if (data.username) {
+                usernameField.value = data.username;
+              } else {
+                usernameField.value = '';
+                console.error('Username generation failed:', data.error);
+              }
+            } catch (error) {
+              console.error('Error generating username:', error);
+              usernameField.value = '';
+            }
+          }
+        });
+      });
+
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          e.preventDefault();
+
+          const submitButton = form.querySelector('button[type="submit"]');
+          const originalText = submitButton.textContent;
+
+          // Disable button and show loading state
+          submitButton.disabled = true;
+          submitButton.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Creating Account...';
+
+          // Create URLSearchParams for form data
+          const formData = new URLSearchParams();
+          const formElements = form.querySelectorAll('input, select, textarea');
+
+          formElements.forEach(element => {
+            if (element.type === 'radio' && !element.checked) return;
+            if (element.type === 'checkbox' && !element.checked) return;
+            if (element.name && element.value) {
+              formData.append(element.name, element.value);
+            }
+          });
+
+          fetch('/register', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+              },
+              body: formData
+            })
+            .then(response => {
+              if (response.redirected) {
+                // Successful registration with redirect
+                window.location.href = response.url;
+                return;
+              }
+              return response.text();
+            })
+            .then(html => {
+              if (html && (html.includes('error') || html.includes('register'))) {
+                // Error occurred, show error message
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-button mb-4';
+                errorDiv.innerHTML = '<i class="ri-error-warning-line mr-2"></i>Registration failed. Please check your details and try again.';
+
+                // Insert error message at the top of the form
+                form.insertBefore(errorDiv, form.firstChild);
+
+                // Remove error message after 5 seconds
+                setTimeout(() => {
+                  errorDiv.remove();
+                }, 5000);
+              }
+            })
+            .catch(error => {
+              console.error('Registration error:', error);
+
+              // Show error notification
+              const errorDiv = document.createElement('div');
+              errorDiv.className = 'bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-button mb-4';
+              errorDiv.innerHTML = '<i class="ri-error-warning-line mr-2"></i>Network error. Please try again.';
+              form.insertBefore(errorDiv, form.firstChild);
+
+              setTimeout(() => {
+                errorDiv.remove();
+              }, 5000);
+            })
+            .finally(() => {
+              // Re-enable button
+              submitButton.disabled = false;
+              submitButton.innerHTML = originalText;
+            });
+        });
+      }
+      <% } %>
+    });
+  </script>
+
+  <!-- Add mobile filter functionality script -->
+  <script id="mobile-filter-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      const mobileFilterBtn = document.getElementById('mobileFilterBtn');
+      const mobileFilterOverlay = document.getElementById('mobileFilterOverlay');
+      const mobileFilterPanel = document.getElementById('mobileFilterPanel');
+      const closeMobileFilterBtn = document.getElementById('closeMobileFilter'); // Renamed variable
+      const mobileFilterForm = document.getElementById('mobileFilterForm');
+      const mobileClearFilters = document.getElementById('mobileClearFilters');
+
+      // Function to open mobile filter with animation
+      function openMobileFilterPanel() { // Renamed function
+        if (mobileFilterOverlay && mobileFilterPanel) {
+          console.log('Opening mobile filter panel'); // Debug log
+
+          // Show overlay
+          mobileFilterOverlay.classList.remove('hidden');
+
+          // Force reflow to ensure the element is rendered
+          mobileFilterOverlay.offsetHeight;
+
+          // Start animations
+          setTimeout(() => {
+            mobileFilterOverlay.classList.remove('opacity-0');
+            mobileFilterOverlay.classList.add('opacity-100');
+            mobileFilterPanel.classList.remove('-translate-x-full');
+            mobileFilterPanel.classList.add('translate-x-0');
+          }, 10);
+
+          // Prevent background scrolling
+          document.body.style.overflow = 'hidden';
+        } else {
+          console.log('Mobile filter elements not found'); // Debug log
+        }
+      }
+
+      // Function to close mobile filter with animation
+      function closeMobileFilterPanel() { // Renamed function
+        if (mobileFilterOverlay && mobileFilterPanel) {
+          console.log('Closing mobile filter panel'); // Debug log
+
+          // Start closing animations
+          mobileFilterOverlay.classList.remove('opacity-100');
+          mobileFilterOverlay.classList.add('opacity-0');
+          mobileFilterPanel.classList.remove('translate-x-0');
+          mobileFilterPanel.classList.add('-translate-x-full');
+
+          // Hide overlay after animation completes
+          setTimeout(() => {
+            mobileFilterOverlay.classList.add('hidden');
+          }, 300); // Match the transition duration
+
+          // Restore scrolling
+          document.body.style.overflow = '';
+        }
+      }
+
+      // Open mobile filter
+      if (mobileFilterBtn) {
+        console.log('Mobile filter button found'); // Debug log
+        mobileFilterBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Mobile filter button clicked'); // Debug log
+          openMobileFilterPanel();
+        });
+      } else {
+        console.log('Mobile filter button NOT found'); // Debug log
+      }
+
+      // Close mobile filter button
+      if (closeMobileFilterBtn) {
+        console.log('Close mobile filter button found'); // Debug log
+        closeMobileFilterBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Close button clicked'); // Debug log
+          closeMobileFilterPanel();
+        });
+      } else {
+        console.log('Close mobile filter button NOT found'); // Debug log
+      }
+
+      // Close on backdrop click
+      if (mobileFilterOverlay) {
+        mobileFilterOverlay.addEventListener('click', function(e) {
+          if (e.target === mobileFilterOverlay) {
+            console.log('Backdrop clicked'); // Debug log
+            closeMobileFilterPanel();
+          }
+        });
+      }
+
+      // Handle mobile filter form submission
+      if (mobileFilterForm) {
+        mobileFilterForm.addEventListener('submit', function(e) {
+          e.preventDefault();
+          console.log('Mobile filter form submitted'); // Debug log
+
+          const formData = new FormData(mobileFilterForm);
+          const params = new URLSearchParams();
+
+          // Build query parameters
+          for (let [key, value] of formData.entries()) {
+            if (value.trim() !== '') {
+              params.append(key, value);
+            }
+          }
+
+          // Close overlay with animation and redirect
+          closeMobileFilterPanel();
+
+          setTimeout(() => {
+            const currentPath = window.location.pathname;
+            const newUrl = `${currentPath}?${params.toString()}`;
+            window.location.href = newUrl;
+          }, 300); // Wait for animation to complete
+        });
+      }
+
+      // Clear mobile filters
+      if (mobileClearFilters) {
+        mobileClearFilters.addEventListener('click', function(e) {
+          e.preventDefault();
+          console.log('Clear filters clicked'); // Debug log
+          closeMobileFilterPanel();
+
+          setTimeout(() => {
+            const currentPath = window.location.pathname;
+            window.location.href = currentPath;
+          }, 300); // Wait for animation to complete
+        });
+      }
+
+      // Close on escape key
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !mobileFilterOverlay.classList.contains('hidden')) {
+          console.log('Escape key pressed'); // Debug log
+          closeMobileFilterPanel();
+        }
+      });
+
+      // Debug: Log all found elements
+      console.log('Mobile filter setup complete. Elements found:', {
+        mobileFilterBtn: !!mobileFilterBtn,
+        mobileFilterOverlay: !!mobileFilterOverlay,
+        mobileFilterPanel: !!mobileFilterPanel,
+        closeMobileFilterBtn: !!closeMobileFilterBtn,
+        mobileFilterForm: !!mobileFilterForm,
+        mobileClearFilters: !!mobileClearFilters
+      });
+    });
+  </script>
+  <script id="active-filters">
+    // Remove individual filter
+    function removeFilter(param) {
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.delete(param);
+      const currentPath = window.location.pathname;
+      const newUrl = urlParams.toString() ? `${currentPath}?${urlParams.toString()}` : currentPath;
+      window.location.href = newUrl;
+    }
+
+    // Clear all filters
+    function clearAllFilters() {
+      const currentPath = window.location.pathname;
+      window.location.href = currentPath;
+    }
+  </script>
 </body>
 
 </html>

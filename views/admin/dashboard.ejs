@@ -2,206 +2,551 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8" />
-  <title>Admin Dashboard - damourmuslim</title>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="shortcut icon" href="/favicon.ico">
-  <link rel="manifest" href="/site.webmanifest">
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="/css/styles.css" />
-  <link rel="stylesheet" href="/css/admin-dashboard.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>D'amour Muslim - Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'none': '0px',
+            'sm': '4px',
+            DEFAULT: '8px',
+            'md': '12px',
+            'lg': '16px',
+            'xl': '20px',
+            '2xl': '24px',
+            '3xl': '32px',
+            'full': '9999px',
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    :where([class^="ri-"])::before {
+      content: "\f3c2";
+    }
+
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .material-shadow-elevated {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .ripple:active::before {
+      width: 300px;
+      height: 300px;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+
+    .profile-card {
+      transition: all 0.3s ease;
+    }
+
+    .profile-card:hover {
+      transform: translateY(-2px);
+    }
+  </style>
 </head>
 
-<body>
-  <main>
-    <div class="admin-dashboard-container">
-      <div style="
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 32px;
-          ">
-        <h1 class="admin-dashboard-title">
-          <i class="fas fa-user-shield"></i> Admin Dashboard
-        </h1>
-        <div class="admin-search-bar-wrapper">
-          <input type="text" id="admin-user-search" class="admin-search-bar" placeholder="Search by username or name..." autocomplete="off" />
-        </div>
-        <div style="display: flex; gap: 12px">
-          <a href="/admin/addUser" id="admin-add-user-btn" class="admin-add-btn">
-            <i class="fas fa-user-plus"></i> Add User
+<body class="bg-gray-50 font-['Roboto']">
+  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+            D'amour Muslim
           </a>
-          <form action="/logout" method="get" style="display: inline">
-            <button type="submit" class="admin-cancel-btn" style="margin-right: 0">
-              <i class="fas fa-sign-out-alt"></i> Logout
+        </h1>
+        <span class="ml-4 px-3 py-1 bg-primary/10 text-primary text-sm rounded-full font-medium">Admin</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <button id="logoutBtn" class="px-6 py-2 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
+          <i class="ri-logout-box-line mr-2"></i>Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-7xl mx-auto px-6">
+      <!-- Admin Controls -->
+      <div class="bg-white rounded-2xl p-6 material-shadow mb-8">
+        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div class="flex-1 w-full lg:max-w-md">
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="ri-search-line text-gray-400"></i>
+              </div>
+              <input type="text" id="searchInput" placeholder="Search by username or name..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+            </div>
+          </div>
+          <div class="flex gap-4">
+            <button id="addUserBtn" class="px-6 py-2.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+              <i class="ri-user-add-line mr-2"></i>Add User
             </button>
-          </form>
+            <div class="flex gap-2">
+              <button id="threeCol" class="w-10 h-10 flex items-center justify-center rounded-button border-2 border-gray-300 text-gray-500 hover:border-primary hover:text-primary transition-all duration-300 relative group">
+                <i class="ri-layout-row-line text-lg"></i>
+                <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Large Cards (3 per row)
+                </div>
+              </button>
+              <button id="fourCol" class="w-10 h-10 flex items-center justify-center rounded-button border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 active relative group">
+                <i class="ri-layout-grid-line text-lg"></i>
+                <div class="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">
+                  Compact Cards (4 per row)
+                </div>
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="admin-users-table-wrapper">
-        <table class="admin-users-table">
-          <thead>
-            <tr>
-              <th>Profile</th>
-              <th>Username</th>
-              <th>Name</th>
-              <th>Age</th>
-              <th class="filterable-th">
-                Gender
-                <div class="filter-dropdown" data-filter="gender">
-                  <select id="filter-gender">
-                    <option value="">All</option>
-                    <option value="male">Male</option>
-                    <option value="female">Female</option>
-                    <option value="rather not say">Rather not say</option>
-                  </select>
-                </div>
-              </th>
-              <th class="filterable-th">
-                Country
-                <div class="filter-dropdown" data-filter="country">
-                  <select id="filter-country">
-                    <option value="">All</option>
-                    <option value="Pakistan">Pakistan</option>
-                    <option value="India">India</option>
-                    <option value="UK">United Kingdom</option>
-                  </select>
-                </div>
-              </th>
-              <th class="filterable-th">
-                State
-                <div class="filter-dropdown" data-filter="state">
-                  <select id="filter-state" disabled>
-                    <option value="">All</option>
-                  </select>
-                </div>
-              </th>
-              <th class="filterable-th">
-                City
-                <div class="filter-dropdown" data-filter="city">
-                  <select id="filter-city" disabled>
-                    <option value="">All</option>
-                  </select>
-                </div>
-              </th>
-              <th>Contact</th>
-              <th class="filterable-th">
-                Religion
-                <div class="filter-dropdown" data-filter="religion">
-                  <select id="filter-religion">
-                    <option value="">All</option>
-                    <option value="islam">Islam</option>
-                    <option value="hinduism">Hinduism</option>
-                    <option value="christianity">Christianity</option>
-                    <option value="sikhism">Sikhism</option>
-                    <option value="buddhism">Buddhism</option>
-                    <option value="judaism">Judaism</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </th>
-              <th class="filterable-th">
-                Caste
-                <div class="filter-dropdown" data-filter="caste">
-                  <select id="filter-caste">
-                    <option value="">All</option>
-                    <option value="syed">Syed</option>
-                    <option value="sheikh">Sheikh</option>
-                    <option value="pathan">Pathan</option>
-                    <option value="rajput">Rajput</option>
-                    <option value="mughal">Mughal</option>
-                    <option value="gujjar">Gujjar</option>
-                    <option value="jutt">Jutt</option>
-                    <option value="ansari">Ansari</option>
-                    <option value="awwan">Awwan</option>
-                    <option value="qureshi">Qureshi</option>
-                    <option value="malik">Malik</option>
-                    <option value="choudhary">Choudhary</option>
-                    <option value="other">Other</option>
-                  </select>
-                </div>
-              </th>
-              <th>Address</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <% users.forEach(function(user) { %>
-            <tr>
-              <td>
-                <% if (user.profilePic && user.profilePic.url) { %>
-                <img src="<%= user.profilePic.url %>" alt="Profile" class="admin-profile-img" />
-                <% } else { %>
-                <span class="admin-profile-placeholder"><i class="fas fa-user"></i></span>
-                <% } %>
-              </td>
-              <td><%= user.username %></td>
-              <td data-field="name"><%= user.name %></td>
-              <td data-field="age"><%= user.age %></td>
-              <td data-field="gender"><%= user.gender %></td>
-              <td data-field="country"><%= user.country %></td>
-              <td data-field="state"><%= user.state %></td>
-              <td data-field="city"><%= user.city %></td>
-              <td data-field="contact"><%= user.contact %></td>
-              <td data-field="religion"><%= user.religion %></td>
-              <td data-field="caste"><%= user.caste %></td>
-              <td data-field="adress"><%= user.adress %></td>
-              <td>
-                <a href="/admin/user/<%= user._id %>" class="admin-action-btn" target="_self" title="View Profile">
-                  <i class="fas fa-eye"></i>
-                </a>
-                <button type="button" class="admin-edit-btn" data-user-id="<%= user._id %>" title="Edit">
-                  <i class="fas fa-edit"></i>
-                </button>
-                <button type="button" class="admin-delete-btn" data-user-id="<%= user._id %>" title="Delete">
-                  <i class="fas fa-trash"></i>
-                </button>
-              </td>
-            </tr>
-            <% }) %>
-          </tbody>
-        </table>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <i class="ri-user-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">Total Users</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.totalUsers %></p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+              <i class="ri-user-heart-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">Active Profiles</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.activeUsers %></p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+              <i class="ri-heart-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">Matches Made</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.matchesMade %></p>
+            </div>
+          </div>
+        </div>
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+              <i class="ri-user-add-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">New This Month</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.newThisMonth %></p>
+            </div>
+          </div>
+        </div>
       </div>
+
+      <!-- User Profiles Grid -->
+      <div id="profileGrid" class="grid grid-cols-4 gap-6">
+        <% if (users && users.length > 0) { %>
+        <% users.forEach(user => { %>
+        <div class="profile-card bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover" data-username="<%= user.username %>" data-name="<%= user.name || user.username %>">
+          <div class="aspect-[4/5] overflow-hidden">
+            <% if (user.profilePic && user.profilePic.url) { %>
+            <img src="<%= user.profilePic.url %>" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
+            <% } else { %>
+            <!-- Default placeholder based on gender -->
+            <% if (user.gender === 'male') { %>
+            <img src="/images/boyavatar.png" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
+            <% } else { %>
+            <img src="/images/girlavatar.png" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
+            <% } %>
+            <% } %>
+          </div>
+          <div class="p-4">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-lg font-semibold text-gray-900">
+                <%=  user.username %>
+              </h3>
+              <% 
+                    // Determine user status based on profile completeness
+                    let status = 'Active';
+                    let statusClass = 'bg-green-100 text-green-600';
+                    
+                    if (!user.name || !user.age || !user.city) {
+                      status = 'Pending';
+                      statusClass = 'bg-yellow-100 text-yellow-600';
+                    }
+                    
+                    if (!user.contact && !user.aboutMe) {
+                      status = 'Inactive';
+                      statusClass = 'bg-red-100 text-red-600';
+                    }
+                  %>
+              <span class="px-2 py-1 <%= statusClass %> text-xs rounded-full"><%= status %></span>
+            </div>
+            <div class="flex items-center text-gray-600 mb-3">
+              <i class="ri-map-pin-line mr-2"></i>
+              <span>
+                <% if (user.city && user.country) { %>
+                <%= user.city %>, <%= user.country %>
+                <% } else if (user.city) { %>
+                <%= user.city %>
+                <% } else if (user.country) { %>
+                <%= user.country %>
+                <% } else { %>
+                Location not specified
+                <% } %>
+              </span>
+            </div>
+            <div class="text-sm text-gray-500 mb-4">
+              <p>Username: <%= user.username %></p>
+              <p>
+                <% if (user.age) { %>
+                Age: <%= user.age %> •
+                <% } %>
+                <% if (user.gender) { %>
+                <%= user.gender.charAt(0).toUpperCase() + user.gender.slice(1) %>
+                <% } %>
+              </p>
+              <% if (user.createdAt) { %>
+              <p class="text-xs text-gray-400 mt-1">
+                Joined: <%= new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) %>
+              </p>
+              <% } %>
+            </div>
+            <div class="flex gap-2">
+              <button class="edit-btn flex-1 px-3 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 !rounded-button text-sm ripple" data-user-id="<%= user._id %>">
+                <i class="ri-edit-line mr-1"></i>Edit
+              </button>
+              <button class="view-btn flex-1 px-3 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button text-sm ripple" data-user-id="<%= user._id %>">
+                <i class="ri-eye-line mr-1"></i>View
+              </button>
+              <button class="delete-btn flex-1 px-3 py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 !rounded-button text-sm ripple" data-user-id="<%= user._id %>">
+                <i class="ri-delete-bin-line mr-1"></i>Delete
+              </button>
+            </div>
+          </div>
+        </div>
+        <% }) %>
+        <% } else { %>
+        <!-- No users found -->
+        <div class="col-span-3 text-center py-16">
+          <div class="max-w-md mx-auto">
+            <div class="mb-4">
+              <i class="ri-user-search-line text-6xl text-gray-300"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No Users Found</h3>
+            <p class="text-gray-500 mb-6">There are currently no users registered in the system.</p>
+            <button id="addFirstUserBtn" class="inline-flex items-center gap-2 px-6 py-2 bg-primary text-white rounded-button hover:bg-pink-600 transition-all duration-300">
+              <i class="ri-user-add-line"></i>
+              <span>Add First User</span>
+            </button>
+          </div>
+        </div>
+        <% } %>
+      </div>
+
+      <!-- Pagination -->
+      <% if (users && users.length > 0) { %>
+      <div class="flex justify-center items-center gap-4 mt-12">
+        <div class="text-sm text-gray-600">
+          Showing <%= users.length %> users
+        </div>
+      </div>
+      <% } %>
     </div>
   </main>
-  <!-- Custom Delete Confirmation Modal -->
-  <div id="delete-modal" class="admin-modal-overlay" style="display: none">
-    <div class="admin-modal-box">
-      <div class="admin-modal-message">
-        This action will delete this user all data, tap yes to confirm.
+
+  <footer class="gradient-bg text-white">
+    <div class="max-w-6xl mx-auto px-6 py-12">
+      <div class="grid md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
+          <div class="flex gap-4">
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-facebook-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-instagram-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-twitter-fill ri-lg"></i>
+            </a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
+              <i class="ri-youtube-fill ri-lg"></i>
+            </a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-mail-line"></i>
+              </div>
+              <span>damourmuslim@gmail.com</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-phone-line"></i>
+              </div>
+              <span>+447454516156</span>
+            </div>
+            <div class="flex items-center gap-3">
+              <div class="w-5 h-5 flex items-center justify-center">
+                <i class="ri-map-pin-line"></i>
+              </div>
+              <span>London, UK</span>
+            </div>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
+          <div class="space-y-2">
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
+            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
+          </div>
+        </div>
       </div>
-      <div class="admin-modal-actions">
-        <button id="admin-modal-cancel" class="admin-cancel-btn">
-          Cancel
-        </button>
-        <button id="admin-modal-ok" class="admin-modal-ok-btn">OK</button>
+      <div class="border-t border-white border-opacity-20 pt-8 text-center">
+        <p class="text-pink-100">&copy; 2024 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
       </div>
     </div>
-  </div>
-  <script src="/js/admin-dashboard.js"></script>
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      [
-        "aboutMe",
-        "describeNature",
-        "islamIsImportantToMeInfo",
-        "QualitiesThatYouCanBringToYourMarriage",
-        "lookingForASpouseThatIs",
-        "anySpecialInformationPeopleShouldKnow",
-      ].forEach(function(name) {
-        const ta = document.querySelector('textarea[name="' + name + '"]');
-        if (ta) {
-          ta.addEventListener("input", function() {
-            this.style.height = "auto";
-            this.style.height = this.scrollHeight + "px";
+  </footer>
+
+  <script id="ripple-effects">
+    document.addEventListener('DOMContentLoaded', function() {
+      const rippleButtons = document.querySelectorAll('.ripple');
+      rippleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('absolute', 'bg-white', 'bg-opacity-30', 'rounded-full', 'animate-ping');
+          this.appendChild(ripple);
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+    });
+  </script>
+
+  <script id="admin-interactions">
+    document.addEventListener('DOMContentLoaded', function() {
+      // Grid toggle functionality
+      const threeColBtn = document.getElementById('threeCol');
+      const fourColBtn = document.getElementById('fourCol');
+      const profileGrid = document.getElementById('profileGrid');
+
+      if (threeColBtn && fourColBtn && profileGrid) {
+        threeColBtn.addEventListener('click', function() {
+          profileGrid.classList.remove('grid-cols-4');
+          profileGrid.classList.add('grid-cols-3');
+          threeColBtn.classList.remove('border-gray-300', 'text-gray-500');
+          threeColBtn.classList.add('border-primary', 'text-primary', 'active');
+          fourColBtn.classList.remove('border-primary', 'text-primary', 'active');
+          fourColBtn.classList.add('border-gray-300', 'text-gray-500');
+        });
+
+        fourColBtn.addEventListener('click', function() {
+          profileGrid.classList.remove('grid-cols-3');
+          profileGrid.classList.add('grid-cols-4');
+          fourColBtn.classList.remove('border-gray-300', 'text-gray-500');
+          fourColBtn.classList.add('border-primary', 'text-primary', 'active');
+          threeColBtn.classList.remove('border-primary', 'text-primary', 'active');
+          threeColBtn.classList.add('border-gray-300', 'text-gray-500');
+        });
+      }
+
+      // Search functionality
+      const searchInput = document.getElementById('searchInput');
+      const profileCards = document.querySelectorAll('.profile-card');
+
+      if (searchInput) {
+        searchInput.addEventListener('input', function() {
+          const searchTerm = this.value.toLowerCase();
+
+          profileCards.forEach(card => {
+            const name = card.getAttribute('data-name').toLowerCase();
+            const username = card.getAttribute('data-username').toLowerCase();
+
+            if (name.includes(searchTerm) || username.includes(searchTerm)) {
+              card.style.display = 'block';
+            } else {
+              card.style.display = 'none';
+            }
           });
-          // Trigger once in case of pre-filled value
-          ta.dispatchEvent(new Event("input"));
+        });
+      }
+
+      // Add User button
+      const addUserBtn = document.getElementById('addUserBtn');
+      const addFirstUserBtn = document.getElementById('addFirstUserBtn');
+
+      [addUserBtn, addFirstUserBtn].forEach(btn => {
+        if (btn) {
+          btn.addEventListener('click', function() {
+            window.location.href = '/admin/addUser';
+          });
         }
       });
+
+      // Logout button
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          if (confirm('Are you sure you want to logout?')) {
+            window.location.href = '/logout';
+          }
+        });
+      }
+
+      // View buttons
+      const viewButtons = document.querySelectorAll('.view-btn');
+      viewButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          window.location.href = `/profiles/${userId}`;
+        });
+      });
+
+      // Edit buttons
+      const editButtons = document.querySelectorAll('.edit-btn');
+      editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          const card = this.closest('.profile-card');
+          const name = card.getAttribute('data-name');
+          showNotification('Edit User', `Opening edit form for ${name}...`, 'info');
+
+          // Redirect admin to edit user page
+          window.location.href = `/admin/edit-user/${userId}`;
+        });
+      });
+
+      // Delete buttons
+      const deleteButtons = document.querySelectorAll('.delete-btn');
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          const card = this.closest('.profile-card');
+          const name = card.getAttribute('data-name');
+
+          if (confirm(`Are you sure you want to delete ${name}'s profile? This action cannot be undone.`)) {
+            // Send delete request
+            fetch(`/admin/user/${userId}/delete`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                }
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  // Add fade out animation
+                  card.style.transition = 'all 0.3s ease';
+                  card.style.opacity = '0';
+                  card.style.transform = 'scale(0.9)';
+
+                  setTimeout(() => {
+                    card.remove();
+                    showNotification('User Deleted', `${name}'s profile has been deleted.`, 'success');
+
+                    // Reload page if no users left
+                    const remainingCards = document.querySelectorAll('.profile-card');
+                    if (remainingCards.length === 0) {
+                      setTimeout(() => location.reload(), 1000);
+                    }
+                  }, 300);
+                } else {
+                  showNotification('Delete Failed', 'Failed to delete user profile.', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Delete error:', error);
+                showNotification('Delete Failed', 'An error occurred while deleting the user.', 'error');
+              });
+          }
+        });
+      });
+
+      // Notification function
+      function showNotification(title, message, type = 'info') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-blue-500' : 'bg-red-500';
+        const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'info' ? 'ri-information-line' : 'ri-error-warning-line';
+
+        notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
+        notification.innerHTML = `
+          <i class="${icon} text-xl"></i>
+          <div>
+            <p class="font-medium">${title}</p>
+            <p class="text-sm opacity-90">${message}</p>
+          </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.transform = 'translateY(100%)';
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
     });
   </script>
 </body>

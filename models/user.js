@@ -108,7 +108,8 @@ const userSchema = new mongoose.Schema({
     enum: ["asian", "african", "caucasian", "latino", "arab", "other", "N/A"],
   },
   maritalStatus: {
-    type: Boolean, // true = married, false = unmarried
+    type: String,
+    // enum: ["married", "unmarried", "divorced", "widowed", "separated", "N/A"],
   },
   disability: {
     type: String,
@@ -253,6 +254,9 @@ const userSchema = new mongoose.Schema({
   ],
   anySpecialInformationPeopleShouldKnow: {
     type: String, // e.g., "any special information"
+  },
+  willingToConsiderANonUkCitizen: {
+    type: Boolean, // true = yes, false = no
   },
 });
 module.exports = mongoose.model("User", userSchema);
