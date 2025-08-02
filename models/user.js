@@ -105,7 +105,7 @@ const userSchema = new mongoose.Schema({
   },
   ethnicity: {
     type: String,
-    enum: ["asian", "african", "caucasian", "latino", "arab", "other", "N/A"],
+    enum: ["bangladeshi", "pakistani", "indian", "british", "other", "N/A"],
   },
   maritalStatus: {
     type: String,

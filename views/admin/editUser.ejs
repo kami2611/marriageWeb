@@ -186,49 +186,26 @@
                 </div>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Gender</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="gender" value="male" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Male</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="gender" value="female" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Female</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="gender" value="rather not say" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Rather not say</span>
-                  </label>
-                </div>
+                <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                <select id="gender" name="gender" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="">Select Gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
+                </select>
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Marital Status</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="maritalStatus" value="unmarried" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Unmarried</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="maritalStatus" value="married" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Married</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="maritalStatus" value="divorced" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Divorced</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="maritalStatus" value="widowed" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Widowed</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="maritalStatus" value="separated" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Separated</span>
-                  </label>
-                </div>
+                <label for="maritalStatus" class="block text-sm font-medium text-gray-700">Marital Status</label>
+                <select id="maritalStatus" name="maritalStatus" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="unmarried" <%= (userToEdit.maritalStatus === 'unmarried') ? 'selected' : '' %>>Unmarried</option>
+                  <option value="married" <%= (userToEdit.maritalStatus === 'married') ? 'selected' : '' %>>Married</option>
+                  <option value="divorced" <%= (userToEdit.maritalStatus === 'divorced') ? 'selected' : '' %>>Divorced</option>
+                  <option value="widowed" <%= (userToEdit.maritalStatus === 'widowed') ? 'selected' : '' %>>Widowed</option>
+                  <option value="separated" <%= (userToEdit.maritalStatus === 'separated') ? 'selected' : '' %>>Separated</option>
+                  <option value="N/A" <%= (!userToEdit.maritalStatus || userToEdit.maritalStatus === 'N/A') ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
               <div class="space-y-2">
                 <label for="work" class="block text-sm font-medium text-gray-700">Profession/Work</label>
@@ -336,17 +313,12 @@
                 </div>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Willing to Relocate</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToRelocate" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToRelocate" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="willingToRelocate" class="block text-sm font-medium text-gray-700">Willing to Relocate</label>
+                <select id="willingToRelocate" name="willingToRelocate" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.willingToRelocate === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.willingToRelocate === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.willingToRelocate === undefined || userToEdit.willingToRelocate === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
@@ -374,12 +346,11 @@
               <div class="space-y-2">
                 <label for="build" class="block text-sm font-medium text-gray-700">Build</label>
                 <select id="build" name="build" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Build</option>
-                  <option value="slim">Slim</option>
-                  <option value="average">Average</option>
-                  <option value="athletic">Athletic</option>
-                  <option value="heavy">Heavy</option>
-                  <option value="N/A">N/A</option>
+                  <option value="slim" <%= (userToEdit.build === 'slim') ? 'selected' : '' %>>Slim</option>
+                  <option value="average" <%= (userToEdit.build === 'average') ? 'selected' : '' %>>Average</option>
+                  <option value="athletic" <%= (userToEdit.build === 'athletic') ? 'selected' : '' %>>Athletic</option>
+                  <option value="heavy" <%= (userToEdit.build === 'heavy') ? 'selected' : '' %>>Heavy</option>
+                  <option value="N/A" <%= (!userToEdit.build || userToEdit.build === 'N/A') ? 'selected' : '' %>>N/A</option>
                 </select>
               </div>
             </div>
@@ -388,22 +359,20 @@
               <div class="space-y-2">
                 <label for="eyeColor" class="block text-sm font-medium text-gray-700">Eye Color</label>
                 <select id="eyeColor" name="eyeColor" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Eye Color</option>
-                  <option value="black">Black</option>
-                  <option value="brown">Brown</option>
-                  <option value="grey">Grey</option>
-                  <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="black" <%= (userToEdit.eyeColor === 'black') ? 'selected' : '' %>>Black</option>
+                  <option value="brown" <%= (userToEdit.eyeColor === 'brown') ? 'selected' : '' %>>Brown</option>
+                  <option value="grey" <%= (userToEdit.eyeColor === 'grey') ? 'selected' : '' %>>Grey</option>
+                  <option value="other" <%= (userToEdit.eyeColor === 'other') ? 'selected' : '' %>>Other</option>
+                  <option value="N/A" <%= (!userToEdit.eyeColor || userToEdit.eyeColor === 'N/A') ? 'selected' : '' %>>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="hairColor" class="block text-sm font-medium text-gray-700">Hair Color</label>
                 <select id="hairColor" name="hairColor" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Hair Color</option>
-                  <option value="black">Black</option>
-                  <option value="brown">Brown</option>
-                  <option value="blonde">Blonde</option>
-                  <option value="N/A">N/A</option>
+                  <option value="black" <%= (userToEdit.hairColor === 'black') ? 'selected' : '' %>>Black</option>
+                  <option value="brown" <%= (userToEdit.hairColor === 'brown') ? 'selected' : '' %>>Brown</option>
+                  <option value="blonde" <%= (userToEdit.hairColor === 'blonde') ? 'selected' : '' %>>Blonde</option>
+                  <option value="N/A" <%= (!userToEdit.hairColor || userToEdit.hairColor === 'N/A') ? 'selected' : '' %>>N/A</option>
                 </select>
               </div>
             </div>
@@ -412,24 +381,21 @@
               <div class="space-y-2">
                 <label for="complexion" class="block text-sm font-medium text-gray-700">Complexion</label>
                 <select id="complexion" name="complexion" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Complexion</option>
-                  <option value="fair">Fair</option>
-                  <option value="wheatish">Wheatish</option>
-                  <option value="dark">Dark</option>
-                  <option value="N/A">N/A</option>
+                  <option value="fair" <%= (userToEdit.complexion === 'fair') ? 'selected' : '' %>>Fair</option>
+                  <option value="wheatish" <%= (userToEdit.complexion === 'wheatish') ? 'selected' : '' %>>Wheatish</option>
+                  <option value="dark" <%= (userToEdit.complexion === 'dark') ? 'selected' : '' %>>Dark</option>
+                  <option value="N/A" <%= (!userToEdit.complexion || userToEdit.complexion === 'N/A') ? 'selected' : '' %>>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="ethnicity" class="block text-sm font-medium text-gray-700">Ethnicity</label>
                 <select id="ethnicity" name="ethnicity" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Ethnicity</option>
-                  <option value="asian">Asian</option>
-                  <option value="african">African</option>
-                  <option value="caucasian">Caucasian</option>
-                  <option value="latino">Latino</option>
-                  <option value="arab">Arab</option>
-                  <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="bangladeshi" <%= (userToEdit.ethnicity === 'bangladeshi') ? 'selected' : '' %>>Bangladeshi</option>
+                  <option value="pakistani" <%= (userToEdit.ethnicity === 'pakistani') ? 'selected' : '' %>>Pakistani</option>
+                  <option value="indian" <%= (userToEdit.ethnicity === 'indian') ? 'selected' : '' %>>Indian</option>
+                  <option value="british" <%= (userToEdit.ethnicity === 'british') ? 'selected' : '' %>>British</option>
+                  <option value="other" <%= (userToEdit.ethnicity === 'other') ? 'selected' : '' %>>Other</option>
+                  <option value="N/A" <%= (!userToEdit.ethnicity || userToEdit.ethnicity === 'N/A') ? 'selected' : '' %>>N/A</option>
                 </select>
               </div>
             </div>
@@ -440,17 +406,12 @@
                 <input type="text" id="disability" name="disability" value="no" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter disability status">
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Smoker</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="smoker" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="smoker" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="smoker" class="block text-sm font-medium text-gray-700">Smoker</label>
+                <select id="smoker" name="smoker" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.smoker === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.smoker === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.smoker === undefined || userToEdit.smoker === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
           </form>
@@ -483,63 +444,44 @@
                 <input type="text" id="islamicSect" name="islamicSect" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter Islamic sect">
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Born Muslim</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="bornMuslim" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="bornMuslim" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="bornMuslim" class="block text-sm font-medium text-gray-700">Born Muslim</label>
+                <select id="bornMuslim" name="bornMuslim" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.bornMuslim === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.bornMuslim === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.bornMuslim === undefined || userToEdit.bornMuslim === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Prays Regularly</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="prays" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="prays" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="prays" class="block text-sm font-medium text-gray-700">Prays Regularly</label>
+                <select id="prays" name="prays" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.prays === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.prays === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.prays === undefined || userToEdit.prays === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Celebrates Milaad</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="celebratesMilaad" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="celebratesMilaad" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="celebratesMilaad" class="block text-sm font-medium text-gray-700">Celebrates Milaad</label>
+                <select id="celebratesMilaad" name="celebratesMilaad" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.celebratesMilaad === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.celebratesMilaad === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.celebratesMilaad === undefined || userToEdit.celebratesMilaad === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Celebrates Khatams</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="celebrateKhatams" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="celebrateKhatams" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="celebrateKhatams" class="block text-sm font-medium text-gray-700">Celebrates Khatams</label>
+                <select id="celebrateKhatams" name="celebrateKhatams" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.celebrateKhatams === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.celebrateKhatams === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.celebrateKhatams === undefined || userToEdit.celebrateKhatams === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
+
               <div class="space-y-2">
                 <label for="islamIsImportantToMeInfo" class="block text-sm font-medium text-gray-700">How important is Islam to you?</label>
                 <textarea id="islamIsImportantToMeInfo" name="islamIsImportantToMeInfo" rows="3" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Describe the importance of Islam in your life"></textarea>
@@ -578,22 +520,20 @@
               <div class="space-y-2">
                 <label for="livingArrangementsAfterMarriage" class="block text-sm font-medium text-gray-700">Living Arrangements After Marriage</label>
                 <select id="livingArrangementsAfterMarriage" name="livingArrangementsAfterMarriage" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Living Arrangement</option>
-                  <option value="live with parents">Live with parents</option>
-                  <option value="live alone">Live alone</option>
-                  <option value="live with spouse">Live with spouse</option>
-                  <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="live with parents" <%= (userToEdit.livingArrangementsAfterMarriage === 'live with parents') ? 'selected' : '' %>>Live with parents</option>
+                  <option value="live alone" <%= (userToEdit.livingArrangementsAfterMarriage === 'live alone') ? 'selected' : '' %>>Live alone</option>
+                  <option value="live with spouse" <%= (userToEdit.livingArrangementsAfterMarriage === 'live with spouse') ? 'selected' : '' %>>Live with spouse</option>
+                  <option value="other" <%= (userToEdit.livingArrangementsAfterMarriage === 'other') ? 'selected' : '' %>>Other</option>
+                  <option value="N/A" <%= (!userToEdit.livingArrangementsAfterMarriage || userToEdit.livingArrangementsAfterMarriage === 'N/A') ? 'selected' : '' %>>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="futurePlans" class="block text-sm font-medium text-gray-700">Future Plans</label>
                 <select id="futurePlans" name="futurePlans" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Future Plans</option>
-                  <option value="settle abroad">Settle abroad</option>
-                  <option value="stay in current country">Stay in current country</option>
-                  <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="settle abroad" <%= (userToEdit.futurePlans === 'settle abroad') ? 'selected' : '' %>>Settle abroad</option>
+                  <option value="stay in current country" <%= (userToEdit.futurePlans === 'stay in current country') ? 'selected' : '' %>>Stay in current country</option>
+                  <option value="other" <%= (userToEdit.futurePlans === 'other') ? 'selected' : '' %>>Other</option>
+                  <option value="N/A" <%= (!userToEdit.futurePlans || userToEdit.futurePlans === 'N/A') ? 'selected' : '' %>>N/A</option>
                 </select>
               </div>
             </div>
@@ -674,190 +614,128 @@
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Allow Partner to Work</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="allowParnterToWork" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="allowParnterToWork" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="allowParnterToWork" class="block text-sm font-medium text-gray-700">Allow Partner to Work</label>
+                <select id="allowParnterToWork" name="allowParnterToWork" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.allowParnterToWork === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.allowParnterToWork === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.allowParnterToWork === undefined || userToEdit.allowParnterToWork === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Allow Partner to Study</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="allowPartnerToStudy" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="allowPartnerToStudy" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="allowPartnerToStudy" class="block text-sm font-medium text-gray-700">Allow Partner to Study</label>
+                <select id="allowPartnerToStudy" name="allowPartnerToStudy" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.allowPartnerToStudy === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.allowPartnerToStudy === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.allowPartnerToStudy === undefined || userToEdit.allowPartnerToStudy === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
             <!-- Acceptance Preferences -->
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Accept Someone with Children</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptSomeoneWithChildren" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptSomeoneWithChildren" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="acceptSomeoneWithChildren" class="block text-sm font-medium text-gray-700">Accept Someone with Children</label>
+                <select id="acceptSomeoneWithChildren" name="acceptSomeoneWithChildren" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.acceptSomeoneWithChildren === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.acceptSomeoneWithChildren === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.acceptSomeoneWithChildren === undefined || userToEdit.acceptSomeoneWithChildren === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Accept a Divorced Person</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptADivorcedPerson" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptADivorcedPerson" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="acceptADivorcedPerson" class="block text-sm font-medium text-gray-700">Accept a Divorced Person</label>
+                <select id="acceptADivorcedPerson" name="acceptADivorcedPerson" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.acceptADivorcedPerson === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.acceptADivorcedPerson === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.acceptADivorcedPerson === undefined || userToEdit.acceptADivorcedPerson === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Accept a Widow</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptAWidow" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptAWidow" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="acceptAWidow" class="block text-sm font-medium text-gray-700">Accept a Widow</label>
+                <select id="acceptAWidow" name="acceptAWidow" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.acceptAWidow === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.acceptAWidow === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.acceptAWidow === undefined || userToEdit.acceptAWidow === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Agrees with Polygamy</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="agreesWithPolygamy" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="agreesWithPolygamy" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="agreesWithPolygamy" class="block text-sm font-medium text-gray-700">Agrees with Polygamy</label>
+                <select id="agreesWithPolygamy" name="agreesWithPolygamy" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.agreesWithPolygamy === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.agreesWithPolygamy === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.agreesWithPolygamy === undefined || userToEdit.agreesWithPolygamy === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Accept Someone with Beard</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="AcceptSomeoneWithBeard" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="AcceptSomeoneWithBeard" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="AcceptSomeoneWithBeard" class="block text-sm font-medium text-gray-700">Accept Someone with Beard</label>
+                <select id="AcceptSomeoneWithBeard" name="AcceptSomeoneWithBeard" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.AcceptSomeoneWithBeard === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.AcceptSomeoneWithBeard === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.AcceptSomeoneWithBeard === undefined || userToEdit.AcceptSomeoneWithBeard === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Accept Someone with Hijab</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="AcceptSomeoneWithHijab" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="AcceptSomeoneWithHijab" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="AcceptSomeoneWithHijab" class="block text-sm font-medium text-gray-700">Accept Someone with Hijab</label>
+                <select id="AcceptSomeoneWithHijab" name="AcceptSomeoneWithHijab" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.AcceptSomeoneWithHijab === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.AcceptSomeoneWithHijab === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.AcceptSomeoneWithHijab === undefined || userToEdit.AcceptSomeoneWithHijab === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Consider a Revert</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="ConsiderARevert" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="ConsiderARevert" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="ConsiderARevert" class="block text-sm font-medium text-gray-700">Consider a Revert</label>
+                <select id="ConsiderARevert" name="ConsiderARevert" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.ConsiderARevert === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.ConsiderARevert === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.ConsiderARevert === undefined || userToEdit.ConsiderARevert === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Accept Someone in Other Country</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptSomeoneInOtherCountry" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="acceptSomeoneInOtherCountry" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="acceptSomeoneInOtherCountry" class="block text-sm font-medium text-gray-700">Accept Someone in Other Country</label>
+                <select id="acceptSomeoneInOtherCountry" name="acceptSomeoneInOtherCountry" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.acceptSomeoneInOtherCountry === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.acceptSomeoneInOtherCountry === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.acceptSomeoneInOtherCountry === undefined || userToEdit.acceptSomeoneInOtherCountry === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Willing to Share Photos Upon Request</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToSharePhotosUponRequest" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToSharePhotosUponRequest" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="willingToSharePhotosUponRequest" class="block text-sm font-medium text-gray-700">Willing to Share Photos Upon Request</label>
+                <select id="willingToSharePhotosUponRequest" name="willingToSharePhotosUponRequest" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.willingToSharePhotosUponRequest === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.willingToSharePhotosUponRequest === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.willingToSharePhotosUponRequest === undefined || userToEdit.willingToSharePhotosUponRequest === null) ? 'selected' : '' %>>N/A</option>
+                </select>
+
               </div>
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Willing to Meet Up Outside</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToMeetUpOutside" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToMeetUpOutside" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="willingToMeetUpOutside" class="block text-sm font-medium text-gray-700">Willing to Meet Up Outside</label>
+                <select id="willingToMeetUpOutside" name="willingToMeetUpOutside" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.willingToMeetUpOutside === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.willingToMeetUpOutside === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.willingToMeetUpOutside === undefined || userToEdit.willingToMeetUpOutside === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
-              <!-- Add this after willingToMeetUpOutside -->
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Willing to Consider a Non-UK Citizen</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToConsiderANonUkCitizen" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToConsiderANonUkCitizen" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
-                </div>
+                <label for="willingToConsiderANonUkCitizen" class="block text-sm font-medium text-gray-700">Willing to Consider a Non-UK Citizen</label>
+                <select id="willingToConsiderANonUkCitizen" name="willingToConsiderANonUkCitizen" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="true" <%= (userToEdit.willingToConsiderANonUkCitizen === true) ? 'selected' : '' %>>Yes</option>
+                  <option value="false" <%= (userToEdit.willingToConsiderANonUkCitizen === false) ? 'selected' : '' %>>No</option>
+                  <option value="N/A" <%= (userToEdit.willingToConsiderANonUkCitizen === undefined || userToEdit.willingToConsiderANonUkCitizen === null) ? 'selected' : '' %>>N/A</option>
+                </select>
               </div>
             </div>
 
@@ -1069,18 +947,10 @@
           if (field) {
             console.log(`Populating field ${key} with value:`, userData[key]); // Debug log
 
-            if (field.type === 'radio') {
-              const radioGroup = document.querySelectorAll(`[name="${key}"]`);
-              radioGroup.forEach(radio => {
-                if (radio.value === userData[key]) {
-                  radio.checked = true;
-                  console.log(`Checked radio ${key} with value ${userData[key]}`); // Debug log
-                }
-              });
-            } else if (field.type === 'checkbox') {
+            if (field.type === 'checkbox') {
               field.checked = userData[key] === 'true' || userData[key] === true;
             } else if (field.tagName === 'SELECT') {
-              // Handle select dropdowns
+              // Handle select dropdowns (including the converted radio buttons)
               const option = field.querySelector(`option[value="${userData[key]}"]`);
               if (option) {
                 field.value = userData[key];

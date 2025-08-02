@@ -856,8 +856,6 @@ app.get("/profiles/:id", async (req, res) => {
 //     });
 //   }
 // });
-// ...existing code...
-
 app.post("/interested/:id", isLoggedIn, async (req, res) => {
   try {
     const beinglikeduserId = req.params.id; // receiver
@@ -1084,13 +1082,267 @@ app.post("/admin/user/:id/delete", async (req, res) => {
     res.status(500).json({ error: "Delete failed" });
   }
 });
+// app.post("/admin/user/add", async (req, res) => {
+//   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
+
+//   console.log("Received user data:", req.body); // Debug log
+
+//   const {
+//     username, // This should come from frontend now
+//     password,
+//     willingToConsiderANonUkCitizen,
+//     name,
+//     work,
+//     age,
+//     gender,
+//     country,
+//     state,
+//     city,
+//     contact,
+//     religion,
+//     caste,
+//     adress,
+//     eyeColor,
+//     hairColor,
+//     complexion,
+//     build,
+//     height,
+//     languagesSpoken,
+//     education,
+//     nationality,
+//     ethnicity,
+//     maritalStatus,
+//     disability,
+//     smoker,
+//     bornMuslim,
+//     islamicSect,
+//     prays,
+//     celebratesMilaad,
+//     celebrateKhatams,
+//     islamIsImportantToMeInfo,
+//     acceptSomeoneWithChildren,
+//     acceptADivorcedPerson,
+//     agreesWithPolygamy,
+//     acceptAWidow,
+//     AcceptSomeoneWithBeard,
+//     AcceptSomeoneWithHijab,
+//     ConsiderARevert,
+//     livingArrangementsAfterMarriage,
+//     futurePlans,
+//     describeNature,
+//     QualitiesThatYouCanBringToYourMarriage,
+//     fatherName,
+//     motherName,
+//     fatherProfession,
+//     aboutMe,
+//     hobbies,
+//     willingToRelocate,
+//     preferredAgeRange,
+//     preferredHeightRange,
+//     preferredCaste,
+//     preferredEthnicity,
+//     allowParnterToWork,
+//     allowPartnerToStudy,
+//     acceptSomeoneInOtherCountry,
+//     qualitiesYouNeedInYourPartner,
+//     lookingForASpouseThatIs,
+//     willingToSharePhotosUponRequest,
+//     willingToMeetUpOutside,
+//     whoCompletedProfile,
+//     waliMyContactDetails,
+//     siblings,
+//     birthPlace,
+//     children,
+//     anySpecialInformationPeopleShouldKnow,
+//   } = req.body;
+
+//   // Validate required fields
+//   if (!password) {
+//     return res.json({ error: "Password is required" });
+//   }
+
+//   if (!username) {
+//     return res.json({
+//       error: "Username is required (should be auto-generated)",
+//     });
+//   }
+
+//   try {
+//     // Check if username already exists
+//     const existing = await User.findOne({ username });
+//     if (existing) {
+//       return res.json({ error: "Username already exists" });
+//     }
+
+//     // Hash password
+//     const hashedPassword = await bcrypt.hash(password, 12);
+
+//     // Process arrays (they should already be arrays from frontend)
+//     const languagesSpokenArr = Array.isArray(languagesSpoken)
+//       ? languagesSpoken
+//       : [];
+//     const qualitiesArr = Array.isArray(QualitiesThatYouCanBringToYourMarriage)
+//       ? QualitiesThatYouCanBringToYourMarriage
+//       : [];
+//     const hobbiesArr = Array.isArray(hobbies) ? hobbies : [];
+//     const qualitiesNeededArr = Array.isArray(qualitiesYouNeedInYourPartner)
+//       ? qualitiesYouNeedInYourPartner
+//       : [];
+
+//     // Process education and children arrays (they should already be properly formatted)
+//     const educationArr = Array.isArray(education) ? education : [];
+//     const childrenArr = Array.isArray(children) ? children : [];
+
+//     // Create new user object
+//     const userData = {
+//       username,
+//       password: hashedPassword,
+//       gender,
+//     };
+
+//     // Add optional fields only if they exist and are not empty
+//     if (name) userData.name = name;
+//     if (work) userData.work = work;
+//     if (age) userData.age = parseInt(age);
+//     if (country) userData.country = country;
+//     if (state) userData.state = state;
+//     if (city) userData.city = city;
+//     if (contact) userData.contact = contact;
+//     if (religion) userData.religion = religion;
+//     if (caste) userData.caste = caste;
+//     if (adress) userData.adress = adress;
+//     if (eyeColor) userData.eyeColor = eyeColor;
+//     if (hairColor) userData.hairColor = hairColor;
+//     if (complexion) userData.complexion = complexion;
+//     if (build) userData.build = build;
+//     if (height) userData.height = parseInt(height);
+//     if (nationality) userData.nationality = nationality;
+//     if (ethnicity) userData.ethnicity = ethnicity;
+//     if (islamicSect) userData.islamicSect = islamicSect;
+//     if (islamIsImportantToMeInfo)
+//       userData.islamIsImportantToMeInfo = islamIsImportantToMeInfo;
+//     if (livingArrangementsAfterMarriage)
+//       userData.livingArrangementsAfterMarriage =
+//         livingArrangementsAfterMarriage;
+//     if (futurePlans) userData.futurePlans = futurePlans;
+//     if (describeNature) userData.describeNature = describeNature;
+//     if (fatherName) userData.fatherName = fatherName;
+//     if (motherName) userData.motherName = motherName;
+//     if (fatherProfession) userData.fatherProfession = fatherProfession;
+//     if (aboutMe) userData.aboutMe = aboutMe;
+//     if (preferredAgeRange) userData.preferredAgeRange = preferredAgeRange;
+//     if (preferredHeightRange)
+//       userData.preferredHeightRange = preferredHeightRange;
+//     if (preferredCaste) userData.preferredCaste = preferredCaste;
+//     if (preferredEthnicity) userData.preferredEthnicity = preferredEthnicity;
+//     if (lookingForASpouseThatIs)
+//       userData.lookingForASpouseThatIs = lookingForASpouseThatIs;
+//     if (whoCompletedProfile) userData.whoCompletedProfile = whoCompletedProfile;
+//     if (waliMyContactDetails)
+//       userData.waliMyContactDetails = waliMyContactDetails;
+//     if (birthPlace) userData.birthPlace = birthPlace;
+//     if (anySpecialInformationPeopleShouldKnow)
+//       userData.anySpecialInformationPeopleShouldKnow =
+//         anySpecialInformationPeopleShouldKnow;
+//     if (disability && disability !== "no") userData.disability = disability;
+
+//     // Handle numeric fields
+//     if (siblings !== undefined && siblings !== "")
+//       userData.siblings = parseInt(siblings) || 0;
+
+//     // Handle boolean fields - convert properly
+//     if (maritalStatus && maritalStatus !== "N/A") {
+//       userData.maritalStatus = maritalStatus;
+//     }
+//     if (smoker !== undefined && smoker !== "N/A") userData.smoker = smoker;
+//     if (bornMuslim !== undefined && bornMuslim !== "N/A")
+//       userData.bornMuslim = bornMuslim;
+//     if (prays !== undefined && prays !== "N/A") userData.prays = prays;
+//     if (celebratesMilaad !== undefined && celebratesMilaad !== "N/A")
+//       userData.celebratesMilaad = celebratesMilaad;
+//     if (celebrateKhatams !== undefined && celebrateKhatams !== "N/A")
+//       userData.celebrateKhatams = celebrateKhatams;
+//     if (willingToRelocate !== undefined && willingToRelocate !== "N/A")
+//       userData.willingToRelocate = willingToRelocate;
+//     if (allowParnterToWork !== undefined && allowParnterToWork !== "N/A")
+//       userData.allowParnterToWork = allowParnterToWork;
+//     if (allowPartnerToStudy !== undefined && allowPartnerToStudy !== "N/A")
+//       userData.allowPartnerToStudy = allowPartnerToStudy;
+//     if (
+//       acceptSomeoneWithChildren !== undefined &&
+//       acceptSomeoneWithChildren !== "N/A"
+//     )
+//       userData.acceptSomeoneWithChildren = acceptSomeoneWithChildren;
+//     if (acceptADivorcedPerson !== undefined && acceptADivorcedPerson !== "N/A")
+//       userData.acceptADivorcedPerson = acceptADivorcedPerson;
+//     if (agreesWithPolygamy !== undefined && agreesWithPolygamy !== "N/A")
+//       userData.agreesWithPolygamy = agreesWithPolygamy;
+//     if (acceptAWidow !== undefined && acceptAWidow !== "N/A")
+//       userData.acceptAWidow = acceptAWidow;
+//     if (
+//       AcceptSomeoneWithBeard !== undefined &&
+//       AcceptSomeoneWithBeard !== "N/A"
+//     )
+//       userData.AcceptSomeoneWithBeard = AcceptSomeoneWithBeard;
+//     if (
+//       AcceptSomeoneWithHijab !== undefined &&
+//       AcceptSomeoneWithHijab !== "N/A"
+//     )
+//       userData.AcceptSomeoneWithHijab = AcceptSomeoneWithHijab;
+//     if (ConsiderARevert !== undefined && ConsiderARevert !== "N/A")
+//       userData.ConsiderARevert = ConsiderARevert;
+//     if (
+//       acceptSomeoneInOtherCountry !== undefined &&
+//       acceptSomeoneInOtherCountry !== "N/A"
+//     )
+//       userData.acceptSomeoneInOtherCountry = acceptSomeoneInOtherCountry;
+//     if (
+//       willingToSharePhotosUponRequest !== undefined &&
+//       willingToSharePhotosUponRequest !== "N/A"
+//     )
+//       userData.willingToSharePhotosUponRequest =
+//         willingToSharePhotosUponRequest;
+//     if (
+//       willingToMeetUpOutside !== undefined &&
+//       willingToMeetUpOutside !== "N/A"
+//     )
+//       userData.willingToMeetUpOutside = willingToMeetUpOutside;
+//     if (
+//       willingToConsiderANonUkCitizen !== undefined &&
+//       willingToConsiderANonUkCitizen !== "N/A"
+//     )
+//       userData.willingToConsiderANonUkCitizen = willingToConsiderANonUkCitizen;
+//     // Handle arrays
+//     if (languagesSpokenArr.length > 0)
+//       userData.languagesSpoken = languagesSpokenArr;
+//     if (qualitiesArr.length > 0)
+//       userData.QualitiesThatYouCanBringToYourMarriage = qualitiesArr;
+//     if (hobbiesArr.length > 0) userData.hobbies = hobbiesArr;
+//     if (qualitiesNeededArr.length > 0)
+//       userData.qualitiesYouNeedInYourPartner = qualitiesNeededArr;
+//     if (educationArr.length > 0) userData.education = educationArr;
+//     if (childrenArr.length > 0) userData.children = childrenArr;
+
+//     console.log("Creating user with data:", userData); // Debug log
+
+//     // Create and save user
+//     const user = new User(userData);
+//     await user.save();
+
+//     console.log("User created successfully:", user.username); // Debug log
+//     res.json({ success: true, message: "User created successfully" });
+//   } catch (err) {
+//     console.error("Add user error:", err);
+//     res.json({ error: `Failed to add user: ${err.message}` });
+//   }
+// });
 app.post("/admin/user/add", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
   console.log("Received user data:", req.body); // Debug log
 
   const {
-    username, // This should come from frontend now
+    username,
     password,
     willingToConsiderANonUkCitizen,
     name,
@@ -1103,7 +1355,7 @@ app.post("/admin/user/add", async (req, res) => {
     contact,
     religion,
     caste,
-    adress, // Note: using 'adress' to match your schema
+    adress,
     eyeColor,
     hairColor,
     complexion,
@@ -1115,6 +1367,7 @@ app.post("/admin/user/add", async (req, res) => {
     ethnicity,
     maritalStatus,
     disability,
+    disabilityInfo,
     smoker,
     bornMuslim,
     islamicSect,
@@ -1191,138 +1444,210 @@ app.post("/admin/user/add", async (req, res) => {
       ? qualitiesYouNeedInYourPartner
       : [];
 
-    // Process education and children arrays (they should already be properly formatted)
+    // Process education and children arrays
     const educationArr = Array.isArray(education) ? education : [];
     const childrenArr = Array.isArray(children) ? children : [];
 
-    // Create new user object
+    // Create new user object with required fields
     const userData = {
       username,
       password: hashedPassword,
       gender,
     };
 
-    // Add optional fields only if they exist and are not empty
-    if (name) userData.name = name;
-    if (work) userData.work = work;
-    if (age) userData.age = parseInt(age);
-    if (country) userData.country = country;
-    if (state) userData.state = state;
-    if (city) userData.city = city;
-    if (contact) userData.contact = contact;
-    if (religion) userData.religion = religion;
-    if (caste) userData.caste = caste;
-    if (adress) userData.adress = adress;
-    if (eyeColor) userData.eyeColor = eyeColor;
-    if (hairColor) userData.hairColor = hairColor;
-    if (complexion) userData.complexion = complexion;
-    if (build) userData.build = build;
-    if (height) userData.height = parseInt(height);
-    if (nationality) userData.nationality = nationality;
-    if (ethnicity) userData.ethnicity = ethnicity;
-    if (islamicSect) userData.islamicSect = islamicSect;
-    if (islamIsImportantToMeInfo)
+    // Add optional STRING fields only if they exist and are not "N/A"
+    if (name && name !== "N/A") userData.name = name;
+    if (work && work !== "N/A") userData.work = work;
+    if (country && country !== "N/A") userData.country = country;
+    if (state && state !== "N/A") userData.state = state;
+    if (city && city !== "N/A") userData.city = city;
+    if (contact && contact !== "N/A") userData.contact = contact;
+    if (religion && religion !== "N/A") userData.religion = religion;
+    if (caste && caste !== "N/A") userData.caste = caste;
+    if (adress && adress !== "N/A") userData.adress = adress;
+    if (eyeColor && eyeColor !== "N/A") userData.eyeColor = eyeColor;
+    if (hairColor && hairColor !== "N/A") userData.hairColor = hairColor;
+    if (complexion && complexion !== "N/A") userData.complexion = complexion;
+    if (build && build !== "N/A") userData.build = build;
+    if (nationality && nationality !== "N/A")
+      userData.nationality = nationality;
+    if (ethnicity && ethnicity !== "N/A") userData.ethnicity = ethnicity;
+    if (islamicSect && islamicSect !== "N/A")
+      userData.islamicSect = islamicSect;
+    if (islamIsImportantToMeInfo && islamIsImportantToMeInfo !== "N/A")
       userData.islamIsImportantToMeInfo = islamIsImportantToMeInfo;
-    if (livingArrangementsAfterMarriage)
+    if (
+      livingArrangementsAfterMarriage &&
+      livingArrangementsAfterMarriage !== "N/A"
+    )
       userData.livingArrangementsAfterMarriage =
         livingArrangementsAfterMarriage;
-    if (futurePlans) userData.futurePlans = futurePlans;
-    if (describeNature) userData.describeNature = describeNature;
-    if (fatherName) userData.fatherName = fatherName;
-    if (motherName) userData.motherName = motherName;
-    if (fatherProfession) userData.fatherProfession = fatherProfession;
-    if (aboutMe) userData.aboutMe = aboutMe;
-    if (preferredAgeRange) userData.preferredAgeRange = preferredAgeRange;
-    if (preferredHeightRange)
+    if (futurePlans && futurePlans !== "N/A")
+      userData.futurePlans = futurePlans;
+    if (describeNature && describeNature !== "N/A")
+      userData.describeNature = describeNature;
+    if (fatherName && fatherName !== "N/A") userData.fatherName = fatherName;
+    if (motherName && motherName !== "N/A") userData.motherName = motherName;
+    if (fatherProfession && fatherProfession !== "N/A")
+      userData.fatherProfession = fatherProfession;
+    if (aboutMe && aboutMe !== "N/A") userData.aboutMe = aboutMe;
+    if (preferredAgeRange && preferredAgeRange !== "N/A")
+      userData.preferredAgeRange = preferredAgeRange;
+    if (preferredHeightRange && preferredHeightRange !== "N/A")
       userData.preferredHeightRange = preferredHeightRange;
-    if (preferredCaste) userData.preferredCaste = preferredCaste;
-    if (preferredEthnicity) userData.preferredEthnicity = preferredEthnicity;
-    if (lookingForASpouseThatIs)
+    if (preferredCaste && preferredCaste !== "N/A")
+      userData.preferredCaste = preferredCaste;
+    if (preferredEthnicity && preferredEthnicity !== "N/A")
+      userData.preferredEthnicity = preferredEthnicity;
+    if (lookingForASpouseThatIs && lookingForASpouseThatIs !== "N/A")
       userData.lookingForASpouseThatIs = lookingForASpouseThatIs;
-    if (whoCompletedProfile) userData.whoCompletedProfile = whoCompletedProfile;
-    if (waliMyContactDetails)
+    if (whoCompletedProfile && whoCompletedProfile !== "N/A")
+      userData.whoCompletedProfile = whoCompletedProfile;
+    if (waliMyContactDetails && waliMyContactDetails !== "N/A")
       userData.waliMyContactDetails = waliMyContactDetails;
-    if (birthPlace) userData.birthPlace = birthPlace;
-    if (anySpecialInformationPeopleShouldKnow)
+    if (birthPlace && birthPlace !== "N/A") userData.birthPlace = birthPlace;
+    if (
+      anySpecialInformationPeopleShouldKnow &&
+      anySpecialInformationPeopleShouldKnow !== "N/A"
+    )
       userData.anySpecialInformationPeopleShouldKnow =
         anySpecialInformationPeopleShouldKnow;
-    if (disability && disability !== "no") userData.disability = disability;
 
-    // Handle numeric fields
-    if (siblings !== undefined && siblings !== "")
-      userData.siblings = parseInt(siblings) || 0;
-
-    // Handle boolean fields - convert properly
+    // Handle MARITAL STATUS (enum field)
     if (maritalStatus && maritalStatus !== "N/A") {
       userData.maritalStatus = maritalStatus;
     }
-    if (smoker !== undefined)
-      userData.smoker = smoker === true || smoker === "true";
-    if (bornMuslim !== undefined)
-      userData.bornMuslim = bornMuslim === true || bornMuslim === "true";
-    if (prays !== undefined)
-      userData.prays = prays === true || prays === "true";
-    if (celebratesMilaad !== undefined)
-      userData.celebratesMilaad =
-        celebratesMilaad === true || celebratesMilaad === "true";
-    if (celebrateKhatams !== undefined)
-      userData.celebrateKhatams =
-        celebrateKhatams === true || celebrateKhatams === "true";
-    if (willingToRelocate !== undefined)
-      userData.willingToRelocate =
-        willingToRelocate === true || willingToRelocate === "true";
-    if (allowParnterToWork !== undefined)
-      userData.allowParnterToWork =
-        allowParnterToWork === true || allowParnterToWork === "true";
-    if (allowPartnerToStudy !== undefined)
-      userData.allowPartnerToStudy =
-        allowPartnerToStudy === true || allowPartnerToStudy === "true";
-    if (acceptSomeoneWithChildren !== undefined)
-      userData.acceptSomeoneWithChildren =
-        acceptSomeoneWithChildren === true ||
-        acceptSomeoneWithChildren === "true";
-    if (acceptADivorcedPerson !== undefined)
-      userData.acceptADivorcedPerson =
-        acceptADivorcedPerson === true || acceptADivorcedPerson === "true";
-    if (agreesWithPolygamy !== undefined)
-      userData.agreesWithPolygamy =
-        agreesWithPolygamy === true || agreesWithPolygamy === "true";
-    if (acceptAWidow !== undefined)
-      userData.acceptAWidow = acceptAWidow === true || acceptAWidow === "true";
-    if (AcceptSomeoneWithBeard !== undefined)
-      userData.AcceptSomeoneWithBeard =
-        AcceptSomeoneWithBeard === true || AcceptSomeoneWithBeard === "true";
-    if (AcceptSomeoneWithHijab !== undefined)
-      userData.AcceptSomeoneWithHijab =
-        AcceptSomeoneWithHijab === true || AcceptSomeoneWithHijab === "true";
-    if (ConsiderARevert !== undefined)
-      userData.ConsiderARevert =
-        ConsiderARevert === true || ConsiderARevert === "true";
-    if (acceptSomeoneInOtherCountry !== undefined)
+
+    // Handle DISABILITY (special logic)
+    if (disability && disability !== "N/A") {
+      if (disability === "yes" && disabilityInfo && disabilityInfo.trim()) {
+        userData.disability = disabilityInfo.trim();
+      } else if (disability === "no") {
+        userData.disability = "no";
+      } else if (disability !== "yes") {
+        userData.disability = disability;
+      }
+    }
+
+    // Handle NUMERIC fields (convert and validate)
+    if (age && age !== "N/A" && age !== "") {
+      const ageNum = parseInt(age);
+      if (!isNaN(ageNum)) userData.age = ageNum;
+    }
+    if (height && height !== "N/A" && height !== "") {
+      const heightNum = parseInt(height);
+      if (!isNaN(heightNum)) userData.height = heightNum;
+    }
+    if (siblings !== undefined && siblings !== "N/A" && siblings !== "") {
+      const siblingsNum = parseInt(siblings);
+      if (!isNaN(siblingsNum)) userData.siblings = siblingsNum;
+    }
+
+    // Handle BOOLEAN fields - only save if not "N/A" and convert to proper boolean
+    if (smoker !== undefined && smoker !== "N/A") {
+      userData.smoker = smoker === "true";
+    }
+    if (bornMuslim !== undefined && bornMuslim !== "N/A") {
+      userData.bornMuslim = bornMuslim === "true";
+    }
+    if (prays !== undefined && prays !== "N/A") {
+      userData.prays = prays === "true";
+    }
+    if (celebratesMilaad !== undefined && celebratesMilaad !== "N/A") {
+      userData.celebratesMilaad = celebratesMilaad === "true";
+    }
+    if (celebrateKhatams !== undefined && celebrateKhatams !== "N/A") {
+      userData.celebrateKhatams = celebrateKhatams === "true";
+    }
+    if (willingToRelocate !== undefined && willingToRelocate !== "N/A") {
+      userData.willingToRelocate = willingToRelocate === "true";
+    }
+    if (allowParnterToWork !== undefined && allowParnterToWork !== "N/A") {
+      userData.allowParnterToWork = allowParnterToWork === "true";
+    }
+    if (allowPartnerToStudy !== undefined && allowPartnerToStudy !== "N/A") {
+      userData.allowPartnerToStudy = allowPartnerToStudy === "true";
+    }
+    if (
+      acceptSomeoneWithChildren !== undefined &&
+      acceptSomeoneWithChildren !== "N/A"
+    ) {
+      userData.acceptSomeoneWithChildren = acceptSomeoneWithChildren === "true";
+    }
+    if (
+      acceptADivorcedPerson !== undefined &&
+      acceptADivorcedPerson !== "N/A"
+    ) {
+      userData.acceptADivorcedPerson = acceptADivorcedPerson === "true";
+    }
+    if (agreesWithPolygamy !== undefined && agreesWithPolygamy !== "N/A") {
+      userData.agreesWithPolygamy = agreesWithPolygamy === "true";
+    }
+    if (acceptAWidow !== undefined && acceptAWidow !== "N/A") {
+      userData.acceptAWidow = acceptAWidow === "true";
+    }
+    if (
+      AcceptSomeoneWithBeard !== undefined &&
+      AcceptSomeoneWithBeard !== "N/A"
+    ) {
+      userData.AcceptSomeoneWithBeard = AcceptSomeoneWithBeard === "true";
+    }
+    if (
+      AcceptSomeoneWithHijab !== undefined &&
+      AcceptSomeoneWithHijab !== "N/A"
+    ) {
+      userData.AcceptSomeoneWithHijab = AcceptSomeoneWithHijab === "true";
+    }
+    if (ConsiderARevert !== undefined && ConsiderARevert !== "N/A") {
+      userData.ConsiderARevert = ConsiderARevert === "true";
+    }
+    if (
+      acceptSomeoneInOtherCountry !== undefined &&
+      acceptSomeoneInOtherCountry !== "N/A"
+    ) {
       userData.acceptSomeoneInOtherCountry =
-        acceptSomeoneInOtherCountry === true ||
         acceptSomeoneInOtherCountry === "true";
-    if (willingToSharePhotosUponRequest !== undefined)
+    }
+    if (
+      willingToSharePhotosUponRequest !== undefined &&
+      willingToSharePhotosUponRequest !== "N/A"
+    ) {
       userData.willingToSharePhotosUponRequest =
-        willingToSharePhotosUponRequest === true ||
         willingToSharePhotosUponRequest === "true";
-    if (willingToMeetUpOutside !== undefined)
-      userData.willingToMeetUpOutside =
-        willingToMeetUpOutside === true || willingToMeetUpOutside === "true";
-    if (willingToConsiderANonUkCitizen !== undefined)
+    }
+    if (
+      willingToMeetUpOutside !== undefined &&
+      willingToMeetUpOutside !== "N/A"
+    ) {
+      userData.willingToMeetUpOutside = willingToMeetUpOutside === "true";
+    }
+    if (
+      willingToConsiderANonUkCitizen !== undefined &&
+      willingToConsiderANonUkCitizen !== "N/A"
+    ) {
       userData.willingToConsiderANonUkCitizen =
-        willingToConsiderANonUkCitizen === true ||
         willingToConsiderANonUkCitizen === "true";
-    // Handle arrays
-    if (languagesSpokenArr.length > 0)
+    }
+
+    // Handle ARRAYS - only add if they have content
+    if (languagesSpokenArr.length > 0) {
       userData.languagesSpoken = languagesSpokenArr;
-    if (qualitiesArr.length > 0)
+    }
+    if (qualitiesArr.length > 0) {
       userData.QualitiesThatYouCanBringToYourMarriage = qualitiesArr;
-    if (hobbiesArr.length > 0) userData.hobbies = hobbiesArr;
-    if (qualitiesNeededArr.length > 0)
+    }
+    if (hobbiesArr.length > 0) {
+      userData.hobbies = hobbiesArr;
+    }
+    if (qualitiesNeededArr.length > 0) {
       userData.qualitiesYouNeedInYourPartner = qualitiesNeededArr;
-    if (educationArr.length > 0) userData.education = educationArr;
-    if (childrenArr.length > 0) userData.children = childrenArr;
+    }
+    if (educationArr.length > 0) {
+      userData.education = educationArr;
+    }
+    if (childrenArr.length > 0) {
+      userData.children = childrenArr;
+    }
 
     console.log("Creating user with data:", userData); // Debug log
 
@@ -1357,12 +1682,6 @@ app.get("/admin/user/:id", async (req, res) => {
     acceptedRequests,
   });
 });
-// app.get("/admin/usercount", async (req, res) => {
-//   const gender = req.query.gender;
-//   if (!gender) return res.json({ count: 0 });
-//   const count = await User.countDocuments({ gender });
-//   res.json({ count });
-// });
 app.get("/generate-username", async (req, res) => {
   const { gender } = req.query;
   if (!gender || (gender !== "male" && gender !== "female")) {
@@ -1409,6 +1728,8 @@ app.get("/admin/edit-user/:id", async (req, res) => {
 });
 
 // Update User Route
+// Replace the entire /admin/user/update route with this corrected version:
+
 app.post("/admin/user/update", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
@@ -1424,29 +1745,127 @@ app.post("/admin/user/update", async (req, res) => {
       return res.json({ error: "User not found" });
     }
 
-    // Update all fields that are provided
+    console.log("Update data received:", updateData); // Debug log
+
+    // Process each field individually with proper type handling and N/A filtering
     Object.keys(updateData).forEach((key) => {
-      if (updateData[key] !== undefined && updateData[key] !== "") {
-        // Handle boolean fields properly
-        if (
-          typeof updateData[key] === "boolean" ||
-          updateData[key] === "true" ||
-          updateData[key] === "false"
-        ) {
-          user[key] = updateData[key] === true || updateData[key] === "true";
+      const value = updateData[key];
+
+      // Skip empty, undefined, or "N/A" values (same as add route logic)
+      if (value === undefined || value === "" || value === "N/A") {
+        console.log(`Skipping field ${key} with value:`, value);
+        return;
+      }
+
+      console.log(`Processing field ${key} with value:`, value); // Debug log
+
+      // Handle boolean fields that come as strings
+      if (
+        [
+          "smoker",
+          "bornMuslim",
+          "prays",
+          "celebratesMilaad",
+          "celebrateKhatams",
+          "willingToRelocate",
+          "allowParnterToWork",
+          "allowPartnerToStudy",
+          "acceptSomeoneWithChildren",
+          "acceptADivorcedPerson",
+          "agreesWithPolygamy",
+          "acceptAWidow",
+          "AcceptSomeoneWithBeard",
+          "AcceptSomeoneWithHijab",
+          "ConsiderARevert",
+          "acceptSomeoneInOtherCountry",
+          "willingToSharePhotosUponRequest",
+          "willingToMeetUpOutside",
+          "willingToConsiderANonUkCitizen",
+        ].includes(key)
+      ) {
+        user[key] = value === "true" || value === true;
+        console.log(`Set boolean ${key} to:`, user[key]);
+      }
+      // Handle numeric fields
+      else if (["age", "height", "siblings", "contact"].includes(key)) {
+        const num = parseInt(value);
+        if (!isNaN(num)) {
+          user[key] = num;
+          console.log(`Set number ${key} to:`, user[key]);
         }
-        // Handle numeric fields
-        else if (key === "age" || key === "height" || key === "siblings") {
-          const num = parseInt(updateData[key]);
-          if (!isNaN(num)) user[key] = num;
+      }
+      // Handle comma-separated arrays
+      else if (
+        [
+          "hobbies",
+          "languagesSpoken",
+          "QualitiesThatYouCanBringToYourMarriage",
+          "qualitiesYouNeedInYourPartner",
+        ].includes(key)
+      ) {
+        if (Array.isArray(value)) {
+          user[key] = value.filter((item) => item && item.trim());
+        } else if (typeof value === "string" && value.trim()) {
+          user[key] = value
+            .split(",")
+            .map((item) => item.trim())
+            .filter((item) => item);
         }
-        // Handle arrays
-        else if (Array.isArray(updateData[key])) {
-          user[key] = updateData[key];
+        console.log(`Set array ${key} to:`, user[key]);
+      }
+      // Handle education and children arrays (structured objects)
+      else if (key === "education" || key === "children") {
+        if (Array.isArray(value)) {
+          user[key] = value.filter(
+            (item) =>
+              item && Object.values(item).some((val) => val && val.trim())
+          );
+          console.log(`Set object array ${key} to:`, user[key]);
         }
-        // Handle regular fields
-        else {
-          user[key] = updateData[key];
+      }
+      // Handle disability special case
+      else if (key === "disability") {
+        if (value === "no") {
+          user[key] = "no";
+        } else if (value && value.trim()) {
+          user[key] = value.trim();
+        }
+        console.log(`Set disability to:`, user[key]);
+      }
+      // Handle marital status enum
+      else if (key === "maritalStatus") {
+        const validStatuses = [
+          "married",
+          "unmarried",
+          "divorced",
+          "widowed",
+          "separated",
+        ];
+        if (validStatuses.includes(value)) {
+          user[key] = value;
+          console.log(`Set maritalStatus to:`, user[key]);
+        }
+      }
+      // Handle enum fields
+      else if (
+        [
+          "livingArrangementsAfterMarriage",
+          "futurePlans",
+          "build",
+          "eyeColor",
+          "hairColor",
+          "complexion",
+          "ethnicity",
+        ].includes(key)
+      ) {
+        user[key] = value;
+        console.log(`Set enum ${key} to:`, user[key]);
+      }
+      // Handle all other string fields
+      else {
+        if (typeof value === "string" && value.trim()) {
+          user[key] = value.trim();
+          console.log(`Set string ${key} to:`, user[key]);
         }
       }
     });
@@ -1562,6 +1981,32 @@ app.get("/allusersmaritalstatus", async (req, res) => {
   } catch (error) {
     console.error("Error fetching marital status counts:", error);
     res.status(500).json({ error: "Failed to fetch marital status counts" });
+  }
+});
+
+app.get("/api/user/:username", async (req, res) => {
+  try {
+    const { username } = req.params;
+
+    if (!username) {
+      return res.status(400).json({
+        success: false,
+        error: "Username is required",
+      });
+    }
+
+    const user = await User.findOne({ username: username });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "User not found",
+      });
+    }
+    res.json({ success: true, user });
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch user" });
   }
 });
 

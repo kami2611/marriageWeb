@@ -165,7 +165,6 @@
                 <option value="">Select Gender</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="rather not say">Rather not say</option>
               </select>
             </div>
 
@@ -215,13 +214,12 @@
             <div class="space-y-2">
               <label for="maritalStatus" class="block text-sm font-medium text-gray-700">Marital Status</label>
               <select id="maritalStatus" name="maritalStatus" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                <option value="">Select Marital Status</option>
                 <option value="unmarried">Unmarried</option>
                 <option value="married">Married</option>
                 <option value="divorced">Divorced</option>
                 <option value="widowed">Widowed</option>
                 <option value="separated">Separated</option>
-                <option value="N/A">N/A</option>
+                <option value="N/A" selected>N/A</option>
               </select>
             </div>
 
@@ -249,7 +247,7 @@
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="ri-phone-line text-gray-400"></i>
                   </div>
-                  <input type="tel" id="contact" name="contact" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter contact number">
+                  <input type="number" id="contact" name="contact" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter contact number" inputmode="numeric" pattern="[0-9]*">
                 </div>
               </div>
               <div class="space-y-2">
@@ -327,9 +325,10 @@
               <div class="space-y-2">
                 <label for="willingToRelocate" class="block text-sm font-medium text-gray-700">Willing to Relocate</label>
                 <select id="willingToRelocate" name="willingToRelocate" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
+
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -408,12 +407,11 @@
               <div class="space-y-2">
                 <label for="build" class="block text-sm font-medium text-gray-700">Build</label>
                 <select id="build" name="build" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Build</option>
                   <option value="slim">Slim</option>
                   <option value="average">Average</option>
                   <option value="athletic">Athletic</option>
                   <option value="heavy">Heavy</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -422,22 +420,20 @@
               <div class="space-y-2">
                 <label for="eyeColor" class="block text-sm font-medium text-gray-700">Eye Color</label>
                 <select id="eyeColor" name="eyeColor" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Eye Color</option>
                   <option value="black">Black</option>
                   <option value="brown">Brown</option>
                   <option value="grey">Grey</option>
                   <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="hairColor" class="block text-sm font-medium text-gray-700">Hair Color</label>
                 <select id="hairColor" name="hairColor" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Hair Color</option>
                   <option value="black">Black</option>
                   <option value="brown">Brown</option>
                   <option value="blonde">Blonde</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -446,24 +442,21 @@
               <div class="space-y-2">
                 <label for="complexion" class="block text-sm font-medium text-gray-700">Complexion</label>
                 <select id="complexion" name="complexion" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Complexion</option>
                   <option value="fair">Fair</option>
                   <option value="wheatish">Wheatish</option>
                   <option value="dark">Dark</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="ethnicity" class="block text-sm font-medium text-gray-700">Ethnicity</label>
                 <select id="ethnicity" name="ethnicity" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Ethnicity</option>
-                  <option value="asian">Asian</option>
-                  <option value="african">African</option>
-                  <option value="caucasian">Caucasian</option>
-                  <option value="latino">Latino</option>
-                  <option value="arab">Arab</option>
+                  <option value="bangladeshi">Bangladeshi</option>
+                  <option value="pakistani">Pakistani</option>
+                  <option value="indian">Indian</option>
+                  <option value="british">British</option>
                   <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -474,6 +467,7 @@
                 <select id="disability" name="disability" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
                   <option value="no">No</option>
                   <option value="yes">Yes</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
                 <!-- Conditional textarea for disability details -->
                 <div id="disabilityDetails" class="hidden mt-3">
@@ -484,9 +478,9 @@
               <div class="space-y-2">
                 <label for="smoker" class="block text-sm font-medium text-gray-700">Smoker</label>
                 <select id="smoker" name="smoker" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -526,9 +520,9 @@
               <div class="space-y-2">
                 <label for="bornMuslim" class="block text-sm font-medium text-gray-700">Born Muslim</label>
                 <select id="bornMuslim" name="bornMuslim" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -540,14 +534,15 @@
                   <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="celebratesMilaad" class="block text-sm font-medium text-gray-700">Celebrates Milaad</label>
                 <select id="celebratesMilaad" name="celebratesMilaad" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -556,9 +551,9 @@
               <div class="space-y-2">
                 <label for="celebrateKhatams" class="block text-sm font-medium text-gray-700">Celebrates Khatams</label>
                 <select id="celebrateKhatams" name="celebrateKhatams" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
@@ -603,12 +598,11 @@
               <div class="space-y-2">
                 <label for="livingArrangementsAfterMarriage" class="block text-sm font-medium text-gray-700">Living Arrangements After Marriage</label>
                 <select id="livingArrangementsAfterMarriage" name="livingArrangementsAfterMarriage" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Living Arrangement</option>
                   <option value="live with parents">Live with parents</option>
                   <option value="live alone">Live alone</option>
                   <option value="live with spouse">Live with spouse</option>
                   <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -617,11 +611,10 @@
               <div class="space-y-2">
                 <label for="futurePlans" class="block text-sm font-medium text-gray-700">Future Plans</label>
                 <select id="futurePlans" name="futurePlans" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Future Plans</option>
                   <option value="settle abroad">Settle abroad</option>
                   <option value="stay in current country">Stay in current country</option>
                   <option value="other">Other</option>
-                  <option value="N/A">N/A</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
@@ -695,7 +688,14 @@
               </div>
               <div class="space-y-2">
                 <label for="preferredEthnicity" class="block text-sm font-medium text-gray-700">Preferred Ethnicity</label>
-                <input type="text" id="preferredEthnicity" name="preferredEthnicity" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter preferred ethnicity">
+                <select id="preferredEthnicity" name="preferredEthnicity" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="bangladeshi">Bangladeshi</option>
+                  <option value="indian">Indian</option>
+                  <option value="pakistani">Pakistani</option>
+                  <option value="british">British</option>
+                  <option value="other">Other</option>
+                  <option value="N/A" selected>N/A</option>
+                </select>
               </div>
             </div>
 
@@ -703,17 +703,17 @@
               <div class="space-y-2">
                 <label for="allowParnterToWork" class="block text-sm font-medium text-gray-700">Allow Partner to Work</label>
                 <select id="allowParnterToWork" name="allowParnterToWork" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="allowPartnerToStudy" class="block text-sm font-medium text-gray-700">Allow Partner to Study</label>
                 <select id="allowPartnerToStudy" name="allowPartnerToStudy" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -723,17 +723,17 @@
               <div class="space-y-2">
                 <label for="acceptSomeoneWithChildren" class="block text-sm font-medium text-gray-700">Accept Someone with Children</label>
                 <select id="acceptSomeoneWithChildren" name="acceptSomeoneWithChildren" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="acceptADivorcedPerson" class="block text-sm font-medium text-gray-700">Accept a Divorced Person</label>
                 <select id="acceptADivorcedPerson" name="acceptADivorcedPerson" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -742,17 +742,17 @@
               <div class="space-y-2">
                 <label for="acceptAWidow" class="block text-sm font-medium text-gray-700">Accept a Widow</label>
                 <select id="acceptAWidow" name="acceptAWidow" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="agreesWithPolygamy" class="block text-sm font-medium text-gray-700">Agrees with Polygamy</label>
                 <select id="agreesWithPolygamy" name="agreesWithPolygamy" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -761,17 +761,17 @@
               <div class="space-y-2">
                 <label for="AcceptSomeoneWithBeard" class="block text-sm font-medium text-gray-700">Accept Someone with Beard</label>
                 <select id="AcceptSomeoneWithBeard" name="AcceptSomeoneWithBeard" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="AcceptSomeoneWithHijab" class="block text-sm font-medium text-gray-700">Accept Someone with Hijab</label>
                 <select id="AcceptSomeoneWithHijab" name="AcceptSomeoneWithHijab" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -780,17 +780,17 @@
               <div class="space-y-2">
                 <label for="ConsiderARevert" class="block text-sm font-medium text-gray-700">Consider a Revert</label>
                 <select id="ConsiderARevert" name="ConsiderARevert" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
               <div class="space-y-2">
                 <label for="acceptSomeoneInOtherCountry" class="block text-sm font-medium text-gray-700">Accept Someone in Other Country</label>
                 <select id="acceptSomeoneInOtherCountry" name="acceptSomeoneInOtherCountry" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -799,18 +799,18 @@
               <div class="space-y-2">
                 <label for="willingToSharePhotosUponRequest" class="block text-sm font-medium text-gray-700">Willing to Share Photos Upon Request</label>
                 <select id="willingToSharePhotosUponRequest" name="willingToSharePhotosUponRequest" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
 
               <div class="space-y-2">
                 <label for="willingToMeetUpOutside" class="block text-sm font-medium text-gray-700">Willing to Meet Up Outside</label>
                 <select id="willingToMeetUpOutside" name="willingToMeetUpOutside" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="">Select Option</option>
                   <option value="true">Yes</option>
                   <option value="false">No</option>
+                  <option value="N/A" selected>N/A</option>
                 </select>
               </div>
             </div>
@@ -818,9 +818,9 @@
             <div class="space-y-2">
               <label for="willingToConsiderANonUkCitizen" class="block text-sm font-medium text-gray-700">Willing to Consider a Non-UK Citizen</label>
               <select id="willingToConsiderANonUkCitizen" name="willingToConsiderANonUkCitizen" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                <option value="">Select Option</option>
                 <option value="true">Yes</option>
                 <option value="false">No</option>
+                <option value="N/A" selected>N/A</option>
               </select>
             </div>
 
