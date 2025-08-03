@@ -3,7 +3,6 @@ const path = require("path");
 const Request = require("./models/Request");
 const isLoggedIn = require("./middlewares/isLoggedIn");
 const findUser = require("./middlewares/findUser");
-const requireProfileComplete = require("./middlewares/requireProfileComplete");
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
@@ -1747,62 +1746,111 @@ app.post("/admin/user/update", async (req, res) => {
 
     console.log("Update data received:", updateData); // Debug log
 
-    // Process each field individually with proper type handling and N/A filtering
+    // Define field categories for cleaner processing
+    const booleanFields = [
+      "smoker",
+      "bornMuslim",
+      "prays",
+      "celebratesMilaad",
+      "celebrateKhatams",
+      "willingToRelocate",
+      "allowParnterToWork",
+      "allowPartnerToStudy",
+      "acceptSomeoneWithChildren",
+      "acceptADivorcedPerson",
+      "agreesWithPolygamy",
+      "acceptAWidow",
+      "AcceptSomeoneWithBeard",
+      "AcceptSomeoneWithHijab",
+      "ConsiderARevert",
+      "acceptSomeoneInOtherCountry",
+      "willingToSharePhotosUponRequest",
+      "willingToMeetUpOutside",
+      "willingToConsiderANonUkCitizen",
+    ];
+
+    const numericFields = ["age", "height", "siblings", "contact"];
+
+    const arrayFields = [
+      "hobbies",
+      "languagesSpoken",
+      "QualitiesThatYouCanBringToYourMarriage",
+      "qualitiesYouNeedInYourPartner",
+    ];
+
+    const objectArrayFields = ["education", "children"];
+
+    const enumFields = {
+      maritalStatus: [
+        "married",
+        "unmarried",
+        "divorced",
+        "widowed",
+        "separated",
+      ],
+      build: ["slim", "average", "athletic", "heavy"],
+      eyeColor: ["black", "brown", "grey", "other"],
+      hairColor: ["black", "brown", "blonde"],
+      complexion: ["fair", "wheatish", "dark"],
+      ethnicity: ["bangladeshi", "pakistani", "indian", "british", "other"],
+      livingArrangementsAfterMarriage: [
+        "live with parents",
+        "live alone",
+        "live with spouse",
+        "other",
+      ],
+      futurePlans: ["settle abroad", "stay in current country", "other"],
+      gender: ["male", "female", "rather not say"],
+    };
+
+    // **IMPORTANT FIX**: Clear any existing "N/A" values in boolean fields first
+    booleanFields.forEach((field) => {
+      if (user[field] === "N/A" || user[field] === null) {
+        user[field] = undefined;
+        console.log(`Cleared existing N/A value for ${field}`);
+      }
+    });
+
+    // Process each field individually
     Object.keys(updateData).forEach((key) => {
       const value = updateData[key];
 
-      // Skip empty, undefined, or "N/A" values (same as add route logic)
-      if (value === undefined || value === "" || value === "N/A") {
-        console.log(`Skipping field ${key} with value:`, value);
+      // Skip empty, undefined, or "N/A" values - do NOT save these fields
+      if (
+        value === undefined ||
+        value === "" ||
+        value === "N/A" ||
+        value === null
+      ) {
+        console.log(`Skipping field ${key} with N/A or empty value:`, value);
+
+        // **CRITICAL FIX**: If this is a boolean field with "N/A", explicitly unset it
+        if (booleanFields.includes(key) && value === "N/A") {
+          user[key] = undefined;
+          console.log(
+            `Explicitly cleared boolean field ${key} due to N/A value`
+          );
+        }
         return;
       }
 
-      console.log(`Processing field ${key} with value:`, value); // Debug log
+      console.log(`Processing field ${key} with value:`, value);
 
-      // Handle boolean fields that come as strings
-      if (
-        [
-          "smoker",
-          "bornMuslim",
-          "prays",
-          "celebratesMilaad",
-          "celebrateKhatams",
-          "willingToRelocate",
-          "allowParnterToWork",
-          "allowPartnerToStudy",
-          "acceptSomeoneWithChildren",
-          "acceptADivorcedPerson",
-          "agreesWithPolygamy",
-          "acceptAWidow",
-          "AcceptSomeoneWithBeard",
-          "AcceptSomeoneWithHijab",
-          "ConsiderARevert",
-          "acceptSomeoneInOtherCountry",
-          "willingToSharePhotosUponRequest",
-          "willingToMeetUpOutside",
-          "willingToConsiderANonUkCitizen",
-        ].includes(key)
-      ) {
+      // Handle BOOLEAN fields
+      if (booleanFields.includes(key)) {
         user[key] = value === "true" || value === true;
         console.log(`Set boolean ${key} to:`, user[key]);
       }
-      // Handle numeric fields
-      else if (["age", "height", "siblings", "contact"].includes(key)) {
+      // Handle NUMERIC fields
+      else if (numericFields.includes(key)) {
         const num = parseInt(value);
         if (!isNaN(num)) {
           user[key] = num;
           console.log(`Set number ${key} to:`, user[key]);
         }
       }
-      // Handle comma-separated arrays
-      else if (
-        [
-          "hobbies",
-          "languagesSpoken",
-          "QualitiesThatYouCanBringToYourMarriage",
-          "qualitiesYouNeedInYourPartner",
-        ].includes(key)
-      ) {
+      // Handle ARRAY fields (comma-separated strings)
+      else if (arrayFields.includes(key)) {
         if (Array.isArray(value)) {
           user[key] = value.filter((item) => item && item.trim());
         } else if (typeof value === "string" && value.trim()) {
@@ -1813,8 +1861,8 @@ app.post("/admin/user/update", async (req, res) => {
         }
         console.log(`Set array ${key} to:`, user[key]);
       }
-      // Handle education and children arrays (structured objects)
-      else if (key === "education" || key === "children") {
+      // Handle OBJECT ARRAY fields (education, children)
+      else if (objectArrayFields.includes(key)) {
         if (Array.isArray(value)) {
           user[key] = value.filter(
             (item) =>
@@ -1823,7 +1871,16 @@ app.post("/admin/user/update", async (req, res) => {
           console.log(`Set object array ${key} to:`, user[key]);
         }
       }
-      // Handle disability special case
+      // Handle ENUM fields with validation
+      else if (enumFields[key]) {
+        if (enumFields[key].includes(value)) {
+          user[key] = value;
+          console.log(`Set enum ${key} to:`, user[key]);
+        } else {
+          console.log(`Invalid enum value for ${key}:`, value);
+        }
+      }
+      // Handle DISABILITY special case
       else if (key === "disability") {
         if (value === "no") {
           user[key] = "no";
@@ -1832,42 +1889,38 @@ app.post("/admin/user/update", async (req, res) => {
         }
         console.log(`Set disability to:`, user[key]);
       }
-      // Handle marital status enum
-      else if (key === "maritalStatus") {
-        const validStatuses = [
-          "married",
-          "unmarried",
-          "divorced",
-          "widowed",
-          "separated",
-        ];
-        if (validStatuses.includes(value)) {
-          user[key] = value;
-          console.log(`Set maritalStatus to:`, user[key]);
-        }
-      }
-      // Handle enum fields
-      else if (
-        [
-          "livingArrangementsAfterMarriage",
-          "futurePlans",
-          "build",
-          "eyeColor",
-          "hairColor",
-          "complexion",
-          "ethnicity",
-        ].includes(key)
-      ) {
-        user[key] = value;
-        console.log(`Set enum ${key} to:`, user[key]);
-      }
-      // Handle all other string fields
+      // Handle all other STRING fields
       else {
         if (typeof value === "string" && value.trim()) {
           user[key] = value.trim();
           console.log(`Set string ${key} to:`, user[key]);
+        } else if (typeof value === "number") {
+          user[key] = value;
+          console.log(`Set number ${key} to:`, user[key]);
         }
       }
+    });
+
+    // **FINAL CLEANUP**: Remove any remaining "N/A" or invalid values in boolean fields
+    booleanFields.forEach((field) => {
+      if (
+        user[field] === "N/A" ||
+        user[field] === null ||
+        user[field] === "null"
+      ) {
+        user[field] = undefined;
+        console.log(`Final cleanup: cleared ${field} with invalid value`);
+      }
+    });
+
+    // Add debug log before saving
+    console.log("Final user object boolean fields before save:", {
+      smoker: user.smoker,
+      prays: user.prays,
+      celebratesMilaad: user.celebratesMilaad,
+      celebrateKhatams: user.celebrateKhatams,
+      bornMuslim: user.bornMuslim,
+      willingToRelocate: user.willingToRelocate,
     });
 
     await user.save();
