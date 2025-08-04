@@ -1730,15 +1730,33 @@ app.get("/admin/edit-user/:id", async (req, res) => {
 // Replace the entire /admin/user/update route with this corrected version:
 
 app.post("/admin/user/update", async (req, res) => {
-  if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
-
   try {
     const { userId, ...updateData } = req.body;
 
     if (!userId) {
       return res.json({ error: "User ID is required" });
     }
+    const isAdmin = req.session.isAdmin;
+    const isUserUpdatingSelf =
+      req.session.userId && req.session.userId === userId;
 
+    if (!isAdmin && !isUserUpdatingSelf) {
+      console.log("Access denied:", {
+        isAdmin,
+        isUserUpdatingSelf,
+        sessionUserId: req.session.userId,
+        targetUserId: userId,
+      });
+      return res
+        .status(403)
+        .json({ error: "Forbidden: You can only update your own profile" });
+    }
+
+    console.log("Access granted:", {
+      isAdmin,
+      isUserUpdatingSelf,
+      updateType: isAdmin ? "Admin update" : "User self-update",
+    });
     const user = await User.findById(userId);
     if (!user) {
       return res.json({ error: "User not found" });
@@ -1803,7 +1821,7 @@ app.post("/admin/user/update", async (req, res) => {
       gender: ["male", "female", "rather not say"],
     };
 
-    // **IMPORTANT FIX**: Clear any existing "N/A" values in boolean fields first
+    // **IMPORTANT FIX**: Clear any existing "N/A" values in boolean fields |first
     booleanFields.forEach((field) => {
       if (user[field] === "N/A" || user[field] === null) {
         user[field] = undefined;
@@ -1815,22 +1833,35 @@ app.post("/admin/user/update", async (req, res) => {
     Object.keys(updateData).forEach((key) => {
       const value = updateData[key];
 
-      // Skip empty, undefined, or "N/A" values - do NOT save these fields
+      // Handle N/A values - need special logic for different field types
       if (
         value === undefined ||
         value === "" ||
         value === "N/A" ||
         value === null
       ) {
-        console.log(`Skipping field ${key} with N/A or empty value:`, value);
+        console.log(`Processing N/A or empty value for field ${key}:`, value);
 
-        // **CRITICAL FIX**: If this is a boolean field with "N/A", explicitly unset it
+        // **FIX**: Clear boolean fields when N/A
         if (booleanFields.includes(key) && value === "N/A") {
           user[key] = undefined;
           console.log(
             `Explicitly cleared boolean field ${key} due to N/A value`
           );
         }
+
+        // **NEW**: Clear enum fields when N/A
+        else if (enumFields[key] && value === "N/A") {
+          user[key] = undefined;
+          console.log(`Explicitly cleared enum field ${key} due to N/A value`);
+        }
+
+        // Skip truly empty values (but N/A was handled above)
+        if (value === undefined || value === "" || value === null) {
+          return;
+        }
+
+        // If we reach here, it was "N/A" and was handled above
         return;
       }
 

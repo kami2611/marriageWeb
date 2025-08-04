@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>D'amour Muslim - Account Management</title>
+  <title>D'amour Muslim - Edit User</title>
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script>
     tailwind.config = {
@@ -91,128 +91,17 @@
       margin-bottom: 12px;
     }
 
-    /* Add to existing styles */
     .main-nav-active {
       background-color: #E91E63;
       color: white;
     }
 
-    .request-card {
-      border: 1px solid #e5e7eb;
-      border-radius: 12px;
-      padding: 20px;
-      margin-bottom: 16px;
-      transition: all 0.3s ease;
+    .main-section {
+      display: block;
     }
 
-    .request-card:hover {
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      transform: translateY(-2px);
-    }
-
-    .status-pending {
-      background-color: #fef3c7;
-      color: #d97706;
-    }
-
-    .status-accepted {
-      background-color: #d1fae5;
-      color: #059669;
-    }
-
-    .status-rejected {
-      background-color: #fee2e2;
-      color: #dc2626;
-    }
-
-    /* Add mobile scrollable tabs styling */
-    .scrollbar-hide {
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-    }
-
-    .scrollbar-hide::-webkit-scrollbar {
+    .main-section.hidden {
       display: none;
-    }
-
-    /* Smooth scrolling for mobile */
-    @media (max-width: 768px) {
-
-      .main-nav-btn,
-      .tab-btn {
-        min-width: 140px;
-        font-size: 0.875rem;
-      }
-
-      .main-nav-btn i,
-      .tab-btn i {
-        font-size: 1rem;
-      }
-    }
-
-    /* Snap scrolling for better UX */
-    .snap-x {
-      scroll-snap-type: x mandatory;
-    }
-
-    .snap-start {
-      scroll-snap-align: start;
-    }
-
-    /* Optional: Add scroll indicators */
-    .scroll-container {
-      position: relative;
-    }
-
-    .scroll-container::after {
-      content: '';
-      position: absolute;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      width: 20px;
-      background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.8));
-      pointer-events: none;
-    }
-
-    /* Better desktop navigation layout */
-    @media (min-width: 768px) {
-      .main-nav-btn {
-        flex: 1;
-        justify-content: center;
-      }
-
-      /* Override mobile scrolling styles for desktop */
-      #mainNavScroll.grid {
-        overflow: visible;
-        scroll-snap-type: none;
-      }
-
-      #mainNavScroll.grid .main-nav-btn {
-        min-width: auto;
-        flex-shrink: 1;
-      }
-    }
-
-    /* Keep mobile styles intact */
-    @media (max-width: 767px) {
-      #mainNavScroll {
-        display: flex !important;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-      }
-
-      #mainNavScroll .main-nav-btn {
-        flex-shrink: 0;
-        min-width: 140px;
-      }
-    }
-
-    @media (max-width: 640px) {
-      .scroll-container::after {
-        display: block;
-      }
     }
   </style>
 </head>
@@ -228,7 +117,7 @@
         </h1>
       </div>
       <div class="flex items-center gap-4">
-        <% if (user) { %>
+        <% if (accountInfo) { %>
         <!-- Logged in user dropdown -->
         <div class="relative">
           <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
@@ -237,7 +126,7 @@
             <i class="ri-arrow-down-s-line"></i>
           </button>
           <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
-            <% if (user.isAdmin) { %>
+            <% if (accountInfo.isAdmin) { %>
             <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
               <i class="ri-dashboard-line text-primary"></i>
               <span>Dashboard</span>
@@ -271,53 +160,42 @@
   <main class="pt-24 pb-16 min-h-screen">
     <div class="max-w-6xl mx-auto px-6">
       <div class="text-center mb-8">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6 font-['Playfair_Display']">Account Dashboard</h2>
-
-        <!-- Main Navigation Buttons -->
-        <!-- Main Navigation Buttons - Updated for mobile scrolling -->
-        <!-- Enhanced Main Navigation with Scroll Indicators -->
-        <!-- Main Navigation Buttons - Updated to spread evenly -->
-        <div class="bg-white rounded-2xl p-2 material-shadow mb-8 max-w-2xl mx-auto relative">
-          <div class="grid grid-cols-3 gap-2" id="mainNavScroll">
-            <button class="main-nav-btn main-nav-active flex-1 py-3 px-4 text-center transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-section="account">
-              <i class="ri-user-settings-line mr-2"></i>Edit Account
-            </button>
-            <button class="main-nav-btn flex-1 py-3 px-4 text-gray-500 text-center transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-section="sent">
-              <i class="ri-send-plane-line mr-2"></i>Your Requests
-            </button>
-            <button class="main-nav-btn flex-1 py-3 px-4 text-gray-500 text-center transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-section="received">
-              <i class="ri-inbox-line mr-2"></i>Received Requests
-            </button>
-          </div>
-          <!-- Scroll indicator -->
-          <div class="hidden sm:hidden absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 pointer-events-none" id="scrollIndicator">
-            <i class="ri-arrow-left-s-line"></i>
-          </div>
+        <h2 class="text-3xl font-bold text-gray-800 mb-3 font-['Playfair_Display']">My Account</h2>
+        <p class="text-gray-600">Manage your profile and requests</p>
+      </div>
+      <div class="bg-white rounded-2xl p-2 material-shadow mb-8">
+        <div class="flex flex-wrap gap-2">
+          <button class="main-nav-btn main-nav-active flex-1 py-2.5 px-4 text-center transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-section="account">
+            <i class="ri-user-settings-line mr-2"></i>Edit Account
+          </button>
+          <button class="main-nav-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-section="sent">
+            <i class="ri-send-plane-line mr-2"></i>Your Requests
+          </button>
+          <button class="main-nav-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-section="received">
+            <i class="ri-inbox-line mr-2"></i>Received Requests
+          </button>
         </div>
       </div>
-
-      <!-- Account Management Section -->
+      <!-- Tab Navigation -->
       <div id="account-section" class="main-section">
-        <!-- Tab Navigation -->
-        <!-- Tab Navigation - Updated for mobile scrolling -->
         <div class="bg-white rounded-2xl p-2 material-shadow mb-8">
-          <div class="flex gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory" style="scrollbar-width: none; -ms-overflow-style: none;">
-            <button class="tab-btn tab-active flex-shrink-0 py-2.5 px-4 text-center transition-all duration-300 !rounded-button whitespace-nowrap ripple snap-start min-w-max" data-tab="basic">
+          <div class="flex flex-wrap gap-2">
+            <button class="tab-btn tab-active flex-1 py-2.5 px-4 text-center transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-tab="basic">
               <i class="ri-user-line mr-2"></i>Basic Info
             </button>
-            <button class="tab-btn flex-shrink-0 py-2.5 px-4 text-gray-500 transition-all duration-300 !rounded-button whitespace-nowrap ripple snap-start min-w-max" data-tab="contact">
+            <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-tab="contact">
               <i class="ri-contacts-line mr-2"></i>Contact & Location
             </button>
-            <button class="tab-btn flex-shrink-0 py-2.5 px-4 text-gray-500 transition-all duration-300 !rounded-button whitespace-nowrap ripple snap-start min-w-max" data-tab="appearance">
+            <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-tab="appearance">
               <i class="ri-user-heart-line mr-2"></i>Physical Appearance
             </button>
-            <button class="tab-btn flex-shrink-0 py-2.5 px-4 text-gray-500 transition-all duration-300 !rounded-button whitespace-nowrap ripple snap-start min-w-max" data-tab="religion">
+            <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-tab="religion">
               <i class="ri-church-line mr-2"></i>Religion & Faith
             </button>
-            <button class="tab-btn flex-shrink-0 py-2.5 px-4 text-gray-500 transition-all duration-300 !rounded-button whitespace-nowrap ripple snap-start min-w-max" data-tab="family">
+            <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-tab="family">
               <i class="ri-group-line mr-2"></i>Family & Background
             </button>
-            <button class="tab-btn flex-shrink-0 py-2.5 px-4 text-gray-500 transition-all duration-300 !rounded-button whitespace-nowrap ripple snap-start min-w-max" data-tab="preferences">
+            <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-tab="preferences">
               <i class="ri-heart-line mr-2"></i>Partner Preferences
             </button>
           </div>
@@ -361,46 +239,26 @@
                   </div>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Gender</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" disabled name="gender" value="male" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Male</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" disabled name="gender" value="female" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Female</span>
-                    </label>
-                  </div>
+                  <label for="gender" class="block text-sm font-medium text-gray-700">Gender</label>
+                  <select id="gender" disabled name="gender" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="">Select Gender</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                  </select>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
-                <!-- Replace the existing marital status section -->
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Marital Status</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="maritalStatus" value="unmarried" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Unmarried</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="maritalStatus" value="married" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Married</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="maritalStatus" value="divorced" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Divorced</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="maritalStatus" value="widowed" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Widowed</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="maritalStatus" value="separated" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Separated</span>
-                    </label>
-                  </div>
+                  <label for="maritalStatus" class="block text-sm font-medium text-gray-700">Marital Status</label>
+                  <select id="maritalStatus" name="maritalStatus" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="unmarried" <%= (accountInfo.maritalStatus === 'unmarried') ? 'selected' : '' %>>Unmarried</option>
+                    <option value="married" <%= (accountInfo.maritalStatus === 'married') ? 'selected' : '' %>>Married</option>
+                    <option value="divorced" <%= (accountInfo.maritalStatus === 'divorced') ? 'selected' : '' %>>Divorced</option>
+                    <option value="widowed" <%= (accountInfo.maritalStatus === 'widowed') ? 'selected' : '' %>>Widowed</option>
+                    <option value="separated" <%= (accountInfo.maritalStatus === 'separated') ? 'selected' : '' %>>Separated</option>
+                    <option value="N/A" <%= (!accountInfo.maritalStatus || accountInfo.maritalStatus === 'N/A') ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
                 <div class="space-y-2">
                   <label for="work" class="block text-sm font-medium text-gray-700">Profession/Work</label>
@@ -419,7 +277,6 @@
               </div>
             </form>
           </div>
-
 
           <!-- Contact & Location Tab -->
           <div id="contact-tab" class="tab-content hidden">
@@ -447,7 +304,7 @@
               </div>
 
               <div class="space-y-2">
-                <label for="address" class="block text-sm font-medium text-gray-700">Address</label>
+                <label for="adress" class="block text-sm font-medium text-gray-700">Address</label>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="ri-map-pin-line text-gray-400"></i>
@@ -456,42 +313,45 @@
                 </div>
               </div>
 
-              <!-- Updated Location Fields with Cascading Dropdowns -->
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
-                  <select id="nationality" name="nationality" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Nationality</option>
-                    <option value="british">British</option>
-                    <option value="pakistani">Pakistani</option>
-                    <option value="bangladeshi">Bangladeshi</option>
-                    <option value="other">Other</option>
-                  </select>
+                  <label for="city" class="block text-sm font-medium text-gray-700">City</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="ri-building-line text-gray-400"></i>
+                    </div>
+                    <input type="text" id="city" name="city" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter city">
+                  </div>
                 </div>
                 <div class="space-y-2">
-                  <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
-                  <select id="country" name="country" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Country</option>
-                    <option value="uk">United Kingdom</option>
-                    <option value="pakistan">Pakistan</option>
-                    <option value="bangladesh">Bangladesh</option>
-                    <option value="other">Other</option>
-                  </select>
+                  <label for="state" class="block text-sm font-medium text-gray-700">State/Province</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="ri-map-2-line text-gray-400"></i>
+                    </div>
+                    <input type="text" id="state" name="state" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter state/province">
+                  </div>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label for="state" class="block text-sm font-medium text-gray-700">State/Province</label>
-                  <select id="state" name="state" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white" disabled>
-                    <option value="">Select Country First</option>
-                  </select>
+                  <label for="country" class="block text-sm font-medium text-gray-700">Country</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="ri-earth-line text-gray-400"></i>
+                    </div>
+                    <input type="text" id="country" name="country" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter country">
+                  </div>
                 </div>
                 <div class="space-y-2">
-                  <label for="city" class="block text-sm font-medium text-gray-700">City</label>
-                  <select id="city" name="city" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white" disabled>
-                    <option value="">Select State/Province First</option>
-                  </select>
+                  <label for="nationality" class="block text-sm font-medium text-gray-700">Nationality</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="ri-flag-line text-gray-400"></i>
+                    </div>
+                    <input type="text" id="nationality" name="nationality" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter nationality">
+                  </div>
                 </div>
               </div>
 
@@ -506,17 +366,12 @@
                   </div>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Willing to Relocate</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="willingToRelocate" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="willingToRelocate" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="willingToRelocate" class="block text-sm font-medium text-gray-700">Willing to Relocate</label>
+                  <select id="willingToRelocate" name="willingToRelocate" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.willingToRelocate === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.willingToRelocate === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.willingToRelocate === undefined || accountInfo.willingToRelocate === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
@@ -544,12 +399,11 @@
                 <div class="space-y-2">
                   <label for="build" class="block text-sm font-medium text-gray-700">Build</label>
                   <select id="build" name="build" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Build</option>
-                    <option value="slim">Slim</option>
-                    <option value="average">Average</option>
-                    <option value="athletic">Athletic</option>
-                    <option value="heavy">Heavy</option>
-                    <option value="N/A">N/A</option>
+                    <option value="slim" <%= (accountInfo.build === 'slim') ? 'selected' : '' %>>Slim</option>
+                    <option value="average" <%= (accountInfo.build === 'average') ? 'selected' : '' %>>Average</option>
+                    <option value="athletic" <%= (accountInfo.build === 'athletic') ? 'selected' : '' %>>Athletic</option>
+                    <option value="heavy" <%= (accountInfo.build === 'heavy') ? 'selected' : '' %>>Heavy</option>
+                    <option value="N/A" <%= (!accountInfo.build || accountInfo.build === 'N/A') ? 'selected' : '' %>>N/A</option>
                   </select>
                 </div>
               </div>
@@ -558,22 +412,20 @@
                 <div class="space-y-2">
                   <label for="eyeColor" class="block text-sm font-medium text-gray-700">Eye Color</label>
                   <select id="eyeColor" name="eyeColor" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Eye Color</option>
-                    <option value="black">Black</option>
-                    <option value="brown">Brown</option>
-                    <option value="grey">Grey</option>
-                    <option value="other">Other</option>
-                    <option value="N/A">N/A</option>
+                    <option value="black" <%= (accountInfo.eyeColor === 'black') ? 'selected' : '' %>>Black</option>
+                    <option value="brown" <%= (accountInfo.eyeColor === 'brown') ? 'selected' : '' %>>Brown</option>
+                    <option value="grey" <%= (accountInfo.eyeColor === 'grey') ? 'selected' : '' %>>Grey</option>
+                    <option value="other" <%= (accountInfo.eyeColor === 'other') ? 'selected' : '' %>>Other</option>
+                    <option value="N/A" <%= (!accountInfo.eyeColor || accountInfo.eyeColor === 'N/A') ? 'selected' : '' %>>N/A</option>
                   </select>
                 </div>
                 <div class="space-y-2">
                   <label for="hairColor" class="block text-sm font-medium text-gray-700">Hair Color</label>
                   <select id="hairColor" name="hairColor" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Hair Color</option>
-                    <option value="black">Black</option>
-                    <option value="brown">Brown</option>
-                    <option value="blonde">Blonde</option>
-                    <option value="N/A">N/A</option>
+                    <option value="black" <%= (accountInfo.hairColor === 'black') ? 'selected' : '' %>>Black</option>
+                    <option value="brown" <%= (accountInfo.hairColor === 'brown') ? 'selected' : '' %>>Brown</option>
+                    <option value="blonde" <%= (accountInfo.hairColor === 'blonde') ? 'selected' : '' %>>Blonde</option>
+                    <option value="N/A" <%= (!accountInfo.hairColor || accountInfo.hairColor === 'N/A') ? 'selected' : '' %>>N/A</option>
                   </select>
                 </div>
               </div>
@@ -582,24 +434,21 @@
                 <div class="space-y-2">
                   <label for="complexion" class="block text-sm font-medium text-gray-700">Complexion</label>
                   <select id="complexion" name="complexion" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Complexion</option>
-                    <option value="fair">Fair</option>
-                    <option value="wheatish">Wheatish</option>
-                    <option value="dark">Dark</option>
-                    <option value="N/A">N/A</option>
+                    <option value="fair" <%= (accountInfo.complexion === 'fair') ? 'selected' : '' %>>Fair</option>
+                    <option value="wheatish" <%= (accountInfo.complexion === 'wheatish') ? 'selected' : '' %>>Wheatish</option>
+                    <option value="dark" <%= (accountInfo.complexion === 'dark') ? 'selected' : '' %>>Dark</option>
+                    <option value="N/A" <%= (!accountInfo.complexion || accountInfo.complexion === 'N/A') ? 'selected' : '' %>>N/A</option>
                   </select>
                 </div>
                 <div class="space-y-2">
                   <label for="ethnicity" class="block text-sm font-medium text-gray-700">Ethnicity</label>
                   <select id="ethnicity" name="ethnicity" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Ethnicity</option>
-                    <option value="asian">Asian</option>
-                    <option value="african">African</option>
-                    <option value="caucasian">Caucasian</option>
-                    <option value="latino">Latino</option>
-                    <option value="arab">Arab</option>
-                    <option value="other">Other</option>
-                    <option value="N/A">N/A</option>
+                    <option value="bangladeshi" <%= (accountInfo.ethnicity === 'bangladeshi') ? 'selected' : '' %>>Bangladeshi</option>
+                    <option value="pakistani" <%= (accountInfo.ethnicity === 'pakistani') ? 'selected' : '' %>>Pakistani</option>
+                    <option value="indian" <%= (accountInfo.ethnicity === 'indian') ? 'selected' : '' %>>Indian</option>
+                    <option value="british" <%= (accountInfo.ethnicity === 'british') ? 'selected' : '' %>>British</option>
+                    <option value="other" <%= (accountInfo.ethnicity === 'other') ? 'selected' : '' %>>Other</option>
+                    <option value="N/A" <%= (!accountInfo.ethnicity || accountInfo.ethnicity === 'N/A') ? 'selected' : '' %>>N/A</option>
                   </select>
                 </div>
               </div>
@@ -610,17 +459,12 @@
                   <input type="text" id="disability" name="disability" value="no" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter disability status">
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Smoker</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="smoker" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="smoker" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="smoker" class="block text-sm font-medium text-gray-700">Smoker</label>
+                  <select id="smoker" name="smoker" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.smoker === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.smoker === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.smoker === undefined || accountInfo.smoker === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
             </form>
@@ -653,63 +497,44 @@
                   <input type="text" id="islamicSect" name="islamicSect" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter Islamic sect">
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Born Muslim</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="bornMuslim" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="bornMuslim" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="bornMuslim" class="block text-sm font-medium text-gray-700">Born Muslim</label>
+                  <select id="bornMuslim" name="bornMuslim" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.bornMuslim === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.bornMuslim === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.bornMuslim === undefined || accountInfo.bornMuslim === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Prays Regularly</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="prays" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="prays" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="prays" class="block text-sm font-medium text-gray-700">Prays Regularly</label>
+                  <select id="prays" name="prays" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.prays === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.prays === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.prays === undefined || accountInfo.prays === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Celebrates Milaad</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="celebratesMilaad" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="celebratesMilaad" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="celebratesMilaad" class="block text-sm font-medium text-gray-700">Celebrates Milaad</label>
+                  <select id="celebratesMilaad" name="celebratesMilaad" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.celebratesMilaad === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.celebratesMilaad === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.celebratesMilaad === undefined || accountInfo.celebratesMilaad === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Celebrates Khatams</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="celebrateKhatams" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="celebrateKhatams" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="celebrateKhatams" class="block text-sm font-medium text-gray-700">Celebrates Khatams</label>
+                  <select id="celebrateKhatams" name="celebrateKhatams" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.celebrateKhatams === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.celebrateKhatams === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.celebrateKhatams === undefined || accountInfo.celebrateKhatams === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
+
                 <div class="space-y-2">
                   <label for="islamIsImportantToMeInfo" class="block text-sm font-medium text-gray-700">How important is Islam to you?</label>
                   <textarea id="islamIsImportantToMeInfo" name="islamIsImportantToMeInfo" rows="3" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Describe the importance of Islam in your life"></textarea>
@@ -748,22 +573,20 @@
                 <div class="space-y-2">
                   <label for="livingArrangementsAfterMarriage" class="block text-sm font-medium text-gray-700">Living Arrangements After Marriage</label>
                   <select id="livingArrangementsAfterMarriage" name="livingArrangementsAfterMarriage" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Living Arrangement</option>
-                    <option value="live with parents">Live with parents</option>
-                    <option value="live alone">Live alone</option>
-                    <option value="live with spouse">Live with spouse</option>
-                    <option value="other">Other</option>
-                    <option value="N/A">N/A</option>
+                    <option value="live with parents" <%= (accountInfo.livingArrangementsAfterMarriage === 'live with parents') ? 'selected' : '' %>>Live with parents</option>
+                    <option value="live alone" <%= (accountInfo.livingArrangementsAfterMarriage === 'live alone') ? 'selected' : '' %>>Live alone</option>
+                    <option value="live with spouse" <%= (accountInfo.livingArrangementsAfterMarriage === 'live with spouse') ? 'selected' : '' %>>Live with spouse</option>
+                    <option value="other" <%= (accountInfo.livingArrangementsAfterMarriage === 'other') ? 'selected' : '' %>>Other</option>
+                    <option value="N/A" <%= (!accountInfo.livingArrangementsAfterMarriage || accountInfo.livingArrangementsAfterMarriage === 'N/A') ? 'selected' : '' %>>N/A</option>
                   </select>
                 </div>
                 <div class="space-y-2">
                   <label for="futurePlans" class="block text-sm font-medium text-gray-700">Future Plans</label>
                   <select id="futurePlans" name="futurePlans" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="">Select Future Plans</option>
-                    <option value="settle abroad">Settle abroad</option>
-                    <option value="stay in current country">Stay in current country</option>
-                    <option value="other">Other</option>
-                    <option value="N/A">N/A</option>
+                    <option value="settle abroad" <%= (accountInfo.futurePlans === 'settle abroad') ? 'selected' : '' %>>Settle abroad</option>
+                    <option value="stay in current country" <%= (accountInfo.futurePlans === 'stay in current country') ? 'selected' : '' %>>Stay in current country</option>
+                    <option value="other" <%= (accountInfo.futurePlans === 'other') ? 'selected' : '' %>>Other</option>
+                    <option value="N/A" <%= (!accountInfo.futurePlans || accountInfo.futurePlans === 'N/A') ? 'selected' : '' %>>N/A</option>
                   </select>
                 </div>
               </div>
@@ -844,192 +667,130 @@
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Allow Partner to Work</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="allowParnterToWork" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="allowParnterToWork" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="allowParnterToWork" class="block text-sm font-medium text-gray-700">Allow Partner to Work</label>
+                  <select id="allowParnterToWork" name="allowParnterToWork" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.allowParnterToWork === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.allowParnterToWork === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.allowParnterToWork === undefined || accountInfo.allowParnterToWork === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Allow Partner to Study</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="allowPartnerToStudy" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="allowPartnerToStudy" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="allowPartnerToStudy" class="block text-sm font-medium text-gray-700">Allow Partner to Study</label>
+                  <select id="allowPartnerToStudy" name="allowPartnerToStudy" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.allowPartnerToStudy === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.allowPartnerToStudy === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.allowPartnerToStudy === undefined || accountInfo.allowPartnerToStudy === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
               <!-- Acceptance Preferences -->
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Accept Someone with Children</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptSomeoneWithChildren" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptSomeoneWithChildren" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="acceptSomeoneWithChildren" class="block text-sm font-medium text-gray-700">Accept Someone with Children</label>
+                  <select id="acceptSomeoneWithChildren" name="acceptSomeoneWithChildren" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.acceptSomeoneWithChildren === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.acceptSomeoneWithChildren === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.acceptSomeoneWithChildren === undefined || accountInfo.acceptSomeoneWithChildren === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Accept a Divorced Person</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptADivorcedPerson" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptADivorcedPerson" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="acceptADivorcedPerson" class="block text-sm font-medium text-gray-700">Accept a Divorced Person</label>
+                  <select id="acceptADivorcedPerson" name="acceptADivorcedPerson" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.acceptADivorcedPerson === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.acceptADivorcedPerson === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.acceptADivorcedPerson === undefined || accountInfo.acceptADivorcedPerson === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Accept a Widow</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptAWidow" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptAWidow" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="acceptAWidow" class="block text-sm font-medium text-gray-700">Accept a Widow</label>
+                  <select id="acceptAWidow" name="acceptAWidow" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.acceptAWidow === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.acceptAWidow === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.acceptAWidow === undefined || accountInfo.acceptAWidow === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Agrees with Polygamy</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="agreesWithPolygamy" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="agreesWithPolygamy" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="agreesWithPolygamy" class="block text-sm font-medium text-gray-700">Agrees with Polygamy</label>
+                  <select id="agreesWithPolygamy" name="agreesWithPolygamy" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.agreesWithPolygamy === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.agreesWithPolygamy === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.agreesWithPolygamy === undefined || accountInfo.agreesWithPolygamy === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Accept Someone with Beard</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="AcceptSomeoneWithBeard" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="AcceptSomeoneWithBeard" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="AcceptSomeoneWithBeard" class="block text-sm font-medium text-gray-700">Accept Someone with Beard</label>
+                  <select id="AcceptSomeoneWithBeard" name="AcceptSomeoneWithBeard" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.AcceptSomeoneWithBeard === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.AcceptSomeoneWithBeard === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.AcceptSomeoneWithBeard === undefined || accountInfo.AcceptSomeoneWithBeard === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Accept Someone with Hijab</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="AcceptSomeoneWithHijab" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="AcceptSomeoneWithHijab" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="AcceptSomeoneWithHijab" class="block text-sm font-medium text-gray-700">Accept Someone with Hijab</label>
+                  <select id="AcceptSomeoneWithHijab" name="AcceptSomeoneWithHijab" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.AcceptSomeoneWithHijab === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.AcceptSomeoneWithHijab === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.AcceptSomeoneWithHijab === undefined || accountInfo.AcceptSomeoneWithHijab === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Consider a Revert</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="ConsiderARevert" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="ConsiderARevert" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="ConsiderARevert" class="block text-sm font-medium text-gray-700">Consider a Revert</label>
+                  <select id="ConsiderARevert" name="ConsiderARevert" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.ConsiderARevert === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.ConsiderARevert === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.ConsiderARevert === undefined || accountInfo.ConsiderARevert === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Accept Someone in Other Country</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptSomeoneInOtherCountry" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="acceptSomeoneInOtherCountry" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="acceptSomeoneInOtherCountry" class="block text-sm font-medium text-gray-700">Accept Someone in Other Country</label>
+                  <select id="acceptSomeoneInOtherCountry" name="acceptSomeoneInOtherCountry" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.acceptSomeoneInOtherCountry === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.acceptSomeoneInOtherCountry === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.acceptSomeoneInOtherCountry === undefined || accountInfo.acceptSomeoneInOtherCountry === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
               <div class="grid md:grid-cols-2 gap-6">
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Willing to Share Photos Upon Request</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="willingToSharePhotosUponRequest" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="willingToSharePhotosUponRequest" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
+                  <label for="willingToSharePhotosUponRequest" class="block text-sm font-medium text-gray-700">Willing to Share Photos Upon Request</label>
+                  <select id="willingToSharePhotosUponRequest" name="willingToSharePhotosUponRequest" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.willingToSharePhotosUponRequest === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.willingToSharePhotosUponRequest === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.willingToSharePhotosUponRequest === undefined || accountInfo.willingToSharePhotosUponRequest === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
+
                 </div>
                 <div class="space-y-2">
-                  <label class="block text-sm font-medium text-gray-700">Willing to Meet Up Outside</label>
-                  <div class="space-y-2">
-                    <label class="flex items-center">
-                      <input type="radio" name="willingToMeetUpOutside" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">Yes</span>
-                    </label>
-                    <label class="flex items-center">
-                      <input type="radio" name="willingToMeetUpOutside" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                      <span class="ml-2 text-sm text-gray-700">No</span>
-                    </label>
-                  </div>
-                </div>
-              </div>
-              <div class="space-y-2">
-                <label class="block text-sm font-medium text-gray-700">Willing to Consider a Non-UK Citizen</label>
-                <div class="space-y-2">
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToConsiderANonUkCitizen" value="true" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Yes</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="willingToConsiderANonUkCitizen" value="false" class="h-4 w-4 text-primary focus:ring-primary border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">No</span>
-                  </label>
+                  <label for="willingToMeetUpOutside" class="block text-sm font-medium text-gray-700">Willing to Meet Up Outside</label>
+                  <select id="willingToMeetUpOutside" name="willingToMeetUpOutside" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.willingToMeetUpOutside === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.willingToMeetUpOutside === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.willingToMeetUpOutside === undefined || accountInfo.willingToMeetUpOutside === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
                 </div>
               </div>
 
+              <div class="grid md:grid-cols-2 gap-6">
+                <div class="space-y-2">
+                  <label for="willingToConsiderANonUkCitizen" class="block text-sm font-medium text-gray-700">Willing to Consider a Non-UK Citizen</label>
+                  <select id="willingToConsiderANonUkCitizen" name="willingToConsiderANonUkCitizen" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                    <option value="true" <%= (accountInfo.willingToConsiderANonUkCitizen === true) ? 'selected' : '' %>>Yes</option>
+                    <option value="false" <%= (accountInfo.willingToConsiderANonUkCitizen === false) ? 'selected' : '' %>>No</option>
+                    <option value="N/A" <%= (accountInfo.willingToConsiderANonUkCitizen === undefined || accountInfo.willingToConsiderANonUkCitizen === null) ? 'selected' : '' %>>N/A</option>
+                  </select>
+                </div>
+              </div>
 
               <div class="space-y-2">
                 <label for="lookingForASpouseThatIs" class="block text-sm font-medium text-gray-700">Looking for a Spouse That Is</label>
@@ -1052,529 +813,64 @@
         </div>
       </div>
 
-      <!-- Your Requests Section -->
       <div id="sent-section" class="main-section hidden">
         <div class="bg-white rounded-2xl p-8 material-shadow">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-semibold text-gray-900 font-['Playfair_Display']">Your Requests</h3>
-            <div class="text-sm text-gray-500">
-              <span id="sentRequestsCount">Loading...</span> requests sent
-            </div>
-          </div>
-
+          <h3 class="text-xl font-semibold text-gray-900 mb-6 font-['Playfair_Display']">Your Sent Requests</h3>
           <div id="sentRequestsContainer">
-            <!-- Loading placeholder -->
+            <!-- Sent requests will be loaded here -->
             <div class="text-center py-8">
-              <i class="ri-loader-4-line animate-spin text-3xl text-primary mb-4"></i>
+              <i class="ri-loader-4-line animate-spin text-3xl text-gray-400 mb-4"></i>
               <p class="text-gray-500">Loading your requests...</p>
             </div>
           </div>
         </div>
       </div>
-
-      <!-- Received Requests Section -->
       <div id="received-section" class="main-section hidden">
         <div class="bg-white rounded-2xl p-8 material-shadow">
-          <div class="flex items-center justify-between mb-6">
-            <h3 class="text-xl font-semibold text-gray-900 font-['Playfair_Display']">Received Requests</h3>
-            <div class="text-sm text-gray-500">
-              <span id="receivedRequestsCount">Loading...</span> requests received
-            </div>
-          </div>
-
+          <h3 class="text-xl font-semibold text-gray-900 mb-6 font-['Playfair_Display']">Received Requests</h3>
           <div id="receivedRequestsContainer">
-            <!-- Loading placeholder -->
+            <!-- Received requests will be loaded here -->
             <div class="text-center py-8">
-              <i class="ri-loader-4-line animate-spin text-3xl text-primary mb-4"></i>
+              <i class="ri-loader-4-line animate-spin text-3xl text-gray-400 mb-4"></i>
               <p class="text-gray-500">Loading received requests...</p>
             </div>
           </div>
         </div>
       </div>
-
-
-
     </div>
   </main>
 
-  <footer class="gradient-bg text-white">
-    <div class="max-w-6xl mx-auto px-6 py-12">
-      <div class="grid md:grid-cols-3 gap-8 mb-8">
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
-          <div class="flex gap-4">
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-facebook-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-instagram-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-twitter-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-youtube-fill ri-lg"></i>
-            </a>
-          </div>
-        </div>
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-mail-line"></i>
-              </div>
-              <span>damourmuslim@gmail.com</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-phone-line"></i>
-              </div>
-              <span>+447454516156</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-map-pin-line"></i>
-              </div>
-              <span>London, UK</span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
-          <div class="space-y-2">
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
-          </div>
-        </div>
-      </div>
-      <div class="border-t border-white border-opacity-20 pt-8 text-center">
-        <p class="text-pink-100">&copy; 2025 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
-      </div>
-    </div>
-  </footer>
 
-  <script id="ripple-effects">
-    document.addEventListener('DOMContentLoaded', function() {
-      const rippleButtons = document.querySelectorAll('.ripple');
-      rippleButtons.forEach(button => {
-        button.addEventListener('click', function(e) {
-          const ripple = document.createElement('span');
-          const rect = this.getBoundingClientRect();
-          const size = Math.max(rect.width, rect.height);
-          const x = e.clientX - rect.left - size / 2;
-          const y = e.clientY - rect.top - size / 2;
-          ripple.style.width = ripple.style.height = size + 'px';
-          ripple.style.left = x + 'px';
-          ripple.style.top = y + 'px';
-          ripple.classList.add('absolute', 'bg-white', 'bg-opacity-30', 'rounded-full', 'animate-ping');
-          this.appendChild(ripple);
-          setTimeout(() => {
-            ripple.remove();
-          }, 600);
-        });
-      });
-    });
-  </script>
+  <!-- filepath: c:\Users\Kami\Desktop\marriageWeb\views\account\info.ejs -->
+  <!-- ...existing code... -->
 
-  <script id="main-navigation">
-    document.addEventListener('DOMContentLoaded', function() {
-      const mainNavButtons = document.querySelectorAll('.main-nav-btn');
-      const mainSections = document.querySelectorAll('.main-section');
-
-      // Main navigation functionality
-      function showMainSection(sectionName) {
-        // Hide all sections
-        mainSections.forEach(section => section.classList.add('hidden'));
-
-        // Remove active class from all buttons
-        mainNavButtons.forEach(btn => {
-          btn.classList.remove('main-nav-active');
-          btn.classList.add('text-gray-500');
-        });
-
-        // Show current section
-        const currentSection = document.getElementById(sectionName + '-section');
-        if (currentSection) {
-          currentSection.classList.remove('hidden');
-        }
-
-        // Activate current button
-        const activeButton = document.querySelector(`[data-section="${sectionName}"]`);
-        if (activeButton) {
-          activeButton.classList.add('main-nav-active');
-          activeButton.classList.remove('text-gray-500');
-        }
-
-        // Load section data
-        if (sectionName === 'sent') {
-          loadSentRequests();
-        } else if (sectionName === 'received') {
-          loadReceivedRequests();
-        }
-      }
-
-      // Main navigation button clicks
-      mainNavButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          const sectionName = this.getAttribute('data-section');
-          showMainSection(sectionName);
-        });
-      });
-
-      // Load sent requests
-      function loadSentRequests() {
-        const container = document.getElementById('sentRequestsContainer');
-        const countElement = document.getElementById('sentRequestsCount');
-
-        fetch('/api/requests/sent')
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const requests = data.requests;
-              countElement.textContent = requests.length;
-
-              if (requests.length === 0) {
-                container.innerHTML = `
-                <div class="text-center py-12">
-                  <i class="ri-send-plane-line text-6xl text-gray-300 mb-4"></i>
-                  <h4 class="text-lg font-medium text-gray-500 mb-2">No Requests Sent</h4>
-                  <p class="text-gray-400">You haven't sent any requests yet. Browse profiles to start connecting!</p>
-                  <a href="/profiles" class="inline-flex items-center gap-2 mt-4 px-6 py-2.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button ripple">
-                    <i class="ri-search-line"></i>Browse Profiles
-                  </a>
-                </div>
-              `;
-              } else {
-                // Replace the existing request card template in loadSentRequests function
-                // Replace the existing request card template in loadSentRequests function
-                container.innerHTML = requests.map(request => `
-  <div class="request-card bg-white">
-    <!-- Desktop Layout: Horizontal -->
-    <div class="hidden md:flex items-center justify-between">
-      <div class="flex items-center gap-4">
-        <div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
-          ${request.to.profilePicture ? 
-            `<img src="${request.to.profilePicture}" alt="${request.to.username}" class="w-full h-full object-cover">` :
-            `<div class="w-full h-full flex items-center justify-center bg-primary text-white text-xl font-bold">
-              ${request.to.username ? request.to.username.charAt(0).toUpperCase() : 'U'}
-            </div>`
-          }
-        </div>
-        <div>
-          <h4 class="font-semibold text-gray-900">${request.to.username || 'Anonymous User'}</h4>
-          <p class="text-sm text-gray-500">
-            ${request.to.country ? request.to.country : (request.to.city ? request.to.city : 'Location not specified')}
-          </p>
-          <p class="text-xs text-gray-400">Sent on ${new Date(request.createdAt || Date.now()).toLocaleDateString()}</p>
-        </div>
-      </div>
-      <div class="text-right">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium status-${request.status}">
-          <i class="ri-${request.status === 'pending' ? 'time' : request.status === 'accepted' ? 'checkbox-circle' : 'close-circle'}-line mr-1"></i>
-          ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-        </span>
-        <div class="mt-2 space-y-1">
-          <div>
-            <a href="/profiles/${request.to._id}" class="text-primary hover:text-pink-600 text-sm font-medium">
-              View Profile
-            </a>
-          </div>
-          ${request.status === 'pending' ? `
-            <div>
-              <button onclick="cancelRequest('${request._id}')" class="text-red-600 hover:text-red-700 text-sm font-medium">
-                Cancel Request
-              </button>
-            </div>
-          ` : ''}
-        </div>
-      </div>
-    </div>
-
-    <!-- Mobile Layout: Vertical -->
-    <div class="md:hidden space-y-4">
-      <!-- Profile Picture and Basic Info -->
-      <div class="flex flex-col items-center text-center">
-        <div class="w-20 h-20 rounded-full bg-gray-200 overflow-hidden mb-3">
-          ${request.to.profilePicture ? 
-            `<img src="${request.to.profilePicture}" alt="${request.to.username}" class="w-full h-full object-cover">` :
-            `<div class="w-full h-full flex items-center justify-center bg-primary text-white text-xl font-bold">
-              ${request.to.username ? request.to.username.charAt(0).toUpperCase() : 'U'}
-            </div>`
-          }
-        </div>
-        <h4 class="font-semibold text-gray-900 text-lg">${request.to.username || 'Anonymous User'}</h4>
-        <p class="text-sm text-gray-500">
-          ${request.to.country ? request.to.country : (request.to.city ? request.to.city : 'Location not specified')}
-        </p>
-        <p class="text-xs text-gray-400">Sent on ${new Date(request.createdAt || Date.now()).toLocaleDateString()}</p>
-      </div>
-
-      <!-- Status Badge -->
-      <div class="flex justify-center">
-        <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium status-${request.status}">
-          <i class="ri-${request.status === 'pending' ? 'time' : request.status === 'accepted' ? 'checkbox-circle' : 'close-circle'}-line mr-2"></i>
-          ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-        </span>
-      </div>
-
-      <!-- Action Buttons -->
-      <div class="flex flex-col gap-3">
-        <a href="/profiles/${request.to._id}" class="w-full text-center py-2.5 px-4 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-button font-medium">
-          <i class="ri-user-line mr-2"></i>View Profile
-        </a>
-        ${request.status === 'pending' ? `
-          <button onclick="cancelRequest('${request._id}')" class="w-full py-2.5 px-4 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-button font-medium">
-            <i class="ri-close-line mr-2"></i>Cancel Request
-          </button>
-        ` : ''}
-      </div>
-    </div>
-  </div>
-`).join('');
-              }
-            } else {
-              container.innerHTML = `
-              <div class="text-center py-8">
-                <i class="ri-error-warning-line text-3xl text-red-500 mb-4"></i>
-                <p class="text-red-500">Failed to load requests</p>
-              </div>
-            `;
-            }
-          })
-          .catch(error => {
-            console.error('Error loading sent requests:', error);
-            container.innerHTML = `
-            <div class="text-center py-8">
-              <i class="ri-error-warning-line text-3xl text-red-500 mb-4"></i>
-              <p class="text-red-500">Failed to load requests</p>
-            </div>
-          `;
-          });
-      }
-
-      function loadReceivedRequests() {
-        const container = document.getElementById('receivedRequestsContainer');
-        const countElement = document.getElementById('receivedRequestsCount');
-
-        fetch('/api/requests/received')
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              const requests = data.requests;
-              countElement.textContent = requests.length;
-
-              if (requests.length === 0) {
-                container.innerHTML = `
-            <div class="text-center py-12">
-              <i class="ri-inbox-line text-6xl text-gray-300 mb-4"></i>
-              <h4 class="text-lg font-medium text-gray-500 mb-2">No Requests Received</h4>
-              <p class="text-gray-400">You haven't received any requests yet. Complete your profile to attract more connections!</p>
-            </div>
-          `;
-              } else {
-                container.innerHTML = requests.map(request => {
-                  // Add null checks for request.from
-                  const fromUser = request.from || {};
-                  const username = fromUser.username || 'Unknown User';
-                  const city = fromUser.city || 'Location not specified';
-                  const profilePicture = fromUser.profilePicture || null;
-                  const userId = fromUser._id || 'unknown';
-
-                  return `
-              <div class="request-card bg-white">
-      <!-- Desktop Layout: Horizontal -->
-      <div class="hidden md:flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-16 h-16 rounded-full bg-gray-200 overflow-hidden">
-            ${profilePicture ? 
-              `<img src="${profilePicture}" alt="${username}" class="w-full h-full object-cover">` :
-              `<div class="w-full h-full flex items-center justify-center bg-primary text-white text-xl font-bold">
-                ${username.charAt(0).toUpperCase()}
-              </div>`
-            }
-          </div>
-          <div>
-            <h4 class="font-semibold text-gray-900">${username}</h4>
-            <p class="text-sm text-gray-500">${city}</p>
-            <p class="text-xs text-gray-400">Received on ${new Date(request.createdAt || Date.now()).toLocaleDateString()}</p>
-          </div>
-        </div>
-        <div class="text-right">
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium status-${request.status}">
-            <i class="ri-${request.status === 'pending' ? 'time' : request.status === 'accepted' ? 'checkbox-circle' : 'close-circle'}-line mr-1"></i>
-            ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-          </span>
-          <div class="mt-2 space-x-2">
-            <a href="/profile/${userId}" class="text-primary hover:text-pink-600 text-sm font-medium">
-              View Profile
-            </a>
-            ${request.status === 'pending' ? `
-              <button onclick="respondToRequest('${request._id}', 'accepted')" class="text-green-600 hover:text-green-700 text-sm font-medium">
-                Accept
-              </button>
-              <button onclick="respondToRequest('${request._id}', 'rejected')" class="text-red-600 hover:text-red-700 text-sm font-medium">
-                Reject
-              </button>
-            ` : ''}
-          </div>
-        </div>
-      </div>
-
-      <!-- Mobile Layout: Vertical -->
-      <div class="md:hidden space-y-4">
-        <!-- Profile Picture and Basic Info -->
-        <div class="flex flex-col items-center text-center">
-          <div class="w-20 h-20 rounded-full bg-gray-200 overflow-hidden mb-3">
-            ${profilePicture ? 
-              `<img src="${profilePicture}" alt="${username}" class="w-full h-full object-cover">` :
-              `<div class="w-full h-full flex items-center justify-center bg-primary text-white text-xl font-bold">
-                ${username.charAt(0).toUpperCase()}
-              </div>`
-            }
-          </div>
-          <h4 class="font-semibold text-gray-900 text-lg">${username}</h4>
-          <p class="text-sm text-gray-500">${city}</p>
-          <p class="text-xs text-gray-400">Received on ${new Date(request.createdAt || Date.now()).toLocaleDateString()}</p>
-        </div>
-
-        <!-- Status Badge -->
-        <div class="flex justify-center">
-          <span class="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium status-${request.status}">
-            <i class="ri-${request.status === 'pending' ? 'time' : request.status === 'accepted' ? 'checkbox-circle' : 'close-circle'}-line mr-2"></i>
-            ${request.status.charAt(0).toUpperCase() + request.status.slice(1)}
-          </span>
-        </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-col gap-3">
-          <a href="/profile/${userId}" class="w-full text-center py-2.5 px-4 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-button font-medium">
-            <i class="ri-user-line mr-2"></i>View Profile
-          </a>
-          ${request.status === 'pending' ? `
-            <button onclick="respondToRequest('${request._id}', 'accepted')" class="w-full py-2.5 px-4 bg-green-500 text-white hover:bg-green-600 transition-all duration-300 rounded-button font-medium">
-              <i class="ri-checkbox-line mr-2"></i>Accept Request
-            </button>
-            <button onclick="respondToRequest('${request._id}', 'rejected')" class="w-full py-2.5 px-4 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-button font-medium">
-              <i class="ri-close-line mr-2"></i>Reject Request
-            </button>
-          ` : ''}
-        </div>
-      </div>
-    </div>
-  `;
-                }).join('');
-              }
-            } else {
-              container.innerHTML = `
-          <div class="text-center py-8">
-            <i class="ri-error-warning-line text-3xl text-red-500 mb-4"></i>
-            <p class="text-red-500">Failed to load requests</p>
-          </div>
-        `;
-            }
-          })
-          .catch(error => {
-            console.error('Error loading received requests:', error);
-            container.innerHTML = `
-        <div class="text-center py-8">
-          <i class="ri-error-warning-line text-3xl text-red-500 mb-4"></i>
-          <p class="text-red-500">Failed to load requests</p>
-        </div>
-      `;
-          });
-      }
-      // Respond to request function
-      window.respondToRequest = function(requestId, action) {
-        fetch(`/api/requests/${requestId}/respond`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              action
-            })
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              showNotification('Request Updated', `Request ${action} successfully!`, 'success');
-              loadReceivedRequests(); // Reload the requests
-            } else {
-              showNotification('Error', data.error || 'Failed to update request', 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Error responding to request:', error);
-            showNotification('Error', 'Failed to update request', 'error');
-          });
-      };
-
-      // Add this function after the respondToRequest function
-      window.cancelRequest = function(requestId) {
-        // Show confirmation dialog
-        if (!confirm('Are you sure you want to cancel this request?')) {
-          return;
-        }
-
-        fetch(`/api/requests/${requestId}/cancel`, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          })
-          .then(response => response.json())
-          .then(data => {
-            if (data.success) {
-              console.log('here success happened.');
-              showNotification('Request Cancelled', 'Request cancelled successfully!', 'success');
-              loadSentRequests(); // Reload the requests
-            } else {
-              showNotification('Error', data.error || 'Failed to cancel request', 'error');
-            }
-          })
-          .catch(error => {
-            console.error('Error cancelling request:', error);
-            showNotification('Error', 'Failed to cancel request', 'error');
-          });
-      };
-      // Initialize with account section
-      showMainSection('account');
-    });
-  </script>
+  <script src="/js/ripple.js"></script>
   <script>
-    // Notification function
-    function showNotification(title, message, type = 'info') {
-      const notification = document.createElement('div');
-      const bgColor = type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-blue-500' : 'bg-red-500';
-      const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'info' ? 'ri-information-line' : 'ri-error-warning-line';
-
-      notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
-      notification.innerHTML = `
-    <i class="${icon} text-xl"></i>
-    <div>
-      <p class="font-medium">${title}</p>
-      <p class="text-sm opacity-90">${message}</p>
-    </div>
-  `;
-
-      document.body.appendChild(notification);
-
-      setTimeout(() => {
-        notification.style.transform = 'translateY(100%)';
-        notification.style.opacity = '0';
-        setTimeout(() => notification.remove(), 300);
-      }, 3000);
-    }
-  </script>
-  <script id="tab-interactions">
     document.addEventListener('DOMContentLoaded', function() {
+      // Initialize dropdown functionality
+      const accountDropdown = document.getElementById('accountDropdown');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+
+      if (accountDropdown && dropdownMenu) {
+        accountDropdown.addEventListener('click', function(e) {
+          e.stopPropagation();
+          dropdownMenu.classList.toggle('hidden');
+        });
+
+        document.addEventListener('click', function() {
+          dropdownMenu.classList.add('hidden');
+        });
+
+        dropdownMenu.addEventListener('click', function(e) {
+          e.stopPropagation();
+        });
+      }
+
+      // Tab functionality
       const tabButtons = document.querySelectorAll('.tab-btn');
       const tabContents = document.querySelectorAll('.tab-content');
-
+      const mainNavButtons = document.querySelectorAll('.main-nav-btn');
+      const mainSections = document.querySelectorAll('.main-section');
       const tabs = ['basic', 'contact', 'appearance', 'religion', 'family', 'preferences'];
       let currentTabIndex = 0;
 
@@ -1589,15 +885,54 @@
         // Show current tab
         document.getElementById(tabs[index] + '-tab').classList.remove('hidden');
         const activeButton = document.querySelector(`[data-tab="${tabs[index]}"]`);
-        activeButton.classList.add('tab-active');
-        activeButton.classList.remove('text-gray-500');
+        if (activeButton) {
+          activeButton.classList.add('tab-active');
+          activeButton.classList.remove('text-gray-500');
+        }
+      }
+
+      function showMainSection(sectionName) {
+        // Hide all main sections
+        mainSections.forEach(section => section.classList.add('hidden'));
+        mainNavButtons.forEach(btn => {
+          btn.classList.remove('main-nav-active');
+          btn.classList.add('text-gray-500');
+        });
+
+        // Show selected section
+        const targetSection = document.getElementById(sectionName + '-section');
+        if (targetSection) {
+          targetSection.classList.remove('hidden');
+        }
+
+        const activeMainButton = document.querySelector(`[data-section="${sectionName}"]`);
+        if (activeMainButton) {
+          activeMainButton.classList.add('main-nav-active');
+          activeMainButton.classList.remove('text-gray-500');
+        }
+
+        // Load data based on section
+        if (sectionName === 'sent') {
+          loadSentRequests();
+        } else if (sectionName === 'received') {
+          loadReceivedRequests();
+        }
       }
 
       // Tab button clicks
-      tabButtons.forEach((button, index) => {
+      tabButtons.forEach((button) => {
         button.addEventListener('click', function() {
-          currentTabIndex = tabs.indexOf(this.getAttribute('data-tab'));
+          const tabName = this.getAttribute('data-tab');
+          currentTabIndex = tabs.indexOf(tabName);
           showTab(currentTabIndex);
+        });
+      });
+
+      // Main navigation clicks
+      mainNavButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const section = this.getAttribute('data-section');
+          showMainSection(section);
         });
       });
 
@@ -1606,46 +941,52 @@
       let childrenCount = 0;
 
       // Add Education
-      document.getElementById('addEducation').addEventListener('click', function() {
-        educationCount++;
-        const educationHtml = `
-      <div class="education-item" data-index="${educationCount}">
-        <div class="flex justify-between items-center mb-4">
-          <h4 class="font-medium text-gray-900">Education ${educationCount}</h4>
-          <button type="button" class="remove-education text-red-500 hover:text-red-700">
-            <i class="ri-delete-bin-line"></i>
-          </button>
-        </div>
-        <div class="grid md:grid-cols-3 gap-4">
-          <input type="text" name="education[${educationCount}][title]" placeholder="Degree/Title" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          <input type="text" name="education[${educationCount}][institute]" placeholder="Institute/University" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          <input type="text" name="education[${educationCount}][year]" placeholder="Year" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-        </div>
-      </div>
-    `;
-        document.getElementById('educationContainer').insertAdjacentHTML('beforeend', educationHtml);
-      });
+      const addEducationBtn = document.getElementById('addEducation');
+      if (addEducationBtn) {
+        addEducationBtn.addEventListener('click', function() {
+          educationCount++;
+          const educationHtml = `
+            <div class="education-item" data-index="${educationCount}">
+              <div class="flex justify-between items-center mb-4">
+                <h4 class="font-medium text-gray-900">Education ${educationCount}</h4>
+                <button type="button" class="remove-education text-red-500 hover:text-red-700">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </div>
+              <div class="grid md:grid-cols-3 gap-4">
+                <input type="text" name="education[${educationCount}][title]" placeholder="Degree/Title" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                <input type="text" name="education[${educationCount}][institute]" placeholder="Institute/University" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                <input type="text" name="education[${educationCount}][year]" placeholder="Year" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+              </div>
+            </div>
+          `;
+          document.getElementById('educationContainer').insertAdjacentHTML('beforeend', educationHtml);
+        });
+      }
 
       // Add Child
-      document.getElementById('addChild').addEventListener('click', function() {
-        childrenCount++;
-        const childHtml = `
-      <div class="child-item" data-index="${childrenCount}">
-        <div class="flex justify-between items-center mb-4">
-          <h4 class="font-medium text-gray-900">Child ${childrenCount}</h4>
-          <button type="button" class="remove-child text-red-500 hover:text-red-700">
-            <i class="ri-delete-bin-line"></i>
-          </button>
-        </div>
-        <div class="grid md:grid-cols-3 gap-4">
-          <input type="text" name="children[${childrenCount}][name]" placeholder="Child's Name" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          <input type="number" name="children[${childrenCount}][age]" placeholder="Age" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          <input type="text" name="children[${childrenCount}][livingLocation]" placeholder="Living Location" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-        </div>
-      </div>
-    `;
-        document.getElementById('childrenContainer').insertAdjacentHTML('beforeend', childHtml);
-      });
+      const addChildBtn = document.getElementById('addChild');
+      if (addChildBtn) {
+        addChildBtn.addEventListener('click', function() {
+          childrenCount++;
+          const childHtml = `
+            <div class="child-item" data-index="${childrenCount}">
+              <div class="flex justify-between items-center mb-4">
+                <h4 class="font-medium text-gray-900">Child ${childrenCount}</h4>
+                <button type="button" class="remove-child text-red-500 hover:text-red-700">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </div>
+              <div class="grid md:grid-cols-3 gap-4">
+                <input type="text" name="children[${childrenCount}][name]" placeholder="Child's Name" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                <input type="number" name="children[${childrenCount}][age]" placeholder="Age" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                <input type="text" name="children[${childrenCount}][livingLocation]" placeholder="Living Location" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+              </div>
+            </div>
+          `;
+          document.getElementById('childrenContainer').insertAdjacentHTML('beforeend', childHtml);
+        });
+      }
 
       // Remove education/children
       document.addEventListener('click', function(e) {
@@ -1657,427 +998,114 @@
         }
       });
 
-      // Dropdown functionality
-      const accountDropdown = document.getElementById('accountDropdown');
-      const dropdownMenu = document.getElementById('dropdownMenu');
+      // Load existing user data and populate fields
+      function loadUserData() {
+        <% if (accountInfo) { %>
+        const userDataRaw = <%- JSON.stringify(accountInfo) %>;
+        console.log('Loading user data:', userDataRaw);
 
-      if (accountDropdown && dropdownMenu) {
-        accountDropdown.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
-          dropdownMenu.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', function(e) {
-          if (!accountDropdown.contains(e.target) && !dropdownMenu.contains(e.target)) {
-            dropdownMenu.classList.add('hidden');
-          }
-        });
-
-        document.addEventListener('keydown', function(e) {
-          if (e.key === 'Escape') {
-            dropdownMenu.classList.add('hidden');
-          }
-        });
-
-        dropdownMenu.addEventListener('click', function(e) {
-          e.stopPropagation();
-        });
-      }
-
-      // Load existing user data and populate fields - MOVED AND CALLED
-      loadUserData();
-    });
-  </script>
-
-  <!-- SEPARATE DATA LOADING SCRIPT -->
-  <!-- <script id="data-loading">
-    function loadUserData() {
-      <% if (accountInfo) { %>
-      const userData = {
-        // Basic Info
-        username: '<%= accountInfo.username || "" %>',
-        name: '<%= accountInfo.name || "" %>',
-        age: '<%= accountInfo.age || "" %>',
-        gender: '<%= accountInfo.gender || "" %>',
-        maritalStatus: '<%= accountInfo.maritalStatus %>',
-        work: '<%= accountInfo.work || "" %>',
-        aboutMe: `<%= (accountInfo.aboutMe || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-        hobbies: '<%= (accountInfo.hobbies && accountInfo.hobbies.join(", ")) || "" %>',
-
-        // Contact & Location
-        contact: '<%= accountInfo.contact || "" %>',
-        waliMyContactDetails: '<%= accountInfo.waliMyContactDetails || "" %>',
-        adress: '<%= accountInfo.adress || "" %>',
-        city: '<%= accountInfo.city || "" %>',
-        state: '<%= accountInfo.state || "" %>',
-        country: '<%= accountInfo.country || "" %>',
-        nationality: '<%= accountInfo.nationality || "" %>',
-        birthPlace: '<%= accountInfo.birthPlace || "" %>',
-        willingToRelocate: '<%= accountInfo.willingToRelocate %>',
-        languagesSpoken: '<%= (accountInfo.languagesSpoken && accountInfo.languagesSpoken.join(", ")) || "" %>',
-
-        // Physical Appearance
-        height: '<%= accountInfo.height || "" %>',
-        build: '<%= accountInfo.build || "" %>',
-        eyeColor: '<%= accountInfo.eyeColor || "" %>',
-        hairColor: '<%= accountInfo.hairColor || "" %>',
-        complexion: '<%= accountInfo.complexion || "" %>',
-        ethnicity: '<%= accountInfo.ethnicity || "" %>',
-        disability: '<%= accountInfo.disability || "no" %>',
-        smoker: '<%= accountInfo.smoker %>',
-
-        // Religion & Faith
-        religion: '<%= accountInfo.religion || "" %>',
-        caste: '<%= accountInfo.caste || "" %>',
-        islamicSect: '<%= accountInfo.islamicSect || "" %>',
-        bornMuslim: '<%= accountInfo.bornMuslim %>',
-        prays: '<%= accountInfo.prays %>',
-        celebratesMilaad: '<%= accountInfo.celebratesMilaad %>',
-        celebrateKhatams: '<%= accountInfo.celebrateKhatams %>',
-        islamIsImportantToMeInfo: `<%= (accountInfo.islamIsImportantToMeInfo || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-
-        // Family & Background
-        fatherName: '<%= accountInfo.fatherName || "" %>',
-        motherName: '<%= accountInfo.motherName || "" %>',
-        fatherProfession: '<%= accountInfo.fatherProfession || "" %>',
-        siblings: '<%= accountInfo.siblings || "" %>',
-        livingArrangementsAfterMarriage: '<%= accountInfo.livingArrangementsAfterMarriage || "" %>',
-        futurePlans: '<%= accountInfo.futurePlans || "" %>',
-        whoCompletedProfile: '<%= accountInfo.whoCompletedProfile || "" %>',
-        describeNature: `<%= (accountInfo.describeNature || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-        QualitiesThatYouCanBringToYourMarriage: '<%= (accountInfo.QualitiesThatYouCanBringToYourMarriage && accountInfo.QualitiesThatYouCanBringToYourMarriage.join(", ")) || "" %>',
-        anySpecialInformationPeopleShouldKnow: `<%= (accountInfo.anySpecialInformationPeopleShouldKnow || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-
-        // Partner Preferences
-        preferredAgeRange: '<%= accountInfo.preferredAgeRange || "" %>',
-        preferredHeightRange: '<%= accountInfo.preferredHeightRange || "" %>',
-        preferredCaste: '<%= accountInfo.preferredCaste || "" %>',
-        preferredEthnicity: '<%= accountInfo.preferredEthnicity || "" %>',
-        allowParnterToWork: '<%= accountInfo.allowParnterToWork %>',
-        allowPartnerToStudy: '<%= accountInfo.allowPartnerToStudy %>',
-        acceptSomeoneWithChildren: '<%= accountInfo.acceptSomeoneWithChildren %>',
-        acceptADivorcedPerson: '<%= accountInfo.acceptADivorcedPerson %>',
-        acceptAWidow: '<%= accountInfo.acceptAWidow %>',
-        agreesWithPolygamy: '<%= accountInfo.agreesWithPolygamy %>',
-        AcceptSomeoneWithBeard: '<%= accountInfo.AcceptSomeoneWithBeard %>',
-        AcceptSomeoneWithHijab: '<%= accountInfo.AcceptSomeoneWithHijab %>',
-        ConsiderARevert: '<%= accountInfo.ConsiderARevert %>',
-        acceptSomeoneInOtherCountry: '<%= accountInfo.acceptSomeoneInOtherCountry %>',
-        willingToSharePhotosUponRequest: '<%= accountInfo.willingToSharePhotosUponRequest %>',
-        willingToMeetUpOutside: '<%= accountInfo.willingToMeetUpOutside %>',
-        willingToConsiderANonUkCitizen: '<%= accountInfo.willingToConsiderANonUkCitizen !== undefined ? accountInfo.willingToConsiderANonUkCitizen.toString() : '' %>',
-        lookingForASpouseThatIs: '<%= accountInfo.lookingForASpouseThatIs || "" %>',
-        qualitiesYouNeedInYourPartner: '<%= (accountInfo.qualitiesYouNeedInYourPartner && accountInfo.qualitiesYouNeedInYourPartner.join(", ")) || "" %>',
-
-        // Arrays for dynamic content
-        education: <%-JSON.stringify(accountInfo.education || [])%>,
-        children: <%-JSON.stringify(accountInfo.children || [])%>
-      };
-
-      // Populate regular form fields
-      Object.keys(userData).forEach(key => {
-        if (key === 'education' || key === 'children') return;
-
-        const field = document.querySelector(`[name="${key}"]`);
-        if (field) {
-          if (field.type === 'radio') {
-            const radioGroup = document.querySelectorAll(`[name="${key}"]`);
-            radioGroup.forEach(radio => {
-              if (radio.value === userData[key]) {
-                radio.checked = true;
-              }
-            });
-          } else if (field.type === 'checkbox') {
-            field.checked = userData[key] === 'true' || userData[key] === true;
-          } else {
-            field.value = userData[key] || '';
-          }
-        }
-      });
-
-      // Populate education
-      if (userData.education && userData.education.length > 0) {
-        let educationCount = 0;
-        userData.education.forEach((edu, index) => {
-          educationCount++;
-          if (index > 0) {
-            const educationHtml = `
-          <div class="education-item" data-index="${educationCount}">
-            <div class="flex justify-between items-center mb-4">
-              <h4 class="font-medium text-gray-900">Education ${educationCount}</h4>
-              <button type="button" class="remove-education text-red-500 hover:text-red-700">
-                <i class="ri-delete-bin-line"></i>
-              </button>
-            </div>
-            <div class="grid md:grid-cols-3 gap-4">
-              <input type="text" name="education[${educationCount}][title]" placeholder="Degree/Title" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-              <input type="text" name="education[${educationCount}][institute]" placeholder="Institute/University" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-              <input type="text" name="education[${educationCount}][year]" placeholder="Year" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-            </div>
-          </div>
-        `;
-            document.getElementById('educationContainer').insertAdjacentHTML('beforeend', educationHtml);
-          }
-
-          // Fill the education data
-          const titleField = document.querySelector(`[name="education[${educationCount}][title]"]`);
-          const instituteField = document.querySelector(`[name="education[${educationCount}][institute]"]`);
-          const yearField = document.querySelector(`[name="education[${educationCount}][year]"]`);
-
-          if (titleField) titleField.value = edu.title || '';
-          if (instituteField) instituteField.value = edu.institute || '';
-          if (yearField) yearField.value = edu.year || '';
-        });
-      }
-
-      // Populate children
-      if (userData.children && userData.children.length > 0) {
-        let childrenCount = 0;
-        userData.children.forEach((child, index) => {
-          childrenCount++;
-          const childHtml = `
-        <div class="child-item" data-index="${childrenCount}">
-          <div class="flex justify-between items-center mb-4">
-            <h4 class="font-medium text-gray-900">Child ${childrenCount}</h4>
-            <button type="button" class="remove-child text-red-500 hover:text-red-700">
-              <i class="ri-delete-bin-line"></i>
-            </button>
-          </div>
-          <div class="grid md:grid-cols-3 gap-4">
-            <input type="text" name="children[${childrenCount}][name]" placeholder="Child's Name" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-            <input type="number" name="children[${childrenCount}][age]" placeholder="Age" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-            <input type="text" name="children[${childrenCount}][livingLocation]" placeholder="Living Location" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          </div>
-        </div>
-      `;
-          document.getElementById('childrenContainer').insertAdjacentHTML('beforeend', childHtml);
-
-          // Fill the children data
-          const nameField = document.querySelector(`[name="children[${childrenCount}][name]"]`);
-          const ageField = document.querySelector(`[name="children[${childrenCount}][age]"]`);
-          const locationField = document.querySelector(`[name="children[${childrenCount}][livingLocation]"]`);
-
-          if (nameField) nameField.value = child.name || '';
-          if (ageField) ageField.value = child.age || '';
-          if (locationField) locationField.value = child.livingLocation || '';
-        });
-      }
-      <% } %>
-      // After the main field population, add this:
-      // Trigger location dropdowns if country/state/city are already set
-      if (userData.country) {
-        const countrySelect = document.getElementById('country');
-        const stateSelect = document.getElementById('state');
-        const citySelect = document.getElementById('city');
-
-        if (countrySelect && userData.country) {
-          countrySelect.value = userData.country;
-          countrySelect.dispatchEvent(new Event('change')); // Trigger state population
-
-          // Wait a bit then set state
-          setTimeout(() => {
-            if (stateSelect && userData.state) {
-              stateSelect.value = userData.state;
-              stateSelect.dispatchEvent(new Event('change')); // Trigger city population
-
-              // Wait a bit then set city  
-              setTimeout(() => {
-                if (citySelect && userData.city) {
-                  citySelect.value = userData.city;
+        // Wait for DOM to be fully ready
+        setTimeout(() => {
+          // Populate all form fields
+          Object.keys(userDataRaw).forEach(key => {
+            const field = document.querySelector(`[name="${key}"]`);
+            if (field && userDataRaw[key] !== undefined && userDataRaw[key] !== null) {
+              if (field.tagName === 'SELECT') {
+                // Handle boolean values properly
+                if (typeof userDataRaw[key] === 'boolean') {
+                  field.value = userDataRaw[key].toString();
+                } else {
+                  field.value = userDataRaw[key];
                 }
-              }, 100);
-            }
-          }, 100);
-        }
-      }
-    }
-  </script> -->
-  <script id="data-loading">
-    function loadUserData() {
-      <% if (accountInfo) { %>
-      const userData = {
-        // Basic Info
-        username: '<%= accountInfo.username || "" %>',
-        name: '<%= accountInfo.name || "" %>',
-        age: '<%= accountInfo.age || "" %>',
-        gender: '<%= accountInfo.gender || "" %>',
-        maritalStatus: '<%= accountInfo.maritalStatus %>',
-        work: '<%= accountInfo.work || "" %>',
-        aboutMe: `<%= (accountInfo.aboutMe || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-        hobbies: '<%= (accountInfo.hobbies && accountInfo.hobbies.join(", ")) || "" %>',
-
-        // Contact & Location
-        contact: '<%= accountInfo.contact || "" %>',
-        waliMyContactDetails: '<%= accountInfo.waliMyContactDetails || "" %>',
-        adress: '<%= accountInfo.adress || "" %>',
-        city: '<%= accountInfo.city || "" %>',
-        state: '<%= accountInfo.state || "" %>',
-        country: '<%= accountInfo.country || "" %>',
-        nationality: '<%= accountInfo.nationality || "" %>',
-        birthPlace: '<%= accountInfo.birthPlace || "" %>',
-        willingToRelocate: '<%= accountInfo.willingToRelocate %>',
-        languagesSpoken: '<%= (accountInfo.languagesSpoken && accountInfo.languagesSpoken.join(", ")) || "" %>',
-
-        // Physical Appearance
-        height: '<%= accountInfo.height || "" %>',
-        build: '<%= accountInfo.build || "" %>',
-        eyeColor: '<%= accountInfo.eyeColor || "" %>',
-        hairColor: '<%= accountInfo.hairColor || "" %>',
-        complexion: '<%= accountInfo.complexion || "" %>',
-        ethnicity: '<%= accountInfo.ethnicity || "" %>',
-        disability: '<%= accountInfo.disability || "no" %>',
-        smoker: '<%= accountInfo.smoker %>',
-
-        // Religion & Faith
-        religion: '<%= accountInfo.religion || "" %>',
-        caste: '<%= accountInfo.caste || "" %>',
-        islamicSect: '<%= accountInfo.islamicSect || "" %>',
-        bornMuslim: '<%= accountInfo.bornMuslim %>',
-        prays: '<%= accountInfo.prays %>',
-        celebratesMilaad: '<%= accountInfo.celebratesMilaad %>',
-        celebrateKhatams: '<%= accountInfo.celebrateKhatams %>',
-        islamIsImportantToMeInfo: `<%= (accountInfo.islamIsImportantToMeInfo || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-
-        // Family & Background
-        fatherName: '<%= accountInfo.fatherName || "" %>',
-        motherName: '<%= accountInfo.motherName || "" %>',
-        fatherProfession: '<%= accountInfo.fatherProfession || "" %>',
-        siblings: '<%= accountInfo.siblings || "" %>',
-        livingArrangementsAfterMarriage: '<%= accountInfo.livingArrangementsAfterMarriage || "" %>',
-        futurePlans: '<%= accountInfo.futurePlans || "" %>',
-        whoCompletedProfile: '<%= accountInfo.whoCompletedProfile || "" %>',
-        describeNature: `<%= (accountInfo.describeNature || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-        QualitiesThatYouCanBringToYourMarriage: '<%= (accountInfo.QualitiesThatYouCanBringToYourMarriage && accountInfo.QualitiesThatYouCanBringToYourMarriage.join(", ")) || "" %>',
-        anySpecialInformationPeopleShouldKnow: `<%= (accountInfo.anySpecialInformationPeopleShouldKnow || "").replace(/\n/g, "\\n").replace(/'/g, "\\'") %>`,
-
-        // Partner Preferences
-        preferredAgeRange: '<%= accountInfo.preferredAgeRange || "" %>',
-        preferredHeightRange: '<%= accountInfo.preferredHeightRange || "" %>',
-        preferredCaste: '<%= accountInfo.preferredCaste || "" %>',
-        preferredEthnicity: '<%= accountInfo.preferredEthnicity || "" %>',
-        allowParnterToWork: '<%= accountInfo.allowParnterToWork %>',
-        allowPartnerToStudy: '<%= accountInfo.allowPartnerToStudy %>',
-        acceptSomeoneWithChildren: '<%= accountInfo.acceptSomeoneWithChildren %>',
-        acceptADivorcedPerson: '<%= accountInfo.acceptADivorcedPerson %>',
-        acceptAWidow: '<%= accountInfo.acceptAWidow %>',
-        agreesWithPolygamy: '<%= accountInfo.agreesWithPolygamy %>',
-        AcceptSomeoneWithBeard: '<%= accountInfo.AcceptSomeoneWithBeard %>',
-        AcceptSomeoneWithHijab: '<%= accountInfo.AcceptSomeoneWithHijab %>',
-        ConsiderARevert: '<%= accountInfo.ConsiderARevert %>',
-        acceptSomeoneInOtherCountry: '<%= accountInfo.acceptSomeoneInOtherCountry %>',
-        willingToSharePhotosUponRequest: '<%= accountInfo.willingToSharePhotosUponRequest %>',
-        willingToMeetUpOutside: '<%= accountInfo.willingToMeetUpOutside %>',
-        willingToConsiderANonUkCitizen: '<%= accountInfo.willingToConsiderANonUkCitizen !== undefined ? accountInfo.willingToConsiderANonUkCitizen.toString() : '' %>',
-        lookingForASpouseThatIs: '<%= accountInfo.lookingForASpouseThatIs || "" %>',
-        qualitiesYouNeedInYourPartner: '<%= (accountInfo.qualitiesYouNeedInYourPartner && accountInfo.qualitiesYouNeedInYourPartner.join(", ")) || "" %>',
-
-        // Arrays for dynamic content
-        education: <%-JSON.stringify(accountInfo.education || [])%>,
-        children: <%-JSON.stringify(accountInfo.children || [])%>
-      };
-
-      // Populate regular form fields (except location fields)
-      Object.keys(userData).forEach(key => {
-        if (key === 'education' || key === 'children' || key === 'country' || key === 'state' || key === 'city') return;
-
-        const field = document.querySelector(`[name="${key}"]`);
-        if (field) {
-          if (field.type === 'radio') {
-            const radioGroup = document.querySelectorAll(`[name="${key}"]`);
-            radioGroup.forEach(radio => {
-              if (radio.value === userData[key]) {
-                radio.checked = true;
+              } else if (field.type === 'checkbox') {
+                field.checked = userDataRaw[key] === true || userDataRaw[key] === 'true';
+              } else {
+                // Handle arrays for comma-separated fields
+                if (Array.isArray(userDataRaw[key])) {
+                  field.value = userDataRaw[key].join(', ');
+                } else {
+                  field.value = userDataRaw[key];
+                }
               }
+              console.log(`Populated ${key} with:`, field.value);
+            }
+          });
+
+          // Populate education
+          if (userDataRaw.education && Array.isArray(userDataRaw.education)) {
+            userDataRaw.education.forEach((edu, index) => {
+              educationCount++;
+              if (index > 0) {
+                // Add new education section
+                const educationHtml = `
+                  <div class="education-item" data-index="${educationCount}">
+                    <div class="flex justify-between items-center mb-4">
+                      <h4 class="font-medium text-gray-900">Education ${educationCount}</h4>
+                      <button type="button" class="remove-education text-red-500 hover:text-red-700">
+                        <i class="ri-delete-bin-line"></i>
+                      </button>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-4">
+                      <input type="text" name="education[${educationCount}][title]" placeholder="Degree/Title" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                      <input type="text" name="education[${educationCount}][institute]" placeholder="Institute/University" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                      <input type="text" name="education[${educationCount}][year]" placeholder="Year" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                    </div>
+                  </div>
+                `;
+                document.getElementById('educationContainer').insertAdjacentHTML('beforeend', educationHtml);
+              }
+
+              // Populate the education fields
+              setTimeout(() => {
+                const titleField = document.querySelector(`[name="education[${educationCount}][title]"]`);
+                const instituteField = document.querySelector(`[name="education[${educationCount}][institute]"]`);
+                const yearField = document.querySelector(`[name="education[${educationCount}][year]"]`);
+
+                if (titleField && edu.title) titleField.value = edu.title;
+                if (instituteField && edu.institute) instituteField.value = edu.institute;
+                if (yearField && edu.year) yearField.value = edu.year;
+              }, 50);
             });
-          } else if (field.type === 'checkbox') {
-            field.checked = userData[key] === 'true' || userData[key] === true;
-          } else {
-            field.value = userData[key] || '';
-          }
-        }
-      });
-
-      // Handle location fields separately after dropdown script is loaded
-      setTimeout(() => {
-        if (window.setLocationValues) {
-          window.setLocationValues(userData.country, userData.state, userData.city);
-        }
-      }, 100);
-
-      // Populate education
-      if (userData.education && userData.education.length > 0) {
-        let educationCount = 0;
-        userData.education.forEach((edu, index) => {
-          educationCount++;
-          if (index > 0) {
-            const educationHtml = `
-        <div class="education-item" data-index="${educationCount}">
-          <div class="flex justify-between items-center mb-4">
-            <h4 class="font-medium text-gray-900">Education ${educationCount}</h4>
-            <button type="button" class="remove-education text-red-500 hover:text-red-700">
-              <i class="ri-delete-bin-line"></i>
-            </button>
-          </div>
-          <div class="grid md:grid-cols-3 gap-4">
-            <input type="text" name="education[${educationCount}][title]" placeholder="Degree/Title" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-            <input type="text" name="education[${educationCount}][institute]" placeholder="Institute/University" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-            <input type="text" name="education[${educationCount}][year]" placeholder="Year" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          </div>
-        </div>
-      `;
-            document.getElementById('educationContainer').insertAdjacentHTML('beforeend', educationHtml);
           }
 
-          // Fill the education data
-          const titleField = document.querySelector(`[name="education[${educationCount}][title]"]`);
-          const instituteField = document.querySelector(`[name="education[${educationCount}][institute]"]`);
-          const yearField = document.querySelector(`[name="education[${educationCount}][year]"]`);
+          // Populate children
+          if (userDataRaw.children && Array.isArray(userDataRaw.children)) {
+            userDataRaw.children.forEach((child, index) => {
+              childrenCount++;
+              const childHtml = `
+                <div class="child-item" data-index="${childrenCount}">
+                  <div class="flex justify-between items-center mb-4">
+                    <h4 class="font-medium text-gray-900">Child ${childrenCount}</h4>
+                    <button type="button" class="remove-child text-red-500 hover:text-red-700">
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </div>
+                  <div class="grid md:grid-cols-3 gap-4">
+                    <input type="text" name="children[${childrenCount}][name]" placeholder="Child's Name" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                    <input type="number" name="children[${childrenCount}][age]" placeholder="Age" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                    <input type="text" name="children[${childrenCount}][livingLocation]" placeholder="Living Location" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+                  </div>
+                </div>
+              `;
+              document.getElementById('childrenContainer').insertAdjacentHTML('beforeend', childHtml);
 
-          if (titleField) titleField.value = edu.title || '';
-          if (instituteField) instituteField.value = edu.institute || '';
-          if (yearField) yearField.value = edu.year || '';
-        });
+              // Populate the children fields
+              setTimeout(() => {
+                const nameField = document.querySelector(`[name="children[${childrenCount}][name]"]`);
+                const ageField = document.querySelector(`[name="children[${childrenCount}][age]"]`);
+                const locationField = document.querySelector(`[name="children[${childrenCount}][livingLocation]"]`);
+
+                if (nameField && child.name) nameField.value = child.name;
+                if (ageField && child.age) ageField.value = child.age;
+                if (locationField && child.livingLocation) locationField.value = child.livingLocation;
+              }, 50);
+            });
+          }
+        }, 200);
+        <% } %>
       }
 
-      // Populate children
-      if (userData.children && userData.children.length > 0) {
-        let childrenCount = 0;
-        userData.children.forEach((child, index) => {
-          childrenCount++;
-          const childHtml = `
-      <div class="child-item" data-index="${childrenCount}">
-        <div class="flex justify-between items-center mb-4">
-          <h4 class="font-medium text-gray-900">Child ${childrenCount}</h4>
-          <button type="button" class="remove-child text-red-500 hover:text-red-700">
-            <i class="ri-delete-bin-line"></i>
-          </button>
-        </div>
-        <div class="grid md:grid-cols-3 gap-4">
-          <input type="text" name="children[${childrenCount}][name]" placeholder="Child's Name" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          <input type="number" name="children[${childrenCount}][age]" placeholder="Age" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-          <input type="text" name="children[${childrenCount}][livingLocation]" placeholder="Living Location" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
-        </div>
-      </div>
-    `;
-          document.getElementById('childrenContainer').insertAdjacentHTML('beforeend', childHtml);
-
-          // Fill the children data
-          const nameField = document.querySelector(`[name="children[${childrenCount}][name]"]`);
-          const ageField = document.querySelector(`[name="children[${childrenCount}][age]"]`);
-          const locationField = document.querySelector(`[name="children[${childrenCount}][livingLocation]"]`);
-
-          if (nameField) nameField.value = child.name || '';
-          if (ageField) ageField.value = child.age || '';
-          if (locationField) locationField.value = child.livingLocation || '';
-        });
-      }
-      <% } %>
-    }
-  </script>
-  <!-- SEPARATE FORM SUBMISSION SCRIPT -->
-  <script id="form-submission">
-    document.addEventListener('DOMContentLoaded', function() {
+      // Form submission handling
       const saveButton = document.querySelector('button[type="submit"]');
       if (saveButton) {
         saveButton.addEventListener('click', function(e) {
@@ -2086,18 +1114,20 @@
           const submitBtn = this;
           const originalText = submitBtn.textContent;
 
-          // Disable button and show loading
           submitBtn.disabled = true;
           submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Saving Changes...';
 
-          // Collect all form data
           const allForms = document.querySelectorAll('.tab-content form');
           const userData = {};
+          userData.userId = '<%= accountInfo._id %>';
 
           allForms.forEach(form => {
             const formData = new FormData(form);
             for (let [key, value] of formData.entries()) {
-              if (value.trim() === '') continue;
+              if (value.trim() === "") {
+                console.log(`Skipping empty field ${key}`);
+                continue;
+              }
 
               if (key.includes('[') && key.includes(']')) {
                 const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
@@ -2108,41 +1138,30 @@
                   userData[field][index][subfield] = value.trim();
                 }
               } else if (key === 'hobbies' || key === 'languagesSpoken' || key === 'QualitiesThatYouCanBringToYourMarriage' || key === 'qualitiesYouNeedInYourPartner') {
-                userData[key] = value.split(',').map(item => item.trim()).filter(item => item);
+                userData[key] = value.trim();
               } else {
-                if (value === 'true') {
-                  userData[key] = true;
-                } else if (value === 'false') {
-                  userData[key] = false;
-                } else if (key === 'age' || key === 'height' || key === 'siblings') {
-                  const num = parseInt(value);
-                  if (!isNaN(num)) userData[key] = num;
-                } else {
-                  userData[key] = value.trim();
-                }
+                userData[key] = value.trim();
               }
             }
           });
 
-          // Clean up arrays
           if (userData.education) {
-            userData.education = userData.education.filter(item => item && (item.title || item.institute || item.year));
+            userData.education = userData.education.filter(item =>
+              item && Object.values(item).some(val => val && val.trim())
+            );
             if (userData.education.length === 0) delete userData.education;
           }
 
           if (userData.children) {
-            userData.children = userData.children.filter(item => item && (item.name || item.age || item.livingLocation));
-            userData.children.forEach(child => {
-              if (child.age) {
-                const age = parseInt(child.age);
-                if (!isNaN(age)) child.age = age;
-              }
-            });
+            userData.children = userData.children.filter(item =>
+              item && Object.values(item).some(val => val && val.trim())
+            );
             if (userData.children.length === 0) delete userData.children;
           }
 
-          // Send to backend
-          fetch('/account/update', {
+          console.log('Sending updated user data:', userData);
+
+          fetch('/admin/user/update', {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -2168,353 +1187,217 @@
             });
         });
       }
-    });
-  </script>
 
-  <script id="form-validation">
-    document.addEventListener('DOMContentLoaded', function() {
-      // Real-time validation
-      const inputs = document.querySelectorAll('input, textarea, select');
+      // Load sent requests
+      function loadSentRequests() {
+        const container = document.getElementById('sentRequestsContainer');
+        container.innerHTML = '<div class="text-center py-8"><i class="ri-loader-4-line animate-spin text-3xl text-gray-400 mb-4"></i><p class="text-gray-500">Loading your requests...</p></div>';
 
-      inputs.forEach(input => {
-        input.addEventListener('blur', function() {
-          validateField(this);
-        });
-
-        input.addEventListener('input', function() {
-          if (this.classList.contains('border-red-500')) {
-            validateField(this);
-          }
-        });
-      });
-
-      function validateField(field) {
-        const value = field.value.trim();
-        let isValid = true;
-        let errorMessage = '';
-
-        // Required field validation
-        if (field.hasAttribute('required') && !value) {
-          isValid = false;
-          errorMessage = 'This field is required';
-        }
-
-        // Email validation
-        if (field.type === 'email' && value) {
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(value)) {
-            isValid = false;
-            errorMessage = 'Please enter a valid email address';
-          }
-        }
-
-        // Phone validation
-
-        // Age validation
-        if (field.name === 'age' && value) {
-          const age = parseInt(value);
-          if (age < 18 || age > 100) {
-            isValid = false;
-            errorMessage = 'Age must be between 18 and 100';
-          }
-        }
-
-        // Height validation
-        if (field.name === 'height' && value) {
-          const height = parseInt(value);
-          if (height < 100 || height > 250) {
-            isValid = false;
-            errorMessage = 'Height must be between 100 and 250 cm';
-          }
-        }
-
-        // Update field styling
-        if (isValid) {
-          field.classList.remove('border-red-500');
-          field.classList.add('border-green-500');
-          removeErrorMessage(field);
-        } else {
-          field.classList.remove('border-green-500');
-          field.classList.add('border-red-500');
-          showErrorMessage(field, errorMessage);
-        }
-
-        return isValid;
-      }
-
-      function showErrorMessage(field, message) {
-        removeErrorMessage(field);
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'error-message text-red-500 text-sm mt-1';
-        errorDiv.textContent = message;
-        field.parentNode.appendChild(errorDiv);
-      }
-
-      function removeErrorMessage(field) {
-        const existingError = field.parentNode.querySelector('.error-message');
-        if (existingError) {
-          existingError.remove();
-        }
-      }
-    });
-  </script>
-  <!-- <script id="info-location-dropdowns">
-    document.addEventListener('DOMContentLoaded', function() {
-      const countrySelect = document.getElementById('country');
-      const stateSelect = document.getElementById('state');
-      const citySelect = document.getElementById('city');
-
-      // Location data (same as addUser.ejs)
-      const locationData = {
-        uk: {
-          states: {
-            'england': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Sheffield', 'Bristol', 'Nottingham', 'Leicester', 'Coventry', 'Bradford', 'Stoke-on-Trent', 'Wolverhampton', 'Plymouth', 'Derby', 'Southampton', 'Portsmouth', 'Newcastle', 'Brighton', 'Reading'],
-            'scotland': ['Glasgow', 'Edinburgh', 'Aberdeen', 'Dundee', 'Stirling', 'Perth', 'Inverness', 'Falkirk', 'Paisley', 'Hamilton'],
-            'wales': ['Cardiff', 'Swansea', 'Newport', 'Wrexham', 'Barry', 'Rhondda', 'Caerphilly', 'Bridgend', 'Neath', 'Port Talbot'],
-            'northern-ireland': ['Belfast', 'Derry', 'Lisburn', 'Newtownabbey', 'Bangor', 'Craigavon', 'Castlereagh', 'Ballymena', 'Newtownards', 'Carrickfergus']
-          }
-        },
-        pakistan: {
-          states: {
-            'punjab': ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan', 'Gujranwala', 'Sialkot', 'Bahawalpur', 'Sargodha', 'Sheikhupura', 'Jhang', 'Gujrat', 'Kasur', 'Rahim Yar Khan', 'Sahiwal', 'Okara', 'Wah Cantonment', 'Dera Ghazi Khan', 'Mirpur Mathelo', 'Kamoke', 'Mandi Bahauddin'],
-            'sindh': ['Karachi', 'Hyderabad', 'Sukkur', 'Larkana', 'Nawabshah', 'Mirpurkhas', 'Jacobabad', 'Shikarpur', 'Khairpur', 'Dadu', 'Ghotki', 'Sanghar', 'Badin', 'Tando Allahyar', 'Matiari', 'Tando Muhammad Khan'],
-            'khyber-pakhtunkhwa': ['Peshawar', 'Mardan', 'Mingora', 'Kohat', 'Dera Ismail Khan', 'Bannu', 'Swabi', 'Charsadda', 'Nowshera', 'Mansehra', 'Abbottabad', 'Karak', 'Hangu', 'Parachinar', 'Lakki Marwat'],
-            'balochistan': ['Quetta', 'Turbat', 'Khuzdar', 'Hub', 'Chaman', 'Gwadar', 'Zhob', 'Musakhel', 'Loralai', 'Sibi', 'Pishin', 'Nushki', 'Kalat', 'Mastung', 'Jaffarabad'],
-            'gilgit-baltistan': ['Gilgit', 'Skardu', 'Hunza', 'Ghanche', 'Shigar', 'Nagar', 'Kharmang', 'Gupis-Yasin', 'Ghizer', 'Diamer'],
-            'azad-kashmir': ['Muzaffarabad', 'Mirpur', 'Rawalakot', 'Palandri', 'Kotli', 'Bhimber', 'Bagh', 'Dadyal', 'Forward Kahuta', 'Hattian Bala'],
-            'islamabad': ['Islamabad']
-          }
-        },
-        bangladesh: {
-          states: {
-            'barisal': ['Barisal', 'Barguna', 'Bhola', 'Jhalokati', 'Patuakhali', 'Pirojpur'],
-            'chittagong': ['Chittagong', 'Bandarban', 'Brahmanbaria', 'Chandpur', 'Comilla', 'Coxs Bazar', 'Feni', 'Khagrachhari', 'Lakshmipur', 'Noakhali', 'Rangamati'],
-            'dhaka': ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur', 'Manikganj', 'Munshiganj', 'Narayanganj', 'Narsingdi', 'Rajbari', 'Shariatpur', 'Tangail'],
-            'khulna': ['Khulna', 'Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Kushtia', 'Magura', 'Meherpur', 'Narail', 'Satkhira'],
-            'rajshahi': ['Rajshahi', 'Bogra', 'Jaipurhat', 'Naogaon', 'Natore', 'Nawabganj', 'Pabna', 'Sirajganj'],
-            'rangpur': ['Rangpur', 'Dinajpur', 'Gaibandha', 'Kurigram', 'Lalmonirhat', 'Nilphamari', 'Panchagarh', 'Thakurgaon'],
-            'sylhet': ['Sylhet', 'Habiganj', 'Moulvibazar', 'Sunamganj'],
-            'mymensingh': ['Mymensingh', 'Jamalpur', 'Netrakona', 'Sherpur']
-          }
-        },
-        other: {
-          states: {
-            'other-state': ['Other City']
-          }
-        }
-      };
-
-      // Country change handler
-      countrySelect.addEventListener('change', function() {
-        const selectedCountry = this.value;
-
-        // Reset state and city
-        stateSelect.innerHTML = '<option value="">Select State/Province</option>';
-        citySelect.innerHTML = '<option value="">Select State/Province First</option>';
-        citySelect.disabled = true;
-
-        if (selectedCountry && locationData[selectedCountry]) {
-          stateSelect.disabled = false;
-
-          // Populate states based on selected country
-          const states = locationData[selectedCountry].states;
-          Object.keys(states).forEach(state => {
-            const option = document.createElement('option');
-            option.value = state;
-            option.textContent = state.charAt(0).toUpperCase() + state.slice(1).replace(/-/g, ' ');
-            stateSelect.appendChild(option);
-          });
-
-          // Add Other option
-          const otherOption = document.createElement('option');
-          otherOption.value = 'other';
-          otherOption.textContent = 'Other';
-          stateSelect.appendChild(otherOption);
-        } else if (selectedCountry === 'other') {
-          stateSelect.disabled = false;
-          stateSelect.innerHTML = '<option value="">Select State/Province</option><option value="other">Other</option>';
-        } else {
-          stateSelect.disabled = true;
-          stateSelect.innerHTML = '<option value="">Select Country First</option>';
-        }
-      });
-
-      // State change handler
-      stateSelect.addEventListener('change', function() {
-        const selectedCountry = countrySelect.value;
-        const selectedState = this.value;
-
-        // Reset city
-        citySelect.innerHTML = '<option value="">Select City</option>';
-
-        if (selectedCountry && selectedState && locationData[selectedCountry] && locationData[selectedCountry].states[selectedState]) {
-          citySelect.disabled = false;
-
-          // Populate cities based on selected state
-          const cities = locationData[selectedCountry].states[selectedState];
-          cities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city;
-            option.textContent = city;
-            citySelect.appendChild(option);
-          });
-
-          // Add Other option
-          const otherOption = document.createElement('option');
-          otherOption.value = 'other';
-          otherOption.textContent = 'Other';
-          citySelect.appendChild(otherOption);
-        } else if (selectedState === 'other') {
-          citySelect.disabled = false;
-          citySelect.innerHTML = '<option value="">Select City</option><option value="other">Other</option>';
-        } else {
-          citySelect.disabled = true;
-          citySelect.innerHTML = '<option value="">Select State/Province First</option>';
-        }
-      });
-    });
-  </script> -->
-  <script id="info-location-dropdowns">
-    document.addEventListener('DOMContentLoaded', function() {
-      const countrySelect = document.getElementById('country');
-      const stateSelect = document.getElementById('state');
-      const citySelect = document.getElementById('city');
-
-      // Updated location data to match your backend format
-      const locationData = {
-        uk: {
-          states: {
-            'england': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Leeds', 'Sheffield', 'Bristol', 'Nottingham', 'Leicester', 'Coventry', 'Bradford', 'Stoke-on-Trent', 'Wolverhampton', 'Plymouth', 'Derby', 'Southampton', 'Portsmouth', 'Newcastle', 'Brighton', 'Reading'],
-            'scotland': ['Glasgow', 'Edinburgh', 'Aberdeen', 'Dundee', 'Stirling', 'Perth', 'Inverness', 'Falkirk', 'Paisley', 'Hamilton'],
-            'wales': ['Cardiff', 'Swansea', 'Newport', 'Wrexham', 'Barry', 'Rhondda', 'Caerphilly', 'Bridgend', 'Neath', 'Port Talbot'],
-            'northern-ireland': ['Belfast', 'Derry', 'Lisburn', 'Newtownabbey', 'Bangor', 'Craigavon', 'Castlereagh', 'Ballymena', 'Newtownards', 'Carrickfergus']
-          }
-        },
-        pakistan: {
-          states: {
-            'punjab': ['Lahore', 'Faisalabad', 'Rawalpindi', 'Multan', 'Gujranwala', 'Sialkot', 'Bahawalpur', 'Sargodha', 'Sheikhupura', 'Jhang'],
-            'sindh': ['Karachi', 'Hyderabad', 'Sukkur', 'Larkana', 'Nawabshah', 'Mirpurkhas', 'Jacobabad', 'Shikarpur'],
-            'khyber-pakhtunkhwa': ['Peshawar', 'Mardan', 'Mingora', 'Kohat', 'Dera Ismail Khan', 'Bannu', 'Swabi'],
-            'balochistan': ['Quetta', 'Turbat', 'Khuzdar', 'Hub', 'Chaman', 'Gwadar', 'Zhob'],
-            'islamabad': ['Islamabad']
-          }
-        },
-        bangladesh: {
-          states: {
-            'dhaka': ['Dhaka', 'Faridpur', 'Gazipur', 'Gopalganj', 'Kishoreganj', 'Madaripur'],
-            'chittagong': ['Chittagong', 'Bandarban', 'Brahmanbaria', 'Chandpur', 'Comilla', 'Coxs Bazar'],
-            'khulna': ['Khulna', 'Bagerhat', 'Chuadanga', 'Jessore', 'Jhenaidah', 'Kushtia']
-          }
-        },
-        other: {
-          states: {
-            'other-state': ['Other City']
-          }
-        }
-      };
-
-      // Country change handler
-      countrySelect.addEventListener('change', function() {
-        const selectedCountry = this.value;
-        populateStates(selectedCountry);
-      });
-
-      // State change handler
-      stateSelect.addEventListener('change', function() {
-        const selectedCountry = countrySelect.value;
-        const selectedState = this.value;
-        populateCities(selectedCountry, selectedState);
-      });
-
-      function populateStates(country) {
-        // Reset state and city
-        stateSelect.innerHTML = '<option value="">Select State/Province</option>';
-        citySelect.innerHTML = '<option value="">Select State/Province First</option>';
-        citySelect.disabled = true;
-
-        if (country && locationData[country]) {
-          stateSelect.disabled = false;
-          const states = locationData[country].states;
-
-          Object.keys(states).forEach(state => {
-            const option = document.createElement('option');
-            option.value = state;
-            option.textContent = state.charAt(0).toUpperCase() + state.slice(1).replace(/-/g, ' ');
-            stateSelect.appendChild(option);
-          });
-
-          // Add Other option
-          const otherOption = document.createElement('option');
-          otherOption.value = 'other';
-          otherOption.textContent = 'Other';
-          stateSelect.appendChild(otherOption);
-        } else if (country === 'other') {
-          stateSelect.disabled = false;
-          stateSelect.innerHTML = '<option value="">Select State/Province</option><option value="other">Other</option>';
-        } else {
-          stateSelect.disabled = true;
-          stateSelect.innerHTML = '<option value="">Select Country First</option>';
-        }
-      }
-
-      function populateCities(country, state) {
-        citySelect.innerHTML = '<option value="">Select City</option>';
-
-        if (country && state && locationData[country] && locationData[country].states[state]) {
-          citySelect.disabled = false;
-          const cities = locationData[country].states[state];
-
-          cities.forEach(city => {
-            const option = document.createElement('option');
-            option.value = city;
-            option.textContent = city;
-            citySelect.appendChild(option);
-          });
-
-          // Add Other option
-          const otherOption = document.createElement('option');
-          otherOption.value = 'other';
-          otherOption.textContent = 'Other';
-          citySelect.appendChild(otherOption);
-        } else if (state === 'other') {
-          citySelect.disabled = false;
-          citySelect.innerHTML = '<option value="">Select City</option><option value="other">Other</option>';
-        } else {
-          citySelect.disabled = true;
-          citySelect.innerHTML = '<option value="">Select State/Province First</option>';
-        }
-      }
-
-      // Function to set location values (called after data is loaded)
-      window.setLocationValues = function(country, state, city) {
-        console.log('Setting location values:', {
-          country,
-          state,
-          city
-        });
-
-        if (country) {
-          countrySelect.value = country;
-          populateStates(country);
-
-          // Wait for states to populate, then set state
-          setTimeout(() => {
-            if (state) {
-              stateSelect.value = state;
-              populateCities(country, state);
-
-              // Wait for cities to populate, then set city
-              setTimeout(() => {
-                if (city) {
-                  citySelect.value = city;
-                }
-              }, 50);
+        fetch('/api/requests/sent')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              displaySentRequests(data.requests);
+            } else {
+              container.innerHTML = '<div class="text-center py-8"><p class="text-red-500">Failed to load requests</p></div>';
             }
-          }, 50);
+          })
+          .catch(error => {
+            console.error('Error loading sent requests:', error);
+            container.innerHTML = '<div class="text-center py-8"><p class="text-red-500">Failed to load requests</p></div>';
+          });
+      }
+
+      // Load received requests
+      function loadReceivedRequests() {
+        const container = document.getElementById('receivedRequestsContainer');
+        container.innerHTML = '<div class="text-center py-8"><i class="ri-loader-4-line animate-spin text-3xl text-gray-400 mb-4"></i><p class="text-gray-500">Loading received requests...</p></div>';
+
+        fetch('/api/requests/received')
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              displayReceivedRequests(data.requests);
+            } else {
+              container.innerHTML = '<div class="text-center py-8"><p class="text-red-500">Failed to load requests</p></div>';
+            }
+          })
+          .catch(error => {
+            console.error('Error loading received requests:', error);
+            container.innerHTML = '<div class="text-center py-8"><p class="text-red-500">Failed to load requests</p></div>';
+          });
+      }
+
+      // Display sent requests
+      function displaySentRequests(requests) {
+        const container = document.getElementById('sentRequestsContainer');
+
+        if (requests.length === 0) {
+          container.innerHTML = '<div class="text-center py-8"><i class="ri-send-plane-line text-3xl text-gray-400 mb-4"></i><p class="text-gray-500">No requests sent yet</p></div>';
+          return;
+        }
+
+        const requestsHtml = requests.map(request => `
+          <div class="border border-gray-200 rounded-lg p-6 mb-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                  <i class="ri-user-line text-gray-500"></i>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900">${request.to.username}</h4>
+                  <p class="text-sm text-gray-500">${request.to.city || ''}, ${request.to.state || ''}</p>
+                  <p class="text-xs text-gray-400">Sent: ${new Date(request.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <span class="px-3 py-1 rounded-full text-xs font-medium ${
+                  request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  request.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                  'bg-red-100 text-red-800'
+                }">${request.status}</span>
+                ${request.status === 'pending' ? `
+                  <button onclick="cancelRequest('${request._id}')" class="ml-3 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">
+                    Cancel
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        container.innerHTML = requestsHtml;
+      }
+
+      // Display received requests
+      function displayReceivedRequests(requests) {
+        const container = document.getElementById('receivedRequestsContainer');
+
+        if (requests.length === 0) {
+          container.innerHTML = '<div class="text-center py-8"><i class="ri-inbox-line text-3xl text-gray-400 mb-4"></i><p class="text-gray-500">No requests received yet</p></div>';
+          return;
+        }
+
+        const requestsHtml = requests.map(request => `
+          <div class="border border-gray-200 rounded-lg p-6 mb-4">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+                  <i class="ri-user-line text-gray-500"></i>
+                </div>
+                <div>
+                  <h4 class="font-medium text-gray-900">${request.from.username}</h4>
+                  <p class="text-sm text-gray-500">${request.from.city || ''}</p>
+                  <p class="text-xs text-gray-400">Received: ${new Date(request.createdAt).toLocaleDateString()}</p>
+                </div>
+              </div>
+              <div class="flex items-center">
+                <span class="px-3 py-1 rounded-full text-xs font-medium ${
+                  request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                  request.status === 'accepted' ? 'bg-green-100 text-green-800' :
+                  'bg-red-100 text-red-800'
+                }">${request.status}</span>
+                ${request.status === 'pending' ? `
+                  <button onclick="respondToRequest('${request._id}', 'accepted')" class="ml-3 px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">
+                    Accept
+                  </button>
+                  <button onclick="respondToRequest('${request._id}', 'rejected')" class="ml-2 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">
+                    Reject
+                  </button>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `).join('');
+
+        container.innerHTML = requestsHtml;
+      }
+
+      // Global functions for request actions
+      window.cancelRequest = function(requestId) {
+        if (confirm('Are you sure you want to cancel this request?')) {
+          fetch(`/api/requests/${requestId}/cancel`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                showNotification('Request Cancelled', 'Request has been cancelled successfully', 'success');
+                loadSentRequests();
+              } else {
+                showNotification('Error', data.error || 'Failed to cancel request', 'error');
+              }
+            })
+            .catch(error => {
+              console.error('Error cancelling request:', error);
+              showNotification('Error', 'Failed to cancel request', 'error');
+            });
         }
       };
+
+      window.respondToRequest = function(requestId, action) {
+        const actionText = action === 'accepted' ? 'accept' : 'reject';
+        if (confirm(`Are you sure you want to ${actionText} this request?`)) {
+          fetch(`/api/requests/${requestId}/respond`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                action
+              })
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                showNotification('Request Updated', `Request has been ${action} successfully`, 'success');
+                loadReceivedRequests();
+              } else {
+                showNotification('Error', data.error || 'Failed to update request', 'error');
+              }
+            })
+            .catch(error => {
+              console.error('Error responding to request:', error);
+              showNotification('Error', 'Failed to update request', 'error');
+            });
+        }
+      };
+
+      // Notification function
+      function showNotification(title, message, type = 'info') {
+        const notification = document.createElement('div');
+        const bgColor = type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-blue-500' : 'bg-red-500';
+        const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'info' ? 'ri-information-line' : 'ri-error-warning-line';
+
+        notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
+        notification.innerHTML = `
+          <i class="${icon} text-xl"></i>
+          <div>
+            <p class="font-medium">${title}</p>
+            <p class="text-sm opacity-90">${message}</p>
+          </div>
+        `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+          notification.style.transform = 'translateY(100%)';
+          notification.style.opacity = '0';
+          setTimeout(() => notification.remove(), 300);
+        }, 3000);
+      }
+
+      // Initialize the form
+      showTab(0);
+      showMainSection('account');
+      loadUserData();
     });
   </script>
 </body>
 
 </html>
+
+<!-- ...existing code... -->
