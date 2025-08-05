@@ -137,8 +137,8 @@
       <div class="bg-white rounded-2xl overflow-hidden material-shadow mb-6">
         <!-- Cover Photo -->
         <div class="aspect-[3/2] relative overflow-hidden">
-          <% if (profile.profilePic && profile.profilePic.url) { %>
-          <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Cover">
+          <% if (profile.coverPhoto && profile.coverPhoto.url) { %>
+          <img src="<%= profile.coverPhoto.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Cover">
           <% } else { %>
           <!-- Default cover image based on gender -->
           <% if (profile.gender === 'male') { %>

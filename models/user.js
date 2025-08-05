@@ -60,6 +60,10 @@ const userSchema = new mongoose.Schema({
     url: String,
     filename: String,
   },
+  coverPhoto: {
+    url: String,
+    filename: String,
+  },
   country: {
     type: String,
   },

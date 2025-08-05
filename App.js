@@ -38,28 +38,32 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
-    // Only for /account/edit, user is available as req.userData
-    let username = req.userData?.username || "unknown";
-    // Get next image number for this user
-    let nextImgNum = 1;
-    try {
-      const result = await cloudinary.search
-        .expression(`folder:user_profiles AND public_id:${username}imgs*`)
-        .sort_by("public_id", "desc")
-        .max_results(100)
-        .execute();
-      let maxNum = 0;
-      result.resources.forEach((img) => {
-        const match = img.public_id.match(new RegExp(username + "imgs(\\d+)$"));
-        if (match && Number(match[1]) > maxNum) {
-          maxNum = Number(match[1]);
-        }
-      });
-      nextImgNum = maxNum + 1;
-    } catch (e) {}
+    // Get username from either userData or form data
+    let username = req.userData?.username || req.body?.userId || "unknown";
+
+    // If userId is passed instead of username, look up the username
+    if (req.body?.userId && !req.userData?.username) {
+      try {
+        const user = await User.findById(req.body.userId);
+        username = user?.username || "unknown";
+      } catch (e) {
+        console.log("Error finding user for username:", e);
+      }
+    }
+
+    // **NEW**: Different naming based on file field name
+    let suffix = "";
+    if (file.fieldname === "coverPhoto") {
+      suffix = "C"; // Cover photo: M23C
+    } else if (file.fieldname === "profilePic") {
+      suffix = "P"; // Profile picture: M23P
+    } else {
+      suffix = "imgs1"; // Fallback for other uploads
+    }
+
     return {
       folder: "user_profiles",
-      public_id: `${username}imgs${nextImgNum}`,
+      public_id: `${username}${suffix}`, // M23C or M23P
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
     };
   },
@@ -1728,14 +1732,37 @@ app.get("/admin/edit-user/:id", async (req, res) => {
 
 // Update User Route
 // Replace the entire /admin/user/update route with this corrected version:
-
-app.post("/admin/user/update", async (req, res) => {
+const profileUpload = multer({ storage }).fields([
+  { name: "profilePic", maxCount: 1 },
+  { name: "coverPhoto", maxCount: 1 },
+]);
+app.post("/admin/user/update", profileUpload, async (req, res) => {
   try {
-    const { userId, ...updateData } = req.body;
+    let updateData, userId;
+
+    if (req.files || req.body.userData) {
+      // FormData request with files
+      userId = req.body.userId;
+      updateData = req.body.userData ? JSON.parse(req.body.userData) : {};
+      console.log(
+        "FormData request - userId:",
+        userId,
+        "files:",
+        Object.keys(req.files || {})
+      );
+    } else {
+      // JSON request without files
+      const { userId: id, ...data } = req.body;
+      userId = id;
+      updateData = data;
+      console.log("JSON request - userId:", userId);
+    }
 
     if (!userId) {
       return res.json({ error: "User ID is required" });
     }
+
+    // Authorization check
     const isAdmin = req.session.isAdmin;
     const isUserUpdatingSelf =
       req.session.userId && req.session.userId === userId;
@@ -1747,22 +1774,48 @@ app.post("/admin/user/update", async (req, res) => {
         sessionUserId: req.session.userId,
         targetUserId: userId,
       });
-      return res
-        .status(403)
-        .json({ error: "Forbidden: You can only update your own profile" });
+      return res.status(403).json({
+        error: "Forbidden: You can only update your own profile",
+      });
     }
 
-    console.log("Access granted:", {
-      isAdmin,
-      isUserUpdatingSelf,
-      updateType: isAdmin ? "Admin update" : "User self-update",
-    });
+    // Set userData for Cloudinary storage naming
+    if (isUserUpdatingSelf || isAdmin) {
+      const currentUser = await User.findById(userId);
+      req.userData = currentUser;
+    }
+
     const user = await User.findById(userId);
     if (!user) {
       return res.json({ error: "User not found" });
     }
 
-    console.log("Update data received:", updateData); // Debug log
+    console.log("Update data received:", updateData);
+
+    // **NEW**: Handle file uploads first
+    if (req.files) {
+      console.log("Files received:", Object.keys(req.files));
+
+      // Handle profile picture
+      if (req.files.profilePic && req.files.profilePic[0]) {
+        const profilePicFile = req.files.profilePic[0];
+        user.profilePic = {
+          url: profilePicFile.path,
+          filename: profilePicFile.filename,
+        };
+        console.log("Profile picture uploaded:", user.profilePic);
+      }
+
+      // Handle cover photo
+      if (req.files.coverPhoto && req.files.coverPhoto[0]) {
+        const coverPhotoFile = req.files.coverPhoto[0];
+        user.coverPhoto = {
+          url: coverPhotoFile.path,
+          filename: coverPhotoFile.filename,
+        };
+        console.log("Cover photo uploaded:", user.coverPhoto);
+      }
+    }
 
     // Define field categories for cleaner processing
     const booleanFields = [

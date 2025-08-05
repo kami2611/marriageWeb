@@ -103,6 +103,34 @@
     .main-section.hidden {
       display: none;
     }
+
+    .hover-overlay {
+      position: relative;
+    }
+
+    .hover-overlay:hover .absolute {
+      opacity: 1 !important;
+    }
+
+    /* Upload preview styles */
+    .upload-preview {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-preview img {
+      transition: all 0.3s ease;
+    }
+
+    .upload-preview:hover img {
+      transform: scale(1.05);
+    }
+
+    /* File input styling */
+    .file-input-wrapper {
+      position: relative;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -163,6 +191,73 @@
         <h2 class="text-3xl font-bold text-gray-800 mb-3 font-['Playfair_Display']">My Account</h2>
         <p class="text-gray-600">Manage your profile and requests</p>
       </div>
+
+      <div class="bg-white rounded-2xl overflow-hidden material-shadow mb-8">
+        <!-- Cover Photo -->
+        <div class="aspect-[5/2] relative overflow-hidden cursor-pointer hover-overlay" id="coverPhotoContainer">
+          <% if (accountInfo.coverPhoto && accountInfo.coverPhoto.url) { %>
+          <img id="coverPhotoImg" src="<%= accountInfo.coverPhoto.url %>" class="w-full h-full object-cover" alt="Cover Photo">
+          <% } else { %>
+          <!-- Default cover image -->
+          <% if (accountInfo.gender === 'male') { %>
+          <img id="coverPhotoImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(accountInfo.name || accountInfo.username) %>&background=0077be&color=fff&size=800&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Cover Photo">
+          <% } else { %>
+          <img id="coverPhotoImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(accountInfo.name || accountInfo.username) %>&background=e91e63&color=fff&size=800&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Cover Photo">
+          <% } %>
+          <% } %>
+
+          <!-- Hover overlay -->
+          <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+            <div class="text-white text-center">
+              <i class="ri-camera-line text-4xl mb-2"></i>
+              <p class="font-medium">Change Cover Photo</p>
+            </div>
+          </div>
+
+          <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/60 to-transparent"></div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="relative -mt-24 px-8 pb-8">
+          <!-- Profile Picture -->
+          <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white material-shadow mx-auto mb-6 cursor-pointer hover-overlay relative" id="profilePicContainer">
+            <% if (accountInfo.profilePic && accountInfo.profilePic.url) { %>
+            <img id="profilePicImg" src="<%= accountInfo.profilePic.url %>" class="w-full h-full object-cover" alt="Profile Picture">
+            <% } else { %>
+            <!-- Default avatar based on gender -->
+            <% if (accountInfo.gender === 'male') { %>
+            <img id="profilePicImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(accountInfo.name || accountInfo.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Profile Picture">
+            <% } else { %>
+            <img id="profilePicImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(accountInfo.name || accountInfo.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Profile Picture">
+            <% } %>
+            <% } %>
+
+            <!-- Hover overlay for profile pic -->
+            <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 rounded-full">
+              <div class="text-white text-center">
+                <i class="ri-camera-line text-2xl mb-1"></i>
+                <p class="text-sm font-medium">Change</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Name and Username -->
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2 font-['Playfair_Display']">
+              <%= accountInfo.name || accountInfo.username %>
+            </h3>
+            <p class="text-gray-600 flex items-center justify-center gap-2">
+              <i class="ri-verified-badge-fill text-primary"></i>
+              <span>@<%= accountInfo.username %></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="coverPhotoInput" accept="image/*" style="display: none;">
+      <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+
       <div class="bg-white rounded-2xl p-2 material-shadow mb-8">
         <div class="flex flex-wrap gap-2">
           <button class="main-nav-btn main-nav-active flex-1 py-2.5 px-4 text-center transition-all duration-300 !rounded-button whitespace-nowrap ripple" data-section="account">
@@ -1107,6 +1202,7 @@
 
       // Form submission handling
       const saveButton = document.querySelector('button[type="submit"]');
+      // Update the save button handler to include photo uploads
       if (saveButton) {
         saveButton.addEventListener('click', function(e) {
           e.preventDefault();
@@ -1117,74 +1213,169 @@
           submitBtn.disabled = true;
           submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Saving Changes...';
 
-          const allForms = document.querySelectorAll('.tab-content form');
-          const userData = {};
-          userData.userId = '<%= accountInfo._id %>';
+          // Check if we have files to upload
+          const hasFiles = (coverPhotoInput.files[0] || profilePicInput.files[0]);
 
-          allForms.forEach(form => {
-            const formData = new FormData(form);
-            for (let [key, value] of formData.entries()) {
-              if (value.trim() === "") {
-                console.log(`Skipping empty field ${key}`);
-                continue;
-              }
+          if (hasFiles) {
+            // Use FormData for file uploads
+            const formData = new FormData();
+            formData.append('userId', '<%= accountInfo._id %>');
 
-              if (key.includes('[') && key.includes(']')) {
-                const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
-                if (match) {
-                  const [, field, index, subfield] = match;
-                  if (!userData[field]) userData[field] = [];
-                  if (!userData[field][index]) userData[field][index] = {};
-                  userData[field][index][subfield] = value.trim();
-                }
-              } else if (key === 'hobbies' || key === 'languagesSpoken' || key === 'QualitiesThatYouCanBringToYourMarriage' || key === 'qualitiesYouNeedInYourPartner') {
-                userData[key] = value.trim();
-              } else {
-                userData[key] = value.trim();
-              }
+            // Add files
+            if (coverPhotoInput.files[0]) {
+              formData.append('coverPhoto', coverPhotoInput.files[0]);
+              console.log('Adding cover photo to upload');
             }
-          });
 
-          if (userData.education) {
-            userData.education = userData.education.filter(item =>
-              item && Object.values(item).some(val => val && val.trim())
-            );
-            if (userData.education.length === 0) delete userData.education;
-          }
+            if (profilePicInput.files[0]) {
+              formData.append('profilePic', profilePicInput.files[0]);
+              console.log('Adding profile pic to upload');
+            }
 
-          if (userData.children) {
-            userData.children = userData.children.filter(item =>
-              item && Object.values(item).some(val => val && val.trim())
-            );
-            if (userData.children.length === 0) delete userData.children;
-          }
+            // Collect and add text data
+            const allForms = document.querySelectorAll('.tab-content form');
+            const userData = {};
 
-          console.log('Sending updated user data:', userData);
+            allForms.forEach(form => {
+              const formDataFields = new FormData(form);
+              for (let [key, value] of formDataFields.entries()) {
+                if (value.trim() === "") {
+                  continue;
+                }
 
-          fetch('/admin/user/update', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(userData)
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                showNotification('Profile Updated', 'Your profile has been updated successfully!', 'success');
-              } else {
-                console.error('Backend error:', data.error);
-                showNotification('Error', data.error || 'Failed to update profile', 'error');
+                if (key.includes('[') && key.includes(']')) {
+                  const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+                  if (match) {
+                    const [, field, index, subfield] = match;
+                    if (!userData[field]) userData[field] = [];
+                    if (!userData[field][index]) userData[field][index] = {};
+                    userData[field][index][subfield] = value.trim();
+                  }
+                } else if (['hobbies', 'languagesSpoken', 'QualitiesThatYouCanBringToYourMarriage', 'qualitiesYouNeedInYourPartner'].includes(key)) {
+                  userData[key] = value.trim();
+                } else {
+                  userData[key] = value.trim();
+                }
               }
-            })
-            .catch(error => {
-              console.error('Request error:', error);
-              showNotification('Error', 'Failed to update profile. Please try again.', 'error');
-            })
-            .finally(() => {
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = originalText;
             });
+
+            // Clean up arrays
+            if (userData.education) {
+              userData.education = userData.education.filter(item =>
+                item && Object.values(item).some(val => val && val.trim())
+              );
+              if (userData.education.length === 0) delete userData.education;
+            }
+
+            if (userData.children) {
+              userData.children = userData.children.filter(item =>
+                item && Object.values(item).some(val => val && val.trim())
+              );
+              if (userData.children.length === 0) delete userData.children;
+            }
+
+            formData.append('userData', JSON.stringify(userData));
+
+            console.log('Sending FormData with files and user data');
+
+            // Send FormData
+            fetch('/admin/user/update', {
+                method: 'POST',
+                body: formData // Don't set Content-Type for FormData
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  showNotification('Profile Updated', 'Your profile has been updated successfully!', 'success');
+                  // Clear file inputs
+                  coverPhotoInput.value = '';
+                  profilePicInput.value = '';
+                } else {
+                  console.error('Backend error:', data.error);
+                  showNotification('Error', data.error || 'Failed to update profile', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Request error:', error);
+                showNotification('Error', 'Failed to update profile. Please try again.', 'error');
+              })
+              .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+              });
+
+          } else {
+            // No files, use JSON for text-only updates
+            const allForms = document.querySelectorAll('.tab-content form');
+            const userData = {};
+            userData.userId = '<%= accountInfo._id %>';
+
+            allForms.forEach(form => {
+              const formData = new FormData(form);
+              for (let [key, value] of formData.entries()) {
+                if (value.trim() === "") {
+                  continue;
+                }
+
+                if (key.includes('[') && key.includes(']')) {
+                  const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+                  if (match) {
+                    const [, field, index, subfield] = match;
+                    if (!userData[field]) userData[field] = [];
+                    if (!userData[field][index]) userData[field][index] = {};
+                    userData[field][index][subfield] = value.trim();
+                  }
+                } else if (['hobbies', 'languagesSpoken', 'QualitiesThatYouCanBringToYourMarriage', 'qualitiesYouNeedInYourPartner'].includes(key)) {
+                  userData[key] = value.trim();
+                } else {
+                  userData[key] = value.trim();
+                }
+              }
+            });
+
+            // Clean up arrays
+            if (userData.education) {
+              userData.education = userData.education.filter(item =>
+                item && Object.values(item).some(val => val && val.trim())
+              );
+              if (userData.education.length === 0) delete userData.education;
+            }
+
+            if (userData.children) {
+              userData.children = userData.children.filter(item =>
+                item && Object.values(item).some(val => val && val.trim())
+              );
+              if (userData.children.length === 0) delete userData.children;
+            }
+
+            console.log('Sending JSON data without files:', userData);
+
+            // Send JSON
+            fetch('/admin/user/update', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  showNotification('Profile Updated', 'Your profile has been updated successfully!', 'success');
+                } else {
+                  console.error('Backend error:', data.error);
+                  showNotification('Error', data.error || 'Failed to update profile', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Request error:', error);
+                showNotification('Error', 'Failed to update profile. Please try again.', 'error');
+              })
+              .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+              });
+          }
         });
       }
 
@@ -1394,6 +1585,197 @@
       showTab(0);
       showMainSection('account');
       loadUserData();
+
+
+
+      // Initialize the form
+      showTab(0);
+      showMainSection('account');
+      loadUserData();
+
+      // ADD THIS PHOTO UPLOAD FUNCTIONALITY HERE
+      // Photo upload functionality
+      const coverPhotoContainer = document.getElementById('coverPhotoContainer');
+      const profilePicContainer = document.getElementById('profilePicContainer');
+      const coverPhotoInput = document.getElementById('coverPhotoInput');
+      const profilePicInput = document.getElementById('profilePicInput');
+      const coverPhotoImg = document.getElementById('coverPhotoImg');
+      const profilePicImg = document.getElementById('profilePicImg');
+
+      // Cover photo upload
+      // ...existing code...
+
+      // Cover photo upload
+      if (coverPhotoContainer && coverPhotoInput) {
+        coverPhotoContainer.addEventListener('click', function() {
+          coverPhotoInput.click();
+        });
+
+        coverPhotoInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+              showNotification('Invalid File', 'Please select a valid image file', 'error');
+              return;
+            }
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+              showNotification('File Too Large', 'Please select an image smaller than 5MB', 'error');
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              // **USE EXACT SAME LOGIC AS PROFILE PIC - just update src**
+              coverPhotoImg.src = e.target.result;
+              showNotification('Preview Updated', 'Cover photo preview updated. Click "Save Changes" to upload.', 'success');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // ...existing code...
+
+      // Profile picture upload
+      if (profilePicContainer && profilePicInput) {
+        profilePicContainer.addEventListener('click', function() {
+          profilePicInput.click();
+        });
+
+        profilePicInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+              showNotification('Invalid File', 'Please select a valid image file', 'error');
+              return;
+            }
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+              showNotification('File Too Large', 'Please select an image smaller than 5MB', 'error');
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              profilePicImg.src = e.target.result;
+              showNotification('Preview Updated', 'Profile picture preview updated. Click "Save Changes" to upload.', 'success');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Update the save button handler to include photo uploads
+      const originalSaveHandler = saveButton.querySelector('button[type="submit"]');
+      if (originalSaveHandler) {
+        // Remove existing event listener and add new one that includes photo upload
+        const newSaveButton = originalSaveHandler.cloneNode(true);
+        originalSaveHandler.parentNode.replaceChild(newSaveButton, originalSaveHandler);
+
+        newSaveButton.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          const submitBtn = this;
+          const originalText = submitBtn.textContent;
+
+          submitBtn.disabled = true;
+          submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Saving Changes...';
+
+          // Create FormData for file uploads
+          const formData = new FormData();
+          formData.append('userId', '<%= accountInfo._id %>');
+
+          // Add cover photo if selected
+          if (coverPhotoInput.files[0]) {
+            formData.append('coverPhoto', coverPhotoInput.files[0]);
+          }
+
+          // Add profile picture if selected
+          if (profilePicInput.files[0]) {
+            formData.append('profilePic', profilePicInput.files[0]);
+          }
+
+          // Collect regular form data
+          const allForms = document.querySelectorAll('.tab-content form');
+          const userData = {};
+
+          allForms.forEach(form => {
+            const formDataFields = new FormData(form);
+            for (let [key, value] of formDataFields.entries()) {
+              if (value.trim() === "") {
+                console.log(`Skipping empty field ${key}`);
+                continue;
+              }
+
+              if (key.includes('[') && key.includes(']')) {
+                const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+                if (match) {
+                  const [, field, index, subfield] = match;
+                  if (!userData[field]) userData[field] = [];
+                  if (!userData[field][index]) userData[field][index] = {};
+                  userData[field][index][subfield] = value.trim();
+                }
+              } else if (key === 'hobbies' || key === 'languagesSpoken' || key === 'QualitiesThatYouCanBringToYourMarriage' || key === 'qualitiesYouNeedInYourPartner') {
+                userData[key] = value.trim();
+              } else {
+                userData[key] = value.trim();
+              }
+            }
+          });
+
+          // Clean up arrays
+          if (userData.education) {
+            userData.education = userData.education.filter(item =>
+              item && Object.values(item).some(val => val && val.trim())
+            );
+            if (userData.education.length === 0) delete userData.education;
+          }
+
+          if (userData.children) {
+            userData.children = userData.children.filter(item =>
+              item && Object.values(item).some(val => val && val.trim())
+            );
+            if (userData.children.length === 0) delete userData.children;
+          }
+
+          // Add text data to FormData
+          formData.append('userData', JSON.stringify(userData));
+
+          console.log('Sending updated user data with photos');
+
+          // Send to backend with FormData (multipart/form-data)
+          fetch('/admin/user/update', {
+              method: 'POST',
+              body: formData // Don't set Content-Type, browser will set it with boundary
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                showNotification('Profile Updated', 'Your profile has been updated successfully!', 'success');
+                // Clear file inputs after successful upload
+                coverPhotoInput.value = '';
+                profilePicInput.value = '';
+              } else {
+                console.error('Backend error:', data.error);
+                showNotification('Error', data.error || 'Failed to update profile', 'error');
+              }
+            })
+            .catch(error => {
+              console.error('Request error:', error);
+              showNotification('Error', 'Failed to update profile. Please try again.', 'error');
+            })
+            .finally(() => {
+              submitBtn.disabled = false;
+              submitBtn.innerHTML = originalText;
+            });
+        });
+      }
+
     });
   </script>
 </body>
