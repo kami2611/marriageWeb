@@ -90,6 +90,34 @@
       padding: 16px;
       margin-bottom: 12px;
     }
+
+    < !-- Add these styles to existing style section -->.hover-overlay {
+      position: relative;
+    }
+
+    .hover-overlay:hover .absolute {
+      opacity: 1 !important;
+    }
+
+    /* Upload preview styles */
+    .upload-preview {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-preview img {
+      transition: all 0.3s ease;
+    }
+
+    .upload-preview:hover img {
+      transform: scale(1.05);
+    }
+
+    /* File input styling */
+    .file-input-wrapper {
+      position: relative;
+      cursor: pointer;
+    }
   </style>
 </head>
 
@@ -124,6 +152,75 @@
         <p class="text-gray-600">Editing profile for: <strong><%= userToEdit.username %></strong></p>
       </div>
 
+      <!-- ADD THIS ENTIRE SECTION HERE -->
+      <!-- Profile Photo Upload Section -->
+      <div class="bg-white rounded-2xl overflow-hidden material-shadow mb-8">
+        <!-- Cover Photo -->
+        <div class="aspect-[5/2] relative overflow-hidden cursor-pointer hover-overlay" id="coverPhotoContainer">
+          <% if (userToEdit.coverPhoto && userToEdit.coverPhoto.url) { %>
+          <img id="coverPhotoImg" src="<%= userToEdit.coverPhoto.url %>" class="w-full h-full object-cover" alt="Cover Photo">
+          <% } else { %>
+          <!-- Default cover image -->
+          <% if (userToEdit.gender === 'male') { %>
+          <img id="coverPhotoImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(userToEdit.name || userToEdit.username) %>&background=0077be&color=fff&size=800&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Cover Photo">
+          <% } else { %>
+          <img id="coverPhotoImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(userToEdit.name || userToEdit.username) %>&background=e91e63&color=fff&size=800&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Cover Photo">
+          <% } %>
+          <% } %>
+
+          <!-- Hover overlay -->
+          <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+            <div class="text-white text-center">
+              <i class="ri-camera-line text-4xl mb-2"></i>
+              <p class="font-medium">Change Cover Photo</p>
+            </div>
+          </div>
+
+          <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black/60 to-transparent"></div>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="relative -mt-24 px-8 pb-8">
+          <!-- Profile Picture -->
+          <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white material-shadow mx-auto mb-6 cursor-pointer hover-overlay relative" id="profilePicContainer">
+            <% if (userToEdit.profilePic && userToEdit.profilePic.url) { %>
+            <img id="profilePicImg" src="<%= userToEdit.profilePic.url %>" class="w-full h-full object-cover" alt="Profile Picture">
+            <% } else { %>
+            <!-- Default avatar based on gender -->
+            <% if (userToEdit.gender === 'male') { %>
+            <img id="profilePicImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(userToEdit.name || userToEdit.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Profile Picture">
+            <% } else { %>
+            <img id="profilePicImg" src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(userToEdit.name || userToEdit.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="Profile Picture">
+            <% } %>
+            <% } %>
+
+            <!-- Hover overlay for profile pic -->
+            <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-50 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100 rounded-full">
+              <div class="text-white text-center">
+                <i class="ri-camera-line text-2xl mb-1"></i>
+                <p class="text-sm font-medium">Change</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Name and Username -->
+          <div class="text-center mb-6">
+            <h3 class="text-2xl font-bold text-gray-900 mb-2 font-['Playfair_Display']">
+              <%= userToEdit.name || userToEdit.username %>
+            </h3>
+            <p class="text-gray-600 flex items-center justify-center gap-2">
+              <i class="ri-verified-badge-fill text-primary"></i>
+              <span>@<%= userToEdit.username %></span>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hidden file inputs -->
+      <input type="file" id="coverPhotoInput" accept="image/*" style="display: none;">
+      <input type="file" id="profilePicInput" accept="image/*" style="display: none;">
+      <!-- END OF NEW SECTION -->
+
       <!-- Tab Navigation -->
       <div class="bg-white rounded-2xl p-2 material-shadow mb-8">
         <div class="flex flex-wrap gap-2">
@@ -147,6 +244,7 @@
           </button>
         </div>
       </div>
+
 
       <!-- Tab Content -->
       <div class="bg-white rounded-2xl p-8 material-shadow">
@@ -1046,6 +1144,7 @@
       }
 
       // Form submission handling
+      // Form submission handling
       const saveButton = document.querySelector('button[type="submit"]');
       if (saveButton) {
         saveButton.addEventListener('click', function(e) {
@@ -1058,98 +1157,200 @@
           submitBtn.disabled = true;
           submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Saving Changes...';
 
-          // Collect all form data
-          const allForms = document.querySelectorAll('.tab-content form');
-          const userData = {};
-          userData.userId = '<%= userToEdit._id %>'; // Add user ID for backend
+          // Check if we have files to upload
+          const hasFiles = (coverPhotoInput.files[0] || profilePicInput.files[0]);
 
-          allForms.forEach(form => {
-            const formData = new FormData(form);
-            for (let [key, value] of formData.entries()) {
-              if (value.trim() === '') continue; // Skip empty values
+          if (hasFiles) {
+            // Use FormData for file uploads
+            const formData = new FormData();
+            formData.append('userId', '<%= userToEdit._id %>');
 
-              if (key.includes('[') && key.includes(']')) {
-                // Handle nested objects (education, children)
-                const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
-                if (match) {
-                  const [, field, index, subfield] = match;
-                  if (!userData[field]) userData[field] = [];
-                  if (!userData[field][index]) userData[field][index] = {};
-                  userData[field][index][subfield] = value.trim();
-                }
-              } else if (key === 'hobbies' || key === 'languagesSpoken' || key === 'QualitiesThatYouCanBringToYourMarriage' || key === 'qualitiesYouNeedInYourPartner') {
-                // Handle comma-separated arrays
-                userData[key] = value.split(',').map(item => item.trim()).filter(item => item);
-              } else {
-                // Convert string booleans to actual booleans
-                if (value === 'true') {
-                  userData[key] = true;
-                } else if (value === 'false') {
-                  userData[key] = false;
-                } else if (key === 'age' || key === 'height' || key === 'siblings') {
-                  // Convert numeric fields
-                  const num = parseInt(value);
-                  if (!isNaN(num)) userData[key] = num;
-                } else {
-                  userData[key] = value.trim();
-                }
-              }
+            // Add files
+            if (coverPhotoInput.files[0]) {
+              formData.append('coverPhoto', coverPhotoInput.files[0]);
+              console.log('Adding cover photo to upload');
             }
-          });
 
-          // Clean up education and children arrays
-          if (userData.education) {
-            userData.education = userData.education.filter(item =>
-              item && (item.title || item.institute || item.year)
-            );
-            if (userData.education.length === 0) delete userData.education;
-          }
+            if (profilePicInput.files[0]) {
+              formData.append('profilePic', profilePicInput.files[0]);
+              console.log('Adding profile pic to upload');
+            }
 
-          if (userData.children) {
-            userData.children = userData.children.filter(item =>
-              item && (item.name || item.age || item.livingLocation)
-            );
-            // Convert age to number for children
-            userData.children.forEach(child => {
-              if (child.age) {
-                const age = parseInt(child.age);
-                if (!isNaN(age)) child.age = age;
+            // Collect all form data
+            const allForms = document.querySelectorAll('.tab-content form');
+            const userData = {};
+
+            allForms.forEach(form => {
+              const formData = new FormData(form);
+              for (let [key, value] of formData.entries()) {
+                if (value.trim() === '') continue; // Skip empty values
+
+                if (key.includes('[') && key.includes(']')) {
+                  // Handle nested objects (education, children)
+                  const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+                  if (match) {
+                    const [, field, index, subfield] = match;
+                    if (!userData[field]) userData[field] = [];
+                    if (!userData[field][index]) userData[field][index] = {};
+                    userData[field][index][subfield] = value.trim();
+                  }
+                } else if (key === 'hobbies' || key === 'languagesSpoken' || key === 'QualitiesThatYouCanBringToYourMarriage' || key === 'qualitiesYouNeedInYourPartner') {
+                  // Handle comma-separated arrays
+                  userData[key] = value.split(',').map(item => item.trim()).filter(item => item);
+                } else {
+                  // Convert string booleans to actual booleans
+                  if (value === 'true') {
+                    userData[key] = true;
+                  } else if (value === 'false') {
+                    userData[key] = false;
+                  } else if (key === 'age' || key === 'height' || key === 'siblings') {
+                    // Convert numeric fields
+                    const num = parseInt(value);
+                    if (!isNaN(num)) userData[key] = num;
+                  } else {
+                    userData[key] = value.trim();
+                  }
+                }
               }
             });
-            if (userData.children.length === 0) delete userData.children;
-          }
 
-          console.log('Sending updated user data:', userData);
+            // Clean up arrays
+            if (userData.education) {
+              userData.education = userData.education.filter(item =>
+                item && (item.title || item.institute || item.year)
+              );
+              if (userData.education.length === 0) delete userData.education;
+            }
 
-          // Send to backend
-          fetch('/admin/user/update', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(userData)
-            })
-            .then(response => response.json())
-            .then(data => {
-              if (data.success) {
-                showNotification('User Updated', 'User profile has been updated successfully!', 'success');
-              } else {
-                console.error('Backend error:', data.error);
-                showNotification('Error', data.error || 'Failed to update user profile', 'error');
+            if (userData.children) {
+              userData.children = userData.children.filter(item =>
+                item && (item.name || item.age || item.livingLocation)
+              );
+              userData.children.forEach(child => {
+                if (child.age) {
+                  const age = parseInt(child.age);
+                  if (!isNaN(age)) child.age = age;
+                }
+              });
+              if (userData.children.length === 0) delete userData.children;
+            }
+
+            formData.append('userData', JSON.stringify(userData));
+
+            console.log('Sending FormData with files and user data');
+
+            // Send FormData
+            fetch('/admin/user/update', {
+                method: 'POST',
+                body: formData
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  showNotification('User Updated', 'User profile has been updated successfully!', 'success');
+                  // Clear file inputs
+                  coverPhotoInput.value = '';
+                  profilePicInput.value = '';
+                } else {
+                  console.error('Backend error:', data.error);
+                  showNotification('Error', data.error || 'Failed to update user profile', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Request error:', error);
+                showNotification('Error', 'Failed to update user profile. Please try again.', 'error');
+              })
+              .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+              });
+
+          } else {
+            // No files, use existing JSON logic
+            const allForms = document.querySelectorAll('.tab-content form');
+            const userData = {};
+            userData.userId = '<%= userToEdit._id %>';
+
+            allForms.forEach(form => {
+              const formData = new FormData(form);
+              for (let [key, value] of formData.entries()) {
+                if (value.trim() === '') continue;
+
+                if (key.includes('[') && key.includes(']')) {
+                  const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
+                  if (match) {
+                    const [, field, index, subfield] = match;
+                    if (!userData[field]) userData[field] = [];
+                    if (!userData[field][index]) userData[field][index] = {};
+                    userData[field][index][subfield] = value.trim();
+                  }
+                } else if (key === 'hobbies' || key === 'languagesSpoken' || key === 'QualitiesThatYouCanBringToYourMarriage' || key === 'qualitiesYouNeedInYourPartner') {
+                  userData[key] = value.split(',').map(item => item.trim()).filter(item => item);
+                } else {
+                  if (value === 'true') {
+                    userData[key] = true;
+                  } else if (value === 'false') {
+                    userData[key] = false;
+                  } else if (key === 'age' || key === 'height' || key === 'siblings') {
+                    const num = parseInt(value);
+                    if (!isNaN(num)) userData[key] = num;
+                  } else {
+                    userData[key] = value.trim();
+                  }
+                }
               }
-            })
-            .catch(error => {
-              console.error('Request error:', error);
-              showNotification('Error', 'Failed to update user profile. Please try again.', 'error');
-            })
-            .finally(() => {
-              // Re-enable button
-              submitBtn.disabled = false;
-              submitBtn.innerHTML = originalText;
             });
+
+            if (userData.education) {
+              userData.education = userData.education.filter(item =>
+                item && (item.title || item.institute || item.year)
+              );
+              if (userData.education.length === 0) delete userData.education;
+            }
+
+            if (userData.children) {
+              userData.children = userData.children.filter(item =>
+                item && (item.name || item.age || item.livingLocation)
+              );
+              userData.children.forEach(child => {
+                if (child.age) {
+                  const age = parseInt(child.age);
+                  if (!isNaN(age)) child.age = age;
+                }
+              });
+              if (userData.children.length === 0) delete userData.children;
+            }
+
+            console.log('Sending JSON data without files:', userData);
+
+            // Send JSON
+            fetch('/admin/user/update', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(userData)
+              })
+              .then(response => response.json())
+              .then(data => {
+                if (data.success) {
+                  showNotification('User Updated', 'User profile has been updated successfully!', 'success');
+                } else {
+                  console.error('Backend error:', data.error);
+                  showNotification('Error', data.error || 'Failed to update user profile', 'error');
+                }
+              })
+              .catch(error => {
+                console.error('Request error:', error);
+                showNotification('Error', 'Failed to update user profile. Please try again.', 'error');
+              })
+              .finally(() => {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+              });
+          }
         });
       }
-
       // Logout functionality
       document.getElementById('logoutBtn').addEventListener('click', function() {
         if (confirm('Are you sure you want to logout?')) {
@@ -1187,6 +1388,76 @@
       // Initialize the form
       showTab(0);
       loadUserData();
+
+      const coverPhotoContainer = document.getElementById('coverPhotoContainer');
+      const profilePicContainer = document.getElementById('profilePicContainer');
+      const coverPhotoInput = document.getElementById('coverPhotoInput');
+      const profilePicInput = document.getElementById('profilePicInput');
+      const coverPhotoImg = document.getElementById('coverPhotoImg');
+      const profilePicImg = document.getElementById('profilePicImg');
+
+      // Cover photo upload
+      if (coverPhotoContainer && coverPhotoInput) {
+        coverPhotoContainer.addEventListener('click', function() {
+          coverPhotoInput.click();
+        });
+
+        coverPhotoInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+              showNotification('Invalid File', 'Please select a valid image file', 'error');
+              return;
+            }
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+              showNotification('File Too Large', 'Please select an image smaller than 5MB', 'error');
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              coverPhotoImg.src = e.target.result;
+              showNotification('Preview Updated', 'Cover photo preview updated. Click "Save Changes" to upload.', 'success');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
+      // Profile picture upload
+      if (profilePicContainer && profilePicInput) {
+        profilePicContainer.addEventListener('click', function() {
+          profilePicInput.click();
+        });
+
+        profilePicInput.addEventListener('change', function(e) {
+          const file = e.target.files[0];
+          if (file) {
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+              showNotification('Invalid File', 'Please select a valid image file', 'error');
+              return;
+            }
+
+            // Validate file size (5MB limit)
+            if (file.size > 5 * 1024 * 1024) {
+              showNotification('File Too Large', 'Please select an image smaller than 5MB', 'error');
+              return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              profilePicImg.src = e.target.result;
+              showNotification('Preview Updated', 'Profile picture preview updated. Click "Save Changes" to upload.', 'success');
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+      }
+
     });
   </script>
 </body>
