@@ -81,55 +81,7 @@
 </head>
 
 <body class="bg-gray-50 font-['Roboto']">
-  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
-    <div class="flex items-center justify-between px-6 h-16">
-      <div class="flex items-center">
-        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
-          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
-            D'amour Muslim
-          </a>
-        </h1>
-      </div>
-      <div class="flex items-center gap-4">
-        <% if (user) { %>
-        <!-- Logged in user dropdown -->
-        <div class="relative">
-          <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
-            <i class="ri-user-line"></i>
-            <span>Account</span>
-            <i class="ri-arrow-down-s-line"></i>
-          </button>
-          <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
-            <% if (user.isAdmin) { %>
-            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-              <i class="ri-dashboard-line text-primary"></i>
-              <span>Dashboard</span>
-            </a>
-            <% } else { %>
-            <a href="/account" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-              <i class="ri-user-settings-line text-primary"></i>
-              <span>My Account</span>
-            </a>
-            <% } %>
-            <hr class="my-2 border-gray-100">
-            <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
-              <i class="ri-logout-box-line"></i>
-              <span>Logout</span>
-            </a>
-          </div>
-        </div>
-        <% } else { %>
-        <!-- Not logged in - show login/signup buttons -->
-        <a href="/login" class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
-          Login
-        </a>
-        <a href="/register" class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
-          Sign Up
-        </a>
-        <% } %>
-      </div>
-    </div>
-  </header>
+  <%- include('partials/header') %>
 
   <main class="pt-24 pb-16 min-h-screen">
     <div class="max-w-6xl mx-auto px-6">
@@ -196,68 +148,7 @@
     </div>
   </main>
 
-  <footer class="gradient-bg text-white">
-    <div class="max-w-6xl mx-auto px-6 py-12">
-      <div class="grid md:grid-cols-3 gap-8 mb-8">
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
-          <div class="flex gap-4">
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-facebook-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-instagram-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-twitter-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-youtube-fill ri-lg"></i>
-            </a>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-mail-line"></i>
-              </div>
-              <span>damourmuslim@gmail.com</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-phone-line"></i>
-              </div>
-              <span>+447454516156</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-map-pin-line"></i>
-              </div>
-              <span>London, UK</span>
-            </div>
-          </div>
-        </div>
-
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
-          <div class="space-y-2">
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
-          </div>
-        </div>
-      </div>
-
-      <div class="border-t border-white border-opacity-20 pt-8 text-center">
-        <p class="text-pink-100">&copy; 2025 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
-      </div>
-    </div>
-  </footer>
+  <%- include('partials/footer') %>
 
   <script id="ripple-effects">
     document.addEventListener('DOMContentLoaded', function() {
@@ -286,36 +177,6 @@
     });
   </script>
 
-  <script id="container-interactions">
-    document.addEventListener('DOMContentLoaded', function() {
-      // Remove the JavaScript click handlers since we're using anchor tags now
-      // The navigation will be handled by the href attributes
-    });
-  </script>
-
-  <script id="dropdown-interactions">
-    document.addEventListener('DOMContentLoaded', function() {
-      const dropdownButton = document.getElementById('accountDropdown');
-      const dropdownMenu = document.getElementById('dropdownMenu');
-
-      if (dropdownButton && dropdownMenu) {
-        dropdownButton.addEventListener('click', function(e) {
-          e.stopPropagation();
-          dropdownMenu.classList.toggle('hidden');
-        });
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', function() {
-          dropdownMenu.classList.add('hidden');
-        });
-
-        // Prevent dropdown from closing when clicking inside it
-        dropdownMenu.addEventListener('click', function(e) {
-          e.stopPropagation();
-        });
-      }
-    });
-  </script>
 </body>
 
 </html>

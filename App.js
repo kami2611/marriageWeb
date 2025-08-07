@@ -486,12 +486,6 @@ app.get("/account/acceptedRequests", isLoggedIn, async (req, res) => {
   const acceptedlikeRequests = beinglikeduser.likeRequests;
   res.render("account/acceptedLikeRequests", { acceptedlikeRequests });
 });
-app.get("/account/yourRequests", isLoggedIn, async (req, res) => {
-  const requestsSentByYou = await Request.find({
-    from: req.session.userId,
-  }).populate("to");
-  res.render("account/yourRequests", { requestsSentByYou });
-});
 
 app.post("/requests/:id/accept", isLoggedIn, async (req, res) => {
   try {
@@ -799,6 +793,7 @@ app.get("/profiles/:id", async (req, res) => {
       hasalreadysentrequest,
       user: req.session.user,
       isAdmin: req.session.isAdmin,
+      filters: null,
     });
   } catch (err) {
     res.status(500).send("Server error");

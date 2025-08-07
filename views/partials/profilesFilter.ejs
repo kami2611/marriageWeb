@@ -238,9 +238,8 @@
         // Debug log
         console.log('Filter params:', params.toString());
 
-        // Redirect with filters
-        const currentPath = window.location.pathname;
-        const newUrl = `${currentPath}?${params.toString()}`;
+        // **FIX**: Always redirect to /profiles page for filtering
+        const newUrl = `/profiles?${params.toString()}`;
         window.location.href = newUrl;
       });
     }
@@ -248,8 +247,8 @@
     // Clear all filters
     if (clearFiltersBtn) {
       clearFiltersBtn.addEventListener('click', function() {
-        const currentPath = window.location.pathname;
-        window.location.href = currentPath;
+        // **FIX**: Always redirect to /profiles page when clearing
+        window.location.href = '/profiles';
       });
     }
   });

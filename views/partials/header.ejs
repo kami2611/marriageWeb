@@ -1,0 +1,159 @@
+<header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+  <div class="flex items-center justify-between px-6 h-16">
+    <div class="flex items-center">
+      <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+        <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+          D'amour Muslim
+        </a>
+      </h1>
+    </div>
+    <nav class="hidden md:flex items-center gap-8">
+      <a href="/profiles?gender=male" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300 font-medium">
+        <i class="ri-user-line"></i>
+        <span>Men</span>
+      </a>
+      <a href="/profiles?gender=female" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300 font-medium">
+        <i class="ri-user-3-line"></i>
+        <span>Women</span>
+      </a>
+    </nav>
+    <div class="flex items-center gap-4">
+      <% if (user) { %>
+      <!-- Logged in user dropdown -->
+      <div class="relative">
+        <button id="notificationDropdown" class="p-2 text-gray-700 hover:text-primary transition-all duration-300 relative">
+          <i class="ri-notification-line text-xl"></i>
+          <!-- Notification badge -->
+          <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">0</span>
+        </button>
+
+        <!-- Notification Dropdown -->
+        <div id="notificationMenu" class="absolute right-0 mt-2 w-80 bg-white rounded-xl material-shadow border border-gray-100 py-4 hidden z-50">
+          <div class="px-4 pb-3 border-b border-gray-100">
+            <h3 class="text-lg font-semibold text-gray-800 font-['Playfair_Display']">Notifications</h3>
+          </div>
+          <div class="px-4 py-8 text-center">
+            <div class="mb-4">
+              <i class="ri-notification-off-line text-4xl text-gray-300"></i>
+            </div>
+            <p class="text-gray-500 font-medium">No new notifications</p>
+            <p class="text-sm text-gray-400 mt-1">We'll notify you when something new arrives</p>
+          </div>
+        </div>
+        <!-- Notification backdrop overlay -->
+        <div id="notificationBackdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300"></div>
+      </div>
+      <div class="relative">
+        <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
+          <i class="ri-user-line"></i>
+          <span>Account</span>
+          <i class="ri-arrow-down-s-line"></i>
+        </button>
+        <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
+          <% if (user.isAdmin) { %>
+          <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+            <i class="ri-dashboard-line text-primary"></i>
+            <span>Dashboard</span>
+          </a>
+          <% } else { %>
+
+          <a href="/account" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
+            <i class="ri-user-settings-line text-primary"></i>
+            <span>My Account</span>
+          </a>
+          <% } %>
+          <hr class="my-2 border-gray-100">
+          <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
+            <i class="ri-logout-box-line"></i>
+            <span>Logout</span>
+          </a>
+        </div>
+      </div>
+      <% } else { %>
+      <!-- Not logged in - show login/signup buttons -->
+      <a href="/login" class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
+        Login
+      </a>
+      <a href="/register" class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+        Sign Up
+      </a>
+      <% } %>
+    </div>
+  </div>
+</header>
+
+<!-- Header dropdown JavaScript -->
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const dropdownButton = document.getElementById('accountDropdown');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const notificationButton = document.getElementById('notificationDropdown');
+    const notificationMenu = document.getElementById('notificationMenu');
+    const notificationBackdrop = document.getElementById('notificationBackdrop');
+
+    // Account dropdown functionality
+    if (dropdownButton && dropdownMenu) {
+      dropdownButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+        // Close notification dropdown if open
+        if (notificationMenu) {
+          notificationMenu.classList.add('hidden');
+          notificationBackdrop.classList.add('hidden');
+        }
+      });
+
+      // Close dropdown when clicking outside
+      document.addEventListener('click', function() {
+        dropdownMenu.classList.add('hidden');
+      });
+
+      // Prevent dropdown from closing when clicking inside it
+      dropdownMenu.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+    }
+
+    // Notification dropdown functionality
+    if (notificationButton && notificationMenu && notificationBackdrop) {
+      notificationButton.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isHidden = notificationMenu.classList.contains('hidden');
+
+        if (isHidden) {
+          // Show notification dropdown
+          notificationMenu.classList.remove('hidden');
+          notificationBackdrop.classList.remove('hidden');
+          // Close account dropdown if open
+          if (dropdownMenu) {
+            dropdownMenu.classList.add('hidden');
+          }
+        } else {
+          // Hide notification dropdown
+          notificationMenu.classList.add('hidden');
+          notificationBackdrop.classList.add('hidden');
+        }
+      });
+
+      // Close notification dropdown when clicking backdrop
+      notificationBackdrop.addEventListener('click', function() {
+        notificationMenu.classList.add('hidden');
+        notificationBackdrop.classList.add('hidden');
+      });
+
+      // Prevent dropdown from closing when clicking inside it
+      notificationMenu.addEventListener('click', function(e) {
+        e.stopPropagation();
+      });
+
+      // Close all dropdowns when pressing Escape
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+          notificationMenu.classList.add('hidden');
+          notificationBackdrop.classList.add('hidden');
+          dropdownMenu.classList.add('hidden');
+        }
+      });
+    }
+  });
+</script>

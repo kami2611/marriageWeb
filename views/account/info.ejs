@@ -79,8 +79,8 @@
     }
 
     .tab-active {
-      background-color: #E91E63;
-      color: white;
+      background-color: #E91E63 !important;
+      color: white !important;
     }
 
     .child-item,
@@ -92,8 +92,8 @@
     }
 
     .main-nav-active {
-      background-color: #E91E63;
-      color: white;
+      background-color: #E91E63 !important;
+      color: white !important;
     }
 
     .main-section {
@@ -131,59 +131,36 @@
       position: relative;
       cursor: pointer;
     }
+
+    .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Smooth scroll behavior */
+    .overflow-x-auto {
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    /* Ensure minimum button width on mobile */
+    @media (max-width: 768px) {
+
+      .main-nav-btn,
+      .tab-btn {
+        min-width: 120px;
+        flex-shrink: 0;
+      }
+    }
   </style>
 </head>
 
 <body class="bg-gray-50 font-['Roboto']">
-  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
-    <div class="flex items-center justify-between px-6 h-16">
-      <div class="flex items-center">
-        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
-          <a href="/" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
-            D'amour Muslim
-          </a>
-        </h1>
-      </div>
-      <div class="flex items-center gap-4">
-        <% if (accountInfo) { %>
-        <!-- Logged in user dropdown -->
-        <div class="relative">
-          <button id="accountDropdown" class="flex items-center gap-2 px-4 py-2 text-gray-700 hover:text-primary transition-all duration-300">
-            <i class="ri-user-line"></i>
-            <span>Account</span>
-            <i class="ri-arrow-down-s-line"></i>
-          </button>
-          <div id="dropdownMenu" class="absolute right-0 mt-2 w-48 bg-white rounded-xl material-shadow border border-gray-100 py-2 hidden">
-            <% if (accountInfo.isAdmin) { %>
-            <a href="/admin/dashboard" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-              <i class="ri-dashboard-line text-primary"></i>
-              <span>Dashboard</span>
-            </a>
-            <% } else { %>
-            <a href="/account" class="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-              <i class="ri-user-settings-line text-primary"></i>
-              <span>My Account</span>
-            </a>
-            <% } %>
-            <hr class="my-2 border-gray-100">
-            <a href="/logout" class="flex items-center gap-3 px-4 py-2 text-red-600 hover:bg-red-50 transition-colors duration-200">
-              <i class="ri-logout-box-line"></i>
-              <span>Logout</span>
-            </a>
-          </div>
-        </div>
-        <% } else { %>
-        <!-- Not logged in - show login/signup buttons -->
-        <a href="/login" class="px-6 py-2 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap ripple">
-          Login
-        </a>
-        <a href="/register" class="px-6 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
-          Sign Up
-        </a>
-        <% } %>
-      </div>
-    </div>
-  </header>
+  <%- include('../partials/header') %>
 
   <main class="pt-24 pb-16 min-h-screen">
     <div class="max-w-6xl mx-auto px-6">
@@ -934,6 +911,7 @@
       </div>
     </div>
   </main>
+  <%- include('../partials/footer') %>
 
 
   <!-- filepath: c:\Users\Kami\Desktop\marriageWeb\views\account\info.ejs -->
@@ -943,23 +921,6 @@
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Initialize dropdown functionality
-      const accountDropdown = document.getElementById('accountDropdown');
-      const dropdownMenu = document.getElementById('dropdownMenu');
-
-      if (accountDropdown && dropdownMenu) {
-        accountDropdown.addEventListener('click', function(e) {
-          e.stopPropagation();
-          dropdownMenu.classList.toggle('hidden');
-        });
-
-        document.addEventListener('click', function() {
-          dropdownMenu.classList.add('hidden');
-        });
-
-        dropdownMenu.addEventListener('click', function(e) {
-          e.stopPropagation();
-        });
-      }
 
       // Tab functionality
       const tabButtons = document.querySelectorAll('.tab-btn');
