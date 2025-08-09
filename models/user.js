@@ -262,5 +262,14 @@ const userSchema = new mongoose.Schema({
   willingToConsiderANonUkCitizen: {
     type: Boolean, // true = yes, false = no
   },
+  registrationSource: {
+    type: String,
+    enum: ["register", "admin"],
+    default: "register",
+  },
+  registeredAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 module.exports = mongoose.model("User", userSchema);

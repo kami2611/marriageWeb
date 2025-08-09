@@ -85,6 +85,15 @@
     .profile-card:hover {
       transform: translateY(-2px);
     }
+
+    .stats-filter-card.active {
+      border: 2px solid #E91E63;
+      box-shadow: 0 4px 16px rgba(233, 30, 99, 0.15);
+    }
+
+    .stats-filter-card:hover {
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 
@@ -143,8 +152,10 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-6 material-shadow">
+      <!-- Stats Cards -->
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card active" data-filter="all">
           <div class="flex items-center">
             <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
               <i class="ri-user-line text-xl"></i>
@@ -155,46 +166,36 @@
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-xl p-6 material-shadow">
+
+        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card" data-filter="admin">
           <div class="flex items-center">
-            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600">
-              <i class="ri-user-heart-line text-xl"></i>
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-purple-100 text-purple-600">
+              <i class="ri-admin-line text-xl"></i>
             </div>
             <div class="ml-4">
-              <p class="text-sm text-gray-500">Active Profiles</p>
-              <p class="text-2xl font-bold text-gray-900"><%= stats.activeUsers %></p>
+              <p class="text-sm text-gray-500">By Admin</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.registrationSources.byAdmin %></p>
             </div>
           </div>
         </div>
-        <div class="bg-white rounded-xl p-6 material-shadow">
+
+        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card" data-filter="register">
           <div class="flex items-center">
-            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-primary/10 text-primary">
-              <i class="ri-heart-line text-xl"></i>
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-orange-100 text-orange-600">
+              <i class="ri-user-smile-line text-xl"></i>
             </div>
             <div class="ml-4">
-              <p class="text-sm text-gray-500">Matches Made</p>
-              <p class="text-2xl font-bold text-gray-900"><%= stats.matchesMade %></p>
-            </div>
-          </div>
-        </div>
-        <div class="bg-white rounded-xl p-6 material-shadow">
-          <div class="flex items-center">
-            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
-              <i class="ri-user-add-line text-xl"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm text-gray-500">New This Month</p>
-              <p class="text-2xl font-bold text-gray-900"><%= stats.newThisMonth %></p>
+              <p class="text-sm text-gray-500">Self Registered</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.registrationSources.bySelf %></p>
             </div>
           </div>
         </div>
       </div>
-
       <!-- User Profiles Grid -->
       <div id="profileGrid" class="grid grid-cols-4 gap-6">
         <% if (users && users.length > 0) { %>
         <% users.forEach(user => { %>
-        <div class="profile-card bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover" data-username="<%= user.username %>" data-name="<%= user.name || user.username %>">
+        <div class="profile-card bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover" data-username="<%= user.username %>" data-name="<%= user.name || user.username %>" data-registration-source="<%= user.registrationSource || 'unknown' %>">
           <div class="aspect-[4/5] overflow-hidden">
             <% if (user.profilePic && user.profilePic.url) { %>
             <img src="<%= user.profilePic.url %>" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
@@ -210,24 +211,22 @@
           <div class="p-4">
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-lg font-semibold text-gray-900">
-                <%=  user.username %>
+                <%=  user.name || user.username %>
               </h3>
               <% 
-                    // Determine user status based on profile completeness
-                    let status = 'Active';
-                    let statusClass = 'bg-green-100 text-green-600';
+                    // Show registration source instead of status
+                    let sourceText = 'Unknown';
+                    let sourceClass = 'bg-gray-100 text-gray-600';
                     
-                    if (!user.name || !user.age || !user.city) {
-                      status = 'Pending';
-                      statusClass = 'bg-yellow-100 text-yellow-600';
-                    }
-                    
-                    if (!user.contact && !user.aboutMe) {
-                      status = 'Inactive';
-                      statusClass = 'bg-red-100 text-red-600';
+                    if (user.registrationSource === 'admin') {
+                      sourceText = 'by Admin';
+                      sourceClass = 'bg-purple-100 text-purple-600';
+                    } else if (user.registrationSource === 'register') {
+                      sourceText = 'Self';
+                      sourceClass = 'bg-orange-100 text-orange-600';
                     }
                   %>
-              <span class="px-2 py-1 <%= statusClass %> text-xs rounded-full"><%= status %></span>
+              <span class="px-2 py-1 <%= sourceClass %> text-xs rounded-full"><%= sourceText %></span>
             </div>
             <div class="flex items-center text-gray-600 mb-3">
               <i class="ri-map-pin-line mr-2"></i>
@@ -412,10 +411,12 @@
         });
       }
 
-      // Search functionality
+      // **SINGLE DECLARATION** - Declare once and use throughout
       const searchInput = document.getElementById('searchInput');
       const profileCards = document.querySelectorAll('.profile-card');
+      const statsFilterCards = document.querySelectorAll('.stats-filter-card');
 
+      // Search functionality
       if (searchInput) {
         searchInput.addEventListener('input', function() {
           const searchTerm = this.value.toLowerCase();
@@ -523,6 +524,104 @@
           }
         });
       });
+
+      // Stats card filter functionality
+      statsFilterCards.forEach(card => {
+        card.addEventListener('click', function() {
+          const filter = this.getAttribute('data-filter');
+
+          // Update active state
+          statsFilterCards.forEach(c => c.classList.remove('active'));
+          this.classList.add('active');
+
+          // Filter profile cards
+          let visibleCount = 0;
+          profileCards.forEach(profileCard => {
+            const registrationSource = profileCard.getAttribute('data-registration-source');
+            let shouldShow = false;
+
+            switch (filter) {
+              case 'all':
+                shouldShow = true;
+                break;
+              case 'admin':
+                shouldShow = registrationSource === 'admin';
+                break;
+              case 'register':
+                shouldShow = registrationSource === 'register';
+                break;
+              default:
+                shouldShow = true;
+            }
+
+            if (shouldShow) {
+              profileCard.style.display = 'block';
+              visibleCount++;
+            } else {
+              profileCard.style.display = 'none';
+            }
+          });
+
+          // Update showing count or add filter indicator
+          updateFilterIndicator(filter, visibleCount);
+        });
+      });
+
+      // Function to show filter status
+      function updateFilterIndicator(filter, count) {
+        // Remove existing filter indicator
+        const existingIndicator = document.getElementById('filter-indicator');
+        if (existingIndicator) {
+          existingIndicator.remove();
+        }
+
+        // Add new filter indicator
+        if (filter !== 'all') {
+          const indicator = document.createElement('div');
+          indicator.id = 'filter-indicator';
+          indicator.className = 'bg-primary text-white px-4 py-2 rounded-full text-sm mb-4 inline-flex items-center gap-2';
+
+          let filterText = '';
+          switch (filter) {
+            case 'admin':
+              filterText = 'Admin Added Users';
+              break;
+            case 'register':
+              filterText = 'Self Registered Users';
+              break;
+          }
+
+          indicator.innerHTML = `
+            <i class="ri-filter-line"></i>
+            <span>Showing ${filterText} (${count} users)</span>
+            <button onclick="clearFilter()" class="ml-2 hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-all duration-200">
+              <i class="ri-close-line"></i>
+            </button>
+          `;
+
+          // Insert before profile grid
+          const profileGrid = document.getElementById('profileGrid');
+          profileGrid.parentNode.insertBefore(indicator, profileGrid);
+        }
+      }
+
+      // Global function to clear filter
+      window.clearFilter = function() {
+        // Reset to "Total Users" (all)
+        statsFilterCards.forEach(c => c.classList.remove('active'));
+        statsFilterCards[0].classList.add('active'); // First card is "Total Users"
+
+        // Show all profile cards
+        profileCards.forEach(card => {
+          card.style.display = 'block';
+        });
+
+        // Remove filter indicator
+        const indicator = document.getElementById('filter-indicator');
+        if (indicator) {
+          indicator.remove();
+        }
+      };
 
       // Notification function
       function showNotification(title, message, type = 'info') {

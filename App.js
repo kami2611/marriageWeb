@@ -307,25 +307,6 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
   }
 });
 
-// app.use((req, res, next) => {
-//   const openPaths = [
-//     "/account/info",
-//     "/logout",
-//     "/register",
-//     "/login",
-//     "/account/update",
-//   ];
-//   if (
-//     openPaths.includes(req.path) ||
-//     req.path.startsWith("/css") ||
-//     req.path.startsWith("/js") ||
-//     req.path.startsWith("/imgs")
-//   ) {
-//     return next();
-//   }
-//   requireProfileComplete(req, res, next);
-// });
-
 app.post("/register", async (req, res) => {
   console.log("Register request body:", req.body); // Debug log
 
@@ -374,6 +355,7 @@ app.post("/register", async (req, res) => {
       username,
       password: hashedPassword,
       gender, // Save the gender immediately
+      registrationSource: "register", // Set registration source
     });
     await newUser.save();
     req.session.userId = newUser._id;
@@ -997,41 +979,85 @@ app.get("/admin/addUser", (req, res) => {
   if (!req.session.isAdmin) return res.redirect("/admin");
   res.render("admin/addUser");
 });
+// app.get("/admin/dashboard", async (req, res) => {
+//   if (!req.session.isAdmin) {
+//     return res.redirect("/admin");
+//   }
+
+//   try {
+//     // Get all users
+//     const users = await User.find({}).sort({ createdAt: -1, _id: -1 });
+
+//     // Calculate stats
+//     const totalUsers = users.length;
+//     const activeUsers = users.filter(
+//       (user) =>
+//         user.name && user.age && user.city && (user.contact || user.aboutMe)
+//     ).length;
+
+//     // Count users created this month
+//     const startOfMonth = new Date();
+//     startOfMonth.setDate(1);
+//     startOfMonth.setHours(0, 0, 0, 0);
+//     const newThisMonth = users.filter(
+//       (user) => user.createdAt && new Date(user.createdAt) >= startOfMonth
+//     ).length;
+//     const byAdmin = users.filter(
+//       (user) => user.registrationSource === "admin"
+//     ).length;
+//     const bySelf = users.filter(
+//       (user) => user.registrationSource === "register"
+//     ).length;
+//     const byUnknown = users.filter(
+//       (user) =>
+//         !user.registrationSource || user.registrationSource === "unknown"
+//     ).length;
+//     // Count accepted requests (matches)
+//     const acceptedRequests = await Request.countDocuments({
+//       status: "accepted",
+//     });
+//     const matchesMade = Math.floor(acceptedRequests / 2); // Each match involves 2 people
+
+//     const stats = {
+//       totalUsers,
+//       activeUsers,
+//       matchesMade,
+//       newThisMonth,
+//     };
+
+//     res.render("admin/dashboard", { users, stats });
+//   } catch (error) {
+//     console.error("Dashboard error:", error);
+//     res.render("admin/dashboard", {
+//       users: [],
+//       stats: { totalUsers: 0, activeUsers: 0, matchesMade: 0, newThisMonth: 0 },
+//     });
+//   }
+// });
 app.get("/admin/dashboard", async (req, res) => {
   if (!req.session.isAdmin) {
     return res.redirect("/admin");
   }
 
   try {
-    // Get all users
+    // Get all users with registration source
     const users = await User.find({}).sort({ createdAt: -1, _id: -1 });
 
-    // Calculate stats
+    // Calculate basic stats
     const totalUsers = users.length;
-    const activeUsers = users.filter(
-      (user) =>
-        user.name && user.age && user.city && (user.contact || user.aboutMe)
+    const byAdmin = users.filter(
+      (user) => user.registrationSource === "admin"
     ).length;
-
-    // Count users created this month
-    const startOfMonth = new Date();
-    startOfMonth.setDate(1);
-    startOfMonth.setHours(0, 0, 0, 0);
-    const newThisMonth = users.filter(
-      (user) => user.createdAt && new Date(user.createdAt) >= startOfMonth
+    const bySelf = users.filter(
+      (user) => user.registrationSource === "register"
     ).length;
-
-    // Count accepted requests (matches)
-    const acceptedRequests = await Request.countDocuments({
-      status: "accepted",
-    });
-    const matchesMade = Math.floor(acceptedRequests / 2); // Each match involves 2 people
 
     const stats = {
       totalUsers,
-      activeUsers,
-      matchesMade,
-      newThisMonth,
+      registrationSources: {
+        byAdmin,
+        bySelf,
+      },
     };
 
     res.render("admin/dashboard", { users, stats });
@@ -1039,7 +1065,13 @@ app.get("/admin/dashboard", async (req, res) => {
     console.error("Dashboard error:", error);
     res.render("admin/dashboard", {
       users: [],
-      stats: { totalUsers: 0, activeUsers: 0, matchesMade: 0, newThisMonth: 0 },
+      stats: {
+        totalUsers: 0,
+        registrationSources: {
+          byAdmin: 0,
+          bySelf: 0,
+        },
+      },
     });
   }
 });
@@ -1080,260 +1112,7 @@ app.post("/admin/user/:id/delete", async (req, res) => {
     res.status(500).json({ error: "Delete failed" });
   }
 });
-// app.post("/admin/user/add", async (req, res) => {
-//   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
-//   console.log("Received user data:", req.body); // Debug log
-
-//   const {
-//     username, // This should come from frontend now
-//     password,
-//     willingToConsiderANonUkCitizen,
-//     name,
-//     work,
-//     age,
-//     gender,
-//     country,
-//     state,
-//     city,
-//     contact,
-//     religion,
-//     caste,
-//     adress,
-//     eyeColor,
-//     hairColor,
-//     complexion,
-//     build,
-//     height,
-//     languagesSpoken,
-//     education,
-//     nationality,
-//     ethnicity,
-//     maritalStatus,
-//     disability,
-//     smoker,
-//     bornMuslim,
-//     islamicSect,
-//     prays,
-//     celebratesMilaad,
-//     celebrateKhatams,
-//     islamIsImportantToMeInfo,
-//     acceptSomeoneWithChildren,
-//     acceptADivorcedPerson,
-//     agreesWithPolygamy,
-//     acceptAWidow,
-//     AcceptSomeoneWithBeard,
-//     AcceptSomeoneWithHijab,
-//     ConsiderARevert,
-//     livingArrangementsAfterMarriage,
-//     futurePlans,
-//     describeNature,
-//     QualitiesThatYouCanBringToYourMarriage,
-//     fatherName,
-//     motherName,
-//     fatherProfession,
-//     aboutMe,
-//     hobbies,
-//     willingToRelocate,
-//     preferredAgeRange,
-//     preferredHeightRange,
-//     preferredCaste,
-//     preferredEthnicity,
-//     allowParnterToWork,
-//     allowPartnerToStudy,
-//     acceptSomeoneInOtherCountry,
-//     qualitiesYouNeedInYourPartner,
-//     lookingForASpouseThatIs,
-//     willingToSharePhotosUponRequest,
-//     willingToMeetUpOutside,
-//     whoCompletedProfile,
-//     waliMyContactDetails,
-//     siblings,
-//     birthPlace,
-//     children,
-//     anySpecialInformationPeopleShouldKnow,
-//   } = req.body;
-
-//   // Validate required fields
-//   if (!password) {
-//     return res.json({ error: "Password is required" });
-//   }
-
-//   if (!username) {
-//     return res.json({
-//       error: "Username is required (should be auto-generated)",
-//     });
-//   }
-
-//   try {
-//     // Check if username already exists
-//     const existing = await User.findOne({ username });
-//     if (existing) {
-//       return res.json({ error: "Username already exists" });
-//     }
-
-//     // Hash password
-//     const hashedPassword = await bcrypt.hash(password, 12);
-
-//     // Process arrays (they should already be arrays from frontend)
-//     const languagesSpokenArr = Array.isArray(languagesSpoken)
-//       ? languagesSpoken
-//       : [];
-//     const qualitiesArr = Array.isArray(QualitiesThatYouCanBringToYourMarriage)
-//       ? QualitiesThatYouCanBringToYourMarriage
-//       : [];
-//     const hobbiesArr = Array.isArray(hobbies) ? hobbies : [];
-//     const qualitiesNeededArr = Array.isArray(qualitiesYouNeedInYourPartner)
-//       ? qualitiesYouNeedInYourPartner
-//       : [];
-
-//     // Process education and children arrays (they should already be properly formatted)
-//     const educationArr = Array.isArray(education) ? education : [];
-//     const childrenArr = Array.isArray(children) ? children : [];
-
-//     // Create new user object
-//     const userData = {
-//       username,
-//       password: hashedPassword,
-//       gender,
-//     };
-
-//     // Add optional fields only if they exist and are not empty
-//     if (name) userData.name = name;
-//     if (work) userData.work = work;
-//     if (age) userData.age = parseInt(age);
-//     if (country) userData.country = country;
-//     if (state) userData.state = state;
-//     if (city) userData.city = city;
-//     if (contact) userData.contact = contact;
-//     if (religion) userData.religion = religion;
-//     if (caste) userData.caste = caste;
-//     if (adress) userData.adress = adress;
-//     if (eyeColor) userData.eyeColor = eyeColor;
-//     if (hairColor) userData.hairColor = hairColor;
-//     if (complexion) userData.complexion = complexion;
-//     if (build) userData.build = build;
-//     if (height) userData.height = parseInt(height);
-//     if (nationality) userData.nationality = nationality;
-//     if (ethnicity) userData.ethnicity = ethnicity;
-//     if (islamicSect) userData.islamicSect = islamicSect;
-//     if (islamIsImportantToMeInfo)
-//       userData.islamIsImportantToMeInfo = islamIsImportantToMeInfo;
-//     if (livingArrangementsAfterMarriage)
-//       userData.livingArrangementsAfterMarriage =
-//         livingArrangementsAfterMarriage;
-//     if (futurePlans) userData.futurePlans = futurePlans;
-//     if (describeNature) userData.describeNature = describeNature;
-//     if (fatherName) userData.fatherName = fatherName;
-//     if (motherName) userData.motherName = motherName;
-//     if (fatherProfession) userData.fatherProfession = fatherProfession;
-//     if (aboutMe) userData.aboutMe = aboutMe;
-//     if (preferredAgeRange) userData.preferredAgeRange = preferredAgeRange;
-//     if (preferredHeightRange)
-//       userData.preferredHeightRange = preferredHeightRange;
-//     if (preferredCaste) userData.preferredCaste = preferredCaste;
-//     if (preferredEthnicity) userData.preferredEthnicity = preferredEthnicity;
-//     if (lookingForASpouseThatIs)
-//       userData.lookingForASpouseThatIs = lookingForASpouseThatIs;
-//     if (whoCompletedProfile) userData.whoCompletedProfile = whoCompletedProfile;
-//     if (waliMyContactDetails)
-//       userData.waliMyContactDetails = waliMyContactDetails;
-//     if (birthPlace) userData.birthPlace = birthPlace;
-//     if (anySpecialInformationPeopleShouldKnow)
-//       userData.anySpecialInformationPeopleShouldKnow =
-//         anySpecialInformationPeopleShouldKnow;
-//     if (disability && disability !== "no") userData.disability = disability;
-
-//     // Handle numeric fields
-//     if (siblings !== undefined && siblings !== "")
-//       userData.siblings = parseInt(siblings) || 0;
-
-//     // Handle boolean fields - convert properly
-//     if (maritalStatus && maritalStatus !== "N/A") {
-//       userData.maritalStatus = maritalStatus;
-//     }
-//     if (smoker !== undefined && smoker !== "N/A") userData.smoker = smoker;
-//     if (bornMuslim !== undefined && bornMuslim !== "N/A")
-//       userData.bornMuslim = bornMuslim;
-//     if (prays !== undefined && prays !== "N/A") userData.prays = prays;
-//     if (celebratesMilaad !== undefined && celebratesMilaad !== "N/A")
-//       userData.celebratesMilaad = celebratesMilaad;
-//     if (celebrateKhatams !== undefined && celebrateKhatams !== "N/A")
-//       userData.celebrateKhatams = celebrateKhatams;
-//     if (willingToRelocate !== undefined && willingToRelocate !== "N/A")
-//       userData.willingToRelocate = willingToRelocate;
-//     if (allowParnterToWork !== undefined && allowParnterToWork !== "N/A")
-//       userData.allowParnterToWork = allowParnterToWork;
-//     if (allowPartnerToStudy !== undefined && allowPartnerToStudy !== "N/A")
-//       userData.allowPartnerToStudy = allowPartnerToStudy;
-//     if (
-//       acceptSomeoneWithChildren !== undefined &&
-//       acceptSomeoneWithChildren !== "N/A"
-//     )
-//       userData.acceptSomeoneWithChildren = acceptSomeoneWithChildren;
-//     if (acceptADivorcedPerson !== undefined && acceptADivorcedPerson !== "N/A")
-//       userData.acceptADivorcedPerson = acceptADivorcedPerson;
-//     if (agreesWithPolygamy !== undefined && agreesWithPolygamy !== "N/A")
-//       userData.agreesWithPolygamy = agreesWithPolygamy;
-//     if (acceptAWidow !== undefined && acceptAWidow !== "N/A")
-//       userData.acceptAWidow = acceptAWidow;
-//     if (
-//       AcceptSomeoneWithBeard !== undefined &&
-//       AcceptSomeoneWithBeard !== "N/A"
-//     )
-//       userData.AcceptSomeoneWithBeard = AcceptSomeoneWithBeard;
-//     if (
-//       AcceptSomeoneWithHijab !== undefined &&
-//       AcceptSomeoneWithHijab !== "N/A"
-//     )
-//       userData.AcceptSomeoneWithHijab = AcceptSomeoneWithHijab;
-//     if (ConsiderARevert !== undefined && ConsiderARevert !== "N/A")
-//       userData.ConsiderARevert = ConsiderARevert;
-//     if (
-//       acceptSomeoneInOtherCountry !== undefined &&
-//       acceptSomeoneInOtherCountry !== "N/A"
-//     )
-//       userData.acceptSomeoneInOtherCountry = acceptSomeoneInOtherCountry;
-//     if (
-//       willingToSharePhotosUponRequest !== undefined &&
-//       willingToSharePhotosUponRequest !== "N/A"
-//     )
-//       userData.willingToSharePhotosUponRequest =
-//         willingToSharePhotosUponRequest;
-//     if (
-//       willingToMeetUpOutside !== undefined &&
-//       willingToMeetUpOutside !== "N/A"
-//     )
-//       userData.willingToMeetUpOutside = willingToMeetUpOutside;
-//     if (
-//       willingToConsiderANonUkCitizen !== undefined &&
-//       willingToConsiderANonUkCitizen !== "N/A"
-//     )
-//       userData.willingToConsiderANonUkCitizen = willingToConsiderANonUkCitizen;
-//     // Handle arrays
-//     if (languagesSpokenArr.length > 0)
-//       userData.languagesSpoken = languagesSpokenArr;
-//     if (qualitiesArr.length > 0)
-//       userData.QualitiesThatYouCanBringToYourMarriage = qualitiesArr;
-//     if (hobbiesArr.length > 0) userData.hobbies = hobbiesArr;
-//     if (qualitiesNeededArr.length > 0)
-//       userData.qualitiesYouNeedInYourPartner = qualitiesNeededArr;
-//     if (educationArr.length > 0) userData.education = educationArr;
-//     if (childrenArr.length > 0) userData.children = childrenArr;
-
-//     console.log("Creating user with data:", userData); // Debug log
-
-//     // Create and save user
-//     const user = new User(userData);
-//     await user.save();
-
-//     console.log("User created successfully:", user.username); // Debug log
-//     res.json({ success: true, message: "User created successfully" });
-//   } catch (err) {
-//     console.error("Add user error:", err);
-//     res.json({ error: `Failed to add user: ${err.message}` });
-//   }
-// });
 app.post("/admin/user/add", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
@@ -1451,6 +1230,7 @@ app.post("/admin/user/add", async (req, res) => {
       username,
       password: hashedPassword,
       gender,
+      registrationSource: "admin",
     };
 
     // Add optional STRING fields only if they exist and are not "N/A"
