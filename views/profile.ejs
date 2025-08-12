@@ -389,6 +389,31 @@
                           </div>
                           <% } %>
 
+                          <% if (profile.beard && profile.beard !== 'N/A' && profile.gender === 'male') { %>
+                          <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                              <i class="ri-user-star-line"></i>
+                            </div>
+                            <div>
+                              <p class="text-sm text-gray-500">Beard</p>
+                              <p class="text-gray-900 capitalize"><%= profile.beard %></p>
+                            </div>
+                          </div>
+                          <% } %>
+
+                          <!-- **NEW**: Hijab field for females -->
+                          <% if (profile.wearHijab && profile.wearHijab !== 'N/A' && profile.gender === 'female') { %>
+                          <div class="flex items-center gap-4">
+                            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-pink-100 text-pink-600">
+                              <i class="ri-user-3-line"></i>
+                            </div>
+                            <div>
+                              <p class="text-sm text-gray-500">Wears Hijab</p>
+                              <p class="text-gray-900 capitalize"><%= profile.wearHijab === 'yes' ? 'Yes' : 'No' %></p>
+                            </div>
+                          </div>
+                          <% } %>
+
                           <% if (profile.complexion && profile.complexion !== 'N/A') { %>
                           <div class="flex items-center gap-4">
                             <div class="w-10 h-10 flex items-center justify-center rounded-full bg-orange-100 text-orange-600">

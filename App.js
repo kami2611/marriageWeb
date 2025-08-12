@@ -1137,6 +1137,8 @@ app.post("/admin/user/add", async (req, res) => {
     hairColor,
     complexion,
     build,
+    wearHijab,
+    beard,
     height,
     languagesSpoken,
     education,
@@ -1247,6 +1249,8 @@ app.post("/admin/user/add", async (req, res) => {
     if (hairColor && hairColor !== "N/A") userData.hairColor = hairColor;
     if (complexion && complexion !== "N/A") userData.complexion = complexion;
     if (build && build !== "N/A") userData.build = build;
+    if (wearHijab && wearHijab !== "N/A") userData.wearHijab = wearHijab;
+    if (beard && beard !== "N/A") userData.beard = beard;
     if (nationality && nationality !== "N/A")
       userData.nationality = nationality;
     if (ethnicity && ethnicity !== "N/A") userData.ethnicity = ethnicity;
@@ -1773,14 +1777,6 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
     });
 
     // Add debug log before saving
-    console.log("Final user object boolean fields before save:", {
-      smoker: user.smoker,
-      prays: user.prays,
-      celebratesMilaad: user.celebratesMilaad,
-      celebrateKhatams: user.celebrateKhatams,
-      bornMuslim: user.bornMuslim,
-      willingToRelocate: user.willingToRelocate,
-    });
 
     await user.save();
 

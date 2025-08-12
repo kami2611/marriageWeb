@@ -74,6 +74,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     // enum: ["black", "brown", "grey", "other", "N/A"],
   },
+  wearHijab: {
+    type: String,
+  },
+  beard: {
+    type: String,
+  },
   hairColor: {
     type: String,
     // enum: ["black", "brown", "blonde", "N/A"],

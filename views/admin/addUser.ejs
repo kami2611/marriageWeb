@@ -414,6 +414,24 @@
                   <option value="N/A" selected>N/A</option>
                 </select>
               </div>
+              <div id="hijabContainer" class="space-y-2 hidden">
+                <label for="wearHijab" class="block text-sm font-medium text-gray-700">Do you wear hijab?</label>
+                <select id="wearHijab" name="wearHijab" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="yes">Yes</option>
+                  <option value="no">No</option>
+                  <option value="N/A" selected>N/A</option>
+                </select>
+              </div>
+              <div id="beardContainer" class="space-y-2 hidden" id="beardField">
+                <label for="beard" class="block text-sm font-medium text-gray-700">Beard</label>
+                <select id="beard" name="beard" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                  <option value="no">No</option>
+                  <option value="short">Short</option>
+                  <option value="medium">Medium</option>
+                  <option value="long">Long</option>
+                  <option value="N/A" selected>N/A</option>
+                </select>
+              </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
@@ -950,8 +968,17 @@
 
       // Username generation when gender is selected
       genderSelect.addEventListener('change', async function() {
+        const hijabContainer = document.getElementById('hijabContainer');
+        const beardContainer = document.getElementById('beardContainer');
         if (this.value) {
           try {
+            if (this.value === 'male') {
+              hijabContainer.classList.add('hidden');
+              beardContainer.classList.remove('hidden');
+            } else if (this.value === 'female') {
+              hijabContainer.classList.remove('hidden');
+              beardContainer.classList.add('hidden');
+            }
             const response = await fetch(`/generate-username?gender=${this.value}`);
             const data = await response.json();
             usernameField.value = data.username;
