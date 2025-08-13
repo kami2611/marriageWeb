@@ -86,6 +86,14 @@ app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
   next();
 });
+// Place after app.use(session(...)) and before your routes
+app.use((req, res, next) => {
+  res.locals.isProd = process.env.NODE_ENV === "production";
+  res.locals.isAdmin = req.session.user?.isAdmin || false;
+  res.locals.GA_ID = process.env.GA_MEASUREMENT_ID; // Use your existing ID from Google
+  next();
+});
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.get(["/", "/home"], (req, res) => {
