@@ -4,7 +4,38 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>D'amour Muslim - Login</title>
+  <%
+    let pageTitle = "Browse Muslim Profiles for Marriage";
+    let metaDescription = "Explore profiles of single Muslims seeking a life partner. Filter by age, location, and more to find your ideal match on D'amour Muslim.";
+    if (filters && filters.gender === 'male') {
+      pageTitle = "Muslim Men for Marriage";
+      metaDescription = "Browse profiles of single Muslim men looking for a serious relationship leading to marriage. Connect with your potential spouse today.";
+    } else if (filters && filters.gender === 'female') {
+      pageTitle = "Muslim Women for Marriage";
+      metaDescription = "Discover profiles of single Muslim women seeking a life partner for a blessed marriage. Find your compatible match on our platform.";
+    }
+  %>
+  <title><%= pageTitle %> | D'amour Muslim</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="<%= metaDescription %>">
+  <meta name="keywords" content="muslim profiles, find muslim partner, muslim singles, islamic marriage, rishta online, matrimonial site, muslim matchmaking">
+  <link rel="canonical" href="https://www.damourmuslim.com/profiles">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.damourmuslim.com/profiles">
+  <meta property="og:title" content="<%= pageTitle %> | D'amour Muslim">
+  <meta property="og:description" content="<%= metaDescription %>">
+  <meta property="og:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
+
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://www.damourmuslim.com/profiles">
+  <meta property="twitter:title" content="<%= pageTitle %> | D'amour Muslim">
+  <meta property="twitter:description" content="<%= metaDescription %>">
+  <meta property="twitter:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
+
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script>
     tailwind.config = {
@@ -121,6 +152,11 @@
 
         <!-- Main Content -->
         <div class="flex-1">
+          <!-- Page Heading -->
+          <div class="mb-6 text-center md:text-left">
+            <h1 class="text-3xl md:text-4xl font-bold text-gray-800 font-['Playfair_Display']"><%= pageTitle %></h1>
+          </div>
+
           <!-- Grid Controls -->
           <div class="flex justify-between items-center mb-8">
             <!-- Mobile Filter Button -->

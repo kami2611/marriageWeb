@@ -14,9 +14,36 @@ const MongoStore = require("connect-mongo");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
 const port = process.env.PORT;
-
+const compression = require("compression");
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.static(path.join(__dirname, "public")));
+app.use(compression());
+app.use((req, res, next) => {
+  // Security headers
+  res.setHeader("X-Content-Type-Options", "nosniff");
+  res.setHeader("X-Frame-Options", "DENY");
+  res.setHeader("X-XSS-Protection", "1; mode=block");
+
+  // SEO-friendly cache headers for static assets
+  if (
+    req.url.match(/\.(css|js|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)$/)
+  ) {
+    res.setHeader("Cache-Control", "public, max-age=31536000"); // 1 year
+  }
+
+  next();
+});
+const rateLimit = require("express-rate-limit");
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Limit each IP to 200 requests per windowMs
+  message: "Too many requests from this IP",
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(limiter);
 app.use(
   session({
     secret: process.env.SECRETKEYSESSION,
@@ -698,13 +725,6 @@ app.get("/profiles", async (req, res) => {
       }
     }
   }
-
-  // Debug log to check filters
-  console.log("Height filters applied:", {
-    minHeight,
-    maxHeight,
-    heightFilter: filter.height,
-  });
 
   try {
     const totalProfiles = await User.countDocuments(filter);
@@ -1883,49 +1903,88 @@ app.post("/api/requests/:requestId/respond", isLoggedIn, async (req, res) => {
 });
 // Add this temporary route to clean up invalid marital status values
 // Alternative bulk update approach
-
-app.get("/allusersmaritalstatus", async (req, res) => {
+// SEO: Generate dynamic sitemap
+app.get("/sitemap.xml", async (req, res) => {
   try {
-    const users = await User.find({}).select("username maritalStatus");
-    const maritalStatusCounts = users.reduce((acc, user) => {
-      const status = user.maritalStatus || "unknown";
-      acc[status] = (acc[status] || 0) + 1;
-      return acc;
-    }, {});
+    const users = await User.find({}).select("_id updatedAt");
 
-    res.json(maritalStatusCounts);
+    let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://www.damourmuslim.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://www.damourmuslim.com/profiles</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://www.damourmuslim.com/profiles?gender=male</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.damourmuslim.com/profiles?gender=female</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.damourmuslim.com/register</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+
+    // Add individual profile pages
+    users.forEach((user) => {
+      const lastmod = user.updatedAt
+        ? user.updatedAt.toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0];
+      sitemap += `
+  <url>
+    <loc>https://www.damourmuslim.com/profiles/${user._id}</loc>
+    <lastmod>${lastmod}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`;
+    });
+
+    sitemap += `
+</urlset>`;
+
+    res.set("Content-Type", "application/xml");
+    res.send(sitemap);
   } catch (error) {
-    console.error("Error fetching marital status counts:", error);
-    res.status(500).json({ error: "Failed to fetch marital status counts" });
+    console.error("Sitemap generation error:", error);
+    res.status(500).send("Error generating sitemap");
   }
 });
+// SEO: Robots.txt
+app.get("/robots.txt", (req, res) => {
+  const robots = `User-agent: *
+Allow: /
+Allow: /profiles
+Allow: /profiles?gender=male
+Allow: /profiles?gender=female
+Allow: /register
+Allow: /login
+Disallow: /admin/
+Disallow: /account/
+Disallow: /api/
+Disallow: /logout
 
-app.get("/api/user/:username", async (req, res) => {
-  try {
-    const { username } = req.params;
+Sitemap: https://www.damourmuslim.com/sitemap.xml`;
 
-    if (!username) {
-      return res.status(400).json({
-        success: false,
-        error: "Username is required",
-      });
-    }
-
-    const user = await User.findOne({ username: username });
-
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        error: "User not found",
-      });
-    }
-    res.json({ success: true, user });
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    res.status(500).json({ success: false, error: "Failed to fetch user" });
-  }
+  res.set("Content-Type", "text/plain");
+  res.send(robots);
 });
-
+app.use((req, res) => {
+  res.status(404).render("404", {
+    title: "Page Not Found - D'amour Muslim",
+    url: req.originalUrl,
+  });
+});
 app.listen(port, (req, res) => {
   console.log("on port 3000!");
 });

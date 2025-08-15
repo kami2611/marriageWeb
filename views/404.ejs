@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page Not Found - D'amour Muslim</title>
+
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="The page you're looking for doesn't exist. Return to D'amour Muslim homepage to continue your search for a Muslim life partner.">
+  <meta name="robots" content="noindex, nofollow">
+
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+
+  <style>
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .ripple {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .ripple::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    .ripple:active::before {
+      width: 300px;
+      height: 300px;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-['Roboto'] min-h-screen flex flex-col">
+  <%- include('partials/header') %>
+
+  <main class="flex-1 flex items-center justify-center px-6 pt-24 pb-16">
+    <div class="max-w-2xl mx-auto text-center">
+      <!-- 404 Illustration -->
+      <div class="mb-8">
+        <div class="text-9xl font-bold text-transparent bg-clip-text gradient-bg font-['Playfair_Display']">
+          404
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4 font-['Playfair_Display']">
+          Page Not Found
+        </h1>
+        <p class="text-lg text-gray-600 mb-2">
+          The page you're looking for doesn't exist or has been moved.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+        <a href="/" class="px-8 py-3 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-button ripple material-shadow font-medium">
+          <i class="ri-home-line mr-2"></i>
+          Go Home
+        </a>
+        <a href="/profiles" class="px-8 py-3 border-2 border-primary text-primary hover:bg-primary hover:text-white transition-all duration-300 rounded-button ripple font-medium">
+          <i class="ri-user-search-line mr-2"></i>
+          Browse Profiles
+        </a>
+      </div>
+
+      <!-- Helpful Links -->
+      <div class="bg-white rounded-2xl p-8 material-shadow">
+        <h2 class="text-xl font-semibold text-gray-800 mb-6 font-['Playfair_Display']">
+          Maybe you're looking for:
+        </h2>
+
+        <div class="grid md:grid-cols-2 gap-4">
+          <a href="/profiles?gender=male" class="flex items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 text-left">
+            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+              <i class="ri-user-line text-blue-600"></i>
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">Men's Profiles</div>
+              <div class="text-sm text-gray-600">Browse male profiles</div>
+            </div>
+          </a>
+
+          <a href="/profiles?gender=female" class="flex items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 text-left">
+            <div class="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center">
+              <i class="ri-user-3-line text-pink-600"></i>
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">Women's Profiles</div>
+              <div class="text-sm text-gray-600">Browse female profiles</div>
+            </div>
+          </a>
+
+          <% if (!user) { %>
+          <a href="/register" class="flex items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 text-left">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+              <i class="ri-user-add-line text-green-600"></i>
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">Create Account</div>
+              <div class="text-sm text-gray-600">Join our community</div>
+            </div>
+          </a>
+
+          <a href="/login" class="flex items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 text-left">
+            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+              <i class="ri-login-box-line text-purple-600"></i>
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">Sign In</div>
+              <div class="text-sm text-gray-600">Access your account</div>
+            </div>
+          </a>
+          <% } else { %>
+          <a href="/account" class="flex items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 text-left">
+            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+              <i class="ri-user-settings-line text-green-600"></i>
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">My Account</div>
+              <div class="text-sm text-gray-600">Manage your profile</div>
+            </div>
+          </a>
+
+          <a href="/account/pendingRequests" class="flex items-center gap-3 p-4 rounded-xl hover:bg-gray-50 transition-colors duration-300 text-left">
+            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+              <i class="ri-notification-line text-yellow-600"></i>
+            </div>
+            <div>
+              <div class="font-medium text-gray-800">Requests</div>
+              <div class="text-sm text-gray-600">View pending requests</div>
+            </div>
+          </a>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Contact Support -->
+
+    </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script>
+    // Add ripple effect to buttons
+    document.addEventListener('DOMContentLoaded', function() {
+      const rippleButtons = document.querySelectorAll('.ripple');
+
+      rippleButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+          const ripple = document.createElement('span');
+          const rect = this.getBoundingClientRect();
+          const size = Math.max(rect.width, rect.height);
+          const x = e.clientX - rect.left - size / 2;
+          const y = e.clientY - rect.top - size / 2;
+
+          ripple.style.width = ripple.style.height = size + 'px';
+          ripple.style.left = x + 'px';
+          ripple.style.top = y + 'px';
+          ripple.classList.add('absolute', 'bg-white', 'bg-opacity-30', 'rounded-full', 'animate-ping');
+
+          this.appendChild(ripple);
+
+          setTimeout(() => {
+            ripple.remove();
+          }, 600);
+        });
+      });
+    });
+
+    // Go back functionality
+    function goBack() {
+      if (window.history.length > 1) {
+        window.history.back();
+      } else {
+        window.location.href = '/';
+      }
+    }
+  </script>
+</body>
+
+</html>
