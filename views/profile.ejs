@@ -7,7 +7,7 @@
   <%
   const pageTitle = `${profile.name || profile.username}, ${profile.age} | Muslim Matchmaking Profile`;
   const metaDescription = `View the profile of ${profile.name || profile.username}, a ${profile.age}-year-old ${profile.gender} from ${profile.city || 'an undisclosed location'}. Learn more about their background, values, and what they are looking for in a partner on D'amour Muslim.`;
-  const profileUrl = `https://www.damourmuslim.com/profiles/${profile._id}`;
+  const profileUrl = `https://www.damourmuslim.com/profiles/${profile.profileSlug || profile._id}`;
   
   // **FIXED**: Better image URL handling
   let imageUrl;

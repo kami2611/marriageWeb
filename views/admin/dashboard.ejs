@@ -262,7 +262,7 @@
               <button class="edit-btn flex-1 px-3 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 !rounded-button text-sm ripple" data-user-id="<%= user._id %>">
                 <i class="ri-edit-line mr-1"></i>Edit
               </button>
-              <button class="view-btn flex-1 px-3 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button text-sm ripple" data-user-id="<%= user._id %>">
+              <button class="view-btn flex-1 px-3 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button text-sm ripple" data-user-id="<%= user._id %>" data-user-slug="<%= user.profileSlug %>">
                 <i class="ri-eye-line mr-1"></i>View
               </button>
               <button class="delete-btn flex-1 px-3 py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 !rounded-button text-sm ripple" data-user-id="<%= user._id %>">
@@ -460,8 +460,8 @@
       const viewButtons = document.querySelectorAll('.view-btn');
       viewButtons.forEach(button => {
         button.addEventListener('click', function() {
-          const userId = this.getAttribute('data-user-id');
-          window.location.href = `/profiles/${userId}`;
+          const userSlug = this.getAttribute('data-user-slug');
+          window.location.href = `/profiles/${userSlug}`;
         });
       });
 

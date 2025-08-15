@@ -268,6 +268,12 @@ const userSchema = new mongoose.Schema({
   willingToConsiderANonUkCitizen: {
     type: Boolean, // true = yes, false = no
   },
+  profileSlug: {
+    type: String,
+    unique: true,
+    sparse: true, // Allows multiple documents without this field
+    index: true, // For faster lookups
+  },
   registrationSource: {
     type: String,
     enum: ["register", "admin"],

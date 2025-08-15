@@ -323,7 +323,7 @@
           <div id="profileGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             <% if (profiles && profiles.length > 0) { %>
             <% profiles.forEach(profile => { %>
-            <a href="/profiles/<%= profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
+            <a href="/profiles/<%= profile.profileSlug || profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
               <div class="aspect-[4/5] overflow-hidden">
                 <% if (profile.profilePic && profile.profilePic.url) { %>
                 <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">

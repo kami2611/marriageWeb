@@ -1,3 +1,72 @@
+const slugify = require("slugify");
+function generateProfileSlug(user) {
+  // Use name if available, otherwise username
+  const baseName = user.name || user.username;
+
+  let parts = [baseName];
+
+  // **FIXED**: Prioritize most specific to least specific location
+  let locationPart = null;
+
+  if (
+    user.birthPlace &&
+    user.birthPlace.trim() &&
+    user.birthPlace.toLowerCase() !== "n/a"
+  ) {
+    locationPart = user.birthPlace;
+  } else if (
+    user.city &&
+    user.city.trim() &&
+    user.city.toLowerCase() !== "n/a"
+  ) {
+    locationPart = user.city;
+  } else if (
+    user.country &&
+    user.country.trim() &&
+    user.country.toLowerCase() !== "n/a"
+  ) {
+    locationPart = user.country;
+  } else if (
+    user.nationality &&
+    user.nationality.trim() &&
+    user.nationality.toLowerCase() !== "n/a"
+  ) {
+    locationPart = user.nationality;
+  }
+
+  if (locationPart) {
+    parts.push(`from-${locationPart}`);
+  }
+
+  // Add age if available
+  if (user.age) {
+    parts.push(`${user.age}`);
+  }
+
+  // Join parts and slugify
+  const slug = slugify(parts.join(" "), {
+    lower: true,
+    strict: true, // Remove special characters
+    locale: "en",
+  });
+
+  return slug;
+}
+
+// **NEW**: Function to ensure unique slug
+async function generateUniqueSlug(user) {
+  let baseSlug = generateProfileSlug(user);
+  let slug = baseSlug;
+  let counter = 1;
+
+  // Check if slug already exists
+  while (await User.findOne({ profileSlug: slug, _id: { $ne: user._id } })) {
+    slug = `${baseSlug}-${counter}`;
+    counter++;
+  }
+
+  return slug;
+}
 const User = require("./models/user");
 const path = require("path");
 const Request = require("./models/Request");
@@ -103,10 +172,10 @@ app.set("view engine", "ejs");
 mongoose
   .connect(process.env.MONGODB_URI, {})
   .then(() => {
-    console.log("Mongoose Server Started!");
+    console.log(" Mongoose Server Started!");
   })
   .catch((err) => {
-    console.log("Err mongoose!", err);
+    console.log(" Err mongoose!", err);
   });
 app.use((req, res, next) => {
   // Make user data available to all templates
@@ -329,6 +398,23 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
         formData.willingToConsiderANonUkCitizen === true ||
         formData.willingToConsiderANonUkCitizen === "true";
     // Save the updated user
+    const fieldsAffectingSlug = [
+      "name",
+      "birthPlace",
+      "city",
+      "country",
+      "nationality",
+      "age",
+    ];
+    const shouldUpdateSlug = fieldsAffectingSlug.some(
+      (field) => formData[field] !== undefined
+    );
+
+    if (shouldUpdateSlug) {
+      user.profileSlug = await generateUniqueSlug(user);
+      console.log("Updated profile slug:", user.profileSlug);
+    }
+
     await user.save();
 
     // Update session user data
@@ -392,6 +478,7 @@ app.post("/register", async (req, res) => {
       gender, // Save the gender immediately
       registrationSource: "register", // Set registration source
     });
+    newUser.profileSlug = await generateUniqueSlug(newUser);
     await newUser.save();
     req.session.userId = newUser._id;
     req.session.user = newUser;
@@ -581,57 +668,6 @@ app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
   }
 });
 
-// Update the existing /requests/:id/cancel route
-// app.post("api/requests/:id/cancel", isLoggedIn, async (req, res) => {
-//   try {
-//     const requestId = req.params.id;
-//     const requestToCancel = await Request.findById(requestId);
-//     console.log("request to cancel: ", requestToCancel);
-
-//     if (!requestToCancel) {
-//       return res
-//         .status(404)
-//         .json({ success: false, error: "Request not found" });
-//     }
-
-//     // Check if current user is the sender
-//     if (requestToCancel.from.toString() !== req.session.userId) {
-//       return res.status(403).json({ success: false, error: "Unauthorized" });
-//     }
-
-//     const fromUserId = requestToCancel.from.toString();
-//     const toUserId = requestToCancel.to.toString();
-
-//     const fromUser = await User.findById(fromUserId);
-//     const toUser = await User.findById(toUserId);
-
-//     // Remove each other from access lists
-//     if (fromUser) {
-//       fromUser.canAccessFullProfileOf.pull(toUserId);
-//       await fromUser.save();
-//     }
-
-//     if (toUser) {
-//       toUser.canAccessFullProfileOf.pull(fromUserId);
-//       toUser.likeRequests.pull(requestId); // Remove from receiver's request list
-//       await toUser.save();
-//     }
-
-//     // Delete the request
-//     await Request.findByIdAndDelete(requestId);
-
-//     res.json({
-//       success: true,
-//       message: "Request cancelled and access revoked from both sides.",
-//     });
-//   } catch (error) {
-//     console.error("Error cancelling request:", error);
-//     res.status(500).json({
-//       success: false,
-//       error: "Failed to cancel request",
-//     });
-//   }
-// });
 // Add this new API route for cancelling requests
 app.post("/api/requests/:requestId/cancel", isLoggedIn, async (req, res) => {
   try {
@@ -759,12 +795,24 @@ app.get("/profiles", async (req, res) => {
   }
 });
 
-app.get("/profiles/:id", async (req, res) => {
+app.get("/profiles/:slug", async (req, res) => {
   try {
-    const { id } = req.params;
-    const foundProfile = await User.findById(id);
+    const { slug } = req.params;
+    let foundProfile;
+
+    // Check if it's an old MongoDB ID format (for backward compatibility)
+    if (mongoose.Types.ObjectId.isValid(slug) && slug.length === 24) {
+      foundProfile = await User.findById(slug);
+    } else {
+      // It's a slug - find by slug field
+      foundProfile = await User.findOne({ profileSlug: slug });
+    }
+
     if (!foundProfile) {
-      return res.status(404).send("Profile not found");
+      return res.status(404).render("404", {
+        title: "Profile Not Found - D'amour Muslim",
+        url: req.originalUrl,
+      });
     }
 
     let canAccessFullProfile = false;
@@ -788,7 +836,7 @@ app.get("/profiles/:id", async (req, res) => {
       // Check if user has already sent a pending request
       const existingRequest = await Request.findOne({
         from: req.session.userId,
-        to: id,
+        to: foundProfile._id,
         status: "pending",
       });
 
@@ -806,64 +854,14 @@ app.get("/profiles/:id", async (req, res) => {
       filters: null,
     });
   } catch (err) {
-    res.status(500).send("Server error");
+    console.error("Profile route error:", err);
+    res.status(500).render("error", {
+      title: "Server Error",
+      message: "Failed to load profile",
+      error: process.env.NODE_ENV === "development" ? err : {},
+    });
   }
 });
-
-// app.post("/interested/:id", isLoggedIn, async (req, res) => {
-//   try {
-//     const beinglikeduserId = req.params.id; // receiver
-//     const likeUserId = req.session.userId; // sender
-
-//     // Check if target user exists
-//     const beingLikedUser = await User.findById(beinglikeduserId);
-//     if (!beingLikedUser) {
-//       return res.status(404).json({ error: "User not found" });
-//     }
-
-//     // Check if request already exists
-//     const existingRequest = await Request.findOne({
-//       from: likeUserId,
-//       to: beinglikeduserId,
-//       status: "pending",
-//     });
-
-//     if (existingRequest) {
-//       return res.json({ error: "Request already sent" });
-//     }
-
-//     // ONLY grant access to sender's profile to receiver
-//     // (Receiver can see sender's info to make decision)
-//     if (!beingLikedUser.canAccessFullProfileOf.includes(likeUserId)) {
-//       beingLikedUser.canAccessFullProfileOf.push(likeUserId);
-//     }
-
-//     // Create new request
-//     const newRequest = new Request({
-//       from: likeUserId,
-//       to: beinglikeduserId,
-//       status: "pending", // explicitly set as pending
-//     });
-
-//     await newRequest.save();
-
-//     // Add request to receiver's list
-//     if (!beingLikedUser.likeRequests.includes(newRequest._id)) {
-//       beingLikedUser.likeRequests.push(newRequest);
-//     }
-
-//     await beingLikedUser.save();
-
-//     return res.json({
-//       message: "Successfully sent your like request",
-//     });
-//   } catch (error) {
-//     console.error("Error sending request:", error);
-//     return res.status(500).json({
-//       error: "Failed to send request. Please try again.",
-//     });
-//   }
-// });
 app.post("/interested/:id", isLoggedIn, async (req, res) => {
   try {
     const beinglikeduserId = req.params.id; // receiver
@@ -1463,6 +1461,8 @@ app.post("/admin/user/add", async (req, res) => {
 
     // Create and save user
     const user = new User(userData);
+    user.profileSlug = await generateUniqueSlug(user);
+    console.log("Generated slug:", user.profileSlug);
     await user.save();
 
     console.log("User created successfully:", user.username); // Debug log
@@ -1805,7 +1805,22 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
     });
 
     // Add debug log before saving
+    const slugFields = [
+      "name",
+      "birthPlace",
+      "city",
+      "country",
+      "nationality",
+      "age",
+    ];
+    const shouldUpdateSlug = slugFields.some(
+      (field) => updateData[field] !== undefined
+    );
 
+    if (shouldUpdateSlug) {
+      user.profileSlug = await generateUniqueSlug(user);
+      console.log("Admin updated profile slug:", user.profileSlug);
+    }
     await user.save();
 
     console.log(`User ${user.username} updated successfully by admin`);
@@ -1901,8 +1916,7 @@ app.post("/api/requests/:requestId/respond", isLoggedIn, async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to update request" });
   }
 });
-// Add this temporary route to clean up invalid marital status values
-// Alternative bulk update approach
+
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {
   try {
