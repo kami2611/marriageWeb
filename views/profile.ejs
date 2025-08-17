@@ -127,6 +127,30 @@
     .gradient-bg {
       background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
     }
+
+    .animate-spin {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    #shareProfileBtn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    #profileCard img {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
 </head>
 <% if (isProd && !isAdmin) { %>
@@ -206,7 +230,20 @@
                       <span>@<%= profile.username %></span>
                     </p>
                   </div>
+                  <!-- Add this right after the name and verification section -->
+                  <div class="text-center mb-6">
+                    <button id="shareProfileBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-300 shadow-md">
+                      <i id="shareIcon" class="ri-share-line"></i>
+                      <span id="shareText">Share Profile</span>
+                    </button>
+                  </div>
 
+                  <!-- Hidden canvas for generating image - UPDATED to be dynamic -->
+                  <div id="profileCard" style="position: absolute; left: -9999px; top: -9999px;">
+                    <div id="shareCanvas" style="width: 450px; padding: 20px; background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%); border-radius: 16px; color: white; font-family: 'Roboto', sans-serif; font-size: 13px;">
+                      <!-- This will be populated dynamically by JavaScript -->
+                    </div>
+                  </div>
                   <!-- Public Information (Always Visible) -->
                   <div class="space-y-8">
                     <div class="bg-gray-50 rounded-xl p-6">
@@ -1103,6 +1140,381 @@
       });
     </script>
     <!-- ...existing code... -->
+    <!-- Add this script before closing </body> tag -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const shareBtn = document.getElementById('shareProfileBtn');
+        const shareIcon = document.getElementById('shareIcon');
+        const shareText = document.getElementById('shareText');
+        const profileCard = document.getElementById('profileCard');
+        const shareCanvas = document.getElementById('shareCanvas');
+
+        if (shareBtn) {
+          shareBtn.addEventListener('click', function() {
+            // Disable button and show loading
+            shareBtn.disabled = true;
+            shareIcon.className = 'ri-loader-4-line animate-spin';
+            shareText.textContent = 'Creating Image...';
+
+            // Generate dynamic content based on available data
+            generateShareContent();
+
+            // Make the card visible temporarily for capture
+            profileCard.style.position = 'fixed';
+            profileCard.style.left = '50%';
+            profileCard.style.top = '50%';
+            profileCard.style.transform = 'translate(-50%, -50%)';
+            profileCard.style.zIndex = '-1';
+
+            // Wait a moment for content to render
+            setTimeout(() => {
+              html2canvas(shareCanvas, {
+                backgroundColor: null,
+                scale: 2,
+                useCORS: true,
+                allowTaint: true,
+                width: 450,
+                height: shareCanvas.offsetHeight
+              }).then(canvas => {
+                // Hide the card again
+                profileCard.style.position = 'absolute';
+                profileCard.style.left = '-9999px';
+                profileCard.style.top = '-9999px';
+                profileCard.style.transform = 'none';
+
+                canvas.toBlob(blob => {
+                  const url = URL.createObjectURL(blob);
+
+                  if (navigator.share && navigator.canShare && navigator.canShare({
+                      files: [new File([blob], 'profile.png', {
+                        type: 'image/png'
+                      })]
+                    })) {
+                    navigator.share({
+                      title: '<%= profile.name || profile.username %> - Profile',
+                      text: 'Check out this profile on D\'Amour Muslim!',
+                      files: [new File([blob], 'profile.png', {
+                        type: 'image/png'
+                      })]
+                    }).then(() => {
+                      showSuccess();
+                    }).catch(() => {
+                      fallbackShare(url);
+                    });
+                  } else {
+                    fallbackShare(url);
+                  }
+                }, 'image/png', 0.9);
+              }).catch(error => {
+                console.error('Error generating image:', error);
+                showError();
+              });
+            }, 800);
+          });
+        }
+
+        function generateShareContent() {
+          const canAccess = <%= canAccessFullProfile ? 'true' : 'false' %>;
+
+          // **FIXED**: Safely get profile data without HTML entities in JavaScript
+          const profileData = {
+            name: `<%= (profile.name || profile.username).replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`,
+            username: `<%= profile.username %>`,
+            age: `<%= profile.age || '' %>`,
+            height: `<%= profile.height ? (profile.height / 30.48).toFixed(1) + ' ft' : '' %>`,
+            location: `<%= profile.city && profile.country ? profile.city + ', ' + profile.country : (profile.city || profile.country || '') %>`,
+            work: `<%= (profile.work || '').replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`,
+            nationality: `<%= profile.nationality || '' %>`,
+            education: `<%= profile.education && profile.education.length > 0 && profile.education[0].title ? profile.education[0].title.replace(/"/g, '\\"').replace(/&/g, '&amp;') : '' %>`,
+            aboutMe: `<%= (profile.aboutMe || '').replace(/"/g, '\\"').replace(/&/g, '&amp;').replace(/\n/g, ' ') %>`,
+            profilePicUrl: `<%= profile.profilePic && profile.profilePic.url ? profile.profilePic.url : '' %>`,
+            gender: `<%= profile.gender || '' %>`,
+
+            // Private info
+            fullName: `<%= (profile.name || '').replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`,
+            contact: '7454516156',
+            religion: `<%= profile.religion || '' %>`,
+            caste: `<%= profile.caste || '' %>`,
+            maritalStatus: `<%= (profile.maritalStatus && profile.maritalStatus !== 'N/A') ? profile.maritalStatus : '' %>`,
+            address: `<%= (profile.adress || '').replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`,
+            birthPlace: `<%= profile.birthPlace || '' %>`,
+
+            // Physical traits
+            eyeColor: `<%= (profile.eyeColor && profile.eyeColor !== 'N/A') ? profile.eyeColor : '' %>`,
+            hairColor: `<%= (profile.hairColor && profile.hairColor !== 'N/A') ? profile.hairColor : '' %>`,
+            complexion: `<%= (profile.complexion && profile.complexion !== 'N/A') ? profile.complexion : '' %>`,
+            build: `<%= (profile.build && profile.build !== 'N/A') ? profile.build : '' %>`,
+            beard: `<%= (profile.beard && profile.beard !== 'N/A' && profile.gender === 'male') ? profile.beard : '' %>`,
+            wearHijab: `<%= (profile.wearHijab && profile.wearHijab !== 'N/A' && profile.gender === 'female') ? (profile.wearHijab === 'yes' ? 'Yes' : 'No') : '' %>`,
+
+            // Religious info
+            bornMuslim: `<%= profile.bornMuslim !== undefined ? (profile.bornMuslim ? 'Yes' : 'No') : '' %>`,
+            islamicSect: `<%= profile.islamicSect || '' %>`,
+            prays: `<%= profile.prays !== undefined ? (profile.prays ? 'Yes' : 'No') : '' %>`,
+            smoker: `<%= profile.smoker !== undefined ? (profile.smoker ? 'Yes' : 'No') : '' %>`,
+
+            // Family info
+            fatherName: `<%= (profile.fatherName || '').replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`,
+            motherName: `<%= (profile.motherName || '').replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`,
+            fatherProfession: `<%= (profile.fatherProfession || '').replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`,
+            siblings: `<%= profile.siblings !== undefined ? profile.siblings : '' %>`,
+
+          };
+
+          let content = `
+      <!-- Header with photo and basic info -->
+      <div style="text-align: center; margin-bottom: 16px;">
+        <div style="width: 70px; height: 70px; border-radius: 50%; overflow: hidden; margin: 0 auto 8px; border: 2px solid rgba(255,255,255,0.3);">`;
+
+          if (profileData.profilePicUrl) {
+            content += `<img src="${profileData.profilePicUrl}" style="width: 100%; height: 100%; object-fit: cover;" alt="Profile">`;
+          } else {
+            const iconClass = profileData.gender === 'male' ? 'ri-user-line' : 'ri-user-3-line';
+            content += `
+            <div style="width: 100%; height: 100%; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center;">
+              <i class="${iconClass}" style="font-size: 1.8rem; color: rgba(255,255,255,0.8);"></i>
+            </div>`;
+          }
+
+          content += `
+        </div>
+        <h2 style="margin: 0 0 2px 0; font-size: 1.3rem; font-weight: bold;">${profileData.name}</h2>
+        <p style="margin: 0 0 12px 0; font-size: 0.8rem; opacity: 0.9;">@${profileData.username}</p>
+      </div>
+    `;
+
+          // Public Information Section
+          const publicInfo = [];
+          if (profileData.age) publicInfo.push(["Age", profileData.age + " years"]);
+          if (profileData.height) publicInfo.push(["Height", profileData.height]);
+          if (profileData.location) publicInfo.push(["Location", profileData.location]);
+          if (profileData.work) publicInfo.push(["Work", profileData.work]);
+          if (profileData.nationality) publicInfo.push(["Nationality", profileData.nationality]);
+          if (profileData.education) publicInfo.push(["Education", profileData.education]);
+
+          if (publicInfo.length > 0) {
+            content += addSection("🌟 Public Information", publicInfo);
+          }
+
+          if (profileData.aboutMe) {
+            content += addTextSection("About Me", profileData.aboutMe);
+          }
+
+          // Private Information (only if user has access)
+          if (canAccess) {
+            const personalDetails = [];
+            if (profileData.fullName) personalDetails.push(["Full Name", profileData.fullName]);
+            if (profileData.contact) personalDetails.push(["Contact", '7454516156']);
+            if (profileData.religion) {
+              const religionText = profileData.religion + (profileData.caste ? ' - ' + profileData.caste : '');
+              personalDetails.push(["Religion", religionText]);
+            }
+            if (profileData.maritalStatus) personalDetails.push(["Marital Status", profileData.maritalStatus]);
+            if (profileData.address) personalDetails.push(["Address", profileData.address]);
+            if (profileData.birthPlace) personalDetails.push(["Birth Place", profileData.birthPlace]);
+
+            if (personalDetails.length > 0) {
+              content += addSection("🔒 Personal Details", personalDetails);
+            }
+
+            // Physical Characteristics
+            const physicalTraits = [];
+            if (profileData.eyeColor) physicalTraits.push(["Eye Color", profileData.eyeColor]);
+            if (profileData.hairColor) physicalTraits.push(["Hair Color", profileData.hairColor]);
+            if (profileData.complexion) physicalTraits.push(["Complexion", profileData.complexion]);
+            if (profileData.build) physicalTraits.push(["Build", profileData.build]);
+            if (profileData.beard) physicalTraits.push(["Beard", profileData.beard]);
+            if (profileData.wearHijab) physicalTraits.push(["Wears Hijab", profileData.wearHijab]);
+
+            if (physicalTraits.length > 0) {
+              content += addSection("👤 Physical Traits", physicalTraits);
+            }
+
+            // Religious Information
+            const religiousInfo = [];
+            if (profileData.bornMuslim) religiousInfo.push(["Born Muslim", profileData.bornMuslim]);
+            if (profileData.islamicSect) religiousInfo.push(["Islamic Sect", profileData.islamicSect]);
+            if (profileData.prays) religiousInfo.push(["Prays Regularly", profileData.prays]);
+            if (profileData.smoker) religiousInfo.push(["Smoker", profileData.smoker]);
+
+            if (religiousInfo.length > 0) {
+              content += addSection("🕌 Religious Info", religiousInfo);
+            }
+
+            // Family Information
+            const familyInfo = [];
+            if (profileData.fatherName) familyInfo.push(["Father's Name", profileData.fatherName]);
+            if (profileData.motherName) familyInfo.push(["Mother's Name", profileData.motherName]);
+            if (profileData.fatherProfession) familyInfo.push(["Father's Profession", profileData.fatherProfession]);
+            if (profileData.siblings) familyInfo.push(["Siblings", profileData.siblings]);
+
+            if (familyInfo.length > 0) {
+              content += addSection("👨‍👩‍👧‍👦 Family", familyInfo);
+            }
+
+            // Partner Preferences
+
+
+          } else {
+            // Show message for private info
+            content += `
+        <div style="background: rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; margin: 8px 0; text-align: center;">
+          <p style="margin: 0; font-size: 0.8rem; opacity: 0.9;">🔒 Private information available after profile sharing</p>
+        </div>
+      `;
+          }
+
+          // Footer
+          content += `
+      <div style="text-align: center; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.2); margin-top: 12px;">
+        <p style="margin: 0 0 2px 0; font-weight: bold; font-size: 0.9rem;">💕 D'Amour Muslim</p>
+        <p style="margin: 0; font-size: 0.7rem; opacity: 0.8;">Find your perfect match • damourmuslim.com</p>
+      </div>
+    `;
+
+          shareCanvas.innerHTML = content;
+        }
+
+        // Helper function to add a section with key-value pairs
+        function addSection(title, items) {
+          if (!items || items.length === 0) return '';
+
+          let section = `
+      <div style="margin: 8px 0;">
+        <h3 style="margin: 0 0 6px 0; font-size: 0.9rem; font-weight: bold; opacity: 0.9;">${title}</h3>
+        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 0.75rem;">
+    `;
+
+          items.forEach(item => {
+            if (item && item.length === 2) {
+              section += `
+          <div style="margin-bottom: 4px;">
+            <p style="margin: 0; opacity: 0.8; font-size: 0.7rem;">${item[0]}</p>
+            <p style="margin: 0; font-weight: bold;">${item[1]}</p>
+          </div>
+        `;
+            }
+          });
+
+          section += `
+          </div>
+        </div>
+      </div>
+    `;
+
+          return section;
+        }
+
+        // Helper function for text sections (like About Me)
+        function addTextSection(title, text) {
+          if (!text || text.trim() === '') return '';
+
+          // Truncate if too long
+          const truncatedText = text.length > 150 ? text.substring(0, 147) + '...' : text;
+
+          return `
+      <div style="margin: 8px 0;">
+        <h3 style="margin: 0 0 6px 0; font-size: 0.9rem; font-weight: bold; opacity: 0.9;">${title}</h3>
+        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+          <p style="margin: 0; font-size: 0.75rem; line-height: 1.4;">${truncatedText}</p>
+        </div>
+      </div>
+    `;
+        }
+
+        // Helper function for tags (like hobbies)
+        function addTagSection(title, tags) {
+          if (!tags || tags.length === 0) return '';
+
+          let section = `
+      <div style="margin: 8px 0;">
+        <h3 style="margin: 0 0 6px 0; font-size: 0.9rem; font-weight: bold; opacity: 0.9;">${title}</h3>
+        <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+    `;
+
+          tags.forEach(tag => {
+            section += `<span style="display: inline-block; background: rgba(255,255,255,0.2); padding: 3px 8px; border-radius: 12px; font-size: 0.7rem; margin: 2px;">${tag}</span>`;
+          });
+
+          section += `
+        </div>
+      </div>
+    `;
+
+          return section;
+        }
+
+        // Keep your existing success/error functions
+        function fallbackShare(imageUrl) {
+          const a = document.createElement('a');
+          a.href = imageUrl;
+          a.download = '<%= profile.username %>_profile.png';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(imageUrl);
+          showSuccess();
+        }
+
+        function showSuccess() {
+          shareIcon.className = 'ri-check-line';
+          shareText.textContent = 'Copied!';
+          shareBtn.style.background = '#10B981';
+          showNotification('Profile image created!', 'You can now share it on WhatsApp or other platforms', 'success');
+
+          setTimeout(() => {
+            shareIcon.className = 'ri-share-line';
+            shareText.textContent = 'Share Profile';
+            shareBtn.style.background = '';
+            shareBtn.disabled = false;
+          }, 3000);
+        }
+
+        function showError() {
+          shareIcon.className = 'ri-error-warning-line';
+          shareText.textContent = 'Failed';
+          shareBtn.style.background = '#EF4444';
+          showNotification('Error', 'Failed to create profile image', 'error');
+
+          setTimeout(() => {
+            shareIcon.className = 'ri-share-line';
+            shareText.textContent = 'Share Profile';
+            shareBtn.style.background = '';
+            shareBtn.disabled = false;
+          }, 3000);
+        }
+
+        function showNotification(title, message, type) {
+          const notification = document.createElement('div');
+          const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+          const icon = type === 'success' ? 'ri-check-circle-line' : 'ri-error-warning-line';
+
+          notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 shadow-lg flex items-center gap-3 z-50 transform transition-all duration-300`;
+          notification.innerHTML = `
+      <i class="${icon} text-xl"></i>
+      <div>
+        <p class="font-medium">${title}</p>
+        <p class="text-sm opacity-90">${message}</p>
+      </div>
+      <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+        <i class="ri-close-line text-lg"></i>
+      </button>
+    `;
+
+          document.body.appendChild(notification);
+
+          setTimeout(() => {
+            if (notification.parentElement) {
+              notification.style.transform = 'translateX(100%)';
+              notification.style.opacity = '0';
+              setTimeout(() => notification.remove(), 300);
+            }
+          }, 5000);
+        }
+      });
+    </script>
 </body>
 
 </html>

@@ -102,9 +102,6 @@
 </head>
 <% if (isProd && !isAdmin) { %>
 <!-- Google Analytics -->
-<%= console.log("Google Analytics is enabled") %>
-<%= console.log("produc?", isProd) %>
-<%= console.log("admin? ",isAdmin) %>
 <script async src="https://www.googletagmanager.com/gtag/js?id=<%= GA_ID %>"></script>
 <script>
   window.dataLayer = window.dataLayer || [];

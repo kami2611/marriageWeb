@@ -1091,7 +1091,6 @@
       function loadUserData() {
         <% if (accountInfo) { %>
         const userDataRaw = <%- JSON.stringify(accountInfo) %>;
-        console.log('Loading user data:', userDataRaw);
 
         // Wait for DOM to be fully ready
         setTimeout(() => {
@@ -1116,7 +1115,6 @@
                   field.value = userDataRaw[key];
                 }
               }
-              console.log(`Populated ${key} with:`, field.value);
             }
           });
 
@@ -1218,12 +1216,10 @@
             // Add files
             if (coverPhotoInput.files[0]) {
               formData.append('coverPhoto', coverPhotoInput.files[0]);
-              console.log('Adding cover photo to upload');
             }
 
             if (profilePicInput.files[0]) {
               formData.append('profilePic', profilePicInput.files[0]);
-              console.log('Adding profile pic to upload');
             }
 
             // Collect and add text data
@@ -1270,7 +1266,6 @@
 
             formData.append('userData', JSON.stringify(userData));
 
-            console.log('Sending FormData with files and user data');
 
             // Send FormData
             fetch('/admin/user/update', {
@@ -1342,7 +1337,6 @@
               if (userData.children.length === 0) delete userData.children;
             }
 
-            console.log('Sending JSON data without files:', userData);
 
             // Send JSON
             fetch('/admin/user/update', {
@@ -1702,7 +1696,6 @@
             const formDataFields = new FormData(form);
             for (let [key, value] of formDataFields.entries()) {
               if (value.trim() === "") {
-                console.log(`Skipping empty field ${key}`);
                 continue;
               }
 
@@ -1740,7 +1733,6 @@
           // Add text data to FormData
           formData.append('userData', JSON.stringify(userData));
 
-          console.log('Sending updated user data with photos');
 
           // Send to backend with FormData (multipart/form-data)
           fetch('/admin/user/update', {

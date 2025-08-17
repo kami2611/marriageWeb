@@ -1092,115 +1092,6 @@
       });
 
       // Form submission
-      // document.getElementById('addUserForm').addEventListener('submit', function(e) {
-      //   e.preventDefault();
-
-      //   const submitBtn = document.getElementById('submitForm');
-      //   const originalText = submitBtn.textContent;
-
-      //   // Disable button and show loading
-      //   submitBtn.disabled = true;
-      //   submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Creating User...';
-
-      //   const formData = new FormData(this);
-      //   const userData = {};
-
-      //   // Convert FormData to object
-      //   for (let [key, value] of formData.entries()) {
-      //     if (value.trim() === '') continue; // Skip empty values
-
-      //     if (key.includes('[') && key.includes(']')) {
-      //       // Handle nested objects (education, children)
-      //       const match = key.match(/(\w+)\[(\d+)\]\[(\w+)\]/);
-      //       if (match) {
-      //         const [, field, index, subfield] = match;
-      //         if (!userData[field]) userData[field] = [];
-      //         if (!userData[field][index]) userData[field][index] = {};
-      //         userData[field][index][subfield] = value.trim();
-      //       }
-      //     } else if (key === 'hobbies' || key === 'languagesSpoken' || key === 'QualitiesThatYouCanBringToYourMarriage' || key === 'qualitiesYouNeedInYourPartner') {
-      //       // Handle comma-separated arrays
-      //       userData[key] = value.split(',').map(item => item.trim()).filter(item => item);
-      //     } else {
-      //       // Convert string booleans to actual booleans
-      //       if (value === 'true') {
-      //         userData[key] = true;
-      //       } else if (value === 'false') {
-      //         userData[key] = false;
-      //       } else if (key === 'age' || key === 'height' || key === 'siblings') {
-      //         // Convert numeric fields
-      //         const num = parseInt(value);
-      //         if (!isNaN(num)) userData[key] = num;
-      //       } else {
-      //         userData[key] = value.trim();
-      //       }
-      //     }
-      //   }
-
-      //   // Clean up education and children arrays - remove empty entries
-      //   if (userData.education) {
-      //     userData.education = userData.education.filter(item =>
-      //       item && (item.title || item.institute || item.year)
-      //     );
-      //     if (userData.education.length === 0) delete userData.education;
-      //   }
-
-      //   if (userData.children) {
-      //     userData.children = userData.children.filter(item =>
-      //       item && (item.name || item.age || item.livingLocation)
-      //     );
-      //     // Convert age to number for children
-      //     userData.children.forEach(child => {
-      //       if (child.age) {
-      //         const age = parseInt(child.age);
-      //         if (!isNaN(age)) child.age = age;
-      //       }
-      //     });
-      //     if (userData.children.length === 0) delete userData.children;
-      //   }
-
-      //   console.log('Sending user data:', userData); // Debug log
-
-      //   // Send to backend
-      //   fetch('/admin/user/add', {
-      //       method: 'POST',
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //       },
-      //       body: JSON.stringify(userData)
-      //     })
-      //     .then(response => response.json())
-      //     .then(data => {
-      //       if (data.success) {
-      //         showNotification('User Created', 'New user has been created successfully!', 'success');
-
-      //         // Reset form after delay
-      //         setTimeout(() => {
-      //           this.reset();
-      //           currentTabIndex = 0;
-      //           showTab(0);
-      //           document.getElementById('educationContainer').innerHTML = '';
-      //           document.getElementById('childrenContainer').innerHTML = '';
-      //           educationCount = 0;
-      //           childrenCount = 0;
-      //           usernameField.value = '';
-      //         }, 2000);
-      //       } else {
-      //         console.error('Backend error:', data.error);
-      //         showNotification('Error', data.error || 'Failed to create user', 'error');
-      //       }
-      //     })
-      //     .catch(error => {
-      //       console.error('Request error:', error);
-      //       showNotification('Error', 'Failed to create user. Please try again.', 'error');
-      //     })
-      //     .finally(() => {
-      //       // Re-enable button
-      //       submitBtn.disabled = false;
-      //       submitBtn.innerHTML = originalText;
-      //     });
-      // });
-      // Form submission
       document.getElementById('addUserForm').addEventListener('submit', function(e) {
         e.preventDefault();
 
@@ -1278,9 +1169,6 @@
           });
           if (userData.children.length === 0) delete userData.children;
         }
-
-        console.log('Sending user data:', userData); // Debug log
-
         // Send to backend
         fetch('/admin/user/add', {
             method: 'POST',

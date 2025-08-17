@@ -1916,6 +1916,7 @@ app.post("/api/requests/:requestId/respond", isLoggedIn, async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to update request" });
   }
 });
+// **ADMIN ONLY**: Route to preview which admin users need contact number updates
 
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {

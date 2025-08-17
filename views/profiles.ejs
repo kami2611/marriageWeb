@@ -743,7 +743,7 @@
             );
 
             updateButtonStates(threeColBtn, fourColBtn);
-            console.log('Switched to 3-column layout (Large cards)');
+
           });
 
           // 4-column layout (Compact cards)
@@ -759,7 +759,6 @@
             );
 
             updateButtonStates(fourColBtn, threeColBtn);
-            console.log('Switched to 4-column layout (Compact cards)');
           });
         }
       }
@@ -925,7 +924,6 @@
       // Function to open mobile filter with animation
       function openMobileFilterPanel() { // Renamed function
         if (mobileFilterOverlay && mobileFilterPanel) {
-          console.log('Opening mobile filter panel'); // Debug log
 
           // Show overlay
           mobileFilterOverlay.classList.remove('hidden');
@@ -943,15 +941,12 @@
 
           // Prevent background scrolling
           document.body.style.overflow = 'hidden';
-        } else {
-          console.log('Mobile filter elements not found'); // Debug log
-        }
+        } else {}
       }
 
       // Function to close mobile filter with animation
       function closeMobileFilterPanel() { // Renamed function
         if (mobileFilterOverlay && mobileFilterPanel) {
-          console.log('Closing mobile filter panel'); // Debug log
 
           // Start closing animations
           mobileFilterOverlay.classList.remove('opacity-100');
@@ -971,10 +966,8 @@
 
       // Open mobile filter
       if (mobileFilterBtn) {
-        console.log('Mobile filter button found'); // Debug log
         mobileFilterBtn.addEventListener('click', function(e) {
           e.preventDefault();
-          console.log('Mobile filter button clicked'); // Debug log
           openMobileFilterPanel();
         });
       } else {
@@ -983,10 +976,8 @@
 
       // Close mobile filter button
       if (closeMobileFilterBtn) {
-        console.log('Close mobile filter button found'); // Debug log
         closeMobileFilterBtn.addEventListener('click', function(e) {
           e.preventDefault();
-          console.log('Close button clicked'); // Debug log
           closeMobileFilterPanel();
         });
       } else {
@@ -997,7 +988,6 @@
       if (mobileFilterOverlay) {
         mobileFilterOverlay.addEventListener('click', function(e) {
           if (e.target === mobileFilterOverlay) {
-            console.log('Backdrop clicked'); // Debug log
             closeMobileFilterPanel();
           }
         });
@@ -1007,7 +997,6 @@
       if (mobileFilterForm) {
         mobileFilterForm.addEventListener('submit', function(e) {
           e.preventDefault();
-          console.log('Mobile filter form submitted'); // Debug log
 
           const formData = new FormData(mobileFilterForm);
           const params = new URLSearchParams();
@@ -1034,7 +1023,6 @@
       if (mobileClearFilters) {
         mobileClearFilters.addEventListener('click', function(e) {
           e.preventDefault();
-          console.log('Clear filters clicked'); // Debug log
           closeMobileFilterPanel();
 
           setTimeout(() => {
@@ -1047,19 +1035,8 @@
       // Close on escape key
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && !mobileFilterOverlay.classList.contains('hidden')) {
-          console.log('Escape key pressed'); // Debug log
           closeMobileFilterPanel();
         }
-      });
-
-      // Debug: Log all found elements
-      console.log('Mobile filter setup complete. Elements found:', {
-        mobileFilterBtn: !!mobileFilterBtn,
-        mobileFilterOverlay: !!mobileFilterOverlay,
-        mobileFilterPanel: !!mobileFilterPanel,
-        closeMobileFilterBtn: !!closeMobileFilterBtn,
-        mobileFilterForm: !!mobileFilterForm,
-        mobileClearFilters: !!mobileClearFilters
       });
     });
   </script>
