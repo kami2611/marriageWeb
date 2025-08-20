@@ -119,7 +119,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
+      mongoUrl: process.env.MONGODB_URI_DEVELOPMENT,
       collectionName: "sessions",
     }),
     cookie: { secure: false, httpOnly: true }, // set secure: true if using HTTPS
@@ -170,7 +170,7 @@ const upload = multer({ storage });
 app.set("view engine", "ejs");
 
 mongoose
-  .connect(process.env.MONGODB_URI, {})
+  .connect(process.env.MONGODB_URI_DEVELOPMENT, {})
   .then(() => {
     console.log(" Mongoose Server Started!");
   })
@@ -1368,7 +1368,7 @@ app.post("/admin/user/add", async (req, res) => {
       userData.celebrateKhatams = celebrateKhatams === "true";
     }
     if (willingToRelocate !== undefined && willingToRelocate !== "N/A") {
-      userData.willingToRelocate = willingToRelocate === "true";
+      userData.willingToRelocate = willingToRelocate;
     }
     if (allowParnterToWork !== undefined && allowParnterToWork !== "N/A") {
       userData.allowParnterToWork = allowParnterToWork === "true";
@@ -1413,28 +1413,26 @@ app.post("/admin/user/add", async (req, res) => {
       acceptSomeoneInOtherCountry !== undefined &&
       acceptSomeoneInOtherCountry !== "N/A"
     ) {
-      userData.acceptSomeoneInOtherCountry =
-        acceptSomeoneInOtherCountry === "true";
+      userData.acceptSomeoneInOtherCountry = acceptSomeoneInOtherCountry;
     }
     if (
       willingToSharePhotosUponRequest !== undefined &&
       willingToSharePhotosUponRequest !== "N/A"
     ) {
       userData.willingToSharePhotosUponRequest =
-        willingToSharePhotosUponRequest === "true";
+        willingToSharePhotosUponRequest;
     }
     if (
       willingToMeetUpOutside !== undefined &&
       willingToMeetUpOutside !== "N/A"
     ) {
-      userData.willingToMeetUpOutside = willingToMeetUpOutside === "true";
+      userData.willingToMeetUpOutside = willingToMeetUpOutside;
     }
     if (
       willingToConsiderANonUkCitizen !== undefined &&
       willingToConsiderANonUkCitizen !== "N/A"
     ) {
-      userData.willingToConsiderANonUkCitizen =
-        willingToConsiderANonUkCitizen === "true";
+      userData.willingToConsiderANonUkCitizen = willingToConsiderANonUkCitizen;
     }
 
     // Handle ARRAYS - only add if they have content

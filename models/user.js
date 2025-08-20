@@ -169,17 +169,9 @@ const userSchema = new mongoose.Schema({
   },
   livingArrangementsAfterMarriage: {
     type: String,
-    // enum: [
-    //   "live with parents",
-    //   "live alone",
-    //   "live with spouse",
-    //   "other",
-    //   "N/A",
-    // ],
   },
   futurePlans: {
     type: String,
-    // enum: ["settle abroad", "stay in current country", "other", "N/A"],
   },
   describeNature: {
     type: String,
@@ -207,7 +199,7 @@ const userSchema = new mongoose.Schema({
     },
   ],
   willingToRelocate: {
-    type: Boolean,
+    type: String,
   },
 
   //what are you looking for.
@@ -230,17 +222,17 @@ const userSchema = new mongoose.Schema({
     type: Boolean, // true = yes, false = no
   },
   acceptSomeoneInOtherCountry: {
-    type: Boolean, // true = yes, false = no
+    type: String, // true = yes, false = no
   },
   qualitiesYouNeedInYourPartner: [{ type: String }],
   lookingForASpouseThatIs: {
-    type: String, // e.g., "educated", "religious", "career-oriented"
+    type: String,
   },
   willingToSharePhotosUponRequest: {
-    type: Boolean, // true = yes, false = no
+    type: String,
   },
   willingToMeetUpOutside: {
-    type: Boolean, // true = yes, false = no
+    type: String, // true = yes, false = no
   },
   waliMyContactDetails: {
     type: String, // e.g., "wali's contact details"
@@ -266,7 +258,7 @@ const userSchema = new mongoose.Schema({
     type: String, // e.g., "any special information"
   },
   willingToConsiderANonUkCitizen: {
-    type: Boolean, // true = yes, false = no
+    type: String, // true = yes, false = no
   },
   profileSlug: {
     type: String,

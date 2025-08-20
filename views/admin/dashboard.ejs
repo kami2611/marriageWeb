@@ -126,7 +126,7 @@
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <i class="ri-search-line text-gray-400"></i>
               </div>
-              <input type="text" id="searchInput" placeholder="Search by username or name..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
+              <input type="text" id="searchInput" placeholder="Search by username/ name/ phone ..." class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white">
             </div>
           </div>
           <div class="flex gap-4">
@@ -195,20 +195,20 @@
       <div id="profileGrid" class="grid grid-cols-4 gap-6">
         <% if (users && users.length > 0) { %>
         <% users.forEach(user => { %>
-        <div class="profile-card bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover" data-username="<%= user.username %>" data-name="<%= user.name || user.username %>" data-registration-source="<%= user.registrationSource || 'unknown' %>">
-          <div class="aspect-[4/5] overflow-hidden">
+        <div class="profile-card bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover" data-waliMyContactDetails="<%= user.waliMyContactDetails || '' %>" data-username="<%= user.username %>" data-name="<%= user.name || user.username %>" data-contact="<%= user.contact || '' %>" data-registration-source="<%= user.registrationSource || 'unknown' %>">
+          <div class="aspect-[4/1] overflow-hidden">
             <% if (user.profilePic && user.profilePic.url) { %>
             <img src="<%= user.profilePic.url %>" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
             <% } else { %>
             <!-- Default placeholder based on gender -->
             <% if (user.gender === 'male') { %>
-            <img src="/images/boyavatar.png" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
+            <img src="/images/boyavatar.png" class="w-16 h-16 mx-auto my-4 rounded-full object-cover" alt="<%= user.name || user.username %>'s Profile">
             <% } else { %>
-            <img src="/images/girlavatar.png" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
+            <img src="/images/girlavatar.png" class="w-16 h-16 mx-auto my-4 rounded-full object-cover" alt="<%= user.name || user.username %>'s Profile">
             <% } %>
             <% } %>
           </div>
-          <div class="p-4">
+          <div class="p-3">
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-lg font-semibold text-gray-900">
                 <%=  user.name || user.username %>
@@ -424,8 +424,11 @@
           profileCards.forEach(card => {
             const name = card.getAttribute('data-name').toLowerCase();
             const username = card.getAttribute('data-username').toLowerCase();
+            const contact = card.getAttribute('data-contact').toLowerCase();
+            const waliMyContactDetailsRaw = card.getAttribute('data-waliMyContactDetails') || '';
+            const waliMyContactDetails = waliMyContactDetailsRaw.replace(/\D/g, '');
 
-            if (name.includes(searchTerm) || username.includes(searchTerm)) {
+            if (name.includes(searchTerm) || username.includes(searchTerm) || contact.includes(searchTerm) || waliMyContactDetails.includes(searchTerm)) {
               card.style.display = 'block';
             } else {
               card.style.display = 'none';

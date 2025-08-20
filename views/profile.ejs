@@ -240,7 +240,7 @@
 
                   <!-- Hidden canvas for generating image - UPDATED to be dynamic -->
                   <div id="profileCard" style="position: absolute; left: -9999px; top: -9999px;">
-                    <div id="shareCanvas" style="width: 450px; padding: 20px; background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%); border-radius: 16px; color: white; font-family: 'Roboto', sans-serif; font-size: 13px;">
+                    <div id="shareCanvas" style="width: 450px; padding: 20px; background: linear-gradient(135deg, #89cff0 0%, #FFE4E1 100%); border-radius: 16px; color: #2D3748; font-family: 'Roboto', sans-serif; font-size: 13px; border: 2px solid #E91E63;">
                       <!-- This will be populated dynamically by JavaScript -->
                     </div>
                   </div>
@@ -816,7 +816,7 @@
                           <% if (profile.willingToRelocate !== undefined) { %>
                           <div class="bg-white rounded-lg p-3 border border-gray-200">
                             <p class="text-sm text-gray-500">Willing to Relocate</p>
-                            <p class="text-gray-900"><%= profile.willingToRelocate ? 'Yes' : 'No' %></p>
+                            <p class="text-gray-900"><%= profile.willingToRelocate %> </p>
                           </div>
                           <% } %>
                         </div>
