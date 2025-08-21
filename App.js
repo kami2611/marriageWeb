@@ -119,7 +119,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI_DEVELOPMENT,
+      mongoUrl: process.env.MONGODB_URI,
       collectionName: "sessions",
     }),
     cookie: { secure: false, httpOnly: true }, // set secure: true if using HTTPS
@@ -170,7 +170,7 @@ const upload = multer({ storage });
 app.set("view engine", "ejs");
 
 mongoose
-  .connect(process.env.MONGODB_URI_DEVELOPMENT, {})
+  .connect(process.env.MONGODB_URI, {})
   .then(() => {
     console.log(" Mongoose Server Started!");
   })
