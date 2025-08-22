@@ -98,6 +98,80 @@
     .gradient-bg {
       background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
     }
+
+    /* Review card hover effects */
+    .group:hover .w-12 {
+      transform: scale(1.1);
+      transition: transform 0.3s ease;
+    }
+
+    /* Staggered animation for reviews */
+    .reviews-grid {
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Review quote styling */
+    .review-quote::before {
+      content: '"';
+      font-size: 2rem;
+      color: #E91E63;
+      opacity: 0.3;
+      font-family: 'Playfair Display', serif;
+    }
+
+    /* Section Distinguishability - Reviews */
+    .reviews-section {
+      background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+      position: relative;
+    }
+
+
+
+    /* Review Cards Hover Effect */
+    .reviews-section .group:hover {
+      transform: translateY(-8px);
+    }
+
+    .reviews-section .group:hover .w-12 {
+      transform: scale(1.15) rotate(5deg);
+      transition: transform 0.4s ease;
+    }
+
+    /* Share Experience Card Animation */
+    .reviews-section a[target="_blank"]:hover {
+      animation: pulse-glow 0.6s ease-in-out;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 20px rgba(59, 130, 246, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+      }
+    }
+
+    /* Section Distinguishability - Newsletter */
+    .newsletter-section {
+      background: linear-gradient(135deg, #fef7ff 0%, #f3e8ff 50%, #fef7ff 100%);
+      border-top: 3px solid #E91E63;
+      border-bottom: 3px solid #673AB7;
+    }
   </style>
 </head>
 <% if (isProd && !isAdmin) { %>
@@ -180,6 +254,334 @@
         </div>
       </div>
     </div>
+
+    <!-- **NEW**: Reviews Section -->
+    <div class="mt-24 mb-16 py-16 px-6 reviews-section relative overflow-hidden" style="background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 30%, #fce7f3 70%, #faf5ff 100%);">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.15) 0%, transparent 50%), radial-gradient(circle at 80% 70%, rgba(147, 51, 234, 0.15) 0%, transparent 50%);"></div>
+
+      <div class="relative max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-bold text-gray-800 mb-4 font-['Playfair_Display']">What People Say About Us</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">Real reviews from our community members who found their perfect match through D'amour Muslim</p>
+          <div class="flex items-center justify-center gap-2 mt-4">
+            <div class="flex text-yellow-400">
+              <i class="ri-star-fill text-xl"></i>
+              <i class="ri-star-fill text-xl"></i>
+              <i class="ri-star-fill text-xl"></i>
+              <i class="ri-star-fill text-xl"></i>
+              <i class="ri-star-fill text-xl"></i>
+            </div>
+            <span class="text-gray-600 font-medium ml-2">4.9/5 from 104+ reviews</span>
+          </div>
+        </div>
+
+        <!-- Reviews Grid -->
+        <div class="grid md:grid-cols-3 gap-8 mb-16">
+          <!-- Review 1 -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 hover:bg-white/90 hover:border-blue-300/70 hover:shadow-xl transition-all duration-300 group">
+            <div class="flex items-center mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                A
+              </div>
+              <div class="ml-4">
+                <h4 class="font-semibold text-gray-800">Ahmed K.</h4>
+                <div class="flex text-yellow-400 text-sm">
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-600 leading-relaxed mb-4 review-quote">"Found my life partner through D'amour Muslim. The platform is genuine and focuses on Islamic values. Highly recommended for serious Muslims looking for marriage."</p>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="ri-time-line mr-1"></i>
+              <span>2 months ago</span>
+            </div>
+          </div>
+
+          <!-- Review 2 -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 hover:bg-white/90 hover:border-blue-300/70 hover:shadow-xl transition-all duration-300 group">
+            <div class="flex items-center mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                F
+              </div>
+              <div class="ml-4">
+                <h4 class="font-semibold text-gray-800">Fatima S.</h4>
+                <div class="flex text-yellow-400 text-sm">
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-600 leading-relaxed mb-4 review-quote">"Excellent platform for Muslim matrimony. Clean interface, authentic profiles, and great customer support. Alhamdulillah, I found my spouse here!"</p>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="ri-time-line mr-1"></i>
+              <span>1 month ago</span>
+            </div>
+          </div>
+
+          <!-- Review 3 -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 hover:bg-white/90 hover:border-blue-300/70 hover:shadow-xl transition-all duration-300 group">
+            <div class="flex items-center mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                M
+              </div>
+              <div class="ml-4">
+                <h4 class="font-semibold text-gray-800">Mohammad A.</h4>
+                <div class="flex text-yellow-400 text-sm">
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-600 leading-relaxed mb-4 review-quote">"Best Muslim marriage platform I've used. Privacy-focused, Islamic approach, and genuinely helps connect compatible matches. May Allah bless this service."</p>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="ri-time-line mr-1"></i>
+              <span>3 weeks ago</span>
+            </div>
+          </div>
+
+          <!-- Review 4 -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 hover:bg-white/90 hover:border-blue-300/70 hover:shadow-xl transition-all duration-300 group">
+            <div class="flex items-center mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                Z
+              </div>
+              <div class="ml-4">
+                <h4 class="font-semibold text-gray-800">Zainab H.</h4>
+                <div class="flex text-yellow-400 text-sm">
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-600 leading-relaxed mb-4 review-quote">"Professional and respectful platform. The team is very supportive and the matching system works perfectly. Found my naseeb through this blessed platform!"</p>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="ri-time-line mr-1"></i>
+              <span>1 week ago</span>
+            </div>
+          </div>
+
+          <!-- Review 5 -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 hover:bg-white/90 hover:border-blue-300/70 hover:shadow-xl transition-all duration-300 group">
+            <div class="flex items-center mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                Y
+              </div>
+              <div class="ml-4">
+                <h4 class="font-semibold text-gray-800">Yusuf M.</h4>
+                <div class="flex text-yellow-400 text-sm">
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-600 leading-relaxed mb-4 review-quote">"Trustworthy and reliable service for Muslim matrimony. Great features, easy to use, and most importantly - it works! Grateful for this platform."</p>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="ri-time-line mr-1"></i>
+              <span>2 weeks ago</span>
+            </div>
+          </div>
+
+          <!-- Review 6 -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-2xl p-6 border border-blue-200/50 hover:bg-white/90 hover:border-blue-300/70 hover:shadow-xl transition-all duration-300 group">
+            <div class="flex items-center mb-4">
+              <div class="w-12 h-12 bg-gradient-to-br from-secondary to-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                A
+              </div>
+              <div class="ml-4">
+                <h4 class="font-semibold text-gray-800">Aisha R.</h4>
+                <div class="flex text-yellow-400 text-sm">
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                </div>
+              </div>
+            </div>
+            <p class="text-gray-600 leading-relaxed mb-4 review-quote">"Amazing experience! The platform maintains Islamic values while providing modern matchmaking features. Clean, professional, and effective. Barakallahu feeki!"</p>
+            <div class="flex items-center text-sm text-gray-500">
+              <i class="ri-time-line mr-1"></i>
+              <span>4 days ago</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Review CTA -->
+        <!-- Share Your Experience - Integrated -->
+        <div class="mt-12 relative">
+          <div class="bg-white/60 backdrop-blur-sm rounded-2xl p-8 border-2 border-blue-300/60 relative overflow-hidden">
+            <!-- Decorative elements -->
+            <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-400/20 to-purple-500/20 rounded-full -translate-y-8 translate-x-8"></div>
+            <div class="absolute bottom-0 left-0 w-24 h-24 bg-gradient-to-tr from-purple-400/20 to-blue-500/20 rounded-full translate-y-6 -translate-x-6"></div>
+
+            <div class="relative text-center">
+              <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full mb-6 shadow-lg">
+                <i class="ri-heart-add-line text-3xl text-white"></i>
+              </div>
+              <h3 class="text-2xl font-bold text-gray-800 mb-4 font-['Playfair_Display']">Share Your Experience</h3>
+              <p class="text-gray-700 mb-8 text-lg leading-relaxed max-w-xl mx-auto">
+                Help others by sharing your journey with D'amour Muslim. Your review matters to our growing community!
+              </p>
+
+              <!-- Enhanced CTA Button -->
+              <a href="https://www.google.com/maps/place/D'Amour+Muslim/@51.528607,-0.4312449,60135m/data=!3m1!1e3!4m8!3m7!1s0x61837d7f1b1f36ff:0xd87103e4ee1a219e!8m2!3d51.5286416!4d-0.1015987!9m1!1b1!16s%2Fg%2F11xmnzvdcg?entry=ttu&g_ep=EgoyMDI1MDgxOS4wIKXMDSoASAFQAw%3D%3D" target="_blank" class="group inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg rounded-2xl hover:from-blue-700 hover:to-purple-700 hover:shadow-2xl transform hover:-translate-y-2 transition-all duration-300 ripple">
+                <i class="ri-star-line text-2xl group-hover:text-yellow-300 transition-colors duration-300"></i>
+                <span>Write a Review on Google Maps</span>
+                <i class="ri-external-link-line text-xl group-hover:translate-x-1 transition-transform duration-300"></i>
+              </a>
+
+              <!-- Trust indicators -->
+              <div class="flex items-center justify-center gap-6 mt-8 text-gray-600 text-sm">
+                <div class="flex items-center gap-2">
+                  <i class="ri-time-line text-blue-500"></i>
+                  <span>Takes 2 minutes</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="ri-shield-check-line text-blue-500"></i>
+                  <span>Verified platform</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <i class="ri-heart-line text-blue-500"></i>
+                  <span>Help others find love</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div> <!-- Close relative max-w-7xl mx-auto -->
+    </div> <!-- Close reviews-section -->
+    </div>
+
+    <!-- **NEW**: Newsletter Section -->
+    <div class="mt-32 mb-16 relative overflow-hidden">
+      <!-- Background Pattern -->
+      <div class="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/10"></div>
+      <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 25% 25%, rgba(233, 30, 99, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(103, 58, 183, 0.1) 0%, transparent 50%);"></div>
+
+      <div class="relative max-w-4xl mx-auto px-6 py-16">
+        <div class="text-center mb-12">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-primary to-secondary rounded-full mb-6 animate-pulse">
+            <i class="ri-mail-heart-line text-3xl text-white"></i>
+          </div>
+          <h2 class="text-4xl font-bold text-gray-800 mb-4 font-['Playfair_Display']">
+            Don't Miss Your Perfect Match
+          </h2>
+          <p class="text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            Subscribe to our newsletter and be the first to know about new compatible profiles, matrimony tips, and success stories from our community.
+          </p>
+        </div>
+
+        <!-- Newsletter Form -->
+        <form id="newsletterForm" class="max-w-xl mx-auto">
+          <div class="bg-white rounded-2xl p-8 material-shadow-elevated border border-primary/10">
+            <div class="space-y-4">
+              <!-- Name Field -->
+              <div>
+                <label for="newsletter-name" class="block text-sm font-semibold text-gray-700 mb-2">
+                  Full Name <span class="text-primary">*</span>
+                </label>
+                <input type="text" id="newsletter-name" name="name" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-button focus:border-primary focus:ring-0 transition-colors duration-300 text-gray-900 placeholder-gray-400" placeholder="Enter your full name">
+              </div>
+
+              <!-- Email Field -->
+              <div>
+                <label for="newsletter-email" class="block text-sm font-semibold text-gray-700 mb-2">
+                  Email Address <span class="text-primary">*</span>
+                </label>
+                <input type="email" id="newsletter-email" name="email" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-button focus:border-primary focus:ring-0 transition-colors duration-300 text-gray-900 placeholder-gray-400" placeholder="Enter your email address">
+              </div>
+
+              <!-- Gender Field -->
+              <div>
+                <label for="newsletter-gender" class="block text-sm font-semibold text-gray-700 mb-2">
+                  I'm looking for <span class="text-primary">*</span>
+                </label>
+                <select id="newsletter-gender" name="interestedIn" required class="w-full px-4 py-3 border-2 border-gray-200 rounded-button focus:border-primary focus:ring-0 transition-colors duration-300 text-gray-900">
+                  <option value="">Select preference</option>
+                  <option value="male">Muslim Men</option>
+                  <option value="female">Muslim Women</option>
+                  <option value="both">Both</option>
+                </select>
+              </div>
+
+              <!-- Age Range Field -->
+              <div>
+                <label for="newsletter-age" class="block text-sm font-semibold text-gray-700 mb-2">
+                  Preferred Age Range
+                </label>
+                <select id="newsletter-age" name="preferredAgeRange" class="w-full px-4 py-3 border-2 border-gray-200 rounded-button focus:border-primary focus:ring-0 transition-colors duration-300 text-gray-900">
+                  <option value="">Any age</option>
+                  <option value="18-25">18-25 years</option>
+                  <option value="26-30">26-30 years</option>
+                  <option value="31-35">31-35 years</option>
+                  <option value="36-40">36-40 years</option>
+                  <option value="41+">41+ years</option>
+                </select>
+              </div>
+
+              <!-- Submit Button -->
+              <button type="submit" id="newsletter-submit" class="w-full gradient-bg text-white font-bold py-4 px-6 rounded-button hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 ripple text-lg">
+                <i class="ri-heart-line mr-2"></i>
+                <span>Subscribe & Find Love</span>
+              </button>
+            </div>
+
+            <!-- Privacy Notice -->
+            <p class="text-xs text-gray-500 mt-4 text-center leading-relaxed">
+              By subscribing, you agree to receive matrimony updates and match notifications.
+              We respect your privacy and won't spam you. Unsubscribe anytime.
+            </p>
+          </div>
+        </form>
+
+        <!-- Success Message (Hidden by default) -->
+        <div id="newsletter-success" class="hidden max-w-xl mx-auto mt-6">
+          <div class="bg-green-50 border border-green-200 rounded-2xl p-6 text-center">
+            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="ri-check-line text-2xl text-green-600"></i>
+            </div>
+            <h3 class="text-xl font-bold text-green-800 mb-2">Welcome to D'amour Muslim!</h3>
+            <p class="text-green-700">
+              Thank you for subscribing! You'll receive personalized match updates and matrimony tips soon.
+            </p>
+          </div>
+        </div>
+
+        <!-- Trust Indicators -->
+        <div class="flex items-center justify-center gap-8 mt-12 text-gray-500 text-sm">
+          <div class="flex items-center gap-2">
+            <i class="ri-shield-check-line text-primary"></i>
+            <span>Privacy Protected</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="ri-spam-2-line text-primary"></i>
+            <span>No Spam Promise</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="ri-mail-unread-line text-primary"></i>
+            <span>Easy Unsubscribe</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <%- include('partials/footer') %>
@@ -210,7 +612,61 @@
       });
     });
   </script>
+  <script id="newsletter-handler">
+    document.addEventListener('DOMContentLoaded', function() {
+      const newsletterForm = document.getElementById('newsletterForm');
+      const submitButton = document.getElementById('newsletter-submit');
+      const successMessage = document.getElementById('newsletter-success');
 
+      if (newsletterForm) {
+        newsletterForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+
+          // Get form data
+          const formData = new FormData(this);
+          const data = Object.fromEntries(formData.entries());
+
+          // Update button state
+          const originalText = submitButton.innerHTML;
+          submitButton.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Subscribing...';
+          submitButton.disabled = true;
+
+          try {
+            const response = await fetch('/api/newsletter/subscribe', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              // Hide form and show success message
+              newsletterForm.style.display = 'none';
+              successMessage.classList.remove('hidden');
+
+              // Scroll to success message
+              successMessage.scrollIntoView({
+                behavior: 'smooth',
+                block: 'center'
+              });
+            } else {
+              alert(result.error || 'Failed to subscribe. Please try again.');
+            }
+          } catch (error) {
+            console.error('Newsletter subscription error:', error);
+            alert('Failed to subscribe. Please check your connection and try again.');
+          } finally {
+            // Reset button state
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+          }
+        });
+      }
+    });
+  </script>
 </body>
 
 </html>

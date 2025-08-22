@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Requests Management - D'amour Muslim Admin</title>
+  <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#E91E63',
+            secondary: '#673AB7'
+          },
+          borderRadius: {
+            'button': '8px'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <style>
+    .material-shadow {
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .gradient-bg {
+      background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
+    }
+
+    .status-badge {
+      transition: all 0.3s ease;
+    }
+
+    .request-card {
+      transition: all 0.3s ease;
+    }
+
+    .request-card:hover {
+      transform: translateY(-1px);
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50 font-['Roboto']">
+  <header class="fixed top-0 left-0 right-0 bg-white material-shadow z-50">
+    <div class="flex items-center justify-between px-6 h-16">
+      <div class="flex items-center">
+        <h1 class="text-2xl font-bold text-primary font-['Playfair_Display']">
+          <a href="/admin/dashboard" class="hover:text-pink-600 transition-colors duration-300 cursor-pointer">
+            D'amour Muslim
+          </a>
+        </h1>
+        <span class="ml-4 px-3 py-1 bg-secondary/10 text-secondary text-sm rounded-full font-medium">Requests</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <a href="/admin/dashboard" class="px-4 py-2 text-gray-600 hover:text-primary transition-colors duration-300">
+          <i class="ri-arrow-left-line mr-2"></i>Back to Dashboard
+        </a>
+        <button id="logoutBtn" class="px-6 py-2 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 !rounded-button whitespace-nowrap">
+          <i class="ri-logout-box-line mr-2"></i>Logout
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="pt-24 pb-16 min-h-screen">
+    <div class="max-w-7xl mx-auto px-6">
+      <!-- Page Header -->
+      <div class="bg-white rounded-2xl p-6 material-shadow mb-8">
+        <div class="flex flex-col lg:flex-row gap-4 items-center justify-between">
+          <div>
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Requests Management</h2>
+            <p class="text-gray-600">Manage all user connection requests</p>
+          </div>
+          <div class="flex items-center gap-4">
+            <!-- Filter Dropdown -->
+            <div class="relative">
+              <select id="statusFilter" class="px-4 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary bg-white text-gray-900">
+                <option value="all" <%= currentFilter === 'all' ? 'selected' : '' %>>All Requests</option>
+                <option value="pending" <%= currentFilter === 'pending' ? 'selected' : '' %>>Pending</option>
+                <option value="accepted" <%= currentFilter === 'accepted' ? 'selected' : '' %>>Accepted</option>
+                <option value="rejected" <%= currentFilter === 'rejected' ? 'selected' : '' %>>Rejected</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
+              <i class="ri-mail-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">Total Requests</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.total %></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-yellow-100 text-yellow-600">
+              <i class="ri-time-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">Pending</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.pending %></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-green-100 text-green-600">
+              <i class="ri-check-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">Accepted</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.accepted %></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl p-6 material-shadow">
+          <div class="flex items-center">
+            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-red-100 text-red-600">
+              <i class="ri-close-line text-xl"></i>
+            </div>
+            <div class="ml-4">
+              <p class="text-sm text-gray-500">Rejected</p>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.rejected %></p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Requests List -->
+      <div class="bg-white rounded-2xl material-shadow overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h3 class="text-lg font-semibold text-gray-900">
+            <%= currentFilter === 'all' ? 'All Requests' : currentFilter.charAt(0).toUpperCase() + currentFilter.slice(1) + ' Requests' %>
+            <span class="text-sm text-gray-500 font-normal">(<%= requests.length %> found)</span>
+          </h3>
+        </div>
+
+        <% if (requests && requests.length > 0) { %>
+        <div class="divide-y divide-gray-200">
+          <% requests.forEach(request => { %>
+          <div class="request-card p-6 hover:bg-gray-50">
+            <div class="flex items-center justify-between">
+              <!-- Request Info -->
+              <div class="flex-1">
+                <div class="flex items-center gap-4 mb-3">
+                  <!-- From User -->
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
+                      <i class="ri-user-line text-primary"></i>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-gray-900">
+                        <%= request.from?.name || request.from?.username || 'Unknown' %>
+                      </p>
+                      <p class="text-sm text-gray-600">
+                        @<%= request.from?.username || 'unknown' %> •
+                        <%= request.from?.age ? request.from.age + ' yrs' : 'Age N/A' %> •
+                        <%= request.from?.gender?.charAt(0)?.toUpperCase() + request.from?.gender?.slice(1) || 'Gender N/A' %>
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        <%= request.from?.city ? request.from.city + ', ' : '' %><%= request.from?.country || 'Location N/A' %>
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- Arrow -->
+                  <div class="px-3">
+                    <i class="ri-arrow-right-line text-gray-400 text-xl"></i>
+                  </div>
+
+                  <!-- To User -->
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
+                      <i class="ri-user-line text-secondary"></i>
+                    </div>
+                    <div>
+                      <p class="font-semibold text-gray-900">
+                        <%= request.to?.name || request.to?.username || 'Unknown' %>
+                      </p>
+                      <p class="text-sm text-gray-600">
+                        @<%= request.to?.username || 'unknown' %> •
+                        <%= request.to?.age ? request.to.age + ' yrs' : 'Age N/A' %> •
+                        <%= request.to?.gender?.charAt(0)?.toUpperCase() + request.to?.gender?.slice(1) || 'Gender N/A' %>
+                      </p>
+                      <p class="text-xs text-gray-500">
+                        <%= request.to?.city ? request.to.city + ', ' : '' %><%= request.to?.country || 'Location N/A' %>
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Request Meta -->
+                <div class="flex items-center gap-4 text-sm text-gray-500">
+                  <div class="flex items-center gap-1">
+                    <i class="ri-time-line"></i>
+                    <span>
+                      <%= request.createdAt ? new Date(request.createdAt).toLocaleDateString('en-US', { 
+                        month: 'short', 
+                        day: 'numeric', 
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                      }) : 'Date N/A' %>
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <i class="ri-fingerprint-line"></i>
+                    <span class="font-mono text-xs">ID: <%= request._id.toString().substring(0, 8) %>...</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Status & Actions -->
+              <div class="flex items-center gap-4">
+                <!-- Status Badge -->
+                <div>
+                  <% 
+                    let statusClass = 'bg-gray-100 text-gray-600';
+                    let statusIcon = 'ri-question-line';
+                    
+                    if (request.status === 'pending') {
+                      statusClass = 'bg-yellow-100 text-yellow-600';
+                      statusIcon = 'ri-time-line';
+                    } else if (request.status === 'accepted') {
+                      statusClass = 'bg-green-100 text-green-600';
+                      statusIcon = 'ri-check-line';
+                    } else if (request.status === 'rejected') {
+                      statusClass = 'bg-red-100 text-red-600';
+                      statusIcon = 'ri-close-line';
+                    }
+                  %>
+                  <span class="status-badge px-3 py-1 <%= statusClass %> text-sm rounded-full font-medium inline-flex items-center gap-1">
+                    <i class="<%= statusIcon %>"></i>
+                    <%= request.status.charAt(0).toUpperCase() + request.status.slice(1) %>
+                  </span>
+                </div>
+
+                <!-- View Profile Buttons -->
+                <div class="flex gap-2">
+                  <button class="view-profile-btn px-3 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 !rounded-button text-sm" data-user-slug="<%= request.from?.profileSlug %>" title="View <%= request.from?.name || request.from?.username %>'s Profile">
+                    <i class="ri-eye-line mr-1"></i>From
+                  </button>
+                  <button class="view-profile-btn px-3 py-2 bg-purple-500 text-white hover:bg-purple-600 transition-all duration-300 !rounded-button text-sm" data-user-slug="<%= request.to?.profileSlug %>" title="View <%= request.to?.name || request.to?.username %>'s Profile">
+                    <i class="ri-eye-line mr-1"></i>To
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+        <% } else { %>
+        <!-- No requests found -->
+        <div class="text-center py-16">
+          <div class="max-w-md mx-auto">
+            <div class="mb-4">
+              <i class="ri-mail-line text-6xl text-gray-300"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-600 mb-2">No Requests Found</h3>
+            <p class="text-gray-500 mb-6">
+              <%= currentFilter === 'all' ? 'There are no requests in the system yet.' : `No ${currentFilter} requests found.` %>
+            </p>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Status Filter
+      const statusFilter = document.getElementById('statusFilter');
+      if (statusFilter) {
+        statusFilter.addEventListener('change', function() {
+          const selectedStatus = this.value;
+          const url = selectedStatus === 'all' ?
+            '/admin/requests' :
+            `/admin/requests?status=${selectedStatus}`;
+          window.location.href = url;
+        });
+      }
+
+      // View Profile buttons
+      const viewProfileBtns = document.querySelectorAll('.view-profile-btn');
+      viewProfileBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const userSlug = this.getAttribute('data-user-slug');
+          if (userSlug) {
+            window.open(`/profiles/${userSlug}`, '_blank');
+          } else {
+            alert('Profile not available');
+          }
+        });
+      });
+
+      // Logout button
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          if (confirm('Are you sure you want to logout?')) {
+            window.location.href = '/logout';
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

@@ -68,6 +68,7 @@ async function generateUniqueSlug(user) {
   return slug;
 }
 const User = require("./models/user");
+const Newsletter = require("./models/Newsletter");
 const path = require("path");
 const Request = require("./models/Request");
 const isLoggedIn = require("./middlewares/isLoggedIn");
@@ -1005,61 +1006,6 @@ app.get("/admin/addUser", (req, res) => {
   if (!req.session.isAdmin) return res.redirect("/admin");
   res.render("admin/addUser");
 });
-// app.get("/admin/dashboard", async (req, res) => {
-//   if (!req.session.isAdmin) {
-//     return res.redirect("/admin");
-//   }
-
-//   try {
-//     // Get all users
-//     const users = await User.find({}).sort({ createdAt: -1, _id: -1 });
-
-//     // Calculate stats
-//     const totalUsers = users.length;
-//     const activeUsers = users.filter(
-//       (user) =>
-//         user.name && user.age && user.city && (user.contact || user.aboutMe)
-//     ).length;
-
-//     // Count users created this month
-//     const startOfMonth = new Date();
-//     startOfMonth.setDate(1);
-//     startOfMonth.setHours(0, 0, 0, 0);
-//     const newThisMonth = users.filter(
-//       (user) => user.createdAt && new Date(user.createdAt) >= startOfMonth
-//     ).length;
-//     const byAdmin = users.filter(
-//       (user) => user.registrationSource === "admin"
-//     ).length;
-//     const bySelf = users.filter(
-//       (user) => user.registrationSource === "register"
-//     ).length;
-//     const byUnknown = users.filter(
-//       (user) =>
-//         !user.registrationSource || user.registrationSource === "unknown"
-//     ).length;
-//     // Count accepted requests (matches)
-//     const acceptedRequests = await Request.countDocuments({
-//       status: "accepted",
-//     });
-//     const matchesMade = Math.floor(acceptedRequests / 2); // Each match involves 2 people
-
-//     const stats = {
-//       totalUsers,
-//       activeUsers,
-//       matchesMade,
-//       newThisMonth,
-//     };
-
-//     res.render("admin/dashboard", { users, stats });
-//   } catch (error) {
-//     console.error("Dashboard error:", error);
-//     res.render("admin/dashboard", {
-//       users: [],
-//       stats: { totalUsers: 0, activeUsers: 0, matchesMade: 0, newThisMonth: 0 },
-//     });
-//   }
-// });
 app.get("/admin/dashboard", async (req, res) => {
   if (!req.session.isAdmin) {
     return res.redirect("/admin");
@@ -1914,7 +1860,194 @@ app.post("/api/requests/:requestId/respond", isLoggedIn, async (req, res) => {
     res.status(500).json({ success: false, error: "Failed to update request" });
   }
 });
-// **ADMIN ONLY**: Route to preview which admin users need contact number updates
+// Admin Requests Management Route
+app.get("/admin/requests", async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.redirect("/admin");
+  }
+
+  try {
+    const { status } = req.query;
+
+    // Build filter object
+    const filter = {};
+    if (status && ["pending", "accepted", "rejected"].includes(status)) {
+      filter.status = status;
+    }
+
+    // Get all requests with populated user data
+    const requests = await Request.find(filter)
+      .populate(
+        "from",
+        "username name gender age city country createdAt profileSlug"
+      )
+      .populate(
+        "to",
+        "username name gender age city country createdAt profileSlug"
+      )
+      .sort({ createdAt: -1 });
+
+    // Calculate stats
+    const totalRequests = await Request.countDocuments({});
+    const pendingRequests = await Request.countDocuments({ status: "pending" });
+    const acceptedRequests = await Request.countDocuments({
+      status: "accepted",
+    });
+    const rejectedRequests = await Request.countDocuments({
+      status: "rejected",
+    });
+
+    const stats = {
+      total: totalRequests,
+      pending: pendingRequests,
+      accepted: acceptedRequests,
+      rejected: rejectedRequests,
+    };
+
+    res.render("admin/requests", {
+      requests,
+      stats,
+      currentFilter: status || "all",
+    });
+  } catch (error) {
+    console.error("Admin requests error:", error);
+    res.render("admin/requests", {
+      requests: [],
+      stats: { total: 0, pending: 0, accepted: 0, rejected: 0 },
+      currentFilter: "all",
+    });
+  }
+});
+app.post("/api/newsletter/subscribe", async (req, res) => {
+  try {
+    const { name, email, interestedIn, preferredAgeRange } = req.body;
+
+    // Validate required fields
+    if (!name || !email || !interestedIn) {
+      return res.status(400).json({
+        success: false,
+        error: "Name, email, and preference are required",
+      });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: "Please provide a valid email address",
+      });
+    }
+
+    // Check if email already exists
+    const existingSubscriber = await Newsletter.findOne({
+      email: email.toLowerCase(),
+    });
+    if (existingSubscriber) {
+      if (existingSubscriber.isActive) {
+        return res.status(400).json({
+          success: false,
+          error: "This email is already subscribed to our newsletter",
+        });
+      } else {
+        // Reactivate existing subscriber
+        existingSubscriber.isActive = true;
+        existingSubscriber.name = name;
+        existingSubscriber.interestedIn = interestedIn;
+        existingSubscriber.preferredAgeRange = preferredAgeRange || null;
+        existingSubscriber.subscribedAt = new Date();
+        existingSubscriber.unsubscribedAt = null;
+
+        await existingSubscriber.save();
+
+        return res.json({
+          success: true,
+          message: "Welcome back! Your subscription has been reactivated.",
+        });
+      }
+    }
+
+    // Create new newsletter subscription
+    const newSubscriber = new Newsletter({
+      name: name.trim(),
+      email: email.toLowerCase().trim(),
+      interestedIn,
+      preferredAgeRange: preferredAgeRange || null,
+      source: "website",
+    });
+
+    await newSubscriber.save();
+
+    console.log("New newsletter subscriber:", newSubscriber.email);
+
+    res.json({
+      success: true,
+      message: "Successfully subscribed to newsletter!",
+    });
+  } catch (error) {
+    console.error("Newsletter subscription error:", error);
+
+    if (error.code === 11000) {
+      // Duplicate email error
+      return res.status(400).json({
+        success: false,
+        error: "This email is already subscribed",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      error: "Failed to subscribe. Please try again later.",
+    });
+  }
+});
+
+// Admin route to view newsletter subscribers
+app.get("/admin/newsletter", async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.redirect("/admin");
+  }
+
+  try {
+    const subscribers = await Newsletter.find({ isActive: true }).sort({
+      subscribedAt: -1,
+    });
+
+    const stats = {
+      total: subscribers.length,
+      male: subscribers.filter((s) => s.interestedIn === "male").length,
+      female: subscribers.filter((s) => s.interestedIn === "female").length,
+      both: subscribers.filter((s) => s.interestedIn === "both").length,
+    };
+
+    res.render("admin/newsletter", { subscribers, stats });
+  } catch (error) {
+    console.error("Newsletter admin error:", error);
+    res.render("admin/newsletter", {
+      subscribers: [],
+      stats: { total: 0, male: 0, female: 0, both: 0 },
+    });
+  }
+});
+
+// Unsubscribe route (for email links)
+app.get("/newsletter/unsubscribe/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const subscriber = await Newsletter.findOne({ email: email.toLowerCase() });
+    if (subscriber) {
+      subscriber.isActive = false;
+      subscriber.unsubscribedAt = new Date();
+      await subscriber.save();
+    }
+
+    res.render("newsletter/unsubscribe", { email });
+  } catch (error) {
+    console.error("Newsletter unsubscribe error:", error);
+    res.status(500).send("Error unsubscribing");
+  }
+});
 
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {
