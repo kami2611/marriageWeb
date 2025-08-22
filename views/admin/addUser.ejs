@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Country 
-Nationality 
-State/ province 
-City
-Willing to relocate 
-Living arrangements After marriage 
-Future plans 
-Accept someone in other country 
-Willing to share photos upon request 
-Willing to meet up outside 
-Willing to consider a Non-UK citizen -->
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>D'amour Muslim - Add New User</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="manifest" href="/images/site.webmanifest">
+  <meta name="theme-color" content="#E91E63">
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
   <script>
     tailwind.config = {
@@ -915,65 +910,7 @@ Willing to consider a Non-UK citizen -->
     </div>
   </main>
 
-  <footer class="gradient-bg text-white">
-    <div class="max-w-6xl mx-auto px-6 py-12">
-      <div class="grid md:grid-cols-3 gap-8 mb-8">
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Connect With Us</h4>
-          <div class="flex gap-4">
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-facebook-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-instagram-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-twitter-fill ri-lg"></i>
-            </a>
-            <a href="#" class="w-10 h-10 flex items-center justify-center bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300">
-              <i class="ri-youtube-fill ri-lg"></i>
-            </a>
-          </div>
-        </div>
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">Contact</h4>
-          <div class="space-y-2">
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-mail-line"></i>
-              </div>
-              <span>damourmuslim@gmail.com</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-phone-line"></i>
-              </div>
-              <span>+447454516156</span>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="w-5 h-5 flex items-center justify-center">
-                <i class="ri-map-pin-line"></i>
-              </div>
-              <span>London, UK</span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <h4 class="text-xl font-semibold mb-4 font-['Playfair_Display']">About Us</h4>
-          <div class="space-y-2">
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Our Story</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Success Stories</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Privacy Policy</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Terms of Service</a>
-            <a href="#" class="block hover:text-pink-200 transition-colors duration-300">Help Center</a>
-          </div>
-        </div>
-      </div>
-      <div class="border-t border-white border-opacity-20 pt-8 text-center">
-        <p class="text-pink-100">&copy; 2025 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
-      </div>
-    </div>
-  </footer>
+  <%- include('partials/footer') %>
 
   <script id="ripple-effects">
     document.addEventListener('DOMContentLoaded', function() {
