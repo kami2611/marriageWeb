@@ -162,6 +162,18 @@
         flex-shrink: 0;
       }
     }
+
+    .char-counter {
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      transition: color 0.3s ease;
+      display: flex;
+      align-items: center;
+    }
+
+    .char-counter i {
+      font-size: 0.75rem;
+    }
   </style>
 </head>
 <% if (isProd && !isAdmin) { %>
@@ -1210,7 +1222,28 @@
 
           submitBtn.disabled = true;
           submitBtn.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Saving Changes...';
+          // **NEW**: Validate minimum character fields
+          const minCharFields = {
+            'aboutMe': 100,
+            'islamIsImportantToMeInfo': 100,
+            'describeNature': 100,
+            'lookingForASpouseThatIs': 100
+          };
 
+          for (const [field, minLength] of Object.entries(minCharFields)) {
+            const fieldElement = document.getElementById(field);
+            if (fieldElement) {
+              const value = fieldElement.value;
+              if (value && value.trim().length < minLength) {
+                showNotification('Validation Error', `${field.replace(/([A-Z])/g, ' $1').toLowerCase()} must be at least ${minLength} characters long`, 'error');
+
+                // **RESET BUTTON STATE**
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="ri-save-line mr-2"></i>Save Changes';
+                return;
+              }
+            }
+          }
           // Check if we have files to upload
           const hasFiles = (coverPhotoInput.files[0] || profilePicInput.files[0]);
 
@@ -1768,6 +1801,35 @@
         });
       }
 
+    });
+    // **NEW**: Character counter for minimum length fields
+    const fieldsWithMinLength = ['aboutMe', 'islamIsImportantToMeInfo', 'describeNature', 'lookingForASpouseThatIs'];
+
+    fieldsWithMinLength.forEach(fieldId => {
+      const textarea = document.getElementById(fieldId);
+      if (textarea) {
+        const counter = document.createElement('div');
+        counter.className = 'char-counter text-sm mt-1';
+        counter.style.color = '#6b7280';
+        textarea.parentNode.appendChild(counter);
+
+        function updateCounter() {
+          const length = textarea.value.trim().length;
+          const minLength = 100;
+          counter.textContent = `${length}/${minLength} characters minimum`;
+
+          if (length < minLength) {
+            counter.style.color = '#ef4444';
+            counter.innerHTML = `<i class="ri-error-warning-line mr-1"></i>${length}/${minLength} characters minimum`;
+          } else {
+            counter.style.color = '#10b981';
+            counter.innerHTML = `<i class="ri-check-line mr-1"></i>${length}/${minLength} characters minimum`;
+          }
+        }
+
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Initial update
+      }
     });
   </script>
 </body>

@@ -221,6 +221,24 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
   try {
     const user = req.userData;
     const formData = req.body;
+    // **NEW**: Validate minimum character requirements
+    const minCharFields = {
+      aboutMe: 100,
+      islamIsImportantToMeInfo: 100,
+      describeNature: 100,
+      lookingForASpouseThatIs: 100,
+    };
+
+    for (const [field, minLength] of Object.entries(minCharFields)) {
+      const value = formData[field];
+      if (value && value.trim().length < minLength) {
+        return res.json({
+          error: `${field
+            .replace(/([A-Z])/g, " $1")
+            .toLowerCase()} must be at least ${minLength} characters long`,
+        });
+      }
+    }
 
     // Basic Info Tab
     if (formData.name) user.name = formData.name;
@@ -1172,7 +1190,23 @@ app.post("/admin/user/add", async (req, res) => {
       error: "Username is required (should be auto-generated)",
     });
   }
+  const minCharFields = {
+    aboutMe: 100,
+    islamIsImportantToMeInfo: 100,
+    describeNature: 100,
+    lookingForASpouseThatIs: 100,
+  };
 
+  for (const [field, minLength] of Object.entries(minCharFields)) {
+    const value = req.body[field];
+    if (value && value.trim().length < minLength) {
+      return res.json({
+        error: `${field
+          .replace(/([A-Z])/g, " $1")
+          .toLowerCase()} must be at least ${minLength} characters long`,
+      });
+    }
+  }
   try {
     // Check if username already exists
     const existing = await User.findOne({ username });

@@ -48,7 +48,7 @@ const newsletterSchema = new mongoose.Schema(
     },
     source: {
       type: String,
-      default: "website", // track where they subscribed from
+      default: "website",
     },
   },
   {
@@ -56,8 +56,8 @@ const newsletterSchema = new mongoose.Schema(
   }
 );
 
-// Index for faster queries
-newsletterSchema.index({ email: 1 });
+// **REMOVED**: newsletterSchema.index({ email: 1 }); // This is duplicate since unique: true creates an index
+// Keep only the other indexes that don't conflict:
 newsletterSchema.index({ isActive: 1 });
 newsletterSchema.index({ interestedIn: 1 });
 
