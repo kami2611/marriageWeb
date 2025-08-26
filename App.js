@@ -166,6 +166,10 @@ const storage = new CloudinaryStorage({
   },
 });
 const upload = multer({ storage });
+const {
+  generateVerificationCode,
+  sendVerificationEmail,
+} = require("./services/emailService");
 
 // Add this middleware after your session setup but before your routes
 app.set("view engine", "ejs");
@@ -447,17 +451,123 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
   }
 });
 
+// app.post("/register", async (req, res) => {
+//   console.log("Register request body:", req.body); // Debug log
+
+//   const { username, password, passcode, gender } = req.body;
+
+//   // Check if required fields are present
+//   if (!username || !password || !passcode || !gender) {
+//     return res.render("register", {
+//       error: "All fields are required. Please fill out the form completely.",
+//     });
+//   }
+
+//   // Check passcode
+//   if (passcode != process.env.PASSCODE) {
+//     return res.render("register", {
+//       error: "Invalid passcode, please try again.",
+//     });
+//   }
+
+//   // Check password length
+//   if (!password || password.length < 5) {
+//     return res.render("register", {
+//       error: "Password must be at least 5 characters long.",
+//     });
+//   }
+
+//   // Check if gender is valid
+//   if (gender !== "male" && gender !== "female") {
+//     return res.render("register", {
+//       error: "Please select a valid gender.",
+//     });
+//   }
+
+//   // Check unique username (should be auto-generated, but double check)
+//   const existingUser = await User.findOne({ username });
+//   if (existingUser) {
+//     return res.render("register", {
+//       error: "Username already exists. Please refresh and try again.",
+//     });
+//   }
+
+//   // All good, proceed with registration
+//   try {
+//     const hashedPassword = await bcrypt.hash(password, 12);
+//     const newUser = new User({
+//       username,
+//       password: hashedPassword,
+//       gender, // Save the gender immediately
+//       registrationSource: "register", // Set registration source
+//     });
+//     newUser.profileSlug = await generateUniqueSlug(newUser);
+//     await newUser.save();
+//     req.session.userId = newUser._id;
+//     req.session.user = newUser;
+//     return res.redirect(
+//       "/account/info?msg=Please complete your profile to continue."
+//     );
+//   } catch (error) {
+//     console.error("Registration error:", error);
+//     return res.render("register", {
+//       error: "Registration failed. Please try again.",
+//     });
+//   }
+// });
+// new register post
 app.post("/register", async (req, res) => {
-  console.log("Register request body:", req.body); // Debug log
+  console.log("Register request body:", req.body);
 
-  const { username, password, passcode, gender } = req.body;
-
+  const { username, email, password, passcode, gender } = req.body;
+  console.log("Session verification status:", {
+    emailVerified: req.session.emailVerified,
+    verifiedEmail: req.session.verifiedEmail,
+    providedEmail: email?.toLowerCase(),
+    match: req.session.verifiedEmail === email?.toLowerCase(),
+  });
   // Check if required fields are present
+  // if (!username || !email || !password || !passcode || !gender) {
+  //   console.log("all fields required");
+  //   return res.render("register", {
+  //     error: "All fields are required. Please fill out the form completely.",
+  //   });
+  // }
   if (!username || !password || !passcode || !gender) {
+    console.log("required fields missing");
     return res.render("register", {
-      error: "All fields are required. Please fill out the form completely.",
+      error: "Username, password, passcode, and gender are required.",
     });
   }
+
+  // **NEW**: Check if email is verified
+  // if (
+  //   !req.session.emailVerified ||
+  //   req.session.verifiedEmail !== email.toLowerCase()
+  // ) {
+  //   console.log("Email verification failed:", {
+  //     emailVerified: req.session.emailVerified,
+  //     verifiedEmail: req.session.verifiedEmail,
+  //     providedEmail: email.toLowerCase(),
+  //   });
+  //   return res.render("register", {
+  //     error: "Please verify your email before registering.",
+  //   });
+  // }
+
+  // **UPDATED**: Only check email verification if email was provided
+  // if (email && email.trim()) {
+  //   if (
+  //     !req.session.emailVerified ||
+  //     req.session.verifiedEmail !== email.toLowerCase()
+  //   ) {
+  //     console.log("Email provided but not verified");
+  //     return res.render("register", {
+  //       error:
+  //         "Please verify your email address or leave it empty to register without email.",
+  //     });
+  //   }
+  // }
 
   // Check passcode
   if (passcode != process.env.PASSCODE) {
@@ -480,27 +590,70 @@ app.post("/register", async (req, res) => {
     });
   }
 
-  // Check unique username (should be auto-generated, but double check)
-  const existingUser = await User.findOne({ username });
-  if (existingUser) {
-    return res.render("register", {
-      error: "Username already exists. Please refresh and try again.",
-    });
+  // Check unique username and email
+  // const existingUser = await User.findOne({
+  //   $or: [{ username }, { email: email.toLowerCase() }],
+  // });
+  // if (existingUser) {
+  //   return res.render("register", {
+  //     error: "Username or email already exists. Please try different ones.",
+  //   });
+  // }
+  // Build query for existing user check
+  let existingUserQuery = { username };
+  if (email && email.trim()) {
+    existingUserQuery = {
+      $or: [{ username }, { email: email.toLowerCase() }],
+    };
   }
 
-  // All good, proceed with registration
+  const existingUser = await User.findOne(existingUserQuery);
+  if (existingUser) {
+    const errorMsg =
+      email && email.trim()
+        ? "Username or email already exists. Please try different ones."
+        : "Username already exists. Please try a different one.";
+    return res.render("register", { error: errorMsg });
+  }
+
   try {
+    console.log("Creating user...");
     const hashedPassword = await bcrypt.hash(password, 12);
-    const newUser = new User({
+    // const newUser = new User({
+    //   username,
+    //   email: email.toLowerCase(), // **NEW**
+    //   password: hashedPassword,
+    //   gender,
+    //   isEmailVerified: true, // **NEW**: Set as verified since they passed verification
+    //   registrationSource: "register",
+    // });
+    const userData = {
       username,
       password: hashedPassword,
-      gender, // Save the gender immediately
-      registrationSource: "register", // Set registration source
-    });
+      gender,
+      registrationSource: "register",
+    };
+
+    // **OPTIONAL**: Only add email if provided
+    if (email && email.trim()) {
+      userData.email = email.toLowerCase();
+      // Only set as verified if they actually verified it
+      userData.isEmailVerified =
+        req.session.emailVerified &&
+        req.session.verifiedEmail === email.toLowerCase();
+    }
+
+    const newUser = new User(userData);
+
     newUser.profileSlug = await generateUniqueSlug(newUser);
     await newUser.save();
+    console.log("User created successfully:", newUser.username);
     req.session.userId = newUser._id;
     req.session.user = newUser;
+    // Clean up verification session data
+    delete req.session.emailVerified;
+    delete req.session.verifiedEmail;
+
     return res.redirect(
       "/account/info?msg=Please complete your profile to continue."
     );
@@ -511,6 +664,7 @@ app.post("/register", async (req, res) => {
     });
   }
 });
+
 app.post("/login", async (req, res) => {
   const { username, password, remember } = req.body;
   console.log("received");
@@ -2082,7 +2236,150 @@ app.get("/newsletter/unsubscribe/:email", async (req, res) => {
     res.status(500).send("Error unsubscribing");
   }
 });
+// Send email verification code
+app.post("/api/send-verification-code", async (req, res) => {
+  try {
+    const { email, username } = req.body;
 
+    if (!email || !username) {
+      return res.json({
+        success: false,
+        error: "Email and username are required",
+      });
+    }
+
+    // Check if email already exists and is verified
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser && existingUser.isEmailVerified) {
+      return res.json({
+        success: false,
+        error: "This email is already registered and verified",
+      });
+    }
+
+    // Generate verification code
+    const code = generateVerificationCode();
+
+    // Send email
+    const emailResult = await sendVerificationEmail(email, code, username);
+
+    if (!emailResult.success) {
+      return res.json({
+        success: false,
+        error: "Failed to send verification email",
+      });
+    }
+
+    // Store code in session temporarily (you could also store in database)
+    req.session.pendingVerification = {
+      email: email.toLowerCase(),
+      code: code,
+      username: username,
+      expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
+    };
+
+    res.json({
+      success: true,
+      message: "Verification code sent to your email",
+    });
+  } catch (error) {
+    console.error("Send verification code error:", error);
+    res.json({ success: false, error: "Failed to send verification code" });
+  }
+});
+
+// Verify email code
+app.post("/api/verify-email-code", async (req, res) => {
+  try {
+    const { code } = req.body;
+
+    if (!req.session.pendingVerification) {
+      return res.json({
+        success: false,
+        error: "No pending verification found",
+      });
+    }
+
+    const pending = req.session.pendingVerification;
+
+    // Check if code expired
+    if (Date.now() > pending.expiry) {
+      delete req.session.pendingVerification;
+      return res.json({
+        success: false,
+        error: "Verification code expired. Please request a new one.",
+      });
+    }
+
+    // Check if code matches
+    if (code !== pending.code) {
+      return res.json({ success: false, error: "Invalid verification code" });
+    }
+
+    // Code is valid - mark as verified
+    req.session.emailVerified = true;
+    req.session.verifiedEmail = pending.email;
+
+    // Clean up
+    delete req.session.pendingVerification;
+
+    res.json({ success: true, message: "Email verified successfully!" });
+  } catch (error) {
+    console.error("Verify email code error:", error);
+    res.json({ success: false, error: "Failed to verify code" });
+  }
+});
+// **NEW**: Save email verification to user profile
+app.post(
+  "/api/save-email-verification",
+  isLoggedIn,
+  findUser,
+  async (req, res) => {
+    try {
+      const { email } = req.body;
+      const user = req.userData;
+
+      if (
+        !email ||
+        !req.session.emailVerified ||
+        req.session.verifiedEmail !== email.toLowerCase()
+      ) {
+        return res.json({
+          success: false,
+          error: "Email verification session invalid",
+        });
+      }
+
+      // Update user's email and verification status
+      user.email = email.toLowerCase().trim();
+      user.isEmailVerified = true;
+
+      await user.save();
+
+      // Update session user data
+      req.session.user = user;
+
+      // Clean up verification session data
+      delete req.session.emailVerified;
+      delete req.session.verifiedEmail;
+
+      console.log(
+        `Email verification saved for user: ${user.username}, email: ${user.email}`
+      );
+
+      res.json({
+        success: true,
+        message: "Email verification saved successfully!",
+      });
+    } catch (error) {
+      console.error("Save email verification error:", error);
+      res.json({
+        success: false,
+        error: "Failed to save email verification",
+      });
+    }
+  }
+);
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {
   try {

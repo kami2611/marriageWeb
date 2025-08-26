@@ -5,6 +5,33 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  email: {
+    type: String,
+    required: false,
+    unique: true,
+    sparse: true,
+    lowercase: true,
+    validate: {
+      validator: function (email) {
+        // return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!email) return true;
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+      },
+      message: "Please provide a valid email address",
+    },
+  },
+  isEmailVerified: {
+    type: Boolean,
+    default: false,
+  },
+  emailVerificationCode: {
+    type: String,
+    default: null,
+  },
+  emailCodeExpiry: {
+    type: Date,
+    default: null,
+  },
   name: {
     type: String,
   },

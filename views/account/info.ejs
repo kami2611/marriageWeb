@@ -311,6 +311,15 @@
             <h3 class="text-xl font-semibold text-gray-900 mb-6 font-['Playfair_Display']">Basic Information</h3>
             <form class="space-y-6">
               <div class="grid md:grid-cols-2 gap-6">
+                <!-- <div class="space-y-2">
+                  <label for="username" class="block text-sm font-medium text-gray-700">Username *</label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="ri-user-line text-gray-400"></i>
+                    </div>
+                    <input type="text" disabled id="username" name="username" required class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter username">
+                  </div>
+                </div> -->
                 <div class="space-y-2">
                   <label for="username" class="block text-sm font-medium text-gray-700">Username *</label>
                   <div class="relative">
@@ -319,6 +328,61 @@
                     </div>
                     <input type="text" disabled id="username" name="username" required class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter username">
                   </div>
+                </div>
+
+                <!-- **NEW**: Email Field -->
+                <div class="space-y-2">
+                  <label for="email" class="block text-sm font-medium text-gray-700">Email Address <span class="text-gray-400 text-xs">(Optional)</span></label>
+                  <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <i class="ri-mail-line text-gray-400"></i>
+                    </div>
+                    <input type="email" id="email" name="email" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your email address">
+                  </div>
+
+                  <!-- Email Status Display -->
+                  <div id="email-verification-status" class="mt-2">
+                    <% if (accountInfo.email) { %>
+                    <% if (accountInfo.isEmailVerified) { %>
+                    <!-- Verified Email -->
+                    <div class="flex items-center gap-2 text-green-600 text-sm">
+                      <i class="ri-checkbox-circle-fill"></i>
+                      <span>Email verified</span>
+                    </div>
+                    <% } else { %>
+                    <!-- Unverified Email -->
+                    <div class="flex items-center gap-2 text-red-600 text-sm mb-2">
+                      <i class="ri-error-warning-fill"></i>
+                      <span>Email unverified</span>
+                    </div>
+                    <button type="button" id="verify-email-btn" class="px-4 py-2 bg-secondary text-white text-sm rounded-button hover:bg-purple-600 transition-all duration-300">
+                      Verify Email
+                    </button>
+                    <% } %>
+                    <% } else { %>
+                    <!-- No Email Set -->
+                    <button type="button" id="add-email-btn" class="hidden px-4 py-2 bg-secondary text-white text-sm rounded-button hover:bg-purple-600 transition-all duration-300">
+                      Send Email Verification Code
+                    </button>
+                    <% } %>
+                  </div>
+
+                  <!-- Verification Code Input (Hidden by default) -->
+                  <div id="verification-section" class="hidden mt-3">
+                    <label for="verification-code" class="block text-sm font-medium text-gray-700 mb-2">
+                      Enter 4-digit verification code
+                    </label>
+                    <div class="flex gap-2">
+                      <input type="text" id="verification-code" maxlength="4" pattern="[0-9]{4}" class="flex-1 px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 text-center text-lg font-mono" placeholder="0000">
+                      <button type="button" id="verify-code-btn" class="px-4 py-2 bg-green-600 text-white text-sm rounded-button hover:bg-green-700 transition-all duration-300">
+                        Verify
+                      </button>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-1">Check your email for the verification code</p>
+                  </div>
+
+                  <!-- Status Messages -->
+                  <div id="email-status" class="hidden text-sm mt-2"></div>
                 </div>
                 <div class="space-y-2">
                   <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
@@ -1135,7 +1199,10 @@
               }
             }
           });
-
+          if (emailField && userDataRaw.email) {
+            emailField.value = userDataRaw.email;
+            currentEmail = userDataRaw.email;
+          }
           // Populate education
           if (userDataRaw.education && Array.isArray(userDataRaw.education)) {
             userDataRaw.education.forEach((edu, index) => {
@@ -1831,6 +1898,227 @@
         updateCounter(); // Initial update
       }
     });
+
+    function showNotification(title, message, type = 'info') {
+      const notification = document.createElement('div');
+      const bgColor = type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-blue-500' : type === 'warning' ? 'bg-yellow-500' : 'bg-red-500';
+      const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'info' ? 'ri-information-line' : type === 'warning' ? 'ri-alert-line' : 'ri-error-warning-line';
+
+      notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
+      notification.innerHTML = `
+    <i class="${icon} text-xl"></i>
+    <div>
+      <p class="font-medium">${title}</p>
+      <p class="text-sm opacity-90">${message}</p>
+    </div>
+  `;
+
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.style.transform = 'translateY(100%)';
+        notification.style.opacity = '0';
+        setTimeout(() => notification.remove(), 300);
+      }, 3000);
+    }
+    // **NEW**: Email verification functionality for info page
+    const emailField = document.getElementById('email');
+    const verifyEmailBtn = document.getElementById('verify-email-btn');
+    const addEmailBtn = document.getElementById('add-email-btn');
+    const verificationSection = document.getElementById('verification-section');
+    const verificationCodeInput = document.getElementById('verification-code');
+    const verifyCodeBtn = document.getElementById('verify-code-btn');
+    const emailStatus = document.getElementById('email-status');
+    const emailVerificationStatus = document.getElementById('email-verification-status');
+
+    let isEmailVerified = <%= accountInfo.isEmailVerified ? 'true' : 'false' %>;
+    let currentEmail = '<%= accountInfo.email || "" %>';
+
+    // Show add email button when valid email is entered (if no email exists)
+    if (emailField && addEmailBtn) {
+      emailField.addEventListener('input', function() {
+        const email = this.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        // Only show add button if no email is currently set and new email is valid
+        if (!currentEmail && emailRegex.test(email)) {
+          addEmailBtn.classList.remove('hidden');
+        } else {
+          addEmailBtn.classList.add('hidden');
+          verificationSection.classList.add('hidden');
+          hideEmailStatus();
+        }
+      });
+    }
+
+    // Handle verify email button click (for existing unverified email)
+    if (verifyEmailBtn) {
+      verifyEmailBtn.addEventListener('click', async function() {
+        const email = emailField.value.trim() || currentEmail;
+        const username = '<%= accountInfo.username %>';
+
+        if (!email) {
+          showEmailStatus('No email address found', 'error');
+          return;
+        }
+
+        await sendVerificationCode(email, username, this);
+      });
+    }
+
+    // Handle add email button click (for new email)
+    if (addEmailBtn) {
+      addEmailBtn.addEventListener('click', async function() {
+        const email = emailField.value.trim();
+        const username = '<%= accountInfo.username %>';
+
+        if (!email) {
+          showEmailStatus('Please enter an email address first', 'error');
+          return;
+        }
+
+        await sendVerificationCode(email, username, this);
+      });
+    }
+
+    // Send verification code function
+    async function sendVerificationCode(email, username, button) {
+      // Disable button and show loading
+      button.disabled = true;
+      const originalText = button.innerHTML;
+      button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Sending...';
+
+      try {
+        const response = await fetch('/api/send-verification-code', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            email,
+            username
+          })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          verificationSection.classList.remove('hidden');
+          showEmailStatus(data.message, 'success');
+          verificationCodeInput.focus();
+
+          // Update the email verification status display
+          emailVerificationStatus.innerHTML = `
+        <div class="flex items-center gap-2 text-orange-600 text-sm">
+          <i class="ri-time-line"></i>
+          <span>Verification code sent - check your email</span>
+        </div>
+      `;
+        } else {
+          showEmailStatus(data.error, 'error');
+        }
+      } catch (error) {
+        showEmailStatus('Failed to send verification code', 'error');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = originalText;
+      }
+    }
+
+    // Verify code button click
+    if (verifyCodeBtn) {
+      verifyCodeBtn.addEventListener('click', async function() {
+        const code = verificationCodeInput.value.trim();
+
+        if (code.length !== 4) {
+          showEmailStatus('Please enter a 4-digit code', 'error');
+          return;
+        }
+
+        this.disabled = true;
+        this.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Verifying...';
+
+        try {
+          const response = await fetch('/api/verify-email-code', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              code
+            })
+          });
+
+          const data = await response.json();
+
+          if (data.success) {
+            isEmailVerified = true;
+            hideEmailStatus();
+            showEmailStatus(data.message + ' ✓', 'success');
+            verificationSection.classList.add('hidden');
+            const emailToVerify = emailField.value.trim();
+            fetch('/api/save-email-verification', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  email: emailToVerify
+                })
+              })
+              .then(response => response.json())
+              .then(saveData => {
+                if (saveData.success) {
+                  console.log('Email verification saved to database successfully');
+                  showNotification('Email Verified', 'Your email has been verified and saved!', 'success');
+                } else {
+                  console.error('Failed to save email verification:', saveData.error);
+                  showNotification('Warning', 'Email verified but failed to save. Please refresh and try again.', 'warning');
+                }
+              })
+              .catch(error => {
+                console.error('Error saving email verification:', error);
+                showNotification('Warning', 'Email verified but failed to save. Please refresh and try again.', 'warning');
+              });
+            // Update the email verification status display
+            emailVerificationStatus.innerHTML = `
+          <div class="flex items-center gap-2 text-green-600 text-sm">
+            <i class="ri-checkbox-circle-fill"></i>
+            <span>Email verified</span>
+          </div>
+        `;
+
+            // Hide verify button if it exists
+            if (verifyEmailBtn) verifyEmailBtn.classList.add('hidden');
+            if (addEmailBtn) addEmailBtn.classList.add('hidden');
+
+            // Update current email
+            currentEmail = emailToVerify;
+
+            showNotification('Email Verified', 'Your email has been verified successfully! Remember to save your changes.', 'success');
+          } else {
+            showEmailStatus(data.error, 'error');
+            verificationCodeInput.value = '';
+          }
+        } catch (error) {
+          showEmailStatus('Failed to verify code', 'error');
+        } finally {
+          this.disabled = false;
+          this.innerHTML = 'Verify';
+        }
+      });
+    }
+
+    // Helper functions for email status
+    function showEmailStatus(message, type) {
+      emailStatus.textContent = message;
+      emailStatus.className = `text-sm mt-2 ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
+      emailStatus.classList.remove('hidden');
+    }
+
+    function hideEmailStatus() {
+      emailStatus.classList.add('hidden');
+    }
   </script>
 </body>
 
