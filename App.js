@@ -1892,6 +1892,62 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
   }
 });
 
+// Reset User Password Route
+app.post("/admin/user/reset-password", async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res
+      .status(403)
+      .json({ success: false, error: "Forbidden: Admin access required" });
+  }
+
+  try {
+    const { userId, newPassword } = req.body;
+    console.log("Reset password request for userId:", userId);
+
+    // Validate input
+    if (!userId || !newPassword) {
+      return res.json({
+        success: false,
+        error: "User ID and new password are required",
+      });
+    }
+
+    if (newPassword.length < 5) {
+      return res.json({
+        success: false,
+        error: "Password must be at least 5 characters long",
+      });
+    }
+
+    // Find user
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ success: false, error: "User not found" });
+    }
+    console.log("user password was", user.password);
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    // Update user password
+    user.password = hashedPassword;
+    await user.save();
+    console.log("user new password is", user.password);
+    console.log(`Admin reset password for user: ${user.username}`);
+
+    res.json({
+      success: true,
+      message: `Password updated successfully for ${user.username}`,
+    });
+  } catch (error) {
+    console.error("Admin reset password error:", error);
+    res.json({
+      success: false,
+      error: `Failed to reset password: ${error.message}`,
+    });
+  }
+});
+
 // Add this new route for account info updates
 
 // Add these routes in App.js after your existing routes
