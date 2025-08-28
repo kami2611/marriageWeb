@@ -534,11 +534,7 @@
                 </div>
                 <div class="space-y-2">
                   <label for="willingToRelocate" class="block text-sm font-medium text-gray-700">Willing to Relocate</label>
-                  <select id="willingToRelocate" name="willingToRelocate" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="true" <%= (accountInfo.willingToRelocate === true) ? 'selected' : '' %>>Yes</option>
-                    <option value="false" <%= (accountInfo.willingToRelocate === false) ? 'selected' : '' %>>No</option>
-                    <option value="N/A" <%= (accountInfo.willingToRelocate === undefined || accountInfo.willingToRelocate === null) ? 'selected' : '' %>>N/A</option>
-                  </select>
+                  <input type="text" id="willingToRelocate" name="willingToRelocate" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter willingness to relocate" value="<%= accountInfo.willingToRelocate || '' %>">
                 </div>
               </div>
 
@@ -759,22 +755,11 @@
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
                 <label for="livingArrangementsAfterMarriage" class="block text-sm font-medium text-gray-700">Living Arrangements After Marriage</label>
-                <select id="livingArrangementsAfterMarriage" name="livingArrangementsAfterMarriage" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="live with parents" <%= (accountInfo.livingArrangementsAfterMarriage === 'live with parents') ? 'selected' : '' %>>Live with parents</option>
-                  <option value="live alone" <%= (accountInfo.livingArrangementsAfterMarriage === 'live alone') ? 'selected' : '' %>>Live alone</option>
-                  <option value="live with spouse" <%= (accountInfo.livingArrangementsAfterMarriage === 'live with spouse') ? 'selected' : '' %>>Live with spouse</option>
-                  <option value="other" <%= (accountInfo.livingArrangementsAfterMarriage === 'other') ? 'selected' : '' %>>Other</option>
-                  <option value="N/A" <%= (!accountInfo.livingArrangementsAfterMarriage || accountInfo.livingArrangementsAfterMarriage === 'N/A') ? 'selected' : '' %>>N/A</option>
-                </select>
+                <input type="text" id="livingArrangementsAfterMarriage" name="livingArrangementsAfterMarriage" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter living arrangements after marriage" value="<%= accountInfo.livingArrangementsAfterMarriage || '' %>">
               </div>
               <div class="space-y-2">
                 <label for="futurePlans" class="block text-sm font-medium text-gray-700">Future Plans</label>
-                <select id="futurePlans" name="futurePlans" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="settle abroad" <%= (accountInfo.futurePlans === 'settle abroad') ? 'selected' : '' %>>Settle abroad</option>
-                  <option value="stay in current country" <%= (accountInfo.futurePlans === 'stay in current country') ? 'selected' : '' %>>Stay in current country</option>
-                  <option value="other" <%= (accountInfo.futurePlans === 'other') ? 'selected' : '' %>>Other</option>
-                  <option value="N/A" <%= (!accountInfo.futurePlans || accountInfo.futurePlans === 'N/A') ? 'selected' : '' %>>N/A</option>
-                </select>
+                <input type="text" id="futurePlans" name="futurePlans" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter future plans" value="<%= accountInfo.futurePlans || '' %>">
               </div>
             </div>
 
@@ -939,54 +924,37 @@
                 </select>
               </div>
               <div class="space-y-2">
-                <label for="acceptSomeoneInOtherCountry" class="block text-sm font-medium text-gray-700">Accept Someone in Other Country</label>
-                <select id="acceptSomeoneInOtherCountry" name="acceptSomeoneInOtherCountry" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="true" <%= (accountInfo.acceptSomeoneInOtherCountry === true) ? 'selected' : '' %>>Yes</option>
-                  <option value="false" <%= (accountInfo.acceptSomeoneInOtherCountry === false) ? 'selected' : '' %>>No</option>
-                  <option value="N/A" <%= (accountInfo.acceptSomeoneInOtherCountry === undefined || accountInfo.acceptSomeoneInOtherCountry === null) ? 'selected' : '' %>>N/A</option>
-                </select>
+                <label for="acceptSomeoneInOtherCountry" class="block text-sm font-medium text-gray-700">Accecpt some one in other country</label>
+                <input type="text" id="acceptSomeoneInOtherCountry" name="acceptSomeoneInOtherCountry" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="accept someone in other country ..." value="<%= accountInfo.acceptSomeoneInOtherCountry|| '' %>">
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
                 <label for="willingToSharePhotosUponRequest" class="block text-sm font-medium text-gray-700">Willing to Share Photos Upon Request</label>
-                <select id="willingToSharePhotosUponRequest" name="willingToSharePhotosUponRequest" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="true" <%= (accountInfo.willingToSharePhotosUponRequest === true) ? 'selected' : '' %>>Yes</option>
-                  <option value="false" <%= (accountInfo.willingToSharePhotosUponRequest === false) ? 'selected' : '' %>>No</option>
-                  <option value="N/A" <%= (accountInfo.willingToSharePhotosUponRequest === undefined || accountInfo.willingToSharePhotosUponRequest === null) ? 'selected' : '' %>>N/A</option>
-                </select>
-
+                <input type="text" id="willingToSharePhotosUponRequest" name="willingToSharePhotosUponRequest" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" value="<%= accountInfo.willingToSharePhotosUponRequest || '' %>" placeholder="Enter willingness to share photos">
               </div>
               <div class="space-y-2">
                 <label for="willingToMeetUpOutside" class="block text-sm font-medium text-gray-700">Willing to Meet Up Outside</label>
-                <select id="willingToMeetUpOutside" name="willingToMeetUpOutside" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="true" <%= (accountInfo.willingToMeetUpOutside === true) ? 'selected' : '' %>>Yes</option>
-                  <option value="false" <%= (accountInfo.willingToMeetUpOutside === false) ? 'selected' : '' %>>No</option>
-                  <option value="N/A" <%= (accountInfo.willingToMeetUpOutside === undefined || accountInfo.willingToMeetUpOutside === null) ? 'selected' : '' %>>N/A</option>
-                </select>
+                <input type="text" id="willingToMeetUpOutside" name="willingToMeetUpOutside" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white" value="<%= accountInfo.willingToMeetUpOutside || '' %>" placeholder="Enter willingness to meet up outside">
               </div>
             </div>
 
             <div class="grid md:grid-cols-2 gap-6">
               <div class="space-y-2">
                 <label for="willingToConsiderANonUkCitizen" class="block text-sm font-medium text-gray-700">Willing to Consider a Non-UK Citizen</label>
-                <select id="willingToConsiderANonUkCitizen" name="willingToConsiderANonUkCitizen" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                  <option value="true" <%= (accountInfo.willingToConsiderANonUkCitizen === true) ? 'selected' : '' %>>Yes</option>
-                  <option value="false" <%= (accountInfo.willingToConsiderANonUkCitizen === false) ? 'selected' : '' %>>No</option>
-                  <option value="N/A" <%= (accountInfo.willingToConsiderANonUkCitizen === undefined || accountInfo.willingToConsiderANonUkCitizen === null) ? 'selected' : '' %>>N/A</option>
-                </select>
+                <input type="text" id="willingToConsiderANonUkCitizen" name="willingToConsiderANonUkCitizen" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter willingness..." value="<%= accountInfo.willingToConsiderANonUkCitizen || '' %>">
               </div>
             </div>
 
             <div class="space-y-2">
               <label for="lookingForASpouseThatIs" class="block text-sm font-medium text-gray-700">Looking for a Spouse That Is</label>
-              <input type="text" id="lookingForASpouseThatIs" name="lookingForASpouseThatIs" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="e.g., Educated, Religious, Career-oriented">
+              <input type="text" id="lookingForASpouseThatIs" name="lookingForASpouseThatIs" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="e.g., Educated, Religious, Career-oriented" value="<%= accountInfo.lookingForASpouseThatIs || '' %>">
             </div>
 
             <div class="space-y-2">
               <label for="qualitiesYouNeedInYourPartner" class="block text-sm font-medium text-gray-700">Qualities You Need in Your Partner (comma separated)</label>
-              <input type="text" id="qualitiesYouNeedInYourPartner" name="qualitiesYouNeedInYourPartner" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="e.g., Honesty, Kindness, Intelligence">
+              <input type="text" id="qualitiesYouNeedInYourPartner" name="qualitiesYouNeedInYourPartner" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="e.g., Honesty, Kindness, Intelligence" value="<%= accountInfo.qualitiesYouNeedInYourPartner || '' %>">
             </div>
           </form>
         </div>

@@ -908,7 +908,7 @@
                           <% if (profile.acceptSomeoneInOtherCountry !== undefined) { %>
                           <div class="bg-white rounded-lg p-3 border border-gray-200">
                             <p class="text-sm text-gray-500">Accept Someone in Other Country</p>
-                            <p class="text-gray-900"><%= profile.acceptSomeoneInOtherCountry ? 'Yes' : 'No' %></p>
+                            <p class="text-gray-900"><%= profile.acceptSomeoneInOtherCountry %></p>
                           </div>
                           <% } %>
 
@@ -919,10 +919,10 @@
                           </div>
                           <% } %>
 
-                          <% if (profile.willingToConsiderANonUkCitizen !== undefined) { %>
+                          <% if (profile.willingToConsiderANonUkCitizen!== undefined) { %>
                           <div class="bg-white rounded-lg p-3 border border-gray-200">
-                            <p class="text-sm text-gray-500">Willing to Consider Non-UK Citizen</p>
-                            <p class="text-gray-900"><%= profile.willingToConsiderANonUkCitizen ? 'Yes' : 'No' %></p>
+                            <p class="text-sm text-gray-500">Willing to consider a non uk citizen</p>
+                            <p class="text-gray-900"><%= profile.willingToConsiderANonUkCitizen %></p>
                           </div>
                           <% } %>
                         </div>
@@ -935,17 +935,17 @@
                         <h3 class="text-lg font-semibold text-gray-900 mb-3">Additional Information</h3>
 
                         <div class="grid md:grid-cols-2 gap-4 mb-4">
-                          <% if (profile.willingToSharePhotosUponRequest !== undefined) { %>
+                          <% if (profile.willingToSharePhotosUponRequest!== undefined) { %>
                           <div class="bg-white rounded-lg p-3 border border-gray-200">
                             <p class="text-sm text-gray-500">Willing to Share Photos Upon Request</p>
-                            <p class="text-gray-900"><%= profile.willingToSharePhotosUponRequest ? 'Yes' : 'No' %></p>
+                            <p class="text-gray-900"><%= profile.willingToSharePhotosUponRequest  %></p>
                           </div>
                           <% } %>
 
                           <% if (profile.willingToMeetUpOutside !== undefined) { %>
                           <div class="bg-white rounded-lg p-3 border border-gray-200">
                             <p class="text-sm text-gray-500">Willing to Meet Up Outside</p>
-                            <p class="text-gray-900"><%= profile.willingToMeetUpOutside ? 'Yes' : 'No' %></p>
+                            <p class="text-gray-900"><%= profile.willingToMeetUpOutside %></p>
                           </div>
                           <% } %>
 

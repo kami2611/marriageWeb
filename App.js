@@ -451,70 +451,6 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
   }
 });
 
-// app.post("/register", async (req, res) => {
-//   console.log("Register request body:", req.body); // Debug log
-
-//   const { username, password, passcode, gender } = req.body;
-
-//   // Check if required fields are present
-//   if (!username || !password || !passcode || !gender) {
-//     return res.render("register", {
-//       error: "All fields are required. Please fill out the form completely.",
-//     });
-//   }
-
-//   // Check passcode
-//   if (passcode != process.env.PASSCODE) {
-//     return res.render("register", {
-//       error: "Invalid passcode, please try again.",
-//     });
-//   }
-
-//   // Check password length
-//   if (!password || password.length < 5) {
-//     return res.render("register", {
-//       error: "Password must be at least 5 characters long.",
-//     });
-//   }
-
-//   // Check if gender is valid
-//   if (gender !== "male" && gender !== "female") {
-//     return res.render("register", {
-//       error: "Please select a valid gender.",
-//     });
-//   }
-
-//   // Check unique username (should be auto-generated, but double check)
-//   const existingUser = await User.findOne({ username });
-//   if (existingUser) {
-//     return res.render("register", {
-//       error: "Username already exists. Please refresh and try again.",
-//     });
-//   }
-
-//   // All good, proceed with registration
-//   try {
-//     const hashedPassword = await bcrypt.hash(password, 12);
-//     const newUser = new User({
-//       username,
-//       password: hashedPassword,
-//       gender, // Save the gender immediately
-//       registrationSource: "register", // Set registration source
-//     });
-//     newUser.profileSlug = await generateUniqueSlug(newUser);
-//     await newUser.save();
-//     req.session.userId = newUser._id;
-//     req.session.user = newUser;
-//     return res.redirect(
-//       "/account/info?msg=Please complete your profile to continue."
-//     );
-//   } catch (error) {
-//     console.error("Registration error:", error);
-//     return res.render("register", {
-//       error: "Registration failed. Please try again.",
-//     });
-//   }
-// });
 // new register post
 app.post("/register", async (req, res) => {
   console.log("Register request body:", req.body);
@@ -1763,7 +1699,7 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
       "prays",
       "celebratesMilaad",
       "celebrateKhatams",
-      "willingToRelocate",
+      // "willingToRelocate",
       "allowParnterToWork",
       "allowPartnerToStudy",
       "acceptSomeoneWithChildren",
@@ -1773,10 +1709,10 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
       "AcceptSomeoneWithBeard",
       "AcceptSomeoneWithHijab",
       "ConsiderARevert",
-      "acceptSomeoneInOtherCountry",
-      "willingToSharePhotosUponRequest",
-      "willingToMeetUpOutside",
-      "willingToConsiderANonUkCitizen",
+      // "acceptSomeoneInOtherCountry",
+      // "willingToSharePhotosUponRequest",
+      // "willingToMeetUpOutside",
+      // "willingToConsiderANonUkCitizen",
     ];
 
     const numericFields = ["age", "height", "siblings", "contact"];
@@ -1803,13 +1739,6 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
       hairColor: ["black", "brown", "blonde"],
       complexion: ["fair", "wheatish", "dark"],
       ethnicity: ["bangladeshi", "pakistani", "indian", "british", "other"],
-      livingArrangementsAfterMarriage: [
-        "live with parents",
-        "live alone",
-        "live with spouse",
-        "other",
-      ],
-      futurePlans: ["settle abroad", "stay in current country", "other"],
       gender: ["male", "female", "rather not say"],
     };
 
