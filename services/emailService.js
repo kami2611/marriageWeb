@@ -3,8 +3,8 @@ const nodemailer = require("nodemailer");
 // Create transporter with your Hostinger SMTP settings
 const transporter = nodemailer.createTransport({
   host: "smtp.hostinger.com", // Hostinger SMTP server
-  port: 465,
-  secure: true, // true for 465, false for other ports
+  port: 587,
+  secure: false, // true for 465, false for other ports
   auth: {
     user: process.env.EMAIL_USER, // contact@damourmuslim.com
     pass: process.env.EMAIL_PASS, // Your email password
