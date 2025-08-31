@@ -24,22 +24,40 @@
         <button id="notificationDropdown" class="p-2 text-gray-700 hover:text-primary transition-all duration-300 relative">
           <i class="ri-notification-line text-xl"></i>
           <!-- Notification badge -->
-          <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">0</span>
+          <span id="notificationBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center hidden">0</span>
         </button>
 
         <!-- Notification Dropdown -->
-        <div id="notificationMenu" class="absolute right-0 mt-2 w-80 bg-white rounded-xl material-shadow border border-gray-100 py-4 hidden z-50">
-          <div class="px-4 pb-3 border-b border-gray-100">
+        <div id="notificationMenu" class="absolute right-0 mt-2 w-80 bg-white rounded-xl material-shadow border border-gray-100 py-4 hidden z-50 max-h-96 overflow-hidden">
+          <div class="px-4 pb-3 border-b border-gray-100 flex items-center justify-between">
             <h3 class="text-lg font-semibold text-gray-800 font-['Playfair_Display']">Notifications</h3>
+            <button id="markAllReadBtn" class="text-sm text-primary hover:text-pink-600 transition-colors hidden">
+              Mark all read
+            </button>
           </div>
-          <div class="px-4 py-8 text-center">
-            <div class="mb-4">
-              <i class="ri-notification-off-line text-4xl text-gray-300"></i>
+
+          <!-- Notifications container -->
+          <div id="notificationsContainer" class="max-h-80 overflow-y-auto">
+            <!-- Loading state -->
+            <div id="notificationsLoading" class="px-4 py-8 text-center">
+              <div class="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full mx-auto mb-2"></div>
+              <p class="text-gray-500 text-sm">Loading notifications...</p>
             </div>
-            <p class="text-gray-500 font-medium">No new notifications</p>
-            <p class="text-sm text-gray-400 mt-1">We'll notify you when something new arrives</p>
+
+            <!-- Empty state -->
+            <div id="notificationsEmpty" class="px-4 py-8 text-center hidden">
+              <div class="mb-4">
+                <i class="ri-notification-off-line text-4xl text-gray-300"></i>
+              </div>
+              <p class="text-gray-500 font-medium">No new notifications</p>
+              <p class="text-sm text-gray-400 mt-1">We'll notify you when something new arrives</p>
+            </div>
+
+            <!-- Notifications list -->
+            <div id="notificationsList"></div>
           </div>
         </div>
+
         <!-- Notification backdrop overlay -->
         <div id="notificationBackdrop" class="fixed inset-0 bg-black bg-opacity-50 z-40 hidden transition-opacity duration-300"></div>
       </div>
@@ -90,63 +108,81 @@
     const notificationButton = document.getElementById('notificationDropdown');
     const notificationMenu = document.getElementById('notificationMenu');
     const notificationBackdrop = document.getElementById('notificationBackdrop');
+    const notificationBadge = document.getElementById('notificationBadge');
+    const notificationsList = document.getElementById('notificationsList');
+    const notificationsLoading = document.getElementById('notificationsLoading');
+    const notificationsEmpty = document.getElementById('notificationsEmpty');
+    const notificationsContainer = document.getElementById('notificationsContainer');
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
 
-    // Account dropdown functionality
+    let notifications = [];
+    let unreadCount = 0;
+
+    // Account dropdown functionality (keep existing)
     if (dropdownButton && dropdownMenu) {
       dropdownButton.addEventListener('click', function(e) {
         e.stopPropagation();
         dropdownMenu.classList.toggle('hidden');
-        // Close notification dropdown if open
         if (notificationMenu) {
           notificationMenu.classList.add('hidden');
           notificationBackdrop.classList.add('hidden');
         }
       });
 
-      // Close dropdown when clicking outside
       document.addEventListener('click', function() {
         dropdownMenu.classList.add('hidden');
       });
 
-      // Prevent dropdown from closing when clicking inside it
       dropdownMenu.addEventListener('click', function(e) {
         e.stopPropagation();
       });
     }
 
-    // Notification dropdown functionality
+    // Notification system
     if (notificationButton && notificationMenu && notificationBackdrop) {
+      // Load notifications on page load
+      loadNotifications();
+
+      // Check for email notification periodically
+      <% if (user && !user.isAdmin) { %>
+      checkEmailNotification();
+      <% } %>
+
+      // Notification dropdown toggle
       notificationButton.addEventListener('click', function(e) {
         e.stopPropagation();
         const isHidden = notificationMenu.classList.contains('hidden');
 
         if (isHidden) {
-          // Show notification dropdown
           notificationMenu.classList.remove('hidden');
           notificationBackdrop.classList.remove('hidden');
-          // Close account dropdown if open
-          if (dropdownMenu) {
-            dropdownMenu.classList.add('hidden');
-          }
+          if (dropdownMenu) dropdownMenu.classList.add('hidden');
+          loadNotifications(); // Refresh on open
         } else {
-          // Hide notification dropdown
           notificationMenu.classList.add('hidden');
           notificationBackdrop.classList.add('hidden');
         }
       });
 
-      // Close notification dropdown when clicking backdrop
+      // Close on backdrop click
       notificationBackdrop.addEventListener('click', function() {
         notificationMenu.classList.add('hidden');
         notificationBackdrop.classList.add('hidden');
       });
 
-      // Prevent dropdown from closing when clicking inside it
+      // Prevent dropdown from closing when clicking inside
       notificationMenu.addEventListener('click', function(e) {
         e.stopPropagation();
       });
 
-      // Close all dropdowns when pressing Escape
+      // Mark all as read
+      if (markAllReadBtn) {
+        markAllReadBtn.addEventListener('click', function() {
+          markAllNotificationsAsRead();
+        });
+      }
+
+      // Close on Escape
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
           notificationMenu.classList.add('hidden');
@@ -155,5 +191,229 @@
         }
       });
     }
+
+    // Load notifications from API
+    async function loadNotifications() {
+      try {
+        notificationsLoading.classList.remove('hidden');
+        notificationsEmpty.classList.add('hidden');
+        notificationsList.innerHTML = '';
+
+        const response = await fetch('/api/notifications');
+        const data = await response.json();
+
+        if (data.success) {
+          notifications = data.notifications;
+          unreadCount = data.unreadCount;
+
+          updateNotificationBadge();
+          renderNotifications();
+        }
+      } catch (error) {
+        console.error('Error loading notifications:', error);
+      } finally {
+        notificationsLoading.classList.add('hidden');
+      }
+    }
+
+    // Update notification badge
+    function updateNotificationBadge() {
+      if (unreadCount > 0) {
+        notificationBadge.textContent = unreadCount > 99 ? '99+' : unreadCount;
+        notificationBadge.classList.remove('hidden');
+        markAllReadBtn.classList.remove('hidden');
+      } else {
+        notificationBadge.classList.add('hidden');
+        markAllReadBtn.classList.add('hidden');
+      }
+    }
+
+    // Render notifications
+    function renderNotifications() {
+      if (notifications.length === 0) {
+        notificationsEmpty.classList.remove('hidden');
+        return;
+      }
+
+      notificationsEmpty.classList.add('hidden');
+
+      notifications.forEach(notification => {
+        const notificationElement = createNotificationElement(notification);
+        notificationsList.appendChild(notificationElement);
+      });
+    }
+
+    // Create notification element
+    function createNotificationElement(notification) {
+      const div = document.createElement('div');
+      const isUnread = !notification.isRead;
+
+      div.className = `px-4 py-3 border-b border-gray-50 hover:bg-gray-50 transition-colors cursor-pointer ${isUnread ? 'bg-blue-50' : ''}`;
+      div.setAttribute('data-notification-id', notification._id);
+
+      const priorityColors = {
+        high: 'text-red-600',
+        medium: 'text-orange-600',
+        low: 'text-blue-600'
+      };
+
+      const priorityColor = priorityColors[notification.priority] || 'text-blue-600';
+
+      div.innerHTML = `
+        <div class="flex items-start gap-3">
+          ${isUnread ? `<div class="w-2 h-2 bg-primary rounded-full mt-2 flex-shrink-0"></div>` : `<div class="w-2 h-2 mt-2 flex-shrink-0"></div>`}
+          <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-2">
+              <h4 class="text-sm font-semibold text-gray-900 ${isUnread ? 'font-bold' : ''}">${notification.title}</h4>
+              <span class="text-xs ${priorityColor} px-2 py-1 rounded-full bg-gray-100 flex-shrink-0">${notification.priority}</span>
+            </div>
+            <p class="text-sm text-gray-600 mt-1 line-clamp-3">${notification.message}</p>
+            <div class="flex items-center justify-between mt-2">
+              <span class="text-xs text-gray-400">${formatNotificationTime(notification.createdAt)}</span>
+              ${notification.actionUrl ? `<button class="text-xs text-primary hover:text-pink-600 font-medium notification-action" data-url="${notification.actionUrl}">${notification.actionText || 'View'}</button>` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+
+      // Click handler for marking as read
+      div.addEventListener('click', function(e) {
+        if (!e.target.classList.contains('notification-action')) {
+          markNotificationAsRead(notification._id);
+        }
+      });
+
+      // Action button handler
+      const actionBtn = div.querySelector('.notification-action');
+      if (actionBtn) {
+        actionBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          markNotificationAsRead(notification._id);
+          window.location.href = notification.actionUrl;
+        });
+      }
+
+      return div;
+    }
+
+    // Mark notification as read
+    async function markNotificationAsRead(notificationId) {
+      try {
+        const response = await fetch(`/api/notifications/${notificationId}/read`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          // Update local state
+          notifications = notifications.map(n =>
+            n._id === notificationId ? {
+              ...n,
+              isRead: true
+            } : n
+          );
+          unreadCount = Math.max(0, unreadCount - 1);
+          updateNotificationBadge();
+
+          // Update UI
+          const notificationElement = document.querySelector(`[data-notification-id="${notificationId}"]`);
+          if (notificationElement) {
+            notificationElement.classList.remove('bg-blue-50');
+            const unreadDot = notificationElement.querySelector('.w-2.h-2.bg-primary');
+            if (unreadDot) {
+              unreadDot.classList.remove('bg-primary');
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error marking notification as read:', error);
+      }
+    }
+
+    // Mark all notifications as read
+    async function markAllNotificationsAsRead() {
+      try {
+        const response = await fetch('/api/notifications/mark-all-read', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (response.ok) {
+          notifications = notifications.map(n => ({
+            ...n,
+            isRead: true
+          }));
+          unreadCount = 0;
+          updateNotificationBadge();
+
+          // Update UI - remove all unread indicators
+          document.querySelectorAll('.bg-blue-50').forEach(el => {
+            el.classList.remove('bg-blue-50');
+          });
+          document.querySelectorAll('.bg-primary.rounded-full').forEach(el => {
+            el.classList.remove('bg-primary');
+          });
+        }
+      } catch (error) {
+        console.error('Error marking all notifications as read:', error);
+      }
+    }
+
+    // Check for email notification
+    async function checkEmailNotification() {
+      try {
+        await fetch('/api/notifications/check-email', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+      } catch (error) {
+        console.error('Error checking email notification:', error);
+      }
+    }
+
+    // Format notification time
+    function formatNotificationTime(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffInSeconds = Math.floor((now - date) / 1000);
+
+      if (diffInSeconds < 60) return 'Just now';
+      if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)}m ago`;
+      if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)}h ago`;
+      if (diffInSeconds < 604800) return `${Math.floor(diffInSeconds / 86400)}d ago`;
+
+      return date.toLocaleDateString();
+    }
   });
 </script>
+
+<style>
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .notification-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+</style>

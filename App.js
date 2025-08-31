@@ -71,6 +71,8 @@ const User = require("./models/user");
 const Newsletter = require("./models/Newsletter");
 const path = require("path");
 const Request = require("./models/Request");
+const Notification = require("./models/Notification");
+const NotificationService = require("./services/notificationService");
 const isLoggedIn = require("./middlewares/isLoggedIn");
 const findUser = require("./middlewares/findUser");
 const mongoose = require("mongoose");
@@ -170,6 +172,7 @@ const {
   generateVerificationCode,
   sendVerificationEmail,
 } = require("./services/emailService");
+const requireProfileComplete = require("./middlewares/requireProfileComplete");
 
 // Add this middleware after your session setup but before your routes
 app.set("view engine", "ejs");
@@ -462,13 +465,7 @@ app.post("/register", async (req, res) => {
     providedEmail: email?.toLowerCase(),
     match: req.session.verifiedEmail === email?.toLowerCase(),
   });
-  // Check if required fields are present
-  // if (!username || !email || !password || !passcode || !gender) {
-  //   console.log("all fields required");
-  //   return res.render("register", {
-  //     error: "All fields are required. Please fill out the form completely.",
-  //   });
-  // }
+
   if (!username || !password || !passcode || !gender) {
     console.log("required fields missing");
     return res.render("register", {
@@ -655,6 +652,23 @@ app.post("/login", async (req, res) => {
     return res.json({ error: "username or password is incorrect" });
   }
 });
+
+// Middleware to check and create notifications after login
+app.use(async (req, res, next) => {
+  // Only run for logged-in regular users (not admin)
+  if (req.session.userId && !req.session.isAdmin) {
+    try {
+      // Check for email notification
+      await NotificationService.checkAndCreateEmailNotification(
+        req.session.userId
+      );
+    } catch (error) {
+      console.error("Error in notification middleware:", error);
+    }
+  }
+  next();
+});
+
 app.get("/logout", (req, res) => {
   const wasAdmin = req.session.isAdmin;
 
@@ -971,136 +985,65 @@ app.get("/profiles/:slug", async (req, res) => {
     });
   }
 });
-app.post("/interested/:id", isLoggedIn, async (req, res) => {
-  try {
-    const beinglikeduserId = req.params.id; // receiver
-    const likeUserId = req.session.userId; // sender
+app.post(
+  "/interested/:id",
+  isLoggedIn,
+  requireProfileComplete,
+  async (req, res) => {
+    try {
+      const beinglikeduserId = req.params.id; // receiver
+      const likeUserId = req.session.userId; // sender
 
-    // Check if sender's profile is complete BEFORE sending request
-    const senderUser = await User.findById(likeUserId);
+      // Check if target user exists
+      const beingLikedUser = await User.findById(beinglikeduserId);
+      if (!beingLikedUser) {
+        return res.status(404).json({ error: "User not found" });
+      }
 
-    // Use the same profile completion logic from requireProfileComplete.js
-    const isProfileComplete =
-      senderUser &&
-      senderUser.age &&
-      senderUser.name &&
-      senderUser.gender &&
-      senderUser.religion &&
-      senderUser.nationality &&
-      senderUser.country &&
-      senderUser.state &&
-      senderUser.city &&
-      senderUser.contact &&
-      senderUser.adress &&
-      senderUser.height &&
-      senderUser.complexion &&
-      senderUser.build &&
-      senderUser.eyeColor &&
-      senderUser.hairColor &&
-      senderUser.ethnicity &&
-      senderUser.maritalStatus &&
-      senderUser.work &&
-      senderUser.islamicSect &&
-      senderUser.smoker !== undefined &&
-      senderUser.bornMuslim !== undefined &&
-      senderUser.prays !== undefined &&
-      senderUser.celebratesMilaad !== undefined &&
-      senderUser.celebrateKhatams !== undefined &&
-      senderUser.livingArrangementsAfterMarriage &&
-      senderUser.futurePlans &&
-      senderUser.fatherName &&
-      senderUser.motherName &&
-      senderUser.fatherProfession &&
-      senderUser.aboutMe &&
-      senderUser.willingToRelocate !== undefined &&
-      senderUser.preferredAgeRange &&
-      senderUser.preferredHeightRange &&
-      senderUser.preferredCaste &&
-      senderUser.preferredEthnicity &&
-      senderUser.allowParnterToWork !== undefined &&
-      senderUser.allowPartnerToStudy !== undefined &&
-      senderUser.acceptSomeoneInOtherCountry !== undefined &&
-      senderUser.lookingForASpouseThatIs &&
-      senderUser.willingToSharePhotosUponRequest !== undefined &&
-      senderUser.willingToMeetUpOutside !== undefined &&
-      senderUser.whoCompletedProfile &&
-      senderUser.birthPlace &&
-      senderUser.siblings !== undefined &&
-      senderUser.describeNature &&
-      senderUser.acceptSomeoneWithChildren !== undefined &&
-      senderUser.acceptADivorcedPerson !== undefined &&
-      senderUser.agreesWithPolygamy !== undefined &&
-      senderUser.acceptAWidow !== undefined &&
-      senderUser.AcceptSomeoneWithBeard !== undefined &&
-      senderUser.AcceptSomeoneWithHijab !== undefined &&
-      senderUser.ConsiderARevert !== undefined &&
-      senderUser.willingToConsiderANonUkCitizen !== undefined &&
-      senderUser.languagesSpoken &&
-      senderUser.languagesSpoken.length > 0 &&
-      senderUser.hobbies &&
-      senderUser.hobbies.length > 0 &&
-      senderUser.QualitiesThatYouCanBringToYourMarriage &&
-      senderUser.QualitiesThatYouCanBringToYourMarriage.length > 0 &&
-      senderUser.qualitiesYouNeedInYourPartner &&
-      senderUser.qualitiesYouNeedInYourPartner.length > 0;
+      // Check if request already exists
+      const existingRequest = await Request.findOne({
+        from: likeUserId,
+        to: beinglikeduserId,
+        status: "pending",
+      });
 
-    if (!isProfileComplete) {
-      return res.status(400).json({
-        error: "incomplete_profile",
-        message:
-          "You must complete your profile before sending requests to others.",
+      if (existingRequest) {
+        return res.json({ error: "Request already sent" });
+      }
+
+      // ONLY grant access to sender's profile to receiver
+      // (Receiver can see sender's info to make decision)
+      if (!beingLikedUser.canAccessFullProfileOf.includes(likeUserId)) {
+        beingLikedUser.canAccessFullProfileOf.push(likeUserId);
+      }
+
+      // Create new request
+      const newRequest = new Request({
+        from: likeUserId,
+        to: beinglikeduserId,
+        status: "pending", // explicitly set as pending
+      });
+
+      await newRequest.save();
+
+      // Add request to receiver's list
+      if (!beingLikedUser.likeRequests.includes(newRequest._id)) {
+        beingLikedUser.likeRequests.push(newRequest);
+      }
+
+      await beingLikedUser.save();
+
+      return res.json({
+        message: "Successfully sent your like request",
+      });
+    } catch (error) {
+      console.error("Error sending request:", error);
+      return res.status(500).json({
+        error: "Failed to send request. Please try again.",
       });
     }
-
-    // Check if target user exists
-    const beingLikedUser = await User.findById(beinglikeduserId);
-    if (!beingLikedUser) {
-      return res.status(404).json({ error: "User not found" });
-    }
-
-    // Check if request already exists
-    const existingRequest = await Request.findOne({
-      from: likeUserId,
-      to: beinglikeduserId,
-      status: "pending",
-    });
-
-    if (existingRequest) {
-      return res.json({ error: "Request already sent" });
-    }
-
-    // ONLY grant access to sender's profile to receiver
-    // (Receiver can see sender's info to make decision)
-    if (!beingLikedUser.canAccessFullProfileOf.includes(likeUserId)) {
-      beingLikedUser.canAccessFullProfileOf.push(likeUserId);
-    }
-
-    // Create new request
-    const newRequest = new Request({
-      from: likeUserId,
-      to: beinglikeduserId,
-      status: "pending", // explicitly set as pending
-    });
-
-    await newRequest.save();
-
-    // Add request to receiver's list
-    if (!beingLikedUser.likeRequests.includes(newRequest._id)) {
-      beingLikedUser.likeRequests.push(newRequest);
-    }
-
-    await beingLikedUser.save();
-
-    return res.json({
-      message: "Successfully sent your like request",
-    });
-  } catch (error) {
-    console.error("Error sending request:", error);
-    return res.status(500).json({
-      error: "Failed to send request. Please try again.",
-    });
   }
-});
+);
 
 // ...existing code...
 app.get("/admin", (req, res) => {
@@ -2365,6 +2308,79 @@ app.post(
     }
   }
 );
+// Notification API Routes
+app.get("/api/notifications", isLoggedIn, async (req, res) => {
+  try {
+    const notifications = await NotificationService.getUserNotifications(
+      req.session.userId,
+      20,
+      false
+    );
+    const unreadCount = await NotificationService.getUnreadCount(
+      req.session.userId
+    );
+
+    res.json({
+      success: true,
+      notifications,
+      unreadCount,
+    });
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch notifications" });
+  }
+});
+
+// Mark notification as read
+app.post("/api/notifications/:id/read", isLoggedIn, async (req, res) => {
+  try {
+    const notification = await NotificationService.markAsRead(
+      req.params.id,
+      req.session.userId
+    );
+
+    if (!notification) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Notification not found" });
+    }
+
+    res.json({ success: true, notification });
+  } catch (error) {
+    console.error("Error marking notification as read:", error);
+    res.status(500).json({ success: false, error: "Failed to mark as read" });
+  }
+});
+
+// Mark all notifications as read
+app.post("/api/notifications/mark-all-read", isLoggedIn, async (req, res) => {
+  try {
+    const count = await NotificationService.markAllAsRead(req.session.userId);
+    res.json({ success: true, markedCount: count });
+  } catch (error) {
+    console.error("Error marking all notifications as read:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to mark all as read" });
+  }
+});
+
+// Check and create email notification for current user
+app.post("/api/notifications/check-email", isLoggedIn, async (req, res) => {
+  try {
+    const created = await NotificationService.checkAndCreateEmailNotification(
+      req.session.userId
+    );
+    res.json({ success: true, notificationCreated: created });
+  } catch (error) {
+    console.error("Error checking email notification:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to check email notification" });
+  }
+});
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {
   try {
