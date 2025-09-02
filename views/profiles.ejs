@@ -335,9 +335,9 @@
                 <% } else { %>
                 <!-- Default placeholder based on gender -->
                 <% if (profile.gender === 'male') { %>
-                <img src="/images/boyavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.name || profile.username %>'s Profile">
+                <img src="/images/boyavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.username %>'s Profile">
                 <% } else { %>
-                <img src="/images/girlavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.name || profile.username %>'s Profile">
+                <img src="/images/girlavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.username %>'s Profile">
                 <% } %>
                 <% } %>
               </div>

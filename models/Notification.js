@@ -13,7 +13,9 @@ const notificationSchema = new mongoose.Schema({
       "email_required",
       "profile_incomplete",
       "request_received",
-      "request_accepted",
+      "request_accepted", // **NEW**
+      "request_rejected", // **NEW**
+      "request_revoked", // **NEW**
       "system_announcement",
     ],
   },

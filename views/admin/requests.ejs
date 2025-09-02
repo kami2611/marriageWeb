@@ -171,8 +171,8 @@
               <!-- Request Info -->
               <div class="flex-1">
                 <div class="flex items-center gap-4 mb-3">
-                  <!-- From User -->
-                  <div class="flex items-center gap-3">
+                  <!-- From User - **CLICKABLE** -->
+                  <div class="flex items-center gap-3 cursor-pointer hover:bg-blue-50 p-2 rounded-lg transition-colors duration-200 view-profile-clickable" data-user-slug="<%= request.from?.profileSlug %>" title="Click to view <%= request.from?.name || request.from?.username %>'s Profile">
                     <div class="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
                       <i class="ri-user-line text-primary"></i>
                     </div>
@@ -196,8 +196,8 @@
                     <i class="ri-arrow-right-line text-gray-400 text-xl"></i>
                   </div>
 
-                  <!-- To User -->
-                  <div class="flex items-center gap-3">
+                  <!-- To User - **CLICKABLE** -->
+                  <div class="flex items-center gap-3 cursor-pointer hover:bg-purple-50 p-2 rounded-lg transition-colors duration-200 view-profile-clickable" data-user-slug="<%= request.to?.profileSlug %>" title="Click to view <%= request.to?.name || request.to?.username %>'s Profile">
                     <div class="w-10 h-10 bg-secondary/10 rounded-full flex items-center justify-center">
                       <i class="ri-user-line text-secondary"></i>
                     </div>
@@ -263,14 +263,33 @@
                   </span>
                 </div>
 
-                <!-- View Profile Buttons -->
+                <!-- **UPDATED**: Request Action Buttons -->
                 <div class="flex gap-2">
-                  <button class="view-profile-btn px-3 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 !rounded-button text-sm" data-user-slug="<%= request.from?.profileSlug %>" title="View <%= request.from?.name || request.from?.username %>'s Profile">
-                    <i class="ri-eye-line mr-1"></i>From
+                  <% if (request.status === 'pending') { %>
+                  <!-- Pending: Show Accept/Reject/Delete -->
+                  <button class="accept-btn px-3 py-2 bg-green-500 text-white hover:bg-green-600 transition-all duration-300 !rounded-button text-sm" data-request-id="<%= request._id %>" title="Accept Request">
+                    <i class="ri-check-line mr-1"></i>Accept
                   </button>
-                  <button class="view-profile-btn px-3 py-2 bg-purple-500 text-white hover:bg-purple-600 transition-all duration-300 !rounded-button text-sm" data-user-slug="<%= request.to?.profileSlug %>" title="View <%= request.to?.name || request.to?.username %>'s Profile">
-                    <i class="ri-eye-line mr-1"></i>To
+                  <button class="reject-btn px-3 py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 !rounded-button text-sm" data-request-id="<%= request._id %>" title="Reject Request">
+                    <i class="ri-close-line mr-1"></i>Reject
                   </button>
+                  <button class="delete-btn px-3 py-2 bg-gray-800 text-white hover:bg-gray-900 transition-all duration-300 !rounded-button text-sm" data-request-id="<%= request._id %>" title="Delete Request Permanently">
+                    <i class="ri-delete-bin-line mr-1"></i>Delete
+                  </button>
+                  <% } else if (request.status === 'accepted') { %>
+                  <!-- Accepted: Show Revoke/Delete -->
+                  <button class="revoke-btn px-3 py-2 bg-orange-500 text-white hover:bg-orange-600 transition-all duration-300 !rounded-button text-sm" data-request-id="<%= request._id %>" title="Revoke Acceptance">
+                    <i class="ri-arrow-go-back-line mr-1"></i>Revoke
+                  </button>
+                  <button class="delete-btn px-3 py-2 bg-gray-800 text-white hover:bg-gray-900 transition-all duration-300 !rounded-button text-sm" data-request-id="<%= request._id %>" title="Delete Request Permanently">
+                    <i class="ri-delete-bin-line mr-1"></i>Delete
+                  </button>
+                  <% } else { %>
+                  <!-- Rejected: Show Delete only -->
+                  <button class="delete-btn px-3 py-2 bg-gray-800 text-white hover:bg-gray-900 transition-all duration-300 !rounded-button text-sm" data-request-id="<%= request._id %>" title="Delete Request Permanently">
+                    <i class="ri-delete-bin-line mr-1"></i>Delete
+                  </button>
+                  <% } %>
                 </div>
               </div>
             </div>
@@ -295,7 +314,7 @@
     </div>
   </main>
 
-  <script>
+  <!-- <script>
     document.addEventListener('DOMContentLoaded', function() {
       // Status Filter
       const statusFilter = document.getElementById('statusFilter');
@@ -321,6 +340,213 @@
           }
         });
       });
+
+      // Request Action Buttons
+      const acceptBtns = document.querySelectorAll('.accept-btn');
+      const rejectBtns = document.querySelectorAll('.reject-btn');
+      const revokeBtns = document.querySelectorAll('.revoke-btn');
+
+      acceptBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const requestId = this.getAttribute('data-request-id');
+          handleRequestAction(requestId, 'accepted', this);
+        });
+      });
+
+      rejectBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const requestId = this.getAttribute('data-request-id');
+          handleRequestAction(requestId, 'rejected', this);
+        });
+      });
+
+      revokeBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const requestId = this.getAttribute('data-request-id');
+          handleRequestRevoke(requestId, this);
+        });
+      });
+
+      // Handle request actions
+      async function handleRequestAction(requestId, action, button) {
+        try {
+          button.disabled = true;
+          button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i>Processing...';
+
+          const response = await fetch(`/admin/requests/${requestId}/respond`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Reload page to show updated status
+            window.location.reload();
+          } else {
+            alert('Error: ' + (result.error || 'Unknown error occurred'));
+            button.disabled = false;
+            button.innerHTML = action === 'accepted' ?
+              '<i class="ri-check-line mr-1"></i>Accept' :
+              '<i class="ri-close-line mr-1"></i>Reject';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Network error occurred');
+          button.disabled = false;
+        }
+      }
+
+      // Handle request revoke
+      async function handleRequestRevoke(requestId, button) {
+        if (!confirm('Are you sure you want to revoke this accepted request? This will remove mutual access between users.')) {
+          return;
+        }
+
+        try {
+          button.disabled = true;
+          button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i>Revoking...';
+
+          const response = await fetch(`/admin/requests/${requestId}/revoke`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            }
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Reload page to show updated status
+            window.location.reload();
+          } else {
+            alert('Error: ' + (result.error || 'Unknown error occurred'));
+            button.disabled = false;
+            button.innerHTML = '<i class="ri-arrow-go-back-line mr-1"></i>Revoke';
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Network error occurred');
+          button.disabled = false;
+        }
+      }
+
+      // Logout button
+      const logoutBtn = document.getElementById('logoutBtn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+          if (confirm('Are you sure you want to logout?')) {
+            window.location.href = '/logout';
+          }
+        });
+      }
+    });
+  </script> -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Status Filter
+      const statusFilter = document.getElementById('statusFilter');
+      if (statusFilter) {
+        statusFilter.addEventListener('change', function() {
+          const selectedStatus = this.value;
+          const url = selectedStatus === 'all' ?
+            '/admin/requests' :
+            `/admin/requests?status=${selectedStatus}`;
+          window.location.href = url;
+        });
+      }
+
+      // **UPDATED**: Clickable Profile Divs
+      const viewProfileDivs = document.querySelectorAll('.view-profile-clickable');
+      viewProfileDivs.forEach(div => {
+        div.addEventListener('click', function() {
+          const userSlug = this.getAttribute('data-user-slug');
+          if (userSlug) {
+            window.open(`/profiles/${userSlug}`, '_blank');
+          } else {
+            alert('Profile not available');
+          }
+        });
+      });
+
+      // **UPDATED**: Request Action Buttons (Accept, Reject, Revoke, Delete)
+      const actionBtns = document.querySelectorAll('.accept-btn, .reject-btn, .revoke-btn, .delete-btn');
+      actionBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          const requestId = this.getAttribute('data-request-id');
+          let action;
+
+          if (this.classList.contains('accept-btn')) {
+            action = 'accepted';
+          } else if (this.classList.contains('reject-btn')) {
+            action = 'rejected';
+          } else if (this.classList.contains('revoke-btn')) {
+            action = 'revoke';
+            // Show confirmation for revoke
+            if (!confirm('Are you sure you want to revoke this accepted request? This will remove mutual access between users.')) {
+              return;
+            }
+          } else if (this.classList.contains('delete-btn')) {
+            action = 'delete';
+            // Show confirmation for delete
+            if (!confirm('Are you sure you want to permanently delete this request? This action cannot be undone.')) {
+              return;
+            }
+          }
+
+          handleRequestAction(requestId, action, this);
+        });
+      });
+
+      // **UPDATED**: Handle all request actions (Accept, Reject, Revoke, Delete)
+      async function handleRequestAction(requestId, action, button) {
+        try {
+          // Set loading state
+          button.disabled = true;
+          const originalText = button.innerHTML;
+
+          if (action === 'accepted') {
+            button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i>Accepting...';
+          } else if (action === 'rejected') {
+            button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i>Rejecting...';
+          } else if (action === 'revoke') {
+            button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i>Revoking...';
+          } else if (action === 'delete') {
+            button.innerHTML = '<i class="ri-loader-4-line animate-spin mr-1"></i>Deleting...';
+          }
+
+          const response = await fetch(`/admin/requests/${requestId}/respond`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              action
+            })
+          });
+
+          const result = await response.json();
+
+          if (result.success) {
+            // Reload page to show updated status
+            window.location.reload();
+          } else {
+            alert('Error: ' + (result.error || 'Unknown error occurred'));
+            button.disabled = false;
+            button.innerHTML = originalText;
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          alert('Network error occurred');
+          button.disabled = false;
+          button.innerHTML = originalText;
+        }
+      }
 
       // Logout button
       const logoutBtn = document.getElementById('logoutBtn');

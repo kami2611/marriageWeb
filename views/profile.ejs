@@ -197,7 +197,7 @@
               <!-- Cover Photo -->
               <div class="aspect-[3/2] relative overflow-hidden">
                 <% if (profile.coverPhoto && profile.coverPhoto.url) { %>
-                <img src="<%= profile.coverPhoto.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Cover">
+                <img src="<%= profile.coverPhoto.url %>" class="w-full h-full object-cover" alt="<%=  profile.username %>'s Cover">
                 <% } else { %>
                 <!-- Default cover image based on gender -->
                 <% if (profile.gender === 'male') { %>
@@ -218,7 +218,7 @@
                 <!-- Profile Picture -->
                 <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white material-shadow mx-auto mb-6">
                   <% if (profile.profilePic && profile.profilePic.url) { %>
-                  <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+                  <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%=  profile.username %>'s Profile">
                   <% } else { %>
                   <!-- Default avatar based on gender -->
                   <% if (profile.gender === 'male') { %>
@@ -232,12 +232,9 @@
                 <!-- Name and Verification -->
                 <div class="text-center mb-8">
                   <h1 class="text-3xl font-bold text-gray-900 mb-2 font-['Playfair_Display']">
+                    <i class="ri-verified-badge-fill text-primary"></i>
                     <%=  profile.username %>
                   </h1>
-                  <p class="text-gray-600 flex items-center justify-center gap-2">
-                    <i class="ri-verified-badge-fill text-primary"></i>
-                    <span>@<%= profile.username %></span>
-                  </p>
                 </div>
                 <!-- Add this right after the name and verification section -->
                 <div class="text-center mb-6">

@@ -330,7 +330,7 @@
                   </div>
                 </div>
 
-                <!-- **NEW**: Email Field -->
+                <!-- **NEW**: Email Field, verification will be added here after everything goes right wih smtp server -->
                 <div class="space-y-2">
                   <label for="email" class="block text-sm font-medium text-gray-700">Email Address <span class="text-gray-400 text-xs">(Optional)</span></label>
                   <div class="relative">
@@ -341,48 +341,7 @@
                   </div>
 
                   <!-- Email Status Display -->
-                  <div id="email-verification-status" class="mt-2">
-                    <% if (accountInfo.email) { %>
-                    <% if (accountInfo.isEmailVerified) { %>
-                    <!-- Verified Email -->
-                    <div class="flex items-center gap-2 text-green-600 text-sm">
-                      <i class="ri-checkbox-circle-fill"></i>
-                      <span>Email verified</span>
-                    </div>
-                    <% } else { %>
-                    <!-- Unverified Email -->
-                    <div class="flex items-center gap-2 text-red-600 text-sm mb-2">
-                      <i class="ri-error-warning-fill"></i>
-                      <span>Email unverified</span>
-                    </div>
-                    <button type="button" id="verify-email-btn" class="px-4 py-2 bg-secondary text-white text-sm rounded-button hover:bg-purple-600 transition-all duration-300">
-                      Verify Email
-                    </button>
-                    <% } %>
-                    <% } else { %>
-                    <!-- No Email Set -->
-                    <button type="button" id="add-email-btn" class="hidden px-4 py-2 bg-secondary text-white text-sm rounded-button hover:bg-purple-600 transition-all duration-300">
-                      Send Email Verification Code
-                    </button>
-                    <% } %>
-                  </div>
 
-                  <!-- Verification Code Input (Hidden by default) -->
-                  <div id="verification-section" class="hidden mt-3">
-                    <label for="verification-code" class="block text-sm font-medium text-gray-700 mb-2">
-                      Enter 4-digit verification code
-                    </label>
-                    <div class="flex gap-2">
-                      <input type="text" id="verification-code" maxlength="4" pattern="[0-9]{4}" class="flex-1 px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 text-center text-lg font-mono" placeholder="0000">
-                      <button type="button" id="verify-code-btn" class="px-4 py-2 bg-green-600 text-white text-sm rounded-button hover:bg-green-700 transition-all duration-300">
-                        Verify
-                      </button>
-                    </div>
-                    <p class="text-xs text-gray-500 mt-1">Check your email for the verification code</p>
-                  </div>
-
-                  <!-- Status Messages -->
-                  <div id="email-status" class="hidden text-sm mt-2"></div>
                 </div>
                 <div class="space-y-2">
                   <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>

@@ -75,6 +75,11 @@ const Notification = require("./models/Notification");
 const NotificationService = require("./services/notificationService");
 const isLoggedIn = require("./middlewares/isLoggedIn");
 const findUser = require("./middlewares/findUser");
+const {
+  requireAdminOrModerator,
+  requireAdminOnly,
+  requireViewAccess,
+} = require("./middlewares/accessControl");
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
@@ -108,7 +113,7 @@ app.use((req, res, next) => {
 });
 const rateLimit = require("express-rate-limit");
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+  windowMs: 1 * 60 * 1000, // 1 minutes
   max: 200, // Limit each IP to 200 requests per windowMs
   message: "Too many requests from this IP",
   standardHeaders: true,
@@ -188,6 +193,8 @@ mongoose
 app.use((req, res, next) => {
   // Make user data available to all templates
   res.locals.user = req.session.user || null;
+  res.locals.isAdmin = req.session.isAdmin || false; // **EXISTING**
+  res.locals.isModerator = req.session.isModerator || false; // **NEW**
   next();
 });
 // Place after app.use(session(...)) and before your routes
@@ -608,11 +615,13 @@ app.post("/login", async (req, res) => {
     password === process.env.ADMIN_PASSWORD
   ) {
     req.session.isAdmin = true;
+    req.session.isModerator = false; // **NEW**
     req.session.adminUsername = username;
     // Create a user object for admin with isAdmin flag
     req.session.user = {
       username: username,
       isAdmin: true,
+      isModerator: false,
     };
 
     if (remember === "true" || remember === true) {
@@ -623,8 +632,29 @@ app.post("/login", async (req, res) => {
 
     return res.json({ success: true, redirect: "/admin/dashboard" });
   }
+  // **NEW**: Check if it's moderator login
+  if (
+    username === process.env.MODERATOR_USERNAME &&
+    password === process.env.MODERATOR_PASSWORD
+  ) {
+    req.session.isAdmin = false; // **NEW**
+    req.session.isModerator = true; // **NEW**
+    req.session.adminUsername = username;
+    req.session.user = {
+      username: username,
+      isAdmin: false,
+      isModerator: true, // **NEW**
+    };
 
-  // If not admin, try user login
+    if (remember === "true" || remember === true) {
+      req.session.cookie.maxAge = 1000 * 60 * 60 * 24 * 30; // 30 days
+    } else {
+      req.session.cookie.expires = false; // Session cookie
+    }
+
+    return res.json({ success: true, redirect: "/admin/dashboard" });
+  }
+  // If not admin,or moderator try user login
   const foundUser = await User.findOne({ username: username });
   if (!foundUser) {
     return res.json({ error: "username or password is incorrect" });
@@ -636,6 +666,7 @@ app.post("/login", async (req, res) => {
     // Ensure user object has isAdmin flag
     const userObj = foundUser.toObject();
     userObj.isAdmin = false; // Regular users are not admin
+    userObj.isModerator = false; // Regular users are not moderator
     req.session.user = userObj;
 
     if (remember === "true" || remember === true) {
@@ -671,6 +702,7 @@ app.use(async (req, res, next) => {
 
 app.get("/logout", (req, res) => {
   const wasAdmin = req.session.isAdmin;
+  const wasModerator = req.session.isModerator; // **NEW**
 
   req.session.destroy((err) => {
     if (err) {
@@ -679,8 +711,9 @@ app.get("/logout", (req, res) => {
     res.clearCookie("connect.sid");
 
     // Redirect to appropriate page based on user type
-    if (wasAdmin) {
-      res.redirect("/login"); // or "/admin" if you want
+    if (wasAdmin || wasModerator) {
+      // **UPDATED**
+      res.redirect("/login");
     } else {
       res.redirect("/home");
     }
@@ -748,6 +781,21 @@ app.post("/requests/:id/accept", isLoggedIn, async (req, res) => {
     await requestFromUser.save();
     await requestToUser.save();
 
+    await NotificationService.createNotification({
+      userId: request.from._id,
+      type: "request_accepted",
+      title: "Request Accepted!",
+      message: `Congratulations! Your request was accepted by ${
+        request.to.name || request.to.username
+      }.`,
+      priority: "high",
+      actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
+      actionText: "View Profile",
+    });
+    console.log(
+      `User ${request.to.username} accepted request from ${request.from.username}`
+    );
+
     return res.redirect("/account/pendingRequests");
   } catch (error) {
     console.error("Error accepting request:", error);
@@ -783,7 +831,20 @@ app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
 
     await requestToUser.save();
     await requestFromUser.save();
-
+    await NotificationService.createNotification({
+      userId: request.from._id,
+      type: "request_rejected",
+      title: "Request Declined",
+      message: `Your request was declined by ${
+        request.to.name || request.to.username
+      }.`,
+      priority: "medium",
+      actionUrl: "/profiles",
+      actionText: "Browse Profiles",
+    });
+    console.log(
+      `User ${request.to.username} rejected request from ${request.from.username}`
+    );
     return res.redirect("/account/pendingRequests");
   } catch (error) {
     console.error("Error rejecting request:", error);
@@ -942,7 +1003,7 @@ app.get("/profiles/:slug", async (req, res) => {
     let hasalreadysentrequest = false;
 
     // If admin, always grant full access
-    if (req.session.isAdmin) {
+    if (req.session.isAdmin || req.session.isModerator) {
       canAccessFullProfile = true;
     } else if (req.session.userId) {
       const loggedUser = await User.findById(req.session.userId);
@@ -1053,13 +1114,13 @@ app.get("/admin", (req, res) => {
   // Redirect to main login page instead of rendering separate admin login
   res.redirect("/login");
 });
-app.get("/admin/addUser", (req, res) => {
+app.get("/admin/addUser", requireAdminOnly, (req, res) => {
   if (!req.session.isAdmin) return res.redirect("/admin");
   res.render("admin/addUser");
 });
-app.get("/admin/dashboard", async (req, res) => {
-  if (!req.session.isAdmin) {
-    return res.redirect("/admin");
+app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
+  if (!req.session.isAdmin && !req.session.isModerator) {
+    return res.redirect("/login");
   }
 
   try {
@@ -1124,7 +1185,7 @@ app.post("/admin/user/:id/edit", async (req, res) => {
     res.status(500).json({ error: "Update failed" });
   }
 });
-app.post("/admin/user/:id/delete", async (req, res) => {
+app.post("/admin/user/:id/delete", requireAdminOnly, async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
   const { id } = req.params;
   try {
@@ -1136,7 +1197,7 @@ app.post("/admin/user/:id/delete", async (req, res) => {
   }
 });
 
-app.post("/admin/user/add", async (req, res) => {
+app.post("/admin/user/add", requireAdminOnly, async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
   console.log("Received user data:", req.body); // Debug log
@@ -1483,7 +1544,7 @@ app.post("/admin/user/add", async (req, res) => {
     res.json({ error: `Failed to add user: ${err.message}` });
   }
 });
-app.get("/admin/user/:id", async (req, res) => {
+app.get("/admin/user/:id", requireAdminOrModerator, async (req, res) => {
   if (!req.session.isAdmin) return res.redirect("/admin");
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).send("User not found");
@@ -1528,7 +1589,7 @@ app.get("/generate-username", async (req, res) => {
 // Add these routes after your existing admin routes (around line 385, after the generate-username route)
 
 // Edit User Page Route
-app.get("/admin/edit-user/:id", async (req, res) => {
+app.get("/admin/edit-user/:id", requireAdminOnly, async (req, res) => {
   if (!req.session.isAdmin) {
     return res.redirect("/admin");
   }
@@ -1836,7 +1897,7 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
 });
 
 // Reset User Password Route
-app.post("/admin/user/reset-password", async (req, res) => {
+app.post("/admin/user/reset-password", requireAdminOnly, async (req, res) => {
   if (!req.session.isAdmin) {
     return res
       .status(403)
@@ -1977,11 +2038,7 @@ app.post("/api/requests/:requestId/respond", isLoggedIn, async (req, res) => {
   }
 });
 // Admin Requests Management Route
-app.get("/admin/requests", async (req, res) => {
-  if (!req.session.isAdmin) {
-    return res.redirect("/admin");
-  }
-
+app.get("/admin/requests", requireAdminOrModerator, async (req, res) => {
   try {
     const { status } = req.query;
 
@@ -2145,7 +2202,476 @@ app.get("/admin/newsletter", async (req, res) => {
     });
   }
 });
+// Admin Request Actions
+// app.post(
+//   "/admin/requests/:requestId/respond",
+//   requireAdminOrModerator,
+//   async (req, res) => {
+//     try {
+//       const { requestId } = req.params;
+//       const { action } = req.body;
 
+//       if (!["accepted", "rejected"].includes(action)) {
+//         return res
+//           .status(400)
+//           .json({ success: false, error: "Invalid action" });
+//       }
+
+//       const request = await Request.findById(requestId).populate(
+//         "from to",
+//         "username name profileSlug"
+//       );
+//       if (!request) {
+//         return res
+//           .status(404)
+//           .json({ success: false, error: "Request not found" });
+//       }
+
+//       // Update request status
+//       request.status = action;
+//       await request.save();
+
+//       if (action === "accepted") {
+//         // Grant mutual access
+//         const requestFromUser = await User.findById(request.from._id);
+//         const requestToUser = await User.findById(request.to._id);
+
+//         if (
+//           !requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)
+//         ) {
+//           requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
+//         }
+
+//         if (
+//           !requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)
+//         ) {
+//           requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
+//         }
+
+//         await requestFromUser.save();
+//         await requestToUser.save();
+
+//         // Send notification to requester
+//         await NotificationService.createNotification({
+//           userId: request.from._id,
+//           type: "request_accepted",
+//           title: "Request Accepted!",
+//           message: `Congratulations! Your request was accepted by ${
+//             request.to.name || request.to.username
+//           }.`,
+//           priority: "high",
+//           actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
+//           actionText: "View Profile",
+//         });
+//       } else if (action === "rejected") {
+//         // Remove any existing access
+//         const requestToUser = await User.findById(request.to._id);
+//         const requestFromUser = await User.findById(request.from._id);
+
+//         if (requestToUser) {
+//           requestToUser.canAccessFullProfileOf.pull(request.from._id);
+//           await requestToUser.save();
+//         }
+
+//         if (requestFromUser) {
+//           requestFromUser.canAccessFullProfileOf.pull(request.to._id);
+//           await requestFromUser.save();
+//         }
+
+//         // Send notification to requester
+//         await NotificationService.createNotification({
+//           userId: request.from._id,
+//           type: "request_rejected",
+//           title: "Request Declined",
+//           message: `Your request was declined by ${
+//             request.to.name || request.to.username
+//           }.`,
+//           priority: "medium",
+//           actionUrl: "/profiles",
+//           actionText: "Browse Profiles",
+//         });
+//       }
+
+//       console.log(
+//         `Admin ${action} request from ${request.from.username} to ${request.to.username}`
+//       );
+//       res.json({ success: true, message: `Request ${action} successfully` });
+//     } catch (error) {
+//       console.error("Admin request respond error:", error);
+//       res
+//         .status(500)
+//         .json({ success: false, error: "Failed to update request" });
+//     }
+//   }
+// );
+// Admin Request Actions (Enhanced with Revoke)
+// app.post(
+//   "/admin/requests/:requestId/respond",
+//   requireAdminOrModerator,
+//   async (req, res) => {
+//     try {
+//       const { requestId } = req.params;
+//       const { action } = req.body;
+
+//       if (!["accepted", "rejected", "revoke"].includes(action)) {
+//         return res
+//           .status(400)
+//           .json({ success: false, error: "Invalid action" });
+//       }
+
+//       const request = await Request.findById(requestId).populate(
+//         "from to",
+//         "username name profileSlug"
+//       );
+//       if (!request) {
+//         return res
+//           .status(404)
+//           .json({ success: false, error: "Request not found" });
+//       }
+
+//       // Handle revoke action
+//       if (action === "revoke") {
+//         if (request.status !== "accepted") {
+//           return res.status(400).json({
+//             success: false,
+//             error: "Can only revoke accepted requests",
+//           });
+//         }
+
+//         // Remove mutual access
+//         const requestFromUser = await User.findById(request.from._id);
+//         const requestToUser = await User.findById(request.to._id);
+
+//         if (requestFromUser) {
+//           requestFromUser.canAccessFullProfileOf.pull(request.to._id);
+//           await requestFromUser.save();
+//         }
+
+//         if (requestToUser) {
+//           requestToUser.canAccessFullProfileOf.pull(request.from._id);
+//           await requestToUser.save();
+//         }
+
+//         // Update request status back to pending
+//         request.status = "pending";
+//         await request.save();
+
+//         // Send notification to both users
+//         await NotificationService.createNotification({
+//           userId: request.from._id,
+//           type: "request_revoked",
+//           title: "Request Access Revoked",
+//           message: `Your accepted request with ${
+//             request.to.name || request.to.username
+//           } has been revoked by admin.`,
+//           priority: "high",
+//           actionUrl: "/profiles",
+//           actionText: "Browse Profiles",
+//         });
+
+//         await NotificationService.createNotification({
+//           userId: request.to._id,
+//           type: "request_revoked",
+//           title: "Request Access Revoked",
+//           message: `Your connection with ${
+//             request.from.name || request.from.username
+//           } has been revoked by admin.`,
+//           priority: "high",
+//           actionUrl: "/profiles",
+//           actionText: "Browse Profiles",
+//         });
+
+//         console.log(
+//           `Admin revoked request from ${request.from.username} to ${request.to.username}`
+//         );
+//         return res.json({
+//           success: true,
+//           message: "Request access revoked successfully",
+//         });
+//       }
+
+//       // Handle accept/reject actions
+//       request.status = action;
+//       await request.save();
+
+//       if (action === "accepted") {
+//         // Grant mutual access
+//         const requestFromUser = await User.findById(request.from._id);
+//         const requestToUser = await User.findById(request.to._id);
+
+//         if (
+//           !requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)
+//         ) {
+//           requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
+//         }
+
+//         if (
+//           !requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)
+//         ) {
+//           requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
+//         }
+
+//         await requestFromUser.save();
+//         await requestToUser.save();
+
+//         // Send notification to requester
+//         await NotificationService.createNotification({
+//           userId: request.from._id,
+//           type: "request_accepted",
+//           title: "Request Accepted!",
+//           message: `Congratulations! Your request was accepted by ${
+//             request.to.name || request.to.username
+//           }.`,
+//           priority: "high",
+//           actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
+//           actionText: "View Profile",
+//         });
+//       } else if (action === "rejected") {
+//         // Remove any existing access
+//         const requestToUser = await User.findById(request.to._id);
+//         const requestFromUser = await User.findById(request.from._id);
+
+//         if (requestToUser) {
+//           requestToUser.canAccessFullProfileOf.pull(request.from._id);
+//           await requestToUser.save();
+//         }
+
+//         if (requestFromUser) {
+//           requestFromUser.canAccessFullProfileOf.pull(request.to._id);
+//           await requestFromUser.save();
+//         }
+
+//         // Send notification to requester
+//         await NotificationService.createNotification({
+//           userId: request.from._id,
+//           type: "request_rejected",
+//           title: "Request Declined",
+//           message: `Your request was declined by ${
+//             request.to.name || request.to.username
+//           }.`,
+//           priority: "medium",
+//           actionUrl: "/profiles",
+//           actionText: "Browse Profiles",
+//         });
+//       }
+
+//       console.log(
+//         `Admin ${action} request from ${request.from.username} to ${request.to.username}`
+//       );
+//       res.json({ success: true, message: `Request ${action} successfully` });
+//     } catch (error) {
+//       console.error("Admin request respond error:", error);
+//       res
+//         .status(500)
+//         .json({ success: false, error: "Failed to update request" });
+//     }
+//   }
+// );
+// Admin Request Actions (Enhanced with Delete)
+app.post(
+  "/admin/requests/:requestId/respond",
+  requireAdminOrModerator,
+  async (req, res) => {
+    try {
+      const { requestId } = req.params;
+      const { action } = req.body;
+
+      if (!["accepted", "rejected", "revoke", "delete"].includes(action)) {
+        return res
+          .status(400)
+          .json({ success: false, error: "Invalid action" });
+      }
+
+      const request = await Request.findById(requestId).populate(
+        "from to",
+        "username name profileSlug"
+      );
+      if (!request) {
+        return res
+          .status(404)
+          .json({ success: false, error: "Request not found" });
+      }
+
+      // **NEW**: Handle delete action
+      if (action === "delete") {
+        // Remove mutual access between users if it exists
+        const requestFromUser = await User.findById(request.from._id);
+        const requestToUser = await User.findById(request.to._id);
+
+        if (requestFromUser) {
+          requestFromUser.canAccessFullProfileOf.pull(request.to._id);
+          await requestFromUser.save();
+        }
+
+        if (requestToUser) {
+          requestToUser.canAccessFullProfileOf.pull(request.from._id);
+          requestToUser.likeRequests.pull(requestId);
+          await requestToUser.save();
+        }
+
+        // Send notification to requester
+        await NotificationService.createNotification({
+          userId: request.from._id,
+          type: "request_rejected", // Reuse rejected type or create new one
+          title: "Request Deleted",
+          message: `Your request to ${
+            request.to.name || request.to.username
+          } was deleted by admin.`,
+          priority: "medium",
+          actionUrl: "/profiles",
+          actionText: "Browse Profiles",
+        });
+
+        // Delete the request permanently
+        await Request.findByIdAndDelete(requestId);
+
+        console.log(
+          `Admin deleted request from ${request.from.username} to ${request.to.username}`
+        );
+        return res.json({
+          success: true,
+          message: "Request deleted successfully",
+        });
+      }
+
+      // Handle revoke action
+      if (action === "revoke") {
+        if (request.status !== "accepted") {
+          return res.status(400).json({
+            success: false,
+            error: "Can only revoke accepted requests",
+          });
+        }
+
+        // Remove mutual access
+        const requestFromUser = await User.findById(request.from._id);
+        const requestToUser = await User.findById(request.to._id);
+
+        if (requestFromUser) {
+          requestFromUser.canAccessFullProfileOf.pull(request.to._id);
+          await requestFromUser.save();
+        }
+
+        if (requestToUser) {
+          requestToUser.canAccessFullProfileOf.pull(request.from._id);
+          await requestToUser.save();
+        }
+
+        // Update request status back to pending
+        request.status = "pending";
+        await request.save();
+
+        // Send notification to both users
+        await NotificationService.createNotification({
+          userId: request.from._id,
+          type: "request_revoked",
+          title: "Request Access Revoked",
+          message: `Your accepted request with ${
+            request.to.name || request.to.username
+          } has been revoked by admin.`,
+          priority: "high",
+          actionUrl: "/profiles",
+          actionText: "Browse Profiles",
+        });
+
+        await NotificationService.createNotification({
+          userId: request.to._id,
+          type: "request_revoked",
+          title: "Request Access Revoked",
+          message: `Your connection with ${
+            request.from.name || request.from.username
+          } has been revoked by admin.`,
+          priority: "high",
+          actionUrl: "/profiles",
+          actionText: "Browse Profiles",
+        });
+
+        console.log(
+          `Admin revoked request from ${request.from.username} to ${request.to.username}`
+        );
+        return res.json({
+          success: true,
+          message: "Request access revoked successfully",
+        });
+      }
+
+      // Handle accept/reject actions
+      request.status = action;
+      await request.save();
+
+      if (action === "accepted") {
+        // Grant mutual access
+        const requestFromUser = await User.findById(request.from._id);
+        const requestToUser = await User.findById(request.to._id);
+
+        if (
+          !requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)
+        ) {
+          requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
+        }
+
+        if (
+          !requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)
+        ) {
+          requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
+        }
+
+        await requestFromUser.save();
+        await requestToUser.save();
+
+        // Send notification to requester
+        await NotificationService.createNotification({
+          userId: request.from._id,
+          type: "request_accepted",
+          title: "Request Accepted!",
+          message: `Congratulations! Your request was accepted by ${
+            request.to.name || request.to.username
+          }.`,
+          priority: "high",
+          actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
+          actionText: "View Profile",
+        });
+      } else if (action === "rejected") {
+        // Remove any existing access
+        const requestToUser = await User.findById(request.to._id);
+        const requestFromUser = await User.findById(request.from._id);
+
+        if (requestToUser) {
+          requestToUser.canAccessFullProfileOf.pull(request.from._id);
+          await requestToUser.save();
+        }
+
+        if (requestFromUser) {
+          requestFromUser.canAccessFullProfileOf.pull(request.to._id);
+          await requestFromUser.save();
+        }
+
+        // Send notification to requester
+        await NotificationService.createNotification({
+          userId: request.from._id,
+          type: "request_rejected",
+          title: "Request Declined",
+          message: `Your request was declined by ${
+            request.to.name || request.to.username
+          }.`,
+          priority: "medium",
+          actionUrl: "/profiles",
+          actionText: "Browse Profiles",
+        });
+      }
+
+      console.log(
+        `Admin ${action} request from ${request.from.username} to ${request.to.username}`
+      );
+      res.json({ success: true, message: `Request ${action} successfully` });
+    } catch (error) {
+      console.error("Admin request respond error:", error);
+      res
+        .status(500)
+        .json({ success: false, error: "Failed to update request" });
+    }
+  }
+);
 // Unsubscribe route (for email links)
 app.get("/newsletter/unsubscribe/:email", async (req, res) => {
   try {
