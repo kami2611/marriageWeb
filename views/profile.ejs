@@ -243,10 +243,9 @@
                     <span id="shareText">Share Profile</span>
                   </button>
                 </div>
-
                 <!-- Hidden canvas for generating image - UPDATED to be dynamic -->
                 <div id="profileCard" style="position: absolute; left: -9999px; top: -9999px;">
-                  <div id="shareCanvas" style="width: 450px; min-width: 450px; max-width: 450px; padding: 20px; background: linear-gradient(135deg, #89cff0 0%); border-radius: 16px; color: #2D3748; font-family: 'Roboto', sans-serif; font-size: 13px; border: 2px solid; box-sizing: border-box; overflow: visible; height: auto;">
+                  <div id="shareCanvas" style="width: 450px; min-width: 450px; max-width: 450px; padding: 20px; background: <%= profile.gender === 'female' ? 'linear-gradient(135deg, #F6D6E5 0%, #F1CCDE 50%, #F4C4DC 100%)' : 'linear-gradient(135deg, #89cff0 0%)' %>; border-radius: 16px; color: #2D3748; font-family: 'Roboto', sans-serif; font-size: 13px; border: 2px solid; box-sizing: border-box; overflow: visible; height: auto;">
                     <!-- This will be populated dynamically by JavaScript -->
                   </div>
                 </div>
@@ -1253,10 +1252,12 @@
 
           lookingForASpouseThatIs: `<%= (profile.lookingForASpouseThatIs || '').replace(/"/g, '\\"').replace(/&/g, '&amp;') %>`
         };
-
+        //blue default was #b3e5fc
         // **UPDATED**: Header with essential info
+        const backgroundGradient = `<%= profile.gender === 'female' ? '#F1CADB' : '#b3e5fc' %>`;
+
         let content = `
-    <div style="background: #b3e5fc; border-radius: 14px; padding: 12px; margin-bottom: 6px; box-shadow: 0 4px 12px rgba(233,30,99,0.12); display: flex; align-items: center; justify-content: space-between;">
+    <div style="background: ${backgroundGradient}; border-radius: 14px; padding: 12px; margin-bottom: 6px; box-shadow: 0 4px 12px rgba(233,30,99,0.12); display: flex; align-items: center; justify-content: space-between;">
       <!-- Left Side - Profile Info -->
       <div style="flex: 1; text-align: left;">
         <h1 style="margin: 0 0 6px 0; font-size: 1.4rem; font-weight: 800; color: #1a1a1a; letter-spacing: 0.01em;">
@@ -1317,29 +1318,14 @@
           content += addSection("💕 Partner Preferences", preferences);
         }
 
-        // **SECTION 6**: Communication Preferences
-        // const communication = [];
-        // if (profileData.willingToSharePhotosUponRequest) communication.push(["Share Photos", profileData.willingToSharePhotosUponRequest]);
-        // if (profileData.willingToMeetUpOutside) communication.push(["Meet Up Outside", profileData.willingToMeetUpOutside]);
-
-        // if (communication.length > 0) {
-        //   content += addSection("💬 Communication Preferences", communication);
-        // }
 
         // **SECTION 7**: Looking For
         if (profileData.lookingForASpouseThatIs) {
           content += addInlineTextSection("💝 Looking for a Spouse That Is", profileData.lookingForASpouseThatIs);
         }
 
-        // **SECTION 8**: Special Information
-        // if (profileData.anySpecialInformation) {
-        //   content += addInlineTextSection("⭐ Special Information", profileData.anySpecialInformation);
-        // }
-
         shareCanvas.innerHTML = content;
       }
-
-      // Helper function to add a section with key-value pairs
       // Helper function to add a section with key-value pairs - UPDATED for selective styling
 
 
