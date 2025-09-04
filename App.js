@@ -496,18 +496,18 @@ app.post("/register", async (req, res) => {
   // }
 
   // **UPDATED**: Only check email verification if email was provided
-  // if (email && email.trim()) {
-  //   if (
-  //     !req.session.emailVerified ||
-  //     req.session.verifiedEmail !== email.toLowerCase()
-  //   ) {
-  //     console.log("Email provided but not verified");
-  //     return res.render("register", {
-  //       error:
-  //         "Please verify your email address or leave it empty to register without email.",
-  //     });
-  //   }
-  // }
+  if (email && email.trim()) {
+    if (
+      !req.session.emailVerified ||
+      req.session.verifiedEmail !== email.toLowerCase()
+    ) {
+      console.log("Email provided but not verified");
+      return res.render("register", {
+        error:
+          "Please verify your email address or leave it empty to register without email.",
+      });
+    }
+  }
 
   // Check passcode
   if (passcode != process.env.PASSCODE) {

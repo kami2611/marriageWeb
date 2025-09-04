@@ -227,12 +227,12 @@
                 </div>
 
                 <!-- Send Verification Button -->
-                <!-- <button type="button" id="send-verification-btn" class="hidden mt-2 px-4 py-2 bg-secondary text-white text-sm rounded-button hover:bg-purple-600 transition-all duration-300">
+                <button type="button" id="send-verification-btn" class="hidden mt-2 px-4 py-2 bg-secondary text-white text-sm rounded-button hover:bg-purple-600 transition-all duration-300">
                   Send Email Verification Code
-                </button> -->
+                </button>
 
                 <!-- Verification Code Input -->
-                <!-- <div id="verification-section" class="hidden mt-3">
+                <div id="verification-section" class="hidden mt-3">
                   <label for="verification-code" class="block text-sm font-medium text-gray-700 mb-2">
                     Enter 4-digit verification code
                   </label>
@@ -243,10 +243,10 @@
                     </button>
                   </div>
                   <p class="text-xs text-gray-500 mt-1">Check your email for the verification code</p>
-                </div> -->
+                </div>
 
                 <!-- Status Messages -->
-                <!-- <div id="email-status" class="hidden text-sm mt-2"></div> -->
+                <div id="email-status" class="hidden text-sm mt-2"></div>
             </div>
 
             <div class="space-y-2">
@@ -340,131 +340,130 @@
       const genderInputs = document.querySelectorAll('input[name="gender"]');
       const usernameField = document.getElementById('generated-username');
 
-      // **NEW**: Email verification functionality
-      // const emailField = document.getElementById('signup-email');
-      // const sendVerificationBtn = document.getElementById('send-verification-btn');
-      // const verificationSection = document.getElementById('verification-section');
-      // const verificationCodeInput = document.getElementById('verification-code');
-      // const verifyCodeBtn = document.getElementById('verify-code-btn');
-      // const emailStatus = document.getElementById('email-status');
-      // const submitButton = form.querySelector('button[type="submit"]');
+      // **RESTORED**: Email verification functionality
+      const emailField = document.getElementById('signup-email');
+      const sendVerificationBtn = document.getElementById('send-verification-btn');
+      const verificationSection = document.getElementById('verification-section');
+      const verificationCodeInput = document.getElementById('verification-code');
+      const verifyCodeBtn = document.getElementById('verify-code-btn');
+      const emailStatus = document.getElementById('email-status');
+      const submitButton = form.querySelector('button[type="submit"]');
 
-      // let isEmailVerified = false;
+      let isEmailVerified = false;
 
       // Show send verification button when valid email is entered
-      // emailField.addEventListener('input', function() {
-      //   const email = this.value.trim();
-      //   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      emailField.addEventListener('input', function() {
+        const email = this.value.trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-      //   if (emailRegex.test(email)) {
-      //     sendVerificationBtn.classList.remove('hidden');
-      //   } else {
-      //     sendVerificationBtn.classList.add('hidden');
-      //     verificationSection.classList.add('hidden');
-      //     hideEmailStatus();
-      //   }
-      // });
+        if (emailRegex.test(email)) {
+          sendVerificationBtn.classList.remove('hidden');
+        } else {
+          sendVerificationBtn.classList.add('hidden');
+          verificationSection.classList.add('hidden');
+          hideEmailStatus();
+        }
+      });
 
       // Send verification code
-      // sendVerificationBtn.addEventListener('click', async function() {
-      //   const email = emailField.value.trim();
-      //   const username = usernameField.value.trim();
+      sendVerificationBtn.addEventListener('click', async function() {
+        const email = emailField.value.trim();
+        const username = usernameField.value.trim();
 
-      //   if (!email || !username) {
-      //     showEmailStatus('Please enter email and select gender first', 'error');
-      //     return;
-      //   }
+        if (!email || !username) {
+          showEmailStatus('Please enter email and select gender first', 'error');
+          return;
+        }
 
-      // Disable button and show loading
-      // this.disabled = true;
-      // this.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Sending...';
+        // Disable button and show loading
+        this.disabled = true;
+        this.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Sending...';
 
-      // try {
-      //   const response = await fetch('/api/send-verification-code', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json'
-      //     },
-      //     body: JSON.stringify({
-      //       email,
-      //       username
-      //     })
-      //   });
+        try {
+          const response = await fetch('/api/send-verification-code', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email,
+              username
+            })
+          });
 
-      //   const data = await response.json();
+          const data = await response.json();
 
-      //   if (data.success) {
-      //     verificationSection.classList.remove('hidden');
-      //     showEmailStatus(data.message, 'success');
-      //     verificationCodeInput.focus();
-      //   } else {
-      //     showEmailStatus(data.error, 'error');
-      //   }
-      // } catch (error) {
-      //   showEmailStatus('Failed to send verification code', 'error');
-      // } finally {
-      //   this.disabled = false;
-      //   this.innerHTML = 'Send Email Verification Code';
-      // }
-      // });
+          if (data.success) {
+            verificationSection.classList.remove('hidden');
+            showEmailStatus(data.message, 'success');
+            verificationCodeInput.focus();
+          } else {
+            showEmailStatus(data.error, 'error');
+          }
+        } catch (error) {
+          showEmailStatus('Failed to send verification code', 'error');
+        } finally {
+          this.disabled = false;
+          this.innerHTML = 'Send Email Verification Code';
+        }
+      });
 
       // Verify code
-      // verifyCodeBtn.addEventListener('click', async function() {
-      //   const code = verificationCodeInput.value.trim();
+      verifyCodeBtn.addEventListener('click', async function() {
+        const code = verificationCodeInput.value.trim();
 
-      //   if (code.length !== 4) {
-      //     showEmailStatus('Please enter a 4-digit code', 'error');
-      //     return;
-      //   }
+        if (code.length !== 4) {
+          showEmailStatus('Please enter a 4-digit code', 'error');
+          return;
+        }
 
-      //   this.disabled = true;
-      //   this.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Verifying...';
+        this.disabled = true;
+        this.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Verifying...';
 
-      // try {
-      //   const response = await fetch('/api/verify-email-code', {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json'
-      //     },
-      //     body: JSON.stringify({
-      //       code
-      //     })
-      //   });
+        try {
+          const response = await fetch('/api/verify-email-code', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              code
+            })
+          });
 
-      //   const data = await response.json();
+          const data = await response.json();
 
-      //   if (data.success) {
-      //     isEmailVerified = true;
-      //     showEmailStatus(data.message + ' ✓', 'success');
-      //     verificationSection.classList.add('hidden');
-      //     sendVerificationBtn.classList.add('hidden');
-      //     emailField.readOnly = true;
-      //     emailField.classList.add('bg-green-50', 'border-green-300');
-      //   } else {
-      //     showEmailStatus(data.error, 'error');
-      //     verificationCodeInput.value = '';
-      //   }
-      //   } catch (error) {
-      //     showEmailStatus('Failed to verify code', 'error');
-      //   } finally {
-      //     this.disabled = false;
-      //     this.innerHTML = 'Verify';
-      //   }
-      // });
+          if (data.success) {
+            isEmailVerified = true;
+            showEmailStatus(data.message + ' ✓', 'success');
+            verificationSection.classList.add('hidden');
+            sendVerificationBtn.classList.add('hidden');
+            emailField.readOnly = true;
+            emailField.classList.add('bg-green-50', 'border-green-300');
+          } else {
+            showEmailStatus(data.error, 'error');
+            verificationCodeInput.value = '';
+          }
+        } catch (error) {
+          showEmailStatus('Failed to verify code', 'error');
+        } finally {
+          this.disabled = false;
+          this.innerHTML = 'Verify';
+        }
+      });
 
       // Helper functions
-      // function showEmailStatus(message, type) {
-      //   emailStatus.textContent = message;
-      //   emailStatus.className = `text-sm mt-2 ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
-      //   emailStatus.classList.remove('hidden');
-      // }
+      function showEmailStatus(message, type) {
+        emailStatus.textContent = message;
+        emailStatus.className = `text-sm mt-2 ${type === 'error' ? 'text-red-600' : 'text-green-600'}`;
+        emailStatus.classList.remove('hidden');
+      }
 
-      // function hideEmailStatus() {
-      //   emailStatus.classList.add('hidden');
-      // }
+      function hideEmailStatus() {
+        emailStatus.classList.add('hidden');
+      }
 
       // **NEW**: Email format validation on blur
-      const emailField = document.getElementById('signup-email');
       const emailErrorDiv = document.createElement('div');
       emailErrorDiv.id = 'email-error';
       emailErrorDiv.className = 'hidden text-sm text-red-600 mt-1';
@@ -553,12 +552,11 @@
 
       if (form) {
         form.addEventListener('submit', function(e) {
-          // if (!isEmailVerified) {
-          //   e.preventDefault();
-          //   showEmailStatus('Please verify your email address first', 'error');
-          //   return;
-          // }
-
+          if (!isEmailVerified) {
+            e.preventDefault();
+            showEmailStatus('Please verify your email address first', 'error');
+            return;
+          }
           // Continue with existing form submission logic...
         });
       }
