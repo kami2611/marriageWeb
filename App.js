@@ -84,6 +84,7 @@ const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 const multer = require("multer");
 const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
@@ -112,12 +113,37 @@ app.use((req, res, next) => {
   next();
 });
 const rateLimit = require("express-rate-limit");
+const { ipKeyGenerator } = require("express-rate-limit");
 const limiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minutes
   max: 200, // Limit each IP to 200 requests per windowMs
   message: "Too many requests from this IP",
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: ipKeyGenerator,
+});
+const emailVerificationLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // Limit each IP to 3 email verification requests per hour
+  message: {
+    success: false,
+    error: "Too many email verification attempts. Please try again in 1 hour.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: ipKeyGenerator,
+});
+
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // Limit each IP to 3 password reset requests per hour
+  message: {
+    success: false,
+    error: "Too many password reset attempts. Please try again in 1 hour.",
+  },
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: ipKeyGenerator,
 });
 
 app.use(limiter);
@@ -176,6 +202,7 @@ const upload = multer({ storage });
 const {
   generateVerificationCode,
   sendVerificationEmail,
+  sendPasswordResetEmail,
 } = require("./services/emailService");
 const requireProfileComplete = require("./middlewares/requireProfileComplete");
 
@@ -655,7 +682,9 @@ app.post("/login", async (req, res) => {
     return res.json({ success: true, redirect: "/admin/dashboard" });
   }
   // If not admin,or moderator try user login
-  const foundUser = await User.findOne({ username: username });
+  const foundUser = await User.findOne({
+    $or: [{ username: username }, { email: username.toLowerCase() }],
+  });
   if (!foundUser) {
     return res.json({ error: "username or password is incorrect" });
   }
@@ -2691,56 +2720,60 @@ app.get("/newsletter/unsubscribe/:email", async (req, res) => {
   }
 });
 // Send email verification code
-app.post("/api/send-verification-code", async (req, res) => {
-  try {
-    const { email, username } = req.body;
+app.post(
+  "/api/send-verification-code",
+  emailVerificationLimiter,
+  async (req, res) => {
+    try {
+      const { email, username } = req.body;
 
-    if (!email || !username) {
-      return res.json({
-        success: false,
-        error: "Email and username are required",
+      if (!email || !username) {
+        return res.json({
+          success: false,
+          error: "Email and username are required",
+        });
+      }
+
+      // Check if email already exists and is verified
+      const existingUser = await User.findOne({ email: email.toLowerCase() });
+      if (existingUser && existingUser.isEmailVerified) {
+        return res.json({
+          success: false,
+          error: "This email is already registered and verified",
+        });
+      }
+
+      // Generate verification code
+      const code = generateVerificationCode();
+
+      // Send email
+      const emailResult = await sendVerificationEmail(email, code, username);
+
+      if (!emailResult.success) {
+        return res.json({
+          success: false,
+          error: "Failed to send verification email",
+        });
+      }
+
+      // Store code in session temporarily (you could also store in database)
+      req.session.pendingVerification = {
+        email: email.toLowerCase(),
+        code: code,
+        username: username,
+        expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
+      };
+
+      res.json({
+        success: true,
+        message: "Verification code sent to your email",
       });
+    } catch (error) {
+      console.error("Send verification code error:", error);
+      res.json({ success: false, error: "Failed to send verification code" });
     }
-
-    // Check if email already exists and is verified
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser && existingUser.isEmailVerified) {
-      return res.json({
-        success: false,
-        error: "This email is already registered and verified",
-      });
-    }
-
-    // Generate verification code
-    const code = generateVerificationCode();
-
-    // Send email
-    const emailResult = await sendVerificationEmail(email, code, username);
-
-    if (!emailResult.success) {
-      return res.json({
-        success: false,
-        error: "Failed to send verification email",
-      });
-    }
-
-    // Store code in session temporarily (you could also store in database)
-    req.session.pendingVerification = {
-      email: email.toLowerCase(),
-      code: code,
-      username: username,
-      expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
-    };
-
-    res.json({
-      success: true,
-      message: "Verification code sent to your email",
-    });
-  } catch (error) {
-    console.error("Send verification code error:", error);
-    res.json({ success: false, error: "Failed to send verification code" });
   }
-});
+);
 
 // Verify email code
 app.post("/api/verify-email-code", async (req, res) => {
@@ -2905,6 +2938,185 @@ app.post("/api/notifications/check-email", isLoggedIn, async (req, res) => {
     res
       .status(500)
       .json({ success: false, error: "Failed to check email notification" });
+  }
+});
+
+// Forgot Password Routes
+app.get("/forgot-password", (req, res) => {
+  if (req.session.userId) {
+    // User is already logged in
+    return res.redirect("/home");
+  }
+  res.render("forgot-password");
+});
+
+app.post("/forgot-password", passwordResetLimiter, async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    if (!email || !email.trim()) {
+      return res.json({ success: false, error: "Email address is required" });
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.json({
+        success: false,
+        error: "Please provide a valid email address",
+      });
+    }
+
+    // Find user with this email
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) {
+      return res.json({
+        success: false,
+        error:
+          "No account found with this email address. Please check your email or contact support.",
+      });
+    }
+
+    // Generate secure reset token
+    const resetToken = crypto.randomBytes(32).toString("hex");
+    const resetExpiry = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+    // Save token to user
+    user.passwordResetToken = resetToken;
+    user.passwordResetExpiry = resetExpiry;
+    await user.save();
+
+    // Send reset email
+    const emailResult = await sendPasswordResetEmail(
+      user.email,
+      resetToken,
+      user.name || user.username
+    );
+
+    if (!emailResult.success) {
+      // Clean up token on email failure
+      user.passwordResetToken = null;
+      user.passwordResetExpiry = null;
+      await user.save();
+
+      return res.json({
+        success: false,
+        error: "Failed to send reset email. Please try again later.",
+      });
+    }
+
+    console.log(
+      `Password reset requested for user: ${user.username}, email: ${user.email}`
+    );
+
+    res.json({
+      success: true,
+      message: "Password reset instructions sent to your email address",
+    });
+  } catch (error) {
+    console.error("Forgot password error:", error);
+    res.json({
+      success: false,
+      error: "An error occurred. Please try again later.",
+    });
+  }
+});
+
+// Reset Password Routes
+app.get("/reset-password", async (req, res) => {
+  try {
+    const { token } = req.query;
+
+    if (!token) {
+      return res.render("forgot-password", {
+        error:
+          "Invalid or missing reset token. Please request a new password reset.",
+      });
+    }
+
+    // Find user with valid token
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.render("forgot-password", {
+        error:
+          "Invalid or expired reset token. Please request a new password reset.",
+      });
+    }
+
+    // Token is valid, show reset form
+    res.render("reset-password", { token });
+  } catch (error) {
+    console.error("Reset password GET error:", error);
+    res.render("forgot-password", {
+      error: "An error occurred. Please try again.",
+    });
+  }
+});
+app.post("/reset-password", async (req, res) => {
+  try {
+    const { token, password, confirmPassword } = req.body;
+
+    // Validation
+    if (!token || !password || !confirmPassword) {
+      return res.json({
+        success: false,
+        error: "All fields are required",
+      });
+    }
+
+    if (password.length < 5) {
+      return res.json({
+        success: false,
+        error: "Password must be at least 5 characters long",
+      });
+    }
+
+    if (password !== confirmPassword) {
+      return res.json({
+        success: false,
+        error: "Passwords do not match",
+      });
+    }
+
+    // Find user with valid token
+    const user = await User.findOne({
+      passwordResetToken: token,
+      passwordResetExpiry: { $gt: new Date() },
+    });
+
+    if (!user) {
+      return res.json({
+        success: false,
+        error:
+          "Invalid or expired reset token. Please request a new password reset.",
+      });
+    }
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 12);
+
+    // Update user password and clear reset token
+    user.password = hashedPassword;
+    user.passwordResetToken = null;
+    user.passwordResetExpiry = null;
+    await user.save();
+
+    console.log(`Password successfully reset for user: ${user.username}`);
+
+    res.json({
+      success: true,
+      message: "Password reset successfully",
+    });
+  } catch (error) {
+    console.error("Reset password POST error:", error);
+    res.json({
+      success: false,
+      error: "An error occurred. Please try again later.",
+    });
   }
 });
 // SEO: Generate dynamic sitemap

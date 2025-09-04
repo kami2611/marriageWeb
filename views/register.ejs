@@ -101,6 +101,16 @@
     .gradient-bg {
       background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
     }
+
+    .rate-limited {
+      background-color: #fef2f2 !important;
+      border-color: #fca5a5 !important;
+      cursor: not-allowed !important;
+    }
+
+    .rate-limited:hover {
+      background-color: #fef2f2 !important;
+    }
   </style>
 </head>
 <% if (isProd && !isAdmin) { %>
@@ -193,7 +203,7 @@
           </div>
           <div id="registrationForm" class="space-y-6 hidden">
             <div class="space-y-2">
-              <label class="block text-sm font-medium text-gray-700">Gender</label>
+              <label class="block text-sm font-medium text-gray-700">Gender <span class="text-red-500">*</span></label>
               <div class="flex gap-4">
                 <label class="flex items-center">
                   <input type="radio" name="gender" value="male" class="h-4 w-4 text-primary focus:ring-primary border-gray-300" required>
@@ -206,7 +216,7 @@
               </div>
             </div>
             <div class="space-y-2">
-              <label for="generated-username" class="block text-sm font-medium text-gray-700">Your Username</label>
+              <label for="generated-username" class="block text-sm font-medium text-gray-700">Your Username <span class="text-red-500">*</span></label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i class="ri-user-line text-gray-400"></i>
@@ -217,12 +227,12 @@
             </div>
             <div class="space-y-2">
               <!-- <label for="signup-email" class="block text-sm font-medium text-gray-700">Email Address</label> -->
-              <label for="signup-email" class="block text-sm font-medium text-gray-700">Email Address <span class="text-gray-400 text-xs">(Optional)</span>
+              <label for="signup-email" class="block text-sm font-medium text-gray-700">Email Address <span class="text-red-500">*</span>
                 <div class="relative">
                   <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                     <i class="ri-mail-line text-gray-400"></i>
                   </div>
-                  <!-- <input type="email" id="signup-email" name="email" required class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your email address"> -->
+
                   <input type="email" id="signup-email" name="email" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your email address">
                 </div>
 
@@ -250,7 +260,7 @@
             </div>
 
             <div class="space-y-2">
-              <label for="signup-password" class="block text-sm font-medium text-gray-700">Password</label>
+              <label for="signup-password" class="block text-sm font-medium text-gray-700">Password <span class="text-red-500">*</span></label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i class="ri-lock-line text-gray-400"></i>
@@ -259,7 +269,7 @@
               </div>
             </div>
             <div class="space-y-2">
-              <label for="passcode" class="block text-sm font-medium text-gray-700">Passcode (we shared it with you via whatsapp)</label>
+              <label for="passcode" class="block text-sm font-medium text-gray-700">Passcode (we shared it with you via whatsapp) <span class="text-red-500">*</span></label>
               <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <i class="ri-key-line text-gray-400"></i>
@@ -398,7 +408,17 @@
             showEmailStatus(data.message, 'success');
             verificationCodeInput.focus();
           } else {
-            showEmailStatus(data.error, 'error');
+            // **NEW**: Handle rate limit errors specifically
+            if (data.error && data.error.includes('Too many')) {
+              showEmailStatus(data.error, 'error');
+              // Hide the send button for 5 minutes on rate limit
+              sendVerificationBtn.style.display = 'none';
+              setTimeout(() => {
+                location.reload();
+              }, 5 * 60 * 1000);
+            } else {
+              showEmailStatus(data.error, 'error');
+            }
           }
         } catch (error) {
           showEmailStatus('Failed to send verification code', 'error');
