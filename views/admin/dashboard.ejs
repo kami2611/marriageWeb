@@ -100,6 +100,51 @@
     .stats-filter-card:hover {
       transform: translateY(-1px);
     }
+
+    /* **NEW**: Modal styles */
+    .modal-backdrop {
+      backdrop-filter: blur(4px);
+    }
+
+    .modal-enter {
+      animation: modalEnter 0.3s ease-out forwards;
+    }
+
+    .modal-exit {
+      animation: modalExit 0.2s ease-in forwards;
+    }
+
+    @keyframes modalEnter {
+      from {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+    @keyframes modalExit {
+      from {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+
+      to {
+        opacity: 0;
+        transform: scale(0.95) translateY(-10px);
+      }
+    }
+
+    /* Input focus styling */
+    #deleteConfirmationInput:focus {
+      outline: none;
+      ring: 2px;
+      ring-color: rgb(239 68 68);
+      border-color: rgb(239 68 68);
+    }
   </style>
 </head>
 
@@ -168,39 +213,55 @@
       </div>
 
       <!-- Stats Cards -->
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mb-8">
-        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card active" data-filter="all">
-          <div class="flex items-center">
-            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-blue-100 text-blue-600">
-              <i class="ri-user-line text-xl"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm text-gray-500">Total Users</p>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 mb-8">
+        <!-- Total Users -->
+        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card" data-filter="all">
+          <div class="flex items-center justify-between">
+            <div>
               <p class="text-2xl font-bold text-gray-900"><%= stats.totalUsers %></p>
+              <p class="text-sm text-gray-600 mt-1">Total Users</p>
+            </div>
+            <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+              <i class="ri-group-line text-xl text-primary"></i>
             </div>
           </div>
         </div>
 
+        <!-- By Admin -->
         <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card" data-filter="admin">
-          <div class="flex items-center">
-            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-purple-100 text-purple-600">
-              <i class="ri-admin-line text-xl"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm text-gray-500">By Admin</p>
+          <div class="flex items-center justify-between">
+            <div>
               <p class="text-2xl font-bold text-gray-900"><%= stats.registrationSources.byAdmin %></p>
+              <p class="text-sm text-gray-600 mt-1">By Admin</p>
+            </div>
+            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+              <i class="ri-admin-line text-xl text-purple-600"></i>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card col-span-2 md:col-span-1" data-filter="register">
-          <div class="flex items-center">
-            <div class="w-12 h-12 flex items-center justify-center rounded-full bg-orange-100 text-orange-600">
-              <i class="ri-user-smile-line text-xl"></i>
-            </div>
-            <div class="ml-4">
-              <p class="text-sm text-gray-500">Self Registered</p>
+        <!-- Self Registered -->
+        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card" data-filter="register">
+          <div class="flex items-center justify-between">
+            <div>
               <p class="text-2xl font-bold text-gray-900"><%= stats.registrationSources.bySelf %></p>
+              <p class="text-sm text-gray-600 mt-1">Self Registered</p>
+            </div>
+            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+              <i class="ri-user-add-line text-xl text-orange-600"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- **NEW**: Featured Profiles -->
+        <div class="bg-white rounded-xl p-6 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card" data-filter="featured">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-2xl font-bold text-gray-900"><%= stats.featuredCount %></p>
+              <p class="text-sm text-gray-600 mt-1">Featured Profiles</p>
+            </div>
+            <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+              <i class="ri-star-fill text-xl text-yellow-600"></i>
             </div>
           </div>
         </div>
@@ -209,7 +270,7 @@
       <div id="profileGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         <% if (users && users.length > 0) { %>
         <% users.forEach(user => { %>
-        <div class="profile-card bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover" data-waliMyContactDetails="<%= user.waliMyContactDetails || '' %>" data-username="<%= user.username %>" data-name="<%= user.name || user.username %>" data-contact="<%= user.contact || '' %>" data-registration-source="<%= user.registrationSource || 'unknown' %>">
+        <div class="profile-card bg-white rounded-xl md:rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover" data-waliMyContactDetails="<%= user.waliMyContactDetails || '' %>" data-username="<%= user.username %>" data-name="<%= user.name || user.username %>" data-contact="<%= user.contact || '' %>" data-registration-source="<%= user.registrationSource || 'unknown' %>" data-featured="<%= user.isFeatured || false %>">
           <div class="aspect-[4/1] overflow-hidden">
             <% if (user.profilePic && user.profilePic.url) { %>
             <img src="<%= user.profilePic.url %>" class="w-full h-full object-cover" alt="<%= user.name || user.username %>'s Profile">
@@ -280,14 +341,27 @@
                 <i class="ri-edit-line md:mr-1"></i>
                 <span class="hidden md:inline">Edit</span>
               </button>
-              <button class="view-btn flex-1 px-2 md:px-3 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button text-sm ripple flex items-center justify-center" data-user-id="<%= user._id %>" data-user-slug="<%= user.profileSlug %>" title="View Profile">
-                <i class="ri-eye-line md:mr-1"></i>
-                <span class="hidden md:inline">View</span>
-              </button>
               <button class="delete-btn flex-1 px-2 md:px-3 py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 !rounded-button text-sm ripple flex items-center justify-center" data-user-id="<%= user._id %>" title="Delete User">
                 <i class="ri-delete-bin-line md:mr-1"></i>
                 <span class="hidden md:inline">Delete</span>
               </button>
+              <button class="view-btn flex-1 px-2 md:px-3 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button text-sm ripple flex items-center justify-center" data-user-id="<%= user._id %>" data-user-slug="<%= user.profileSlug %>" title="View Profile">
+                <i class="ri-eye-line md:mr-1"></i>
+                <span class="hidden md:inline">View</span>
+              </button>
+              <div class="relative">
+                <button class="feature-dropdown-btn flex items-center justify-center px-2 py-2 bg-gray-600 text-white hover:bg-gray-700 transition-all duration-300 !rounded-button text-sm" data-user-id="<%= user._id %>" title="More Options">
+                  <i class="ri-arrow-up-line text-sm"></i>
+                </button>
+
+                <!-- Dropdown Menu -->
+                <div class="feature-dropdown absolute bottom-full right-0 mb-1 bg-white border border-gray-200 rounded-lg shadow-lg z-10 min-w-48 hidden">
+                  <button class="feature-profile-btn w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 rounded-lg transition-colors flex items-center" data-user-id="<%= user._id %>" data-featured="<%= user.isFeatured || false %>">
+                    <i class="<%= user.isFeatured ? 'ri-star-line' : 'ri-star-fill' %> mr-2 text-yellow-500"></i>
+                    <%= user.isFeatured ? 'Unfeature this Profile' : 'Feature this Profile' %>
+                  </button>
+                </div>
+              </div>
               <% } else if (isModerator) { %>
               <!-- Moderator sees only view button -->
               <button class="view-btn w-full px-2 md:px-3 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button text-sm ripple flex items-center justify-center" data-user-id="<%= user._id %>" data-user-slug="<%= user.profileSlug %>" title="View Profile">
@@ -327,7 +401,52 @@
       <% } %>
     </div>
   </main>
+  <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 max-w-md mx-4 material-shadow-elevated">
+      <!-- Modal Header -->
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="ri-error-warning-line text-3xl text-red-500"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Delete User Profile</h3>
+        <p class="text-gray-600">This action cannot be undone. All user data will be permanently deleted.</p>
+      </div>
 
+      <!-- User Info Display -->
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+            <i class="ri-user-line text-xl text-gray-600"></i>
+          </div>
+          <div>
+            <p class="font-semibold text-gray-900" id="deleteModalUserName">User Name</p>
+            <p class="text-sm text-gray-500" id="deleteModalUserUsername">@username</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Confirmation Text -->
+      <div class="mb-6">
+        <p class="text-sm font-medium text-gray-700 mb-3">Type "delete" below to confirm deletion of this user:</p>
+        <input type="text" id="deleteConfirmationInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-400" placeholder="Type 'delete' to confirm" autocomplete="off">
+        <div id="deleteInputError" class="hidden text-sm text-red-600 mt-2">
+          <i class="ri-error-warning-line mr-1"></i>
+          Please type "delete" exactly as shown
+        </div>
+      </div>
+
+      <!-- Modal Buttons -->
+      <div class="flex gap-3">
+        <button id="cancelDeleteBtn" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg font-medium">
+          Cancel
+        </button>
+        <button id="confirmDeleteBtn" class="flex-1 px-6 py-3 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-lg font-medium disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
+          <span id="deleteButtonText">Delete This User</span>
+          <i id="deleteLoadingIcon" class="ri-loader-4-line animate-spin ml-2 hidden"></i>
+        </button>
+      </div>
+    </div>
+  </div>
   <script id="ripple-effects">
     document.addEventListener('DOMContentLoaded', function() {
       const rippleButtons = document.querySelectorAll('.ripple');
@@ -353,15 +472,36 @@
 
   <script id="admin-interactions">
     document.addEventListener('DOMContentLoaded', function() {
-      // Grid toggle functionality
+      // **UNIFIED**: Single declaration for all elements
+      const searchInput = document.getElementById('searchInput');
+      const profileCards = document.querySelectorAll('.profile-card');
+      const statsFilterCards = document.querySelectorAll('.stats-filter-card');
+      const deleteModal = document.getElementById('deleteModal');
+      const deleteModalUserName = document.getElementById('deleteModalUserName');
+      const deleteModalUserUsername = document.getElementById('deleteModalUserUsername');
+      const deleteConfirmationInput = document.getElementById('deleteConfirmationInput');
+      const deleteInputError = document.getElementById('deleteInputError');
+      const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
+      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+      const deleteButtonText = document.getElementById('deleteButtonText');
+      const deleteLoadingIcon = document.getElementById('deleteLoadingIcon');
+
+      let currentDeleteUserId = null;
+      let currentDeleteUserCard = null;
+
+      // **FIXED**: Grid toggle functionality
       const threeColBtn = document.getElementById('threeCol');
       const fourColBtn = document.getElementById('fourCol');
       const profileGrid = document.getElementById('profileGrid');
 
       if (threeColBtn && fourColBtn && profileGrid) {
         threeColBtn.addEventListener('click', function() {
-          profileGrid.classList.remove('grid-cols-4');
-          profileGrid.classList.add('grid-cols-3');
+          // Remove all possible grid classes
+          profileGrid.classList.remove('grid-cols-2', 'md:grid-cols-4', 'md:grid-cols-3');
+          // Add large cards (3 per row)
+          profileGrid.classList.add('grid-cols-1', 'md:grid-cols-3');
+
+          // Update button states
           threeColBtn.classList.remove('border-gray-300', 'text-gray-500');
           threeColBtn.classList.add('border-primary', 'text-primary', 'active');
           fourColBtn.classList.remove('border-primary', 'text-primary', 'active');
@@ -369,19 +509,18 @@
         });
 
         fourColBtn.addEventListener('click', function() {
-          profileGrid.classList.remove('grid-cols-3');
-          profileGrid.classList.add('grid-cols-4');
+          // Remove all possible grid classes
+          profileGrid.classList.remove('grid-cols-1', 'md:grid-cols-3');
+          // Add compact cards (4 per row) - back to default
+          profileGrid.classList.add('grid-cols-2', 'md:grid-cols-4');
+
+          // Update button states
           fourColBtn.classList.remove('border-gray-300', 'text-gray-500');
           fourColBtn.classList.add('border-primary', 'text-primary', 'active');
           threeColBtn.classList.remove('border-primary', 'text-primary', 'active');
           threeColBtn.classList.add('border-gray-300', 'text-gray-500');
         });
       }
-
-      // **SINGLE DECLARATION** - Declare once and use throughout
-      const searchInput = document.getElementById('searchInput');
-      const profileCards = document.querySelectorAll('.profile-card');
-      const statsFilterCards = document.querySelectorAll('.stats-filter-card');
 
       // Search functionality
       if (searchInput) {
@@ -403,6 +542,8 @@
           });
         });
       }
+
+      // Button event handlers
       const requestsBtn = document.getElementById('requestsBtn');
       if (requestsBtn) {
         requestsBtn.addEventListener('click', function() {
@@ -410,10 +551,8 @@
         });
       }
 
-      // Add User button
       const addUserBtn = document.getElementById('addUserBtn');
       const addFirstUserBtn = document.getElementById('addFirstUserBtn');
-
       [addUserBtn, addFirstUserBtn].forEach(btn => {
         if (btn) {
           btn.addEventListener('click', function() {
@@ -422,7 +561,6 @@
         }
       });
 
-      // Logout button
       const logoutBtn = document.getElementById('logoutBtn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function() {
@@ -449,85 +587,253 @@
           const card = this.closest('.profile-card');
           const name = card.getAttribute('data-name');
           showNotification('Edit User', `Opening edit form for ${name}...`, 'info');
-
-          // Redirect admin to edit user page
           window.location.href = `/admin/edit-user/${userId}`;
         });
       });
 
-      // Delete buttons
+      // **FIXED**: Delete buttons with custom modal
       const deleteButtons = document.querySelectorAll('.delete-btn');
+
       deleteButtons.forEach(button => {
         button.addEventListener('click', function() {
           const userId = this.getAttribute('data-user-id');
           const card = this.closest('.profile-card');
           const name = card.getAttribute('data-name');
+          const username = card.getAttribute('data-username');
 
-          if (confirm(`Are you sure you want to delete ${name}'s profile? This action cannot be undone.`)) {
-            // Send delete request
-            fetch(`/admin/user/${userId}/delete`, {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                }
-              })
-              .then(response => response.json())
-              .then(data => {
-                if (data.success) {
-                  // Add fade out animation
-                  card.style.transition = 'all 0.3s ease';
-                  card.style.opacity = '0';
-                  card.style.transform = 'scale(0.9)';
+          // Store current delete context
+          currentDeleteUserId = userId;
+          currentDeleteUserCard = card;
 
-                  setTimeout(() => {
-                    card.remove();
-                    showNotification('User Deleted', `${name}'s profile has been deleted.`, 'success');
+          // Update modal content
+          deleteModalUserName.textContent = name;
+          deleteModalUserUsername.textContent = `@${username}`;
 
-                    // Reload page if no users left
-                    const remainingCards = document.querySelectorAll('.profile-card');
-                    if (remainingCards.length === 0) {
-                      setTimeout(() => location.reload(), 1000);
-                    }
-                  }, 300);
-                } else {
-                  showNotification('Delete Failed', 'Failed to delete user profile.', 'error');
-                }
-              })
-              .catch(error => {
-                console.error('Delete error:', error);
-                showNotification('Delete Failed', 'An error occurred while deleting the user.', 'error');
-              });
-          }
+          // Reset form
+          deleteConfirmationInput.value = '';
+          confirmDeleteBtn.disabled = true;
+          deleteInputError.classList.add('hidden');
+
+          // Show modal
+          deleteModal.classList.remove('hidden');
+
+          // Focus input
+          setTimeout(() => {
+            deleteConfirmationInput.focus();
+          }, 100);
         });
       });
 
-      // Stats card filter functionality
+      // Modal input validation
+      if (deleteConfirmationInput) {
+        deleteConfirmationInput.addEventListener('input', function() {
+          const value = this.value.trim();
+          const isValid = value === 'delete';
+
+          confirmDeleteBtn.disabled = !isValid;
+
+          if (value && !isValid) {
+            deleteInputError.classList.remove('hidden');
+          } else {
+            deleteInputError.classList.add('hidden');
+          }
+        });
+      }
+
+      // Cancel delete modal
+      if (cancelDeleteBtn) {
+        cancelDeleteBtn.addEventListener('click', function() {
+          deleteModal.classList.add('hidden');
+          currentDeleteUserId = null;
+          currentDeleteUserCard = null;
+        });
+      }
+
+      // Confirm delete with modal
+      if (confirmDeleteBtn) {
+        confirmDeleteBtn.addEventListener('click', async function() {
+          if (deleteConfirmationInput.value.trim() !== 'delete') {
+            deleteInputError.classList.remove('hidden');
+            return;
+          }
+
+          if (!currentDeleteUserId || !currentDeleteUserCard) return;
+
+          // Show loading state
+          this.disabled = true;
+          deleteButtonText.textContent = 'Deleting...';
+          deleteLoadingIcon.classList.remove('hidden');
+
+          try {
+            const response = await fetch(`/admin/user/${currentDeleteUserId}/delete`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              }
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              // Hide modal first
+              deleteModal.classList.add('hidden');
+
+              // Animate card removal
+              currentDeleteUserCard.style.transition = 'all 0.3s ease';
+              currentDeleteUserCard.style.opacity = '0';
+              currentDeleteUserCard.style.transform = 'scale(0.9)';
+
+              setTimeout(() => {
+                currentDeleteUserCard.remove();
+
+                const name = deleteModalUserName.textContent;
+                showNotification('User Deleted', `${name}'s profile has been deleted.`, 'success');
+
+                // Check if no cards remain
+                const remainingCards = document.querySelectorAll('.profile-card');
+                if (remainingCards.length === 0) {
+                  setTimeout(() => location.reload(), 1000);
+                }
+              }, 300);
+            } else {
+              showNotification('Delete Failed', 'Failed to delete user profile.', 'error');
+            }
+          } catch (error) {
+            console.error('Delete error:', error);
+            showNotification('Delete Failed', 'An error occurred while deleting the user.', 'error');
+          } finally {
+            // Reset button state
+            this.disabled = false;
+            deleteButtonText.textContent = 'Delete This User';
+            deleteLoadingIcon.classList.add('hidden');
+
+            // Clean up
+            currentDeleteUserId = null;
+            currentDeleteUserCard = null;
+          }
+        });
+      }
+
+      // Close modal when clicking outside
+      if (deleteModal) {
+        deleteModal.addEventListener('click', function(e) {
+          if (e.target === this) {
+            this.classList.add('hidden');
+            currentDeleteUserId = null;
+            currentDeleteUserCard = null;
+          }
+        });
+      }
+
+      // Handle escape key to close modal
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && deleteModal && !deleteModal.classList.contains('hidden')) {
+          deleteModal.classList.add('hidden');
+          currentDeleteUserId = null;
+          currentDeleteUserCard = null;
+        }
+      });
+
+      // **FIXED**: Feature dropdown functionality
+      const featureDropdownBtns = document.querySelectorAll('.feature-dropdown-btn');
+      const featureProfileBtns = document.querySelectorAll('.feature-profile-btn');
+
+      featureDropdownBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const dropdown = this.nextElementSibling;
+
+          document.querySelectorAll('.feature-dropdown').forEach(d => {
+            if (d !== dropdown) d.classList.add('hidden');
+          });
+
+          dropdown.classList.toggle('hidden');
+        });
+      });
+
+      document.addEventListener('click', function() {
+        document.querySelectorAll('.feature-dropdown').forEach(dropdown => {
+          dropdown.classList.add('hidden');
+        });
+      });
+
+      featureProfileBtns.forEach(btn => {
+        btn.addEventListener('click', async function(e) {
+          e.stopPropagation();
+
+          const userId = this.getAttribute('data-user-id');
+          const isFeatured = this.getAttribute('data-featured') === 'true';
+          const action = isFeatured ? 'unfeature' : 'feature';
+          const actionText = isFeatured ? 'unfeature' : 'feature';
+
+          const confirmed = confirm(`Are you sure you want to ${actionText} this profile?`);
+          if (!confirmed) return;
+
+          this.disabled = true;
+          const originalHTML = this.innerHTML;
+          this.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Loading...';
+
+          try {
+            const response = await fetch(`/admin/user/${userId}/feature`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                action
+              })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              location.reload();
+            } else {
+              alert('Error: ' + (result.error || 'Failed to update profile'));
+              this.disabled = false;
+              this.innerHTML = originalHTML;
+            }
+          } catch (error) {
+            console.error('Feature profile error:', error);
+            alert('Network error occurred');
+            this.disabled = false;
+            this.innerHTML = originalHTML;
+          }
+
+          this.closest('.feature-dropdown').classList.add('hidden');
+        });
+      });
+
+      // **FIXED**: Stats filter functionality
       statsFilterCards.forEach(card => {
         card.addEventListener('click', function() {
           const filter = this.getAttribute('data-filter');
 
-          // Update active state
-          statsFilterCards.forEach(c => c.classList.remove('active'));
-          this.classList.add('active');
+          console.log('Filter clicked:', filter); // Debug log
 
-          // Filter profile cards
+          // Update active state
+          statsFilterCards.forEach(c => {
+            c.classList.remove('ring-2', 'ring-primary', 'active');
+            c.classList.remove('border-2', 'border-primary');
+          });
+
+          this.classList.add('ring-2', 'ring-primary', 'active');
+
+          // Filter profiles
           let visibleCount = 0;
           profileCards.forEach(profileCard => {
             const registrationSource = profileCard.getAttribute('data-registration-source');
+            const isFeatured = profileCard.getAttribute('data-featured') === 'true';
             let shouldShow = false;
 
-            switch (filter) {
-              case 'all':
-                shouldShow = true;
-                break;
-              case 'admin':
-                shouldShow = registrationSource === 'admin';
-                break;
-              case 'register':
-                shouldShow = registrationSource === 'register';
-                break;
-              default:
-                shouldShow = true;
+            if (filter === 'all') {
+              shouldShow = true;
+            } else if (filter === 'admin') {
+              shouldShow = registrationSource === 'admin';
+            } else if (filter === 'register') {
+              shouldShow = registrationSource === 'register';
+            } else if (filter === 'featured') {
+              shouldShow = isFeatured;
             }
 
             if (shouldShow) {
@@ -538,20 +844,29 @@
             }
           });
 
-          // Update showing count or add filter indicator
+          console.log('Visible count after filter:', visibleCount); // Debug log
+
+          // Update URL without refreshing
+          const url = new URL(window.location);
+          if (filter === 'all') {
+            url.searchParams.delete('filter');
+          } else {
+            url.searchParams.set('filter', filter);
+          }
+          window.history.replaceState({}, '', url);
+
+          // Show filter indicator
           updateFilterIndicator(filter, visibleCount);
         });
       });
 
-      // Function to show filter status
+      // Filter indicator function
       function updateFilterIndicator(filter, count) {
-        // Remove existing filter indicator
         const existingIndicator = document.getElementById('filter-indicator');
         if (existingIndicator) {
           existingIndicator.remove();
         }
 
-        // Add new filter indicator
         if (filter !== 'all') {
           const indicator = document.createElement('div');
           indicator.id = 'filter-indicator';
@@ -565,6 +880,9 @@
             case 'register':
               filterText = 'Self Registered Users';
               break;
+            case 'featured':
+              filterText = 'Featured Profiles';
+              break;
           }
 
           indicator.innerHTML = `
@@ -575,7 +893,6 @@
             </button>
           `;
 
-          // Insert before profile grid
           const profileGrid = document.getElementById('profileGrid');
           profileGrid.parentNode.insertBefore(indicator, profileGrid);
         }
@@ -583,21 +900,41 @@
 
       // Global function to clear filter
       window.clearFilter = function() {
-        // Reset to "Total Users" (all)
-        statsFilterCards.forEach(c => c.classList.remove('active'));
-        statsFilterCards[0].classList.add('active'); // First card is "Total Users"
+        statsFilterCards.forEach(c => c.classList.remove('ring-2', 'ring-primary', 'active'));
+        if (statsFilterCards[0]) {
+          statsFilterCards[0].classList.add('ring-2', 'ring-primary', 'active');
+        }
 
-        // Show all profile cards
         profileCards.forEach(card => {
           card.style.display = 'block';
         });
 
-        // Remove filter indicator
         const indicator = document.getElementById('filter-indicator');
         if (indicator) {
           indicator.remove();
         }
+
+        // Update URL
+        const url = new URL(window.location);
+        url.searchParams.delete('filter');
+        window.history.replaceState({}, '', url);
       };
+
+      // Set initial active filter based on URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentFilter = urlParams.get('filter') || 'all';
+
+      if (currentFilter !== 'all') {
+        const targetCard = document.querySelector(`[data-filter="${currentFilter}"]`);
+        if (targetCard) {
+          targetCard.click();
+        }
+      } else {
+        // Set "Total Users" as active by default
+        if (statsFilterCards[0]) {
+          statsFilterCards[0].classList.add('ring-2', 'ring-primary', 'active');
+        }
+      }
 
       // Notification function
       function showNotification(title, message, type = 'info') {

@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%
-  const pageTitle = `${profile.name || profile.username}, ${profile.age} | Muslim Matchmaking Profile`;
-  const metaDescription = `View the profile of ${profile.name || profile.username}, a ${profile.age}-year-old ${profile.gender} from ${profile.city || 'an undisclosed location'}. Learn more about their background, values, and what they are looking for in a partner on D'amour Muslim.`;
+  const pageTitle = `${profile.username}, ${profile.age} | Muslim Matchmaking Profile`;
+  const metaDescription = `View the profile of ${profile.username}, a ${profile.age}-year-old ${profile.gender} from ${profile.city || 'an undisclosed location'}. Learn more about their background, values, and what they are looking for in a partner on D'amour Muslim.`;
   const profileUrl = `https://www.damourmuslim.com/profiles/${profile.profileSlug || profile._id}`;
   
   // **FIXED**: Better image URL handling
@@ -18,7 +18,7 @@
     imageUrl = 'https://www.damourmuslim.com/images/default-profile-og.jpg';
   }
   // **NEW**: Rich description with more profile info
-  const richDescription = `${profile.name || profile.username} • ${profile.age} years old • ${profile.gender} • ${profile.city}, ${profile.country || ''} ${profile.height ? '• ' + (profile.height / 30.48).toFixed(1) + ' ft' : ''} ${profile.work ? '• ' + profile.work : ''} ${profile.education && profile.education.length > 0 ? '• ' + profile.education[0].title : ''} • Find your perfect match on D'amour Muslim matrimonial platform.`;
+  const richDescription = `${profile.username} • ${profile.age} years old • ${profile.gender} • ${profile.city}, ${profile.country || ''} ${profile.height ? '• ' + (profile.height / 30.48).toFixed(1) + ' ft' : ''} ${profile.work ? '• ' + profile.work : ''} ${profile.education && profile.education.length > 0 ? '• ' + profile.education[0].title : ''} • Find your perfect match on D'amour Muslim matrimonial platform.`;
 %>
 
   <title><%= pageTitle %></title>
@@ -44,7 +44,7 @@
   <meta property="og:site_name" content="D'amour Muslim">
 
   <!-- **FIXED**: Profile-specific Open Graph -->
-  <meta property="profile:first_name" content="<%= profile.name ? profile.name.split(' ')[0] : profile.username %>">
+  <meta property="profile:first_name" content="<%= profile.username %>">
   <meta property="profile:username" content="<%= profile.username %>">
   <meta property="profile:gender" content="<%= profile.gender %>">
 
@@ -56,7 +56,7 @@
   <meta name="twitter:image" content="<%= imageUrl %>">
 
   <!-- **NEW**: WhatsApp specific -->
-  <meta property="og:image:alt" content="<%= profile.name || profile.username %>'s profile photo">
+  <meta property="og:image:alt" content="<%= profile.username %>'s profile photo">
   <meta property="og:locale" content="en_US">
 
   <script src="https://cdn.tailwindcss.com/3.4.16"></script>
@@ -222,9 +222,9 @@
                   <% } else { %>
                   <!-- Default avatar based on gender -->
                   <% if (profile.gender === 'male') { %>
-                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %>'s Profile">
                   <% } else { %>
-                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %>'s Profile">
                   <% } %>
                   <% } %>
                 </div>
@@ -393,30 +393,18 @@
                     <div class="grid md:grid-cols-2 gap-6">
                       <div class="space-y-4">
                         <!-- Basic Contact & Personal -->
-                        <% if (profile.name) { %>
-                        <div class="flex items-center gap-4">
-                          <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
-                            <i class="ri-user-3-line"></i>
-                          </div>
-                          <div>
-                            <p class="text-sm text-gray-500">Full Name</p>
-                            <p class="text-gray-900"><%= profile.name %></p>
-                          </div>
-                        </div>
-                        <% } %>
 
 
-                        <% if (profile.contact) { %>
                         <div class="flex items-center gap-4">
                           <div class="w-10 h-10 flex items-center justify-center rounded-full bg-green-100 text-green-600">
                             <i class="ri-phone-line"></i>
                           </div>
                           <div>
                             <p class="text-sm text-gray-500">Contact</p>
-                            <p class="text-gray-900"><%= profile.contact %></p>
+                            <p class="text-gray-900">7454516156</p>
                           </div>
                         </div>
-                        <% } %>
+
 
                         <% if (profile.religion) { %>
                         <div class="flex items-center gap-4">
@@ -938,14 +926,14 @@
                         <% if (profile.willingToSharePhotosUponRequest !== undefined) { %>
                         <div class="bg-white rounded-lg p-3 border border-gray-200">
                           <p class="text-sm text-gray-500">Willing to Share Photos Upon Request</p>
-                          <p class="text-gray-900"><%= profile.willingToSharePhotosUponRequest ? 'Yes' : 'No' %></p>
+                          <p class="text-gray-900"><%= profile.willingToSharePhotosUponRequest %> </p>
                         </div>
                         <% } %>
 
                         <% if (profile.willingToMeetUpOutside !== undefined) { %>
                         <div class="bg-white rounded-lg p-3 border border-gray-200">
                           <p class="text-sm text-gray-500">Willing to Meet Up Outside</p>
-                          <p class="text-gray-900"><%= profile.willingToMeetUpOutside ? 'Yes' : 'No' %></p>
+                          <p class="text-gray-900"><%= profile.willingToMeetUpOutside %></p>
                         </div>
                         <% } %>
 
@@ -957,12 +945,11 @@
                         <% } %>
                       </div>
 
-                      <% if (profile.waliMyContactDetails) { %>
                       <div class="bg-white rounded-lg p-4 border border-gray-200 mb-4">
                         <p class="text-sm text-gray-500 mb-2">Wali Contact Details</p>
-                        <p class="text-gray-900"><%= profile.waliMyContactDetails %></p>
+                        <p class="text-gray-900">7454516156</p>
                       </div>
-                      <% } %>
+
 
                       <% if (profile.anySpecialInformationPeopleShouldKnow) { %>
                       <div class="bg-white rounded-lg p-4 border border-gray-200">
@@ -1264,7 +1251,7 @@
           ${profileData.username} • ${profileData.age ? profileData.age + " years" : ""} • ${profileData.gender ? profileData.gender.charAt(0).toUpperCase() + profileData.gender.slice(1) : ""}
         </h1>
         <p style="margin: 0; font-size: 1rem; font-weight: 700; color: #E91E63;">
-          📞 ${profileData.contact}
+          📞 7454516156
         </p>
       </div>
       

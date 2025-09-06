@@ -1,7 +1,7 @@
 const slugify = require("slugify");
 function generateProfileSlug(user) {
   // Use name if available, otherwise username
-  const baseName = user.name || user.username;
+  const baseName = user.username;
 
   let parts = [baseName];
 
@@ -931,6 +931,82 @@ app.post("/api/requests/:requestId/cancel", isLoggedIn, async (req, res) => {
     });
   }
 });
+// app.get("/profiles", async (req, res) => {
+//   // Pagination params
+//   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
+//   const limit = 10;
+//   const skip = (page - 1) * limit;
+
+//   // Extract filter parameters
+//   const { gender, minAge, maxAge, minHeight, maxHeight, city, nationality } =
+//     req.query;
+
+//   // Build filter object
+//   const filter = {};
+//   if (req.session.userId) {
+//     filter._id = { $ne: req.session.userId };
+//   }
+
+//   if (gender) filter.gender = gender;
+//   if (city) filter.city = { $regex: new RegExp(city, "i") };
+//   if (nationality) filter.nationality = nationality;
+
+//   // Age range filter
+//   if (minAge || maxAge) {
+//     filter.age = {};
+//     if (minAge) filter.age.$gte = parseInt(minAge);
+//     if (maxAge) filter.age.$lte = parseInt(maxAge);
+//   }
+
+//   // Height range filter - FIXED VERSION
+//   if (minHeight || maxHeight) {
+//     filter.height = {};
+//     if (minHeight) {
+//       const minHeightNum = parseFloat(minHeight);
+//       if (!isNaN(minHeightNum)) {
+//         filter.height.$gte = minHeightNum;
+//       }
+//     }
+//     if (maxHeight) {
+//       const maxHeightNum = parseFloat(maxHeight);
+//       if (!isNaN(maxHeightNum)) {
+//         filter.height.$lte = maxHeightNum;
+//       }
+//     }
+//   }
+
+//   try {
+//     const totalProfiles = await User.countDocuments(filter);
+//     const profiles = await User.find(filter).skip(skip).limit(limit);
+
+//     const activeFilters = {
+//       gender,
+//       minAge,
+//       maxAge,
+//       minHeight,
+//       maxHeight,
+//       city,
+//       nationality,
+//     };
+
+//     const totalPages = Math.ceil(totalProfiles / limit);
+
+//     return res.render("profiles", {
+//       profiles,
+//       filters: Object.keys(req.query).length > 0 ? activeFilters : null,
+//       page,
+//       totalPages,
+//       totalProfiles,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching profiles:", error);
+//     return res.status(500).render("error", {
+//       title: "Error",
+//       message: "Failed to fetch profiles",
+//       error: process.env.NODE_ENV === "development" ? error : {},
+//     });
+//   }
+// });
 app.get("/profiles", async (req, res) => {
   // Pagination params
   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
@@ -976,6 +1052,23 @@ app.get("/profiles", async (req, res) => {
   }
 
   try {
+    // **NEW**: Get featured profiles (max 4, exclude current user)
+    const featuredFilter = { isFeatured: true };
+    if (req.session.userId) {
+      featuredFilter._id = { $ne: req.session.userId };
+    }
+
+    const featuredProfiles = await User.find(featuredFilter)
+      .limit(4)
+      .sort({ featuredDate: -1 }); // Show most recently featured first
+
+    // **UPDATED**: Exclude featured profiles from regular profiles to avoid duplicates
+    const excludeIds = [
+      ...(req.session.userId ? [req.session.userId] : []),
+      ...featuredProfiles.map((profile) => profile._id),
+    ];
+    filter._id = { $nin: excludeIds };
+
     const totalProfiles = await User.countDocuments(filter);
     const profiles = await User.find(filter).skip(skip).limit(limit);
 
@@ -992,6 +1085,7 @@ app.get("/profiles", async (req, res) => {
     const totalPages = Math.ceil(totalProfiles / limit);
 
     return res.render("profiles", {
+      featuredProfiles, // **NEW**
       profiles,
       filters: Object.keys(req.query).length > 0 ? activeFilters : null,
       page,
@@ -1007,7 +1101,6 @@ app.get("/profiles", async (req, res) => {
     });
   }
 });
-
 app.get("/profiles/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
@@ -1147,23 +1240,77 @@ app.get("/admin/addUser", requireAdminOnly, (req, res) => {
   if (!req.session.isAdmin) return res.redirect("/admin");
   res.render("admin/addUser");
 });
+// app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
+//   if (!req.session.isAdmin && !req.session.isModerator) {
+//     return res.redirect("/login");
+//   }
+
+//   try {
+//     // Get all users with registration source
+//     const users = await User.find({}).sort({ createdAt: -1, _id: -1 });
+
+//     // Calculate basic stats
+//     const totalUsers = users.length;
+//     const byAdmin = users.filter(
+//       (user) => user.registrationSource === "admin"
+//     ).length;
+//     const bySelf = users.filter(
+//       (user) => user.registrationSource === "register"
+//     ).length;
+
+//     const stats = {
+//       totalUsers,
+//       registrationSources: {
+//         byAdmin,
+//         bySelf,
+//       },
+//     };
+
+//     res.render("admin/dashboard", { users, stats });
+//   } catch (error) {
+//     console.error("Dashboard error:", error);
+//     res.render("admin/dashboard", {
+//       users: [],
+//       stats: {
+//         totalUsers: 0,
+//         registrationSources: {
+//           byAdmin: 0,
+//           bySelf: 0,
+//         },
+//       },
+//     });
+//   }
+// });
 app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
   if (!req.session.isAdmin && !req.session.isModerator) {
     return res.redirect("/login");
   }
 
   try {
-    // Get all users with registration source
-    const users = await User.find({}).sort({ createdAt: -1, _id: -1 });
+    // **UPDATED**: Handle filter parameter
+    const { filter } = req.query;
 
-    // Calculate basic stats
-    const totalUsers = users.length;
-    const byAdmin = users.filter(
-      (user) => user.registrationSource === "admin"
-    ).length;
-    const bySelf = users.filter(
-      (user) => user.registrationSource === "register"
-    ).length;
+    // Build query based on filter
+    let query = {};
+    if (filter === "admin") {
+      query.registrationSource = "admin";
+    } else if (filter === "register") {
+      query.registrationSource = "register";
+    } else if (filter === "featured") {
+      query.isFeatured = true;
+    }
+    // For 'all' or no filter, query remains empty (gets all users)
+
+    // Get users with applied filter
+    const users = await User.find(query).sort({ createdAt: -1, _id: -1 });
+
+    // Calculate basic stats (always from all users, not filtered)
+    const totalUsers = await User.countDocuments({});
+    const byAdmin = await User.countDocuments({ registrationSource: "admin" });
+    const bySelf = await User.countDocuments({
+      registrationSource: "register",
+    });
+    const featuredCount = await User.countDocuments({ isFeatured: true }); // **NEW**
 
     const stats = {
       totalUsers,
@@ -1171,9 +1318,14 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
         byAdmin,
         bySelf,
       },
+      featuredCount, // **NEW**
     };
 
-    res.render("admin/dashboard", { users, stats });
+    res.render("admin/dashboard", {
+      users,
+      stats,
+      currentFilter: filter || "all", // **NEW**
+    });
   } catch (error) {
     console.error("Dashboard error:", error);
     res.render("admin/dashboard", {
@@ -1184,7 +1336,9 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
           byAdmin: 0,
           bySelf: 0,
         },
+        featuredCount: 0, // **NEW**
       },
+      currentFilter: "all", // **NEW**
     });
   }
 });
@@ -2698,6 +2852,54 @@ app.post(
       res
         .status(500)
         .json({ success: false, error: "Failed to update request" });
+    }
+  }
+);
+// **NEW**: Feature/Unfeature Profile Route
+app.post(
+  "/admin/user/:id/feature",
+  requireAdminOrModerator,
+  async (req, res) => {
+    if (!req.session.isAdmin && !req.session.isModerator) {
+      return res.status(403).json({ success: false, error: "Forbidden" });
+    }
+
+    try {
+      const { id } = req.params;
+      const { action } = req.body;
+
+      if (!action || !["feature", "unfeature"].includes(action)) {
+        return res.json({ success: false, error: "Invalid action" });
+      }
+
+      const user = await User.findById(id);
+      if (!user) {
+        return res.json({ success: false, error: "User not found" });
+      }
+
+      if (action === "feature") {
+        user.isFeatured = true;
+        user.featuredDate = new Date();
+        console.log(`Admin featured profile: ${user.username}`);
+      } else {
+        user.isFeatured = false;
+        user.featuredDate = null;
+        console.log(`Admin unfeatured profile: ${user.username}`);
+      }
+
+      await user.save();
+
+      res.json({
+        success: true,
+        message: `Profile ${action}d successfully`,
+        isFeatured: user.isFeatured,
+      });
+    } catch (error) {
+      console.error("Feature profile error:", error);
+      res.json({
+        success: false,
+        error: `Failed to ${req.body.action} profile`,
+      });
     }
   }
 );
