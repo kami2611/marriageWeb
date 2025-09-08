@@ -400,8 +400,15 @@
                             <i class="ri-phone-line"></i>
                           </div>
                           <div>
+                            <% if (user.isAdmin) { %>
+                            <% if (profile.contact) { %>
+                            <p class="text-sm text-gray-500">Contact</p>
+                            <p class="text-gray-900"><%= profile.contact %></p>
+                            <% } %>
+                            <% } else { %>
                             <p class="text-sm text-gray-500">Contact</p>
                             <p class="text-gray-900">7454516156</p>
+                            <% } %>
                           </div>
                         </div>
 

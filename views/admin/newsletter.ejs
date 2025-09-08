@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Newsletter Management - Admin Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+  <style>
+    .material-shadow {
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-shadow-hover {
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .rounded-button {
+      border-radius: 12px;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.3s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body class="bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white border-b border-gray-200 material-shadow sticky top-0 z-40">
+    <div class="px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center py-4">
+        <div class="flex items-center gap-4">
+          <a href="/admin/dashboard" class="text-gray-600 hover:text-gray-900 transition-colors">
+            <i class="ri-arrow-left-line text-xl"></i>
+          </a>
+          <h1 class="text-2xl font-bold text-gray-900">Newsletter Management</h1>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button id="exportBtn" class="px-4 py-2 bg-green-600 text-white rounded-button hover:bg-green-700 transition-all duration-300 flex items-center gap-2">
+            <i class="ri-download-line"></i>
+            Export CSV
+          </button>
+          <button id="logoutBtn" class="px-4 py-2 bg-red-600 text-white rounded-button hover:bg-red-700 transition-all duration-300">
+            Logout
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="px-4 sm:px-6 lg:px-8 py-8 max-w-7xl mx-auto">
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
+      <!-- Total Subscribers -->
+      <div class="bg-white rounded-xl p-6 material-shadow stats-filter-card cursor-pointer hover:material-shadow-hover transition-all duration-300" data-filter="all">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-2xl font-bold text-gray-900"><%= stats.total %></p>
+            <p class="text-sm text-gray-600 mt-1">Total Subscribers</p>
+          </div>
+          <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+            <i class="ri-mail-line text-xl text-blue-600"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interested in Male -->
+      <div class="bg-white rounded-xl p-6 material-shadow stats-filter-card cursor-pointer hover:material-shadow-hover transition-all duration-300" data-filter="male">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-2xl font-bold text-gray-900"><%= stats.male %></p>
+            <p class="text-sm text-gray-600 mt-1">Interested in Male</p>
+          </div>
+          <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+            <i class="ri-user-line text-xl text-green-600"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interested in Female -->
+      <div class="bg-white rounded-xl p-6 material-shadow stats-filter-card cursor-pointer hover:material-shadow-hover transition-all duration-300" data-filter="female">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-2xl font-bold text-gray-900"><%= stats.female %></p>
+            <p class="text-sm text-gray-600 mt-1">Interested in Female</p>
+          </div>
+          <div class="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center">
+            <i class="ri-user-3-line text-xl text-pink-600"></i>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interested in Both -->
+      <div class="bg-white rounded-xl p-6 material-shadow stats-filter-card cursor-pointer hover:material-shadow-hover transition-all duration-300" data-filter="both">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-2xl font-bold text-gray-900"><%= stats.both %></p>
+            <p class="text-sm text-gray-600 mt-1">Interested in Both</p>
+          </div>
+          <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+            <i class="ri-group-line text-xl text-purple-600"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search and Actions -->
+    <div class="bg-white rounded-xl p-6 material-shadow mb-8">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="relative flex-1 max-w-md">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="ri-search-line text-gray-400"></i>
+          </div>
+          <input type="text" id="searchInput" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" placeholder="Search by name or email...">
+        </div>
+
+        <div class="flex items-center gap-3">
+          <select id="ageFilter" class="px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            <option value="">All Age Ranges</option>
+            <option value="18-25">18-25</option>
+            <option value="26-30">26-30</option>
+            <option value="31-35">31-35</option>
+            <option value="36-40">36-40</option>
+            <option value="41+">41+</option>
+          </select>
+
+          <button id="clearFilters" class="px-4 py-2 bg-gray-600 text-white rounded-button hover:bg-gray-700 transition-all duration-300">
+            Clear Filters
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Subscribers Table -->
+    <div class="bg-white rounded-xl material-shadow overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Newsletter Subscribers</h2>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subscriber</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Interested In</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age Range</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Subscribed</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="subscribersTableBody" class="bg-white divide-y divide-gray-200">
+            <% if (subscribers && subscribers.length > 0) { %>
+            <% subscribers.forEach(subscriber => { %>
+            <tr class="subscriber-row hover:bg-gray-50 transition-colors duration-200" data-name="<%= subscriber.name.toLowerCase() %>" data-email="<%= subscriber.email.toLowerCase() %>" data-interested="<%= subscriber.interestedIn %>" data-age="<%= subscriber.preferredAgeRange || '' %>">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <div class="flex items-center">
+                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                    <i class="ri-user-line text-blue-600"></i>
+                  </div>
+                  <div class="ml-4">
+                    <div class="text-sm font-medium text-gray-900"><%= subscriber.name %></div>
+                    <div class="text-sm text-gray-500"><%= subscriber.email %></div>
+                  </div>
+                </div>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                    <% if (subscriber.interestedIn === 'male') { %>bg-green-100 text-green-800<% } %>
+                    <% if (subscriber.interestedIn === 'female') { %>bg-pink-100 text-pink-800<% } %>
+                    <% if (subscriber.interestedIn === 'both') { %>bg-purple-100 text-purple-800<% } %>">
+                  <%= subscriber.interestedIn.charAt(0).toUpperCase() + subscriber.interestedIn.slice(1) %>
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <%= subscriber.preferredAgeRange || 'Not specified' %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <%= new Date(subscriber.subscribedAt).toLocaleDateString() %>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  Active
+                </span>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <div class="flex items-center gap-2">
+                  <!-- <button class="text-blue-600 hover:text-blue-900 transition-colors" onclick="viewSubscriber('<%= subscriber._id %>')">
+                    <i class="ri-eye-line"></i>
+                  </button> -->
+                  <button class="text-red-600 hover:text-red-900 transition-colors" onclick="unsubscribeUser('<%= subscriber._id %>', '<%= subscriber.name %>')">
+                    <i class="ri-user-unfollow-line"></i>
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+            <% } else { %>
+            <tr>
+              <td colspan="6" class="px-6 py-12 text-center">
+                <div class="text-gray-500">
+                  <i class="ri-inbox-line text-4xl mb-2"></i>
+                  <p>No newsletter subscribers found</p>
+                </div>
+              </td>
+            </tr>
+            <% } %>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const searchInput = document.getElementById('searchInput');
+      const ageFilter = document.getElementById('ageFilter');
+      const statsCards = document.querySelectorAll('.stats-filter-card');
+      const subscriberRows = document.querySelectorAll('.subscriber-row');
+      const clearFiltersBtn = document.getElementById('clearFilters');
+      const exportBtn = document.getElementById('exportBtn');
+      const logoutBtn = document.getElementById('logoutBtn');
+
+      let currentFilter = 'all';
+
+      // Search functionality
+      searchInput.addEventListener('input', function() {
+        filterSubscribers();
+      });
+
+      // Age filter
+      ageFilter.addEventListener('change', function() {
+        filterSubscribers();
+      });
+
+      // Stats card filters
+      statsCards.forEach(card => {
+        card.addEventListener('click', function() {
+          const filter = this.getAttribute('data-filter');
+          currentFilter = filter;
+
+          // Update active state
+          statsCards.forEach(c => c.classList.remove('ring-2', 'ring-blue-500'));
+          this.classList.add('ring-2', 'ring-blue-500');
+
+          filterSubscribers();
+        });
+      });
+
+      // Filter subscribers function
+      function filterSubscribers() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const selectedAge = ageFilter.value;
+
+        subscriberRows.forEach(row => {
+          const name = row.getAttribute('data-name');
+          const email = row.getAttribute('data-email');
+          const interested = row.getAttribute('data-interested');
+          const age = row.getAttribute('data-age');
+
+          let shouldShow = true;
+
+          // Filter by search term
+          if (searchTerm && !name.includes(searchTerm) && !email.includes(searchTerm)) {
+            shouldShow = false;
+          }
+
+          // Filter by interest
+          if (currentFilter !== 'all' && interested !== currentFilter) {
+            shouldShow = false;
+          }
+
+          // Filter by age range
+          if (selectedAge && age !== selectedAge) {
+            shouldShow = false;
+          }
+
+          row.style.display = shouldShow ? 'table-row' : 'none';
+        });
+      }
+
+      // Clear filters
+      clearFiltersBtn.addEventListener('click', function() {
+        searchInput.value = '';
+        ageFilter.value = '';
+        currentFilter = 'all';
+
+        statsCards.forEach(c => c.classList.remove('ring-2', 'ring-blue-500'));
+        statsCards[0].classList.add('ring-2', 'ring-blue-500');
+
+        filterSubscribers();
+      });
+
+      // Export functionality
+      exportBtn.addEventListener('click', function() {
+        window.location.href = '/admin/newsletter/export';
+      });
+
+      // Logout
+      logoutBtn.addEventListener('click', function() {
+        if (confirm('Are you sure you want to logout?')) {
+          window.location.href = '/logout';
+        }
+      });
+
+      // Set initial active state
+      statsCards[0].classList.add('ring-2', 'ring-blue-500');
+    });
+
+    // View subscriber details
+    // function viewSubscriber(subscriberId) {
+    //   // You can implement a modal here or redirect to detail page
+    //   console.log('View subscriber:', subscriberId);
+    //   alert('Subscriber details view - feature can be implemented');
+    // }
+
+    // Unsubscribe user
+    async function unsubscribeUser(subscriberId, name) {
+      if (!confirm(`Are you sure you want to unsubscribe ${name}?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/admin/newsletter/${subscriberId}/unsubscribe`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          location.reload();
+        } else {
+          alert('Failed to unsubscribe user: ' + result.error);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Network error occurred');
+      }
+    }
+  </script>
+</body>
+
+</html>

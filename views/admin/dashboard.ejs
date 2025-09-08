@@ -188,6 +188,12 @@
             <button id="requestsBtn" class="px-6 py-2.5 bg-secondary text-white hover:bg-purple-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
               <i class="ri-mail-line mr-2"></i>Requests
             </button>
+            <% if (isAdmin) { %>
+            <button id="newsletterBtn" class="flex items-center gap-3 px-4 py-2.5 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300 !rounded-button material-shadow hover:material-shadow-hover ripple">
+              <i class="ri-mail-line text-lg"></i>
+              <span>Newsletter</span>
+            </button>
+            <% } %>
             <!-- **UPDATED**: Only show Add User for admins -->
             <% if (isAdmin) { %>
             <button id="addUserBtn" class="px-6 py-2.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
@@ -473,6 +479,12 @@
   <script id="admin-interactions">
     document.addEventListener('DOMContentLoaded', function() {
       // **UNIFIED**: Single declaration for all elements
+      const newsletterBtn = document.getElementById('newsletterBtn');
+      if (newsletterBtn) {
+        newsletterBtn.addEventListener('click', function() {
+          window.location.href = '/admin/newsletter';
+        });
+      }
       const searchInput = document.getElementById('searchInput');
       const profileCards = document.querySelectorAll('.profile-card');
       const statsFilterCards = document.querySelectorAll('.stats-filter-card');

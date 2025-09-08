@@ -2359,297 +2359,172 @@ app.post("/api/newsletter/subscribe", async (req, res) => {
 });
 
 // Admin route to view newsletter subscribers
-app.get("/admin/newsletter", async (req, res) => {
+// Admin route to view newsletter subscribers
+app.get("/admin/newsletter", requireAdminOnly, async (req, res) => {
   if (!req.session.isAdmin) {
     return res.redirect("/admin");
   }
 
   try {
-    const subscribers = await Newsletter.find({ isActive: true }).sort({
+    const { filter } = req.query;
+
+    // Build query based on filter
+    let query = { isActive: true };
+    if (filter === "male") {
+      query.interestedIn = "male";
+    } else if (filter === "female") {
+      query.interestedIn = "female";
+    } else if (filter === "both") {
+      query.interestedIn = "both";
+    }
+
+    const subscribers = await Newsletter.find(query).sort({
       subscribedAt: -1,
     });
 
+    // Calculate all stats (not just filtered)
+    const allSubscribers = await Newsletter.find({ isActive: true });
     const stats = {
-      total: subscribers.length,
-      male: subscribers.filter((s) => s.interestedIn === "male").length,
-      female: subscribers.filter((s) => s.interestedIn === "female").length,
-      both: subscribers.filter((s) => s.interestedIn === "both").length,
+      total: allSubscribers.length,
+      male: allSubscribers.filter((s) => s.interestedIn === "male").length,
+      female: allSubscribers.filter((s) => s.interestedIn === "female").length,
+      both: allSubscribers.filter((s) => s.interestedIn === "both").length,
     };
 
-    res.render("admin/newsletter", { subscribers, stats });
+    res.render("admin/newsletter", {
+      subscribers,
+      stats,
+      currentFilter: filter || "all",
+    });
   } catch (error) {
     console.error("Newsletter admin error:", error);
     res.render("admin/newsletter", {
       subscribers: [],
       stats: { total: 0, male: 0, female: 0, both: 0 },
+      currentFilter: "all",
     });
   }
 });
-// Admin Request Actions
-// app.post(
-//   "/admin/requests/:requestId/respond",
-//   requireAdminOrModerator,
-//   async (req, res) => {
-//     try {
-//       const { requestId } = req.params;
-//       const { action } = req.body;
+// **NEW**: Unsubscribe a user (admin action)
+app.post(
+  "/admin/newsletter/:id/unsubscribe",
+  requireAdminOnly,
+  async (req, res) => {
+    try {
+      const { id } = req.params;
 
-//       if (!["accepted", "rejected"].includes(action)) {
-//         return res
-//           .status(400)
-//           .json({ success: false, error: "Invalid action" });
-//       }
+      const subscriber = await Newsletter.findById(id);
+      if (!subscriber) {
+        return res.json({ success: false, error: "Subscriber not found" });
+      }
 
-//       const request = await Request.findById(requestId).populate(
-//         "from to",
-//         "username name profileSlug"
-//       );
-//       if (!request) {
-//         return res
-//           .status(404)
-//           .json({ success: false, error: "Request not found" });
-//       }
+      subscriber.isActive = false;
+      subscriber.unsubscribedAt = new Date();
+      await subscriber.save();
 
-//       // Update request status
-//       request.status = action;
-//       await request.save();
+      console.log(`Admin unsubscribed user: ${subscriber.email}`);
 
-//       if (action === "accepted") {
-//         // Grant mutual access
-//         const requestFromUser = await User.findById(request.from._id);
-//         const requestToUser = await User.findById(request.to._id);
+      res.json({
+        success: true,
+        message: "User unsubscribed successfully",
+      });
+    } catch (error) {
+      console.error("Admin unsubscribe error:", error);
+      res.json({
+        success: false,
+        error: "Failed to unsubscribe user",
+      });
+    }
+  }
+);
 
-//         if (
-//           !requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)
-//         ) {
-//           requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
-//         }
+// **NEW**: Export newsletter subscribers as CSV
+app.get("/admin/newsletter/export", requireAdminOnly, async (req, res) => {
+  try {
+    const subscribers = await Newsletter.find({ isActive: true }).sort({
+      subscribedAt: -1,
+    });
 
-//         if (
-//           !requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)
-//         ) {
-//           requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
-//         }
+    // Generate CSV content
+    let csv =
+      "Name,Email,Interested In,Preferred Age Range,Subscribed Date,Source\n";
 
-//         await requestFromUser.save();
-//         await requestToUser.save();
+    subscribers.forEach((subscriber) => {
+      const subscribedDate = new Date(
+        subscriber.subscribedAt
+      ).toLocaleDateString();
+      const ageRange = subscriber.preferredAgeRange || "Not specified";
 
-//         // Send notification to requester
-//         await NotificationService.createNotification({
-//           userId: request.from._id,
-//           type: "request_accepted",
-//           title: "Request Accepted!",
-//           message: `Congratulations! Your request was accepted by ${
-//             request.to.name || request.to.username
-//           }.`,
-//           priority: "high",
-//           actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
-//           actionText: "View Profile",
-//         });
-//       } else if (action === "rejected") {
-//         // Remove any existing access
-//         const requestToUser = await User.findById(request.to._id);
-//         const requestFromUser = await User.findById(request.from._id);
+      csv += `"${subscriber.name}","${subscriber.email}","${subscriber.interestedIn}","${ageRange}","${subscribedDate}","${subscriber.source}"\n`;
+    });
 
-//         if (requestToUser) {
-//           requestToUser.canAccessFullProfileOf.pull(request.from._id);
-//           await requestToUser.save();
-//         }
+    // Set headers for file download
+    const filename = `newsletter_subscribers_${
+      new Date().toISOString().split("T")[0]
+    }.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
-//         if (requestFromUser) {
-//           requestFromUser.canAccessFullProfileOf.pull(request.to._id);
-//           await requestFromUser.save();
-//         }
+    console.log(`Admin exported ${subscribers.length} newsletter subscribers`);
 
-//         // Send notification to requester
-//         await NotificationService.createNotification({
-//           userId: request.from._id,
-//           type: "request_rejected",
-//           title: "Request Declined",
-//           message: `Your request was declined by ${
-//             request.to.name || request.to.username
-//           }.`,
-//           priority: "medium",
-//           actionUrl: "/profiles",
-//           actionText: "Browse Profiles",
-//         });
-//       }
+    res.send(csv);
+  } catch (error) {
+    console.error("Newsletter export error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to export subscribers",
+    });
+  }
+});
 
-//       console.log(
-//         `Admin ${action} request from ${request.from.username} to ${request.to.username}`
-//       );
-//       res.json({ success: true, message: `Request ${action} successfully` });
-//     } catch (error) {
-//       console.error("Admin request respond error:", error);
-//       res
-//         .status(500)
-//         .json({ success: false, error: "Failed to update request" });
-//     }
-//   }
-// );
-// Admin Request Actions (Enhanced with Revoke)
-// app.post(
-//   "/admin/requests/:requestId/respond",
-//   requireAdminOrModerator,
-//   async (req, res) => {
-//     try {
-//       const { requestId } = req.params;
-//       const { action } = req.body;
+// **NEW**: Get newsletter stats API
+app.get("/api/admin/newsletter/stats", requireAdminOnly, async (req, res) => {
+  try {
+    const totalActive = await Newsletter.countDocuments({ isActive: true });
+    const totalInactive = await Newsletter.countDocuments({ isActive: false });
+    const maleInterested = await Newsletter.countDocuments({
+      isActive: true,
+      interestedIn: "male",
+    });
+    const femaleInterested = await Newsletter.countDocuments({
+      isActive: true,
+      interestedIn: "female",
+    });
+    const bothInterested = await Newsletter.countDocuments({
+      isActive: true,
+      interestedIn: "both",
+    });
 
-//       if (!["accepted", "rejected", "revoke"].includes(action)) {
-//         return res
-//           .status(400)
-//           .json({ success: false, error: "Invalid action" });
-//       }
+    // Age range stats
+    const ageRangeStats = {};
+    const ageRanges = ["18-25", "26-30", "31-35", "36-40", "41+"];
 
-//       const request = await Request.findById(requestId).populate(
-//         "from to",
-//         "username name profileSlug"
-//       );
-//       if (!request) {
-//         return res
-//           .status(404)
-//           .json({ success: false, error: "Request not found" });
-//       }
+    for (const range of ageRanges) {
+      ageRangeStats[range] = await Newsletter.countDocuments({
+        isActive: true,
+        preferredAgeRange: range,
+      });
+    }
 
-//       // Handle revoke action
-//       if (action === "revoke") {
-//         if (request.status !== "accepted") {
-//           return res.status(400).json({
-//             success: false,
-//             error: "Can only revoke accepted requests",
-//           });
-//         }
-
-//         // Remove mutual access
-//         const requestFromUser = await User.findById(request.from._id);
-//         const requestToUser = await User.findById(request.to._id);
-
-//         if (requestFromUser) {
-//           requestFromUser.canAccessFullProfileOf.pull(request.to._id);
-//           await requestFromUser.save();
-//         }
-
-//         if (requestToUser) {
-//           requestToUser.canAccessFullProfileOf.pull(request.from._id);
-//           await requestToUser.save();
-//         }
-
-//         // Update request status back to pending
-//         request.status = "pending";
-//         await request.save();
-
-//         // Send notification to both users
-//         await NotificationService.createNotification({
-//           userId: request.from._id,
-//           type: "request_revoked",
-//           title: "Request Access Revoked",
-//           message: `Your accepted request with ${
-//             request.to.name || request.to.username
-//           } has been revoked by admin.`,
-//           priority: "high",
-//           actionUrl: "/profiles",
-//           actionText: "Browse Profiles",
-//         });
-
-//         await NotificationService.createNotification({
-//           userId: request.to._id,
-//           type: "request_revoked",
-//           title: "Request Access Revoked",
-//           message: `Your connection with ${
-//             request.from.name || request.from.username
-//           } has been revoked by admin.`,
-//           priority: "high",
-//           actionUrl: "/profiles",
-//           actionText: "Browse Profiles",
-//         });
-
-//         console.log(
-//           `Admin revoked request from ${request.from.username} to ${request.to.username}`
-//         );
-//         return res.json({
-//           success: true,
-//           message: "Request access revoked successfully",
-//         });
-//       }
-
-//       // Handle accept/reject actions
-//       request.status = action;
-//       await request.save();
-
-//       if (action === "accepted") {
-//         // Grant mutual access
-//         const requestFromUser = await User.findById(request.from._id);
-//         const requestToUser = await User.findById(request.to._id);
-
-//         if (
-//           !requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)
-//         ) {
-//           requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
-//         }
-
-//         if (
-//           !requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)
-//         ) {
-//           requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
-//         }
-
-//         await requestFromUser.save();
-//         await requestToUser.save();
-
-//         // Send notification to requester
-//         await NotificationService.createNotification({
-//           userId: request.from._id,
-//           type: "request_accepted",
-//           title: "Request Accepted!",
-//           message: `Congratulations! Your request was accepted by ${
-//             request.to.name || request.to.username
-//           }.`,
-//           priority: "high",
-//           actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
-//           actionText: "View Profile",
-//         });
-//       } else if (action === "rejected") {
-//         // Remove any existing access
-//         const requestToUser = await User.findById(request.to._id);
-//         const requestFromUser = await User.findById(request.from._id);
-
-//         if (requestToUser) {
-//           requestToUser.canAccessFullProfileOf.pull(request.from._id);
-//           await requestToUser.save();
-//         }
-
-//         if (requestFromUser) {
-//           requestFromUser.canAccessFullProfileOf.pull(request.to._id);
-//           await requestFromUser.save();
-//         }
-
-//         // Send notification to requester
-//         await NotificationService.createNotification({
-//           userId: request.from._id,
-//           type: "request_rejected",
-//           title: "Request Declined",
-//           message: `Your request was declined by ${
-//             request.to.name || request.to.username
-//           }.`,
-//           priority: "medium",
-//           actionUrl: "/profiles",
-//           actionText: "Browse Profiles",
-//         });
-//       }
-
-//       console.log(
-//         `Admin ${action} request from ${request.from.username} to ${request.to.username}`
-//       );
-//       res.json({ success: true, message: `Request ${action} successfully` });
-//     } catch (error) {
-//       console.error("Admin request respond error:", error);
-//       res
-//         .status(500)
-//         .json({ success: false, error: "Failed to update request" });
-//     }
-//   }
-// );
+    res.json({
+      success: true,
+      stats: {
+        total: totalActive,
+        inactive: totalInactive,
+        male: maleInterested,
+        female: femaleInterested,
+        both: bothInterested,
+        ageRanges: ageRangeStats,
+      },
+    });
+  } catch (error) {
+    console.error("Newsletter stats error:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to fetch stats",
+    });
+  }
+});
 // Admin Request Actions (Enhanced with Delete)
 app.post(
   "/admin/requests/:requestId/respond",
