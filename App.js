@@ -931,82 +931,6 @@ app.post("/api/requests/:requestId/cancel", isLoggedIn, async (req, res) => {
     });
   }
 });
-// app.get("/profiles", async (req, res) => {
-//   // Pagination params
-//   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
-//   const limit = 10;
-//   const skip = (page - 1) * limit;
-
-//   // Extract filter parameters
-//   const { gender, minAge, maxAge, minHeight, maxHeight, city, nationality } =
-//     req.query;
-
-//   // Build filter object
-//   const filter = {};
-//   if (req.session.userId) {
-//     filter._id = { $ne: req.session.userId };
-//   }
-
-//   if (gender) filter.gender = gender;
-//   if (city) filter.city = { $regex: new RegExp(city, "i") };
-//   if (nationality) filter.nationality = nationality;
-
-//   // Age range filter
-//   if (minAge || maxAge) {
-//     filter.age = {};
-//     if (minAge) filter.age.$gte = parseInt(minAge);
-//     if (maxAge) filter.age.$lte = parseInt(maxAge);
-//   }
-
-//   // Height range filter - FIXED VERSION
-//   if (minHeight || maxHeight) {
-//     filter.height = {};
-//     if (minHeight) {
-//       const minHeightNum = parseFloat(minHeight);
-//       if (!isNaN(minHeightNum)) {
-//         filter.height.$gte = minHeightNum;
-//       }
-//     }
-//     if (maxHeight) {
-//       const maxHeightNum = parseFloat(maxHeight);
-//       if (!isNaN(maxHeightNum)) {
-//         filter.height.$lte = maxHeightNum;
-//       }
-//     }
-//   }
-
-//   try {
-//     const totalProfiles = await User.countDocuments(filter);
-//     const profiles = await User.find(filter).skip(skip).limit(limit);
-
-//     const activeFilters = {
-//       gender,
-//       minAge,
-//       maxAge,
-//       minHeight,
-//       maxHeight,
-//       city,
-//       nationality,
-//     };
-
-//     const totalPages = Math.ceil(totalProfiles / limit);
-
-//     return res.render("profiles", {
-//       profiles,
-//       filters: Object.keys(req.query).length > 0 ? activeFilters : null,
-//       page,
-//       totalPages,
-//       totalProfiles,
-//     });
-//   } catch (error) {
-//     console.error("Error fetching profiles:", error);
-//     return res.status(500).render("error", {
-//       title: "Error",
-//       message: "Failed to fetch profiles",
-//       error: process.env.NODE_ENV === "development" ? error : {},
-//     });
-//   }
-// });
 app.get("/profiles", async (req, res) => {
   // Pagination params
   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
@@ -1019,9 +943,6 @@ app.get("/profiles", async (req, res) => {
 
   // Build filter object
   const filter = {};
-  if (req.session.userId) {
-    filter._id = { $ne: req.session.userId };
-  }
 
   if (gender) filter.gender = gender;
   if (city) filter.city = { $regex: new RegExp(city, "i") };
@@ -1054,23 +975,47 @@ app.get("/profiles", async (req, res) => {
   try {
     // **NEW**: Get featured profiles (max 4, exclude current user)
     const featuredFilter = { isFeatured: true };
-    if (req.session.userId) {
-      featuredFilter._id = { $ne: req.session.userId };
-    }
 
     const featuredProfiles = await User.find(featuredFilter)
       .limit(4)
       .sort({ featuredDate: -1 }); // Show most recently featured first
 
     // **UPDATED**: Exclude featured profiles from regular profiles to avoid duplicates
-    const excludeIds = [
-      ...(req.session.userId ? [req.session.userId] : []),
-      ...featuredProfiles.map((profile) => profile._id),
-    ];
-    filter._id = { $nin: excludeIds };
-
+    // const excludeIds = [
+    //   ...(req.session.userId ? [req.session.userId] : []),
+    //   ...featuredProfiles.map((profile) => profile._id),
+    // ];
+    // filter._id = { $nin: excludeIds };
+    const excludeIds = featuredProfiles.map((profile) => profile._id);
+    if (excludeIds.length > 0) {
+      filter._id = { $nin: excludeIds };
+    }
     const totalProfiles = await User.countDocuments(filter);
-    const profiles = await User.find(filter).skip(skip).limit(limit);
+
+    // **NEW**: Handle sorting
+    const { sortBy } = req.query;
+    let sortOptions = {};
+
+    if (sortBy === "random") {
+      // For random sorting, we'll use MongoDB's $sample aggregation
+      const profiles = await User.aggregate([
+        { $match: filter },
+        { $sample: { size: Math.min(limit, totalProfiles) } },
+      ]);
+    } else {
+      // Default: newly created (most recent first)
+      sortOptions = { createdAt: -1, _id: -1 };
+    }
+
+    // **UPDATED**: Apply sorting based on sortBy parameter
+    const profiles =
+      sortBy === "random"
+        ? await User.aggregate([
+            { $match: filter },
+            { $skip: skip },
+            { $sample: { size: Math.min(limit, totalProfiles - skip) } },
+          ])
+        : await User.find(filter).sort(sortOptions).skip(skip).limit(limit);
 
     const activeFilters = {
       gender,
@@ -1088,6 +1033,7 @@ app.get("/profiles", async (req, res) => {
       featuredProfiles, // **NEW**
       profiles,
       filters: Object.keys(req.query).length > 0 ? activeFilters : null,
+      sortBy: sortBy || "newly-created", // **NEW**
       page,
       totalPages,
       totalProfiles,

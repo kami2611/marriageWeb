@@ -230,18 +230,43 @@
                 </div>
 
                 <!-- Name and Verification -->
+                <!-- Name and Verification -->
                 <div class="text-center mb-8">
                   <h1 class="text-3xl font-bold text-gray-900 mb-2 font-['Playfair_Display']">
                     <i class="ri-verified-badge-fill text-primary"></i>
                     <%=  profile.username %>
+                    <% if (user && user._id && user._id.toString() === profile._id.toString()) { %>
+                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 ml-3">
+                      <i class="ri-user-line mr-1"></i>
+                      You
+                    </span>
+                    <% } %>
                   </h1>
                 </div>
                 <!-- Add this right after the name and verification section -->
-                <div class="text-center mb-6">
+                <!-- <div class="text-center mb-6">
                   <button id="shareProfileBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-300 shadow-md">
                     <i id="shareIcon" class="ri-share-line"></i>
                     <span id="shareText">Share Profile</span>
                   </button>
+                </div> -->
+                <!-- Add this right after the name and verification section -->
+                <div class="text-center mb-6">
+                  <div class="flex items-center justify-center gap-3">
+                    <% if (user && user._id && user._id.toString() === profile._id.toString()) { %>
+                    <!-- Edit Profile Button (only for own profile) -->
+                    <a href="/account" class="inline-flex items-center gap-2 px-4 py-2 bg-primary hover:bg-pink-600 text-white rounded-lg transition-all duration-300 shadow-md">
+                      <i class="ri-edit-line"></i>
+                      <span>Edit Profile</span>
+                    </a>
+                    <% } %>
+
+                    <!-- Share Profile Button -->
+                    <button id="shareProfileBtn" class="inline-flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg transition-all duration-300 shadow-md">
+                      <i id="shareIcon" class="ri-share-line"></i>
+                      <span id="shareText">Share Profile</span>
+                    </button>
+                  </div>
                 </div>
                 <!-- Hidden canvas for generating image - UPDATED to be dynamic -->
                 <div id="profileCard" style="position: absolute; left: -9999px; top: -9999px;">
@@ -388,7 +413,7 @@
                       Private Information
                     </h2>
 
-                    <% if (canAccessFullProfile) { %>
+                    <% if (canAccessFullProfile || (user && user._id && user._id.toString() === profile._id.toString())) { %>
                     <!-- Show ALL private information for admin or users with access -->
                     <div class="grid md:grid-cols-2 gap-6">
                       <div class="space-y-4">

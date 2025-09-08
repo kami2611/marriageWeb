@@ -419,7 +419,7 @@
           <% } %>
 
           <!-- **UPDATED**: Other Profiles Section -->
-          <div class="flex items-center justify-between mb-8">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
             <h2 class="text-3xl font-bold text-gray-800 font-['Playfair_Display']">
               <% if (featuredProfiles && featuredProfiles.length > 0) { %>
               Other Profiles
@@ -428,12 +428,24 @@
               <% } %>
             </h2>
 
-            <div class="text-sm text-gray-600">
-              <% if (filters) { %>
-              Showing <%= profiles.length %> filtered results
-              <% } else { %>
-              Showing <%= profiles.length %> of <%= totalProfiles %> profiles
-              <% } %>
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <!-- Sort By Dropdown -->
+              <div class="flex items-center gap-2">
+                <label class="text-sm font-medium text-gray-700 whitespace-nowrap">Sort by:</label>
+                <select id="sortBySelect" class="px-3 py-2 border border-gray-300 rounded-button focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary text-sm bg-white">
+                  <option value="newly-created" <%= (sortBy === 'newly-created' || !sortBy) ? 'selected' : '' %>>Newly Created</option>
+                  <option value="random" <%= sortBy === 'random' ? 'selected' : '' %>>Random</option>
+                </select>
+              </div>
+
+              <!-- Results Count -->
+              <div class="text-sm text-gray-600 whitespace-nowrap">
+                <% if (filters) { %>
+                Showing <%= profiles.length %> filtered results
+                <% } else { %>
+                Showing <%= profiles.length %> of <%= totalProfiles %> profiles
+                <% } %>
+              </div>
             </div>
           </div>
           <!-- Profiles Grid -->
@@ -510,7 +522,7 @@
           <% if (profiles && profiles.length > 0 && totalPages > 1) { %>
           <div class="flex justify-center items-center gap-4 mt-12">
             <% if (page > 1) { %>
-            <a href="/profiles?page=<%= page - 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
+            <a href="/profiles?page=<%= page - 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %><% if (sortBy && sortBy !== 'newly-created') { %>&sortBy=<%= sortBy %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
               <i class="ri-arrow-left-line"></i>
               <span>Previous</span>
             </a>
@@ -523,7 +535,7 @@
                 <%= i %>
               </span>
               <% } else { %>
-              <a href="/profiles?page=<%= i %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %>" class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
+              <a href="/profiles?page=<%= i %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %><% if (sortBy && sortBy !== 'newly-created') { %>&sortBy=<%= sortBy %><% } %>" class="w-10 h-10 flex items-center justify-center border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
                 <%= i %>
               </a>
               <% } %>
@@ -531,7 +543,7 @@
             </div>
 
             <% if (page < totalPages) { %>
-            <a href="/profiles?page=<%= page + 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
+            <a href="/profiles?page=<%= page + 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %><% if (sortBy && sortBy !== 'newly-created') { %>&sortBy=<%= sortBy %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
               <span>Next</span>
               <i class="ri-arrow-right-line"></i>
             </a>
@@ -935,6 +947,34 @@
       const currentPath = window.location.pathname;
       window.location.href = currentPath;
     }
+  </script>
+  <script id="sort-functionality">
+    document.addEventListener('DOMContentLoaded', function() {
+      const sortBySelect = document.getElementById('sortBySelect');
+
+      if (sortBySelect) {
+        sortBySelect.addEventListener('change', function() {
+          const selectedSort = this.value;
+
+          // Get current URL parameters
+          const urlParams = new URLSearchParams(window.location.search);
+
+          // Update or add sortBy parameter
+          if (selectedSort === 'newly-created') {
+            urlParams.delete('sortBy'); // Default, so remove parameter
+          } else {
+            urlParams.set('sortBy', selectedSort);
+          }
+
+          // Keep current page as 1 when changing sort
+          urlParams.set('page', '1');
+
+          // Redirect with new parameters
+          const newUrl = window.location.pathname + '?' + urlParams.toString();
+          window.location.href = newUrl;
+        });
+      }
+    });
   </script>
 </body>
 
