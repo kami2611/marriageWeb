@@ -793,7 +793,7 @@ app.post("/api/verify-passcode", async (req, res) => {
     const lastThreeDigits = cleanMobile.slice(-3);
 
     // Base passcode is always "1111" (even length)
-    const basePasscode = "1111";
+    const basePasscode = process.env.PASSCODE;
 
     // Generate expected passcode using the logic:
     // First digit at start, second digit in middle, third digit at end
