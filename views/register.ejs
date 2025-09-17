@@ -725,11 +725,11 @@
 
       if (form) {
         form.addEventListener('submit', function(e) {
-          // if (!isEmailVerified) {
-          //   e.preventDefault();
-          //   showEmailStatus('Please verify your email address first', 'error');
-          //   return;
-          // }
+          if (!isEmailVerified) {
+            e.preventDefault();
+            showEmailStatus('Please verify your email address first', 'error');
+            return;
+          }
           // Continue with existing form submission logic...
         });
       }
