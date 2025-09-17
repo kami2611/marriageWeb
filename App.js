@@ -230,6 +230,10 @@ const storage = new CloudinaryStorage({
       folder: "user_profiles",
       public_id: `${username}${suffix}`, // M23C or M23P
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
+      transformation: [
+        { quality: "auto" }, // compress smartly
+        { fetch_format: "auto" }, // store in efficient format
+      ],
     };
   },
 });
@@ -391,10 +395,10 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
     const formData = req.body;
     // **NEW**: Validate minimum character requirements
     const minCharFields = {
-      aboutMe: 100,
-      islamIsImportantToMeInfo: 100,
-      describeNature: 100,
-      lookingForASpouseThatIs: 100,
+      aboutMe: 5,
+      islamIsImportantToMeInfo: 5,
+      describeNature: 5,
+      lookingForASpouseThatIs: 5,
     };
 
     for (const [field, minLength] of Object.entries(minCharFields)) {
@@ -1617,10 +1621,10 @@ app.post("/admin/user/add", requireAdminOnly, async (req, res) => {
     });
   }
   const minCharFields = {
-    aboutMe: 100,
-    islamIsImportantToMeInfo: 100,
-    describeNature: 100,
-    lookingForASpouseThatIs: 100,
+    aboutMe: 5,
+    islamIsImportantToMeInfo: 5,
+    describeNature: 5,
+    lookingForASpouseThatIs: 5,
   };
 
   for (const [field, minLength] of Object.entries(minCharFields)) {
@@ -3344,6 +3348,11 @@ app.post("/reset-password", async (req, res) => {
       error: "An error occurred. Please try again later.",
     });
   }
+});
+app.get("/terms", (req, res) => {
+  res.render("terms", {
+    title: "Terms and Conditions - D'amour Muslim",
+  });
 });
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {
