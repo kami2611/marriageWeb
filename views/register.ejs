@@ -808,6 +808,61 @@
           // Continue with existing form submission logic...
         });
       }
+
+      // Password confirmation validation
+      document.getElementById('confirm-password').addEventListener('input', function() {
+        const password = document.getElementById('signup-password').value;
+        const confirmPassword = this.value;
+
+        if (confirmPassword && password !== confirmPassword) {
+          this.classList.add('border-red-300');
+          this.classList.remove('border-gray-300');
+        } else {
+          this.classList.remove('border-red-300');
+          this.classList.add('border-gray-300');
+        }
+      });
+
+      // Add password validation on form submit
+      if (form) {
+        form.addEventListener('submit', function(e) {
+          const password = document.getElementById('signup-password').value;
+          const confirmPassword = document.getElementById('confirm-password').value;
+
+          // Check if passwords match
+          if (password !== confirmPassword) {
+            e.preventDefault();
+
+            // Remove existing error if any
+            const existingError = document.querySelector('.password-error');
+            if (existingError) {
+              existingError.remove();
+            }
+
+            // Create and show error message
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'password-error mb-4 p-4 bg-red-50 border border-red-200 rounded-lg';
+            errorDiv.innerHTML = `
+              <div class="flex items-center gap-2">
+                <i class="ri-error-warning-line text-red-500"></i>
+                <p class="text-red-600 text-sm font-medium">Passwords don't match</p>
+              </div>
+            `;
+
+            // Insert error before the submit button
+            const submitButton = form.querySelector('button[type="submit"]');
+            submitButton.parentNode.insertBefore(errorDiv, submitButton);
+
+            // Add red border to confirm password field
+            document.getElementById('confirm-password').classList.add('border-red-500');
+            document.getElementById('confirm-password').classList.remove('border-gray-300');
+
+            return;
+          }
+
+          // Continue with existing form submission logic...
+        });
+      }
     });
     // Password toggle functionality
     document.querySelectorAll('.toggle-password').forEach(button => {
@@ -824,20 +879,6 @@
           icon.className = 'ri-eye-off-line text-gray-400 hover:text-gray-600';
         }
       });
-    });
-
-    // Password confirmation validation
-    document.getElementById('confirm-password').addEventListener('input', function() {
-      const password = document.getElementById('signup-password').value;
-      const confirmPassword = this.value;
-
-      if (confirmPassword && password !== confirmPassword) {
-        this.classList.add('border-red-300');
-        this.classList.remove('border-gray-300');
-      } else {
-        this.classList.remove('border-red-300');
-        this.classList.add('border-gray-300');
-      }
     });
   </script>
 </body>

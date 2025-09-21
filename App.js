@@ -3357,7 +3357,7 @@ app.get("/terms", (req, res) => {
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {
   try {
-    const users = await User.find({}).select("_id updatedAt");
+    const users = await User.find({}).select("_id updatedAt profileSlug");
 
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://sitemaps.org/schemas/sitemap/0.9">
@@ -3387,18 +3387,21 @@ app.get("/sitemap.xml", async (req, res) => {
     <priority>0.7</priority>
   </url>`;
 
-    // Add individual profile pages
+    // Add individual profile pages (only for users with profileSlug)
     users.forEach((user) => {
-      const lastmod = user.updatedAt
-        ? user.updatedAt.toISOString().split("T")[0]
-        : new Date().toISOString().split("T")[0];
-      sitemap += `
+      if (user.profileSlug) {
+        // Only include users with valid profileSlug
+        const lastmod = user.updatedAt
+          ? user.updatedAt.toISOString().split("T")[0]
+          : new Date().toISOString().split("T")[0];
+        sitemap += `
   <url>
     <loc>https://damourmuslim.com/profiles/${user.profileSlug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.6</priority>
   </url>`;
+      }
     });
 
     sitemap += `
