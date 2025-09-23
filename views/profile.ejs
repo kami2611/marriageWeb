@@ -7,7 +7,7 @@
   <%
   const pageTitle = `${profile.username}, ${profile.age} | Muslim Matchmaking Profile`;
   const metaDescription = `View the profile of ${profile.username}, a ${profile.age}-year-old ${profile.gender} from ${profile.city || 'an undisclosed location'}. Learn more about their background, values, and what they are looking for in a partner on D'amour Muslim.`;
-  const profileUrl = `https://www.damourmuslim.com/profiles/${profile.profileSlug || profile._id}`;
+  const profileUrl = `https://damourmuslim.com/profiles/${profile.profileSlug || profile._id}`;
   
   // **FIXED**: Better image URL handling
   let imageUrl;
@@ -15,7 +15,7 @@
     imageUrl = profile.profilePic.url;
   } else {
     // **FIXED**: Use a proper default image URL (not localhost)
-    imageUrl = 'https://www.damourmuslim.com/images/default-profile-og.jpg';
+    imageUrl = 'https://damourmuslim.com/images/default-profile-og.jpg';
   }
   // **NEW**: Rich description with more profile info
   const richDescription = `${profile.username} • ${profile.age} years old • ${profile.gender} • ${profile.city}, ${profile.country || ''} ${profile.height ? '• ' + (profile.height / 30.48).toFixed(1) + ' ft' : ''} ${profile.work ? '• ' + profile.work : ''} ${profile.education && profile.education.length > 0 ? '• ' + profile.education[0].title : ''} • Find your perfect match on D'amour Muslim matrimonial platform.`;

@@ -1258,10 +1258,13 @@ app.get("/profiles/:slug", async (req, res) => {
   try {
     const { slug } = req.params;
     let foundProfile;
+    let shouldRedirect = false;
 
     // Check if it's an old MongoDB ID format (for backward compatibility)
     if (mongoose.Types.ObjectId.isValid(slug) && slug.length === 24) {
+      // Find by ID
       foundProfile = await User.findById(slug);
+      shouldRedirect = true; // We found by ID, so we should redirect to slug
     } else {
       // It's a slug - find by slug field
       foundProfile = await User.findOne({ profileSlug: slug });
@@ -1273,6 +1276,13 @@ app.get("/profiles/:slug", async (req, res) => {
         url: req.originalUrl,
       });
     }
+
+    // **NEW**: If we found the profile by ID, redirect to the slug URL
+    if (shouldRedirect && foundProfile.profileSlug) {
+      return res.redirect(301, `/profiles/${foundProfile.profileSlug}`);
+    }
+
+    // **NEW**: If profile doesn't have a slug, generate one and redirect
 
     let canAccessFullProfile = false;
     let hasalreadysentrequest = false;
@@ -3360,7 +3370,7 @@ app.get("/sitemap.xml", async (req, res) => {
     const users = await User.find({}).select("_id updatedAt profileSlug");
 
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://damourmuslim.com/</loc>
     <changefreq>daily</changefreq>
@@ -3419,6 +3429,7 @@ app.get("/robots.txt", (req, res) => {
   const robots = `User-agent: *
 Allow: /
 Allow: /profiles
+Allow: /profile
 Allow: /profiles?gender=male
 Allow: /profiles?gender=female
 Allow: /register
