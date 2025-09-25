@@ -1,106 +1,10 @@
-function calculateProfileCompletion(user) {
-  const totalFields = 64; // Total possible fields
-
-  let completedFields = 0;
-
-  // Check each field in the user object
-  Object.keys(user.toObject()).forEach((key) => {
-    const value = user[key];
-    if (
-      value !== null &&
-      value !== undefined &&
-      value !== "" &&
-      value !== "N/A"
-    ) {
-      if (Array.isArray(value) && value.length > 0) {
-        completedFields++;
-      } else if (typeof value === "object" && !Array.isArray(value)) {
-        // For nested objects like profilePic, coverPhoto
-        if (value.url || Object.keys(value).length > 0) {
-          completedFields++;
-        }
-      } else if (typeof value !== "object") {
-        completedFields++;
-      }
-    }
-  });
-
-  const percentage = Math.round((completedFields / totalFields) * 100);
-  return {
-    completed: completedFields,
-    total: totalFields,
-    percentage: percentage,
-  };
-}
 const slugify = require("slugify");
-function generateProfileSlug(user) {
-  // Use name if available, otherwise username
-  const baseName = user.username;
-
-  let parts = [baseName];
-
-  // **FIXED**: Prioritize most specific to least specific location
-  let locationPart = null;
-
-  if (
-    user.birthPlace &&
-    user.birthPlace.trim() &&
-    user.birthPlace.toLowerCase() !== "n/a"
-  ) {
-    locationPart = user.birthPlace;
-  } else if (
-    user.city &&
-    user.city.trim() &&
-    user.city.toLowerCase() !== "n/a"
-  ) {
-    locationPart = user.city;
-  } else if (
-    user.country &&
-    user.country.trim() &&
-    user.country.toLowerCase() !== "n/a"
-  ) {
-    locationPart = user.country;
-  } else if (
-    user.nationality &&
-    user.nationality.trim() &&
-    user.nationality.toLowerCase() !== "n/a"
-  ) {
-    locationPart = user.nationality;
-  }
-
-  if (locationPart) {
-    parts.push(`from-${locationPart}`);
-  }
-
-  // Add age if available
-  if (user.age) {
-    parts.push(`${user.age}`);
-  }
-
-  // Join parts and slugify
-  const slug = slugify(parts.join(" "), {
-    lower: true,
-    strict: true, // Remove special characters
-    locale: "en",
-  });
-
-  return slug;
-}
-
 // **NEW**: Function to ensure unique slug
-async function generateUniqueSlug(user) {
-  let baseSlug = generateProfileSlug(user);
-  let slug = baseSlug;
-  let counter = 1;
-
-  // Check if slug already exists
-  while (await User.findOne({ profileSlug: slug, _id: { $ne: user._id } })) {
-    slug = `${baseSlug}-${counter}`;
-    counter++;
-  }
-
-  return slug;
-}
+const {
+  calculateProfileCompletion,
+  generateProfileSlug,
+  generateUniqueSlug,
+} = require("./utils/profileHelpers");
 const User = require("./models/user");
 const Newsletter = require("./models/Newsletter");
 const { countryOptions, countryPlaceholders } = require("./config/countries");
@@ -126,6 +30,7 @@ const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const MongoStore = require("connect-mongo");
 const { v4: uuidv4 } = require("uuid");
 require("dotenv").config();
+const passport = require("./config/passport");
 const port = process.env.PORT;
 const compression = require("compression");
 const app = express();
@@ -194,7 +99,8 @@ app.use(
     cookie: { secure: false, httpOnly: true }, // set secure: true if using HTTPS
   })
 );
-
+app.use(passport.initialize());
+app.use(passport.session());
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUDINARY_KEY,
@@ -620,150 +526,252 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
 });
 
 // new register post
+// app.post("/register", async (req, res) => {
+//   console.log("Register request body:", req.body);
+
+//   const { email, password, passcode, gender } = req.body;
+//   console.log("Session verification status:", {
+//     emailVerified: req.session.emailVerified,
+//     verifiedEmail: req.session.verifiedEmail,
+//     providedEmail: email?.toLowerCase(),
+//     match: req.session.verifiedEmail === email?.toLowerCase(),
+//   });
+
+//   if (!username || !password || !gender) {
+//     console.log("required fields missing");
+//     return res.render("register", {
+//       error: "Username, password, and gender are required.",
+//     });
+//   }
+
+//   // **NEW**: Check if email is verified
+//   // if (
+//   //   !req.session.emailVerified ||
+//   //   req.session.verifiedEmail !== email.toLowerCase()
+//   // ) {
+//   //   console.log("Email verification failed:", {
+//   //     emailVerified: req.session.emailVerified,
+//   //     verifiedEmail: req.session.verifiedEmail,
+//   //     providedEmail: email.toLowerCase(),
+//   //   });
+//   //   return res.render("register", {
+//   //     error: "Please verify your email before registering.",
+//   //   });
+//   // }
+
+//   // **UPDATED**: Only check email verification if email was provided
+//   if (email && email.trim()) {
+//     if (
+//       !req.session.emailVerified ||
+//       req.session.verifiedEmail !== email.toLowerCase()
+//     ) {
+//       console.log("Email provided but not verified");
+//       return res.render("register", {
+//         error:
+//           "Please verify your email address or leave it empty to register without email.",
+//       });
+//     }
+//   }
+
+//   // Check passcode
+//   // **NEW**: Check if passcode was verified in the verification step
+//   if (!req.session.passcodeVerified) {
+//     return res.render("register", {
+//       error: "Please verify your mobile number and passcode first.",
+//     });
+//   }
+
+//   // **NEW**: Store the verified mobile number in user data
+//   const verifiedMobile = req.session.verifiedMobile;
+
+//   // Check password length
+//   if (!password || password.length < 5) {
+//     return res.render("register", {
+//       error: "Password must be at least 5 characters long.",
+//     });
+//   }
+
+//   // Check if gender is valid
+//   if (gender !== "male" && gender !== "female") {
+//     return res.render("register", {
+//       error: "Please select a valid gender.",
+//     });
+//   }
+
+//   // Check unique username and email
+//   // const existingUser = await User.findOne({
+//   //   $or: [{ username }, { email: email.toLowerCase() }],
+//   // });
+//   // if (existingUser) {
+//   //   return res.render("register", {
+//   //     error: "Username or email already exists. Please try different ones.",
+//   //   });
+//   // }
+//   // Build query for existing user check
+//   let existingUserQuery = { username };
+//   if (email && email.trim()) {
+//     existingUserQuery = {
+//       $or: [{ username }, { email: email.toLowerCase() }],
+//     };
+//   }
+
+//   const existingUser = await User.findOne(existingUserQuery);
+//   if (existingUser) {
+//     const errorMsg =
+//       email && email.trim()
+//         ? "Username or email already exists. Please try different ones."
+//         : "Username already exists. Please try a different one.";
+//     return res.render("register", { error: errorMsg });
+//   }
+
+//   try {
+//     console.log("Creating user...");
+//     const hashedPassword = await bcrypt.hash(password, 12);
+//     // const newUser = new User({
+//     //   username,
+//     //   email: email.toLowerCase(), // **NEW**
+//     //   password: hashedPassword,
+//     //   gender,
+//     //   isEmailVerified: true, // **NEW**: Set as verified since they passed verification
+//     //   registrationSource: "register",
+//     // });
+//     const userData = {
+//       username,
+//       password: hashedPassword,
+//       gender,
+//       registrationSource: "register",
+//       contact: verifiedMobile,
+//     };
+
+//     // **OPTIONAL**: Only add email if provided
+//     if (email && email.trim()) {
+//       userData.email = email.toLowerCase();
+//       // Only set as verified if they actually verified it
+//       userData.isEmailVerified =
+//         req.session.emailVerified &&
+//         req.session.verifiedEmail === email.toLowerCase();
+//     }
+
+//     const newUser = new User(userData);
+
+//     newUser.profileSlug = await generateUniqueSlug(newUser);
+//     await newUser.save();
+//     console.log("User created successfully:", newUser.username);
+//     req.session.userId = newUser._id;
+//     req.session.user = newUser;
+//     // Clean up verification session data
+//     delete req.session.emailVerified;
+//     delete req.session.verifiedEmail;
+//     delete req.session.passcodeVerified; // **NEW**
+//     delete req.session.verifiedMobile; // **NEW**
+
+//     return res.redirect("/onboarding");
+//   } catch (error) {
+//     console.error("Registration error:", error);
+//     return res.render("register", {
+//       error: "Registration failed. Please try again.",
+//     });
+//   }
+// });
+// Update the existing /register POST route
 app.post("/register", async (req, res) => {
   console.log("Register request body:", req.body);
 
-  const { username, email, password, passcode, gender } = req.body;
-  console.log("Session verification status:", {
-    emailVerified: req.session.emailVerified,
-    verifiedEmail: req.session.verifiedEmail,
-    providedEmail: email?.toLowerCase(),
-    match: req.session.verifiedEmail === email?.toLowerCase(),
-  });
+  const { email, password, confirmPassword } = req.body;
 
-  if (!username || !password || !gender) {
-    console.log("required fields missing");
+  if (!password) {
     return res.render("register", {
-      error: "Username, password, and gender are required.",
+      error: "Password is required.",
+      countryOptions,
+      countryPlaceholders,
     });
   }
 
-  // **NEW**: Check if email is verified
-  // if (
-  //   !req.session.emailVerified ||
-  //   req.session.verifiedEmail !== email.toLowerCase()
-  // ) {
-  //   console.log("Email verification failed:", {
-  //     emailVerified: req.session.emailVerified,
-  //     verifiedEmail: req.session.verifiedEmail,
-  //     providedEmail: email.toLowerCase(),
-  //   });
-  //   return res.render("register", {
-  //     error: "Please verify your email before registering.",
-  //   });
-  // }
+  // Check if temp user exists from gender/username step
+  if (!req.session.tempUserId) {
+    return res.render("register", {
+      error: "Please complete the verification process first.",
+      countryOptions,
+      countryPlaceholders,
+    });
+  }
 
-  // **UPDATED**: Only check email verification if email was provided
+  // Check password confirmation
+  if (password !== confirmPassword) {
+    return res.render("register", {
+      error: "Passwords do not match.",
+      countryOptions,
+      countryPlaceholders,
+    });
+  }
+
+  // Email verification check (if email provided)
   if (email && email.trim()) {
     if (
       !req.session.emailVerified ||
       req.session.verifiedEmail !== email.toLowerCase()
     ) {
-      console.log("Email provided but not verified");
       return res.render("register", {
         error:
           "Please verify your email address or leave it empty to register without email.",
+        countryOptions,
+        countryPlaceholders,
       });
     }
   }
 
-  // Check passcode
-  // **NEW**: Check if passcode was verified in the verification step
-  if (!req.session.passcodeVerified) {
-    return res.render("register", {
-      error: "Please verify your mobile number and passcode first.",
-    });
-  }
-
-  // **NEW**: Store the verified mobile number in user data
-  const verifiedMobile = req.session.verifiedMobile;
-
   // Check password length
-  if (!password || password.length < 5) {
+  if (password.length < 5) {
     return res.render("register", {
       error: "Password must be at least 5 characters long.",
+      countryOptions,
+      countryPlaceholders,
     });
-  }
-
-  // Check if gender is valid
-  if (gender !== "male" && gender !== "female") {
-    return res.render("register", {
-      error: "Please select a valid gender.",
-    });
-  }
-
-  // Check unique username and email
-  // const existingUser = await User.findOne({
-  //   $or: [{ username }, { email: email.toLowerCase() }],
-  // });
-  // if (existingUser) {
-  //   return res.render("register", {
-  //     error: "Username or email already exists. Please try different ones.",
-  //   });
-  // }
-  // Build query for existing user check
-  let existingUserQuery = { username };
-  if (email && email.trim()) {
-    existingUserQuery = {
-      $or: [{ username }, { email: email.toLowerCase() }],
-    };
-  }
-
-  const existingUser = await User.findOne(existingUserQuery);
-  if (existingUser) {
-    const errorMsg =
-      email && email.trim()
-        ? "Username or email already exists. Please try different ones."
-        : "Username already exists. Please try a different one.";
-    return res.render("register", { error: errorMsg });
   }
 
   try {
-    console.log("Creating user...");
-    const hashedPassword = await bcrypt.hash(password, 12);
-    // const newUser = new User({
-    //   username,
-    //   email: email.toLowerCase(), // **NEW**
-    //   password: hashedPassword,
-    //   gender,
-    //   isEmailVerified: true, // **NEW**: Set as verified since they passed verification
-    //   registrationSource: "register",
-    // });
-    const userData = {
-      username,
-      password: hashedPassword,
-      gender,
-      registrationSource: "register",
-      contact: verifiedMobile,
-    };
-
-    // **OPTIONAL**: Only add email if provided
-    if (email && email.trim()) {
-      userData.email = email.toLowerCase();
-      // Only set as verified if they actually verified it
-      userData.isEmailVerified =
-        req.session.emailVerified &&
-        req.session.verifiedEmail === email.toLowerCase();
+    // Get the temporary user
+    const user = await User.findById(req.session.tempUserId);
+    if (!user) {
+      return res.render("register", {
+        error: "Session expired. Please start registration again.",
+        countryOptions,
+        countryPlaceholders,
+      });
     }
 
-    const newUser = new User(userData);
+    // Update user with final details
+    const hashedPassword = await bcrypt.hash(password, 12);
+    user.password = hashedPassword;
 
-    newUser.profileSlug = await generateUniqueSlug(newUser);
-    await newUser.save();
-    console.log("User created successfully:", newUser.username);
-    req.session.userId = newUser._id;
-    req.session.user = newUser;
-    // Clean up verification session data
+    // Add email if provided
+    if (email && email.trim()) {
+      user.email = email.toLowerCase();
+      user.isEmailVerified = true;
+    }
+
+    await user.save();
+
+    console.log("User registration completed:", user.username);
+
+    // Set up session
+    req.session.userId = user._id;
+    req.session.user = user;
+
+    // Clean up temporary session data
+    delete req.session.tempUserId;
     delete req.session.emailVerified;
     delete req.session.verifiedEmail;
-    delete req.session.passcodeVerified; // **NEW**
-    delete req.session.verifiedMobile; // **NEW**
+    delete req.session.passcodeVerified;
+    delete req.session.verifiedMobile;
 
     return res.redirect("/onboarding");
   } catch (error) {
-    console.error("Registration error:", error);
+    console.error("Registration completion error:", error);
     return res.render("register", {
       error: "Registration failed. Please try again.",
+      countryOptions,
+      countryPlaceholders,
     });
   }
 });
@@ -836,6 +844,78 @@ app.post("/api/verify-passcode", async (req, res) => {
     res.json({
       success: false,
       error: "Verification failed. Please try again.",
+    });
+  }
+});
+// **NEW**: Save gender and username route
+app.post("/api/savegenderandusername", async (req, res) => {
+  try {
+    const { gender, username } = req.body;
+
+    if (!gender || !username) {
+      return res.json({
+        success: false,
+        error: "Gender and username are required",
+      });
+    }
+
+    // Validate gender
+    if (gender !== "male" && gender !== "female") {
+      return res.json({
+        success: false,
+        error: "Please select a valid gender",
+      });
+    }
+
+    // Check if username already exists
+    const existingUser = await User.findOne({ username });
+    if (existingUser) {
+      return res.json({
+        success: false,
+        error: "Username already exists. Please refresh to generate a new one.",
+      });
+    }
+
+    // Check if passcode was verified
+    if (!req.session.passcodeVerified || !req.session.verifiedMobile) {
+      return res.json({
+        success: false,
+        error: "Please verify your passcode first",
+      });
+    }
+
+    // Create temporary user record with basic info
+    const hashedPassword = await bcrypt.hash(
+      "temp_" + Math.random().toString(36).substring(2, 15),
+      12
+    );
+
+    const newUser = new User({
+      username,
+      gender,
+      password: hashedPassword, // Temporary password
+      contact: req.session.verifiedMobile,
+      registrationSource: "register",
+    });
+
+    // Generate profile slug
+    newUser.profileSlug = await generateUniqueSlug(newUser);
+    await newUser.save();
+
+    console.log("Gender and username saved for user:", username);
+
+    // Store user ID in session for next steps
+    req.session.tempUserId = newUser._id;
+
+    res.json({
+      success: true,
+      message: "Information saved successfully",
+    });
+  } catch (error) {
+    console.error("Save gender and username error:", error);
+    res.json({
+      success: false,
+      error: "Failed to save information. Please try again.",
     });
   }
 });
@@ -919,7 +999,45 @@ app.post("/login", async (req, res) => {
     return res.json({ error: "username or password is incorrect" });
   }
 });
+// Google OAuth routes
+app.get(
+  "/auth/google",
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+  })
+);
 
+app.get(
+  "/auth/google/callback",
+  passport.authenticate("google", { failureRedirect: "/register" }),
+  (req, res) => {
+    try {
+      // Set session data
+      req.session.userId = req.user._id;
+      req.session.user = req.user;
+
+      console.log("Google OAuth successful for user:", req.user.username);
+
+      // **NEW**: Store verified mobile if it exists in session
+      if (req.session.verifiedMobile) {
+        // Update user's contact with verified mobile
+        User.findByIdAndUpdate(req.user._id, {
+          contact: req.session.verifiedMobile,
+        }).catch((err) => console.error("Error updating contact:", err));
+
+        // Clean up session
+        delete req.session.passcodeVerified;
+        delete req.session.verifiedMobile;
+      }
+
+      // Always redirect to onboarding for Google users
+      res.redirect("/onboarding");
+    } catch (error) {
+      console.error("Google OAuth callback error:", error);
+      res.redirect("/register?error=oauth_error");
+    }
+  }
+);
 // Middleware to check and create notifications after login
 app.use(async (req, res, next) => {
   // Only run for logged-in regular users (not admin)
@@ -3362,6 +3480,11 @@ app.post("/reset-password", async (req, res) => {
 app.get("/terms", (req, res) => {
   res.render("terms", {
     title: "Terms and Conditions - D'amour Muslim",
+  });
+});
+app.get("/privacy", (req, res) => {
+  res.render("privacy", {
+    title: "Privacy Policy - D'amour Muslim",
   });
 });
 // SEO: Generate dynamic sitemap
