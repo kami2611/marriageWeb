@@ -190,7 +190,11 @@ app.get("/register", (req, res) => {
     // User is already logged in, redirect to home or dashboard
     return res.redirect("/home");
   }
-  res.render("register", { countryOptions, countryPlaceholders });
+  res.render("register", {
+    countryOptions,
+    countryPlaceholders,
+    query: req.query,
+  });
 });
 
 app.get("/onboarding", isLoggedIn, findUser, (req, res) => {
@@ -1009,35 +1013,47 @@ app.get(
 
 app.get(
   "/auth/google/callback",
-  passport.authenticate("google", { failureRedirect: "/register" }),
+  passport.authenticate("google", {
+    failureRedirect: "/register?error=no_account",
+  }),
   (req, res) => {
     try {
       // Set session data
       req.session.userId = req.user._id;
       req.session.user = req.user;
 
-      console.log("Google OAuth successful for user:", req.user.username);
+      console.log("Google OAuth successful for user:", {
+        id: req.user._id,
+        username: req.user.username,
+        name: req.user.name,
+        gender: req.user.gender,
+        contact: req.user.contact,
+      });
 
-      // **NEW**: Store verified mobile if it exists in session
+      // Clean up any temporary session data
       if (req.session.verifiedMobile) {
-        // Update user's contact with verified mobile
-        User.findByIdAndUpdate(req.user._id, {
-          contact: req.session.verifiedMobile,
-        }).catch((err) => console.error("Error updating contact:", err));
-
-        // Clean up session
+        console.log("Cleaned up verified mobile from session");
         delete req.session.passcodeVerified;
         delete req.session.verifiedMobile;
       }
 
-      // Always redirect to onboarding for Google users
-      res.redirect("/onboarding");
+      // **UPDATED**: Different redirect logic based on user profile completeness
+      // Check if user needs onboarding (new user or incomplete profile)
+      if (!req.user.age || !req.user.gender || !req.user.city) {
+        return res.redirect("/onboarding");
+      }
+
+      // **NEW**: For existing users with complete basic info, redirect to home
+      res.redirect("/home");
     } catch (error) {
       console.error("Google OAuth callback error:", error);
-      res.redirect("/register?error=oauth_error");
+      res.redirect("/login?error=oauth_error");
     }
   }
 );
+app.get("/auth/google/failure", (req, res) => {
+  res.redirect("/login?error=oauth_error");
+});
 // Middleware to check and create notifications after login
 app.use(async (req, res, next) => {
   // Only run for logged-in regular users (not admin)
