@@ -93,7 +93,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
+      mongoUrl: process.env.MONGODB_URI_DEVELOPMENT,
       collectionName: "sessions",
     }),
     cookie: { secure: false, httpOnly: true }, // set secure: true if using HTTPS
@@ -155,7 +155,7 @@ const requireProfileComplete = require("./middlewares/requireProfileComplete");
 app.set("view engine", "ejs");
 
 mongoose
-  .connect(process.env.MONGODB_URI, {})
+  .connect(process.env.MONGODB_URI_DEVELOPMENT, {})
   .then(() => {
     console.log(" Mongoose Server Started!");
   })
@@ -1275,7 +1275,7 @@ app.post("/api/requests/:requestId/cancel", isLoggedIn, async (req, res) => {
 app.get("/profiles", async (req, res) => {
   // Pagination params
   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
-  const limit = 10;
+  const limit = 12;
   const skip = (page - 1) * limit;
 
   // Extract filter parameters
