@@ -4,7 +4,9 @@
   "main": "App.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node App.js"
+    "start": "node App.js",
+    "build-css": "tailwindcss -i ./public/css/input.css -o ./public/css/output.css --watch",
+    "build-css-prod": "tailwindcss -i ./public/css/input.css -o ./public/css/output.css --minify"
   },
   "author": "",
   "license": "ISC",
@@ -27,5 +29,8 @@
     "readline": "^1.3.0",
     "slugify": "^1.6.6",
     "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.16"
   }
 }
