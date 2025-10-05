@@ -293,7 +293,7 @@ const userSchema = new mongoose.Schema({
   },
   registrationSource: {
     type: String,
-    enum: ["register", "admin"],
+    enum: ["register", "admin", "google"],
     default: "register",
   },
   registeredAt: {
@@ -309,6 +309,13 @@ const userSchema = new mongoose.Schema({
     default: null,
   },
   profileFor: {
+    type: String,
+  },
+  googleId: {
+    type: String,
+    sparse: true, // Allows multiple documents without this field
+  },
+  googleProfilePic: {
     type: String,
   },
 });

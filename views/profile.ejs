@@ -5,59 +5,83 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%
-  const pageTitle = `${profile.username}, ${profile.age} | Muslim Matchmaking Profile`;
-  const metaDescription = `View the profile of ${profile.username}, a ${profile.age}-year-old ${profile.gender} from ${profile.city || 'an undisclosed location'}. Learn more about their background, values, and what they are looking for in a partner on D'amour Muslim.`;
+  // Dynamic Title & Description
+  const pageTitle = `${profile.username}, ${profile.age} | ${profile.gender === 'male' ? 'Muslim Man' : 'Muslim Woman'} for Marriage in ${profile.city || 'UK'} | D'amour Muslim`;
+  
+  const metaDescription = `View the profile of ${profile.username}, a ${profile.age}-year-old ${profile.gender} from ${profile.city || 'the UK'}. Seeking a serious halal marriage through D'amour Muslim matchmaking. Discover their background, values, and what they are looking for in a life partner.`;
+  
   const profileUrl = `https://damourmuslim.com/profiles/${profile.profileSlug || profile._id}`;
   
-  // **FIXED**: Better image URL handling
+  // Image Fallback
   let imageUrl;
   if (profile.profilePic && profile.profilePic.url) {
     imageUrl = profile.profilePic.url;
   } else {
-    // **FIXED**: Use a proper default image URL (not localhost)
     imageUrl = 'https://damourmuslim.com/images/default-profile-og.jpg';
   }
-  // **NEW**: Rich description with more profile info
-  const richDescription = `${profile.username} • ${profile.age} years old • ${profile.gender} • ${profile.city}, ${profile.country || ''} ${profile.height ? '• ' + (profile.height / 30.48).toFixed(1) + ' ft' : ''} ${profile.work ? '• ' + profile.work : ''} ${profile.education && profile.education.length > 0 ? '• ' + profile.education[0].title : ''} • Find your perfect match on D'amour Muslim matrimonial platform.`;
+  
+  // Rich, keyword-focused description
+  const richDescription = `${profile.username}, ${profile.age} years old • ${profile.gender} • ${profile.city || 'UK'} ${profile.country ? '• ' + profile.country : ''} ${profile.height ? '• ' + (profile.height / 30.48).toFixed(1) + ' ft' : ''} ${profile.work ? '• ' + profile.work : ''} ${profile.education && profile.education.length > 0 ? '• ' + profile.education[0].title : ''}. Looking for a halal Muslim marriage partner. Join D'amour Muslim to connect with ${profile.gender === 'male' ? 'single Muslim men' : 'single Muslim women'} in London, Leicester & across the UK.`;
 %>
 
-  <title><%= pageTitle %></title>
+<title><%= pageTitle %></title>
 
-  <!-- SEO Meta Tags -->
-  <meta name="description" content="<%= richDescription %>">
-  <meta name="keywords" content="Muslim matrimony, <%= profile.gender %> profile, <%= profile.city %>, halal marriage, Muslim dating, <%= profile.nationality || '' %>">
-  <link rel="canonical" href="<%= profileUrl %>">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-  <link rel="manifest" href="/images/site.webmanifest">
-  <meta name="theme-color" content="#E91E63">
-  <!-- **FIXED**: Open Graph / Facebook -->
-  <meta property="og:type" content="profile">
-  <meta property="og:url" content="<%= profileUrl %>">
-  <meta property="og:title" content="<%= pageTitle %>">
-  <meta property="og:description" content="<%= richDescription %>">
-  <meta property="og:image" content="<%= imageUrl %>">
-  <meta property="og:image:width" content="400">
-  <meta property="og:image:height" content="400">
-  <meta property="og:site_name" content="D'amour Muslim">
+<!-- SEO Meta Tags -->
+<meta name="description" content="<%= richDescription %>">
+<meta name="keywords" content="Muslim matrimony, <%= profile.gender %> for marriage, Muslim singles <%= profile.city || 'UK' %>, Muslim marriage London, Muslim matchmaking Leicester, halal marriage, Islamic matrimonial profiles">
+<link rel="canonical" href="<%= profileUrl %>">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+<link rel="manifest" href="/images/site.webmanifest">
+<meta name="theme-color" content="#E91E63">
 
-  <!-- **FIXED**: Profile-specific Open Graph -->
-  <meta property="profile:first_name" content="<%= profile.username %>">
-  <meta property="profile:username" content="<%= profile.username %>">
-  <meta property="profile:gender" content="<%= profile.gender %>">
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="profile">
+<meta property="og:url" content="<%= profileUrl %>">
+<meta property="og:title" content="<%= pageTitle %>">
+<meta property="og:description" content="<%= richDescription %>">
+<meta property="og:image" content="<%= imageUrl %>">
+<meta property="og:image:width" content="400">
+<meta property="og:image:height" content="400">
+<meta property="og:site_name" content="D'amour Muslim">
 
-  <!-- **FIXED**: Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:site" content="@damourmuslim">
-  <meta name="twitter:title" content="<%= pageTitle %>">
-  <meta name="twitter:description" content="<%= richDescription %>">
-  <meta name="twitter:image" content="<%= imageUrl %>">
+<!-- Profile-specific Open Graph -->
+<meta property="profile:first_name" content="<%= profile.username %>">
+<meta property="profile:username" content="<%= profile.username %>">
+<meta property="profile:gender" content="<%= profile.gender %>">
 
-  <!-- **NEW**: WhatsApp specific -->
-  <meta property="og:image:alt" content="<%= profile.username %>'s profile photo">
-  <meta property="og:locale" content="en_US">
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:site" content="@damourmuslim">
+<meta name="twitter:title" content="<%= pageTitle %>">
+<meta name="twitter:description" content="<%= richDescription %>">
+<meta name="twitter:image" content="<%= imageUrl %>">
+
+<!-- WhatsApp / Sharing Enhancements -->
+<meta property="og:image:alt" content="<%= profile.username %>'s Muslim matchmaking profile photo">
+<meta property="og:locale" content="en_US">
+
+<!-- Structured Data for SEO (JSON-LD Person Schema) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "<%= profile.username %>",
+  "gender": "<%= profile.gender %>",
+  "birthDate": "<%= profile.age ? (new Date().getFullYear() - profile.age) + '-01-01' : '' %>",
+  "address": {
+    "@type": "PostalAddress",
+    "addressLocality": "<%= profile.city || 'UK' %>",
+    "addressCountry": "<%= profile.country || 'UK' %>"
+  },
+  "image": "<%= imageUrl %>",
+  "url": "<%= profileUrl %>",
+  "description": "<%= richDescription %>"
+}
+</script>
+
 
   <link rel="stylesheet" href="/css/output.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -159,7 +183,7 @@
   <!-- Header remains the same -->
   <%- include('partials/header') %>
   <main class="pb-16 min-h-screen">
-    <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-7xl mx-auto">
       <div class="flex gap-8">
         <!-- Filter Sidebar -->
         <div class="w-80 flex-shrink-0 hidden lg:block">

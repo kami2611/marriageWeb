@@ -4,42 +4,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <%
-    let pageTitle = "Browse Muslim Profiles for Marriage";
-    let metaDescription = "Explore profiles of single Muslims seeking a life partner. Filter by age, location, and more to find your ideal match on D'amour Muslim.";
-    if (filters && filters.gender === 'male') {
-      pageTitle = "Muslim Men for Marriage";
-      metaDescription = "Browse profiles of single Muslim men looking for a serious relationship leading to marriage. Connect with your potential spouse today.";
-    } else if (filters && filters.gender === 'female') {
-      pageTitle = "Muslim Women for Marriage";
-      metaDescription = "Discover profiles of single Muslim women seeking a life partner for a blessed marriage. Find your compatible match on our platform.";
-    }
-  %>
-  <title><%= pageTitle %> | D'amour Muslim</title>
+<%
+  let pageTitle = "Browse Muslim Profiles for Marriage | Muslim Singles in UK";
+  let metaDescription = "Explore trusted Muslim profiles for marriage on D'amour Muslim. Browse single Muslims by age, city, and interests to find your ideal life partner in London, Leicester & across the UK.";
+  
+  if (filters && filters.gender === 'male') {
+    pageTitle = "Muslim Men for Marriage | Single Muslim Men in UK";
+    metaDescription = "Browse profiles of single Muslim men seeking marriage. Connect with serious Muslim men in London, Leicester, and across the UK who are ready for a blessed marriage.";
+  } else if (filters && filters.gender === 'female') {
+    pageTitle = "Muslim Women for Marriage | Single Muslim Women in UK";
+    metaDescription = "Discover profiles of single Muslim women looking for a life partner. Find Muslim women for marriage in London, Leicester & across the UK through trusted matchmaking.";
+  }
+%>
+<title><%= pageTitle %> | D'amour Muslim</title>
 
-  <!-- SEO Meta Tags -->
-  <meta name="description" content="<%= metaDescription %>">
-  <meta name="keywords" content="muslim profiles, find muslim partner, muslim singles, islamic marriage, rishta online, matrimonial site, muslim matchmaking">
-  <link rel="canonical" href="https://www.damourmuslim.com/profiles">
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-  <link rel="manifest" href="/images/site.webmanifest">
-  <meta name="theme-color" content="#E91E63">
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.damourmuslim.com/profiles">
-  <meta property="og:title" content="<%= pageTitle %> | D'amour Muslim">
-  <meta property="og:description" content="<%= metaDescription %>">
-  <meta property="og:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
+<!-- SEO Meta Tags -->
+<meta name="description" content="<%= metaDescription %>">
+<meta name="keywords" content="Muslim profiles, single Muslims UK, Muslim men for marriage, Muslim women for marriage, Muslim matchmaking London, Muslim marriage Leicester, Islamic matrimonial site, rishta online">
+<link rel="canonical" href="https://www.damourmuslim.com/profiles">
+<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+<link rel="manifest" href="/images/site.webmanifest">
+<meta name="theme-color" content="#E91E63">
 
-  <!-- Twitter -->
-  <meta property="twitter:card" content="summary_large_image">
-  <meta property="twitter:url" content="https://www.damourmuslim.com/profiles">
-  <meta property="twitter:title" content="<%= pageTitle %> | D'amour Muslim">
-  <meta property="twitter:description" content="<%= metaDescription %>">
-  <meta property="twitter:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://www.damourmuslim.com/profiles">
+<meta property="og:title" content="<%= pageTitle %> | D'amour Muslim">
+<meta property="og:description" content="<%= metaDescription %>">
+<meta property="og:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image">
+<meta property="twitter:url" content="https://www.damourmuslim.com/profiles">
+<meta property="twitter:title" content="<%= pageTitle %> | D'amour Muslim">
+<meta property="twitter:description" content="<%= metaDescription %>">
+<meta property="twitter:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
 
   <link rel="stylesheet" href="/css/output.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
