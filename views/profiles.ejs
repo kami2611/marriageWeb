@@ -121,6 +121,33 @@
     .featured-profile-card:hover {
       box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
     }
+    /* Progressive image loading */
+img {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+img.loaded,
+img[src*="ui-avatars"] {
+  opacity: 1;
+}
+
+/* Skeleton loader for images */
+.aspect-\[4\/5\] {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.aspect-\[4\/5\]:has(img.loaded) {
+  background: none;
+  animation: none;
+}
   </style>
 </head>
 <% if (isProd && !isAdmin) { %>
@@ -342,16 +369,22 @@
                 <!-- Profile Image -->
                 <div class="aspect-[4/5] overflow-hidden relative">
                   <% if (profile.profilePic && profile.profilePic.url) { %>
-                  <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="<%= profile.username %>'s Profile">
+                  <img 
+      src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" 
+      alt="<%= profile.name || profile.username %>" 
+      class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+      loading="lazy"
+      onload="this.classList.add('loaded')"
+      onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'"
+    >
                   <% } else { %>
                   <!-- Default avatar based on gender -->
-                  <div class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200 group-hover:from-gray-200 group-hover:to-gray-300 transition-all duration-300">
-                    <% if (profile.gender === 'male') { %>
-                    <img src="/images/boyavatar.png" class="w-20 h-20 rounded-full object-cover" alt="<%= profile.username %>'s Profile">
-                    <% } else { %>
-                    <img src="/images/girlavatar.png" class="w-20 h-20 rounded-full object-cover" alt="<%= profile.username %>'s Profile">
-                    <% } %>
-                  </div>
+                  <img 
+      src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" 
+      alt="<%= profile.name || profile.username %>" 
+      class="w-full h-full object-cover"
+      loading="lazy"
+    >
                   <% } %>
                 </div>
 
@@ -433,14 +466,22 @@
             <a href="/profiles/<%= profile.profileSlug || profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
               <div class="aspect-[4/5] overflow-hidden">
                 <% if (profile.profilePic && profile.profilePic.url) { %>
-                <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= profile.name || profile.username %>'s Profile">
+                <img 
+      src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" 
+      alt="<%= profile.name || profile.username %>" 
+      class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+      loading="lazy"
+      onload="this.classList.add('loaded')"
+      onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'"
+    >
                 <% } else { %>
                 <!-- Default placeholder based on gender -->
-                <% if (profile.gender === 'male') { %>
-                <img src="/images/boyavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.username %>'s Profile">
-                <% } else { %>
-                <img src="/images/girlavatar.png" class="w-full h-full object-cover bg-gray-100" alt="<%= profile.username %>'s Profile">
-                <% } %>
+                <img 
+      src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" 
+      alt="<%= profile.name || profile.username %>" 
+      class="w-full h-full object-cover"
+      loading="lazy"
+    >
                 <% } %>
               </div>
               <div class="p-4">
@@ -954,6 +995,45 @@
       }
     });
   </script>
+  <script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Progressive image loading
+  const images = document.querySelectorAll('img[loading="lazy"]');
+  
+  // IntersectionObserver for better lazy loading
+  if ('IntersectionObserver' in window) {
+    const imageObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          
+          // Add loading state
+          img.addEventListener('load', function() {
+            this.classList.add('loaded');
+            // Stop animation on parent
+            const parent = this.closest('.aspect-\\[4\\/5\\]');
+            if (parent) {
+              parent.style.animation = 'none';
+              parent.style.background = 'none';
+            }
+          });
+          
+          observer.unobserve(img);
+        }
+      });
+    });
+
+    images.forEach(img => imageObserver.observe(img));
+  } else {
+    // Fallback for browsers without IntersectionObserver
+    images.forEach(img => {
+      img.addEventListener('load', function() {
+        this.classList.add('loaded');
+      });
+    });
+  }
+});
+</script>
 </body>
 
 </html>

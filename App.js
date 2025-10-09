@@ -1,3 +1,23 @@
+// **NEW**: Image optimization helper
+function getOptimizedImageUrl(
+  originalUrl,
+  width = 300,
+  height = 400,
+  crop = "fill"
+) {
+  if (!originalUrl || !originalUrl.includes("cloudinary.com")) {
+    return originalUrl;
+  }
+
+  // Insert transformations into Cloudinary URL
+  return originalUrl.replace(
+    "/upload/",
+    `/upload/c_${crop},w_${width},h_${height},q_auto,f_auto/`
+  );
+}
+
+// Make it available globally
+global.getOptimizedImageUrl = getOptimizedImageUrl;
 const slugify = require("slugify");
 // **NEW**: Function to ensure unique slug
 const {
@@ -109,10 +129,8 @@ cloudinary.config({
 const storage = new CloudinaryStorage({
   cloudinary,
   params: async (req, file) => {
-    // Get username from either userData or form data
     let username = req.userData?.username || req.body?.userId || "unknown";
 
-    // If userId is passed instead of username, look up the username
     if (req.body?.userId && !req.userData?.username) {
       try {
         const user = await User.findById(req.body.userId);
@@ -122,23 +140,33 @@ const storage = new CloudinaryStorage({
       }
     }
 
-    // **NEW**: Different naming based on file field name
     let suffix = "";
     if (file.fieldname === "coverPhoto") {
-      suffix = "C"; // Cover photo: M23C
+      suffix = "C";
     } else if (file.fieldname === "profilePic") {
-      suffix = "P"; // Profile picture: M23P
+      suffix = "P";
     } else {
-      suffix = "imgs1"; // Fallback for other uploads
+      suffix = "imgs1";
     }
 
     return {
       folder: "user_profiles",
-      public_id: `${username}${suffix}`, // M23C or M23P
+      public_id: `${username}${suffix}`,
       allowed_formats: ["jpg", "jpeg", "png", "webp"],
+      // **ENHANCED**: Better compression and optimization
       transformation: [
-        { quality: "auto" }, // compress smartly
-        { fetch_format: "auto" }, // store in efficient format
+        { quality: "auto:good" }, // Smart compression
+        { fetch_format: "auto" }, // Serve optimal format (WebP when supported)
+        {
+          if: "w_gt_1200",
+          width: 1200,
+          crop: "limit",
+        }, // Limit max width
+        {
+          if: "h_gt_1200",
+          height: 1200,
+          crop: "limit",
+        }, // Limit max height
       ],
     };
   },
@@ -528,155 +556,6 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
     res.json({ error: `Failed to update profile: ${error.message}` });
   }
 });
-
-// new register post
-// app.post("/register", async (req, res) => {
-//   console.log("Register request body:", req.body);
-
-//   const { email, password, passcode, gender } = req.body;
-//   console.log("Session verification status:", {
-//     emailVerified: req.session.emailVerified,
-//     verifiedEmail: req.session.verifiedEmail,
-//     providedEmail: email?.toLowerCase(),
-//     match: req.session.verifiedEmail === email?.toLowerCase(),
-//   });
-
-//   if (!username || !password || !gender) {
-//     console.log("required fields missing");
-//     return res.render("register", {
-//       error: "Username, password, and gender are required.",
-//     });
-//   }
-
-//   // **NEW**: Check if email is verified
-//   // if (
-//   //   !req.session.emailVerified ||
-//   //   req.session.verifiedEmail !== email.toLowerCase()
-//   // ) {
-//   //   console.log("Email verification failed:", {
-//   //     emailVerified: req.session.emailVerified,
-//   //     verifiedEmail: req.session.verifiedEmail,
-//   //     providedEmail: email.toLowerCase(),
-//   //   });
-//   //   return res.render("register", {
-//   //     error: "Please verify your email before registering.",
-//   //   });
-//   // }
-
-//   // **UPDATED**: Only check email verification if email was provided
-//   if (email && email.trim()) {
-//     if (
-//       !req.session.emailVerified ||
-//       req.session.verifiedEmail !== email.toLowerCase()
-//     ) {
-//       console.log("Email provided but not verified");
-//       return res.render("register", {
-//         error:
-//           "Please verify your email address or leave it empty to register without email.",
-//       });
-//     }
-//   }
-
-//   // Check passcode
-//   // **NEW**: Check if passcode was verified in the verification step
-//   if (!req.session.passcodeVerified) {
-//     return res.render("register", {
-//       error: "Please verify your mobile number and passcode first.",
-//     });
-//   }
-
-//   // **NEW**: Store the verified mobile number in user data
-//   const verifiedMobile = req.session.verifiedMobile;
-
-//   // Check password length
-//   if (!password || password.length < 5) {
-//     return res.render("register", {
-//       error: "Password must be at least 5 characters long.",
-//     });
-//   }
-
-//   // Check if gender is valid
-//   if (gender !== "male" && gender !== "female") {
-//     return res.render("register", {
-//       error: "Please select a valid gender.",
-//     });
-//   }
-
-//   // Check unique username and email
-//   // const existingUser = await User.findOne({
-//   //   $or: [{ username }, { email: email.toLowerCase() }],
-//   // });
-//   // if (existingUser) {
-//   //   return res.render("register", {
-//   //     error: "Username or email already exists. Please try different ones.",
-//   //   });
-//   // }
-//   // Build query for existing user check
-//   let existingUserQuery = { username };
-//   if (email && email.trim()) {
-//     existingUserQuery = {
-//       $or: [{ username }, { email: email.toLowerCase() }],
-//     };
-//   }
-
-//   const existingUser = await User.findOne(existingUserQuery);
-//   if (existingUser) {
-//     const errorMsg =
-//       email && email.trim()
-//         ? "Username or email already exists. Please try different ones."
-//         : "Username already exists. Please try a different one.";
-//     return res.render("register", { error: errorMsg });
-//   }
-
-//   try {
-//     console.log("Creating user...");
-//     const hashedPassword = await bcrypt.hash(password, 12);
-//     // const newUser = new User({
-//     //   username,
-//     //   email: email.toLowerCase(), // **NEW**
-//     //   password: hashedPassword,
-//     //   gender,
-//     //   isEmailVerified: true, // **NEW**: Set as verified since they passed verification
-//     //   registrationSource: "register",
-//     // });
-//     const userData = {
-//       username,
-//       password: hashedPassword,
-//       gender,
-//       registrationSource: "register",
-//       contact: verifiedMobile,
-//     };
-
-//     // **OPTIONAL**: Only add email if provided
-//     if (email && email.trim()) {
-//       userData.email = email.toLowerCase();
-//       // Only set as verified if they actually verified it
-//       userData.isEmailVerified =
-//         req.session.emailVerified &&
-//         req.session.verifiedEmail === email.toLowerCase();
-//     }
-
-//     const newUser = new User(userData);
-
-//     newUser.profileSlug = await generateUniqueSlug(newUser);
-//     await newUser.save();
-//     console.log("User created successfully:", newUser.username);
-//     req.session.userId = newUser._id;
-//     req.session.user = newUser;
-//     // Clean up verification session data
-//     delete req.session.emailVerified;
-//     delete req.session.verifiedEmail;
-//     delete req.session.passcodeVerified; // **NEW**
-//     delete req.session.verifiedMobile; // **NEW**
-
-//     return res.redirect("/onboarding");
-//   } catch (error) {
-//     console.error("Registration error:", error);
-//     return res.render("register", {
-//       error: "Registration failed. Please try again.",
-//     });
-//   }
-// });
 // Update the existing /register POST route
 app.post("/register", async (req, res) => {
   console.log("Register request body:", req.body);
@@ -1090,11 +969,14 @@ app.get("/logout", (req, res) => {
   });
 });
 
+// app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
+//   const accountInfo = req.userData;
+//   res.render("account/info", { accountInfo });
+// });
 app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
   const accountInfo = req.userData;
   res.render("account/info", { accountInfo });
 });
-
 app.get("/account/pendingRequests", isLoggedIn, async (req, res) => {
   const beinglikeduser = await User.findById(req.session.userId).populate({
     path: "likeRequests",
