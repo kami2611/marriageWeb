@@ -969,11 +969,11 @@ input[name="gender"][value="female"]:checked + .gender-card .text-pink-600 {
 
       if (form) {
         form.addEventListener('submit', function(e) {
-          // if (!isEmailVerified) {
-          //   e.preventDefault();
-          //   showEmailStatus('Please verify your email address first', 'error');
-          //   return;
-          // }
+          if (!isEmailVerified) {
+            e.preventDefault();
+            showEmailStatus('Please verify your email address first', 'error');
+            return;
+          }
           // Continue with existing form submission logic...
         });
       }

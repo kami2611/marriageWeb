@@ -40,6 +40,14 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null,
   },
+  passcodeUsed: {
+    type: String,
+    default: null,
+  },
+  employeeRef: {
+    type: String,
+    default: null,
+  },
   name: {
     type: String,
   },

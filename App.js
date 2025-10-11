@@ -707,10 +707,31 @@ app.post("/api/verify-passcode", async (req, res) => {
       providedPasscode: passcode,
     });
 
-    if (passcode === expectedPasscode) {
+    let cleanPasscode = passcode;
+    let employeePrefix = null;
+
+    if (passcode.includes("-")) {
+      const parts = passcode.split("-");
+      if (parts.length === 2) {
+        employeePrefix = parts[0];
+        cleanPasscode = parts[1];
+      }
+    }
+
+    console.log("Passcode verification with employee tracking:", {
+      mobile: countryCode + cleanMobile,
+      originalPasscode: passcode,
+      employeePrefix,
+      cleanPasscode,
+      expectedPasscode,
+    });
+
+    if (cleanPasscode === expectedPasscode) {
       // Store verification in session
       req.session.passcodeVerified = true;
       req.session.verifiedMobile = countryCode + cleanMobile;
+      req.session.verifiedPasscode = passcode; // **CHANGED**: Store original passcode with employee prefix
+      req.session.employeePrefix = employeePrefix; // **NEW**: Store employee info for analytics
 
       res.json({
         success: true,
@@ -778,6 +799,8 @@ app.post("/api/savegenderandusername", async (req, res) => {
       gender,
       password: hashedPassword, // Temporary password
       contact: req.session.verifiedMobile,
+      passcodeUsed: req.session.verifiedPasscode,
+      employeeRef: req.session.employeePrefix,
       registrationSource: "register",
     });
 
@@ -969,14 +992,11 @@ app.get("/logout", (req, res) => {
   });
 });
 
-// app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
-//   const accountInfo = req.userData;
-//   res.render("account/info", { accountInfo });
-// });
 app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
   const accountInfo = req.userData;
   res.render("account/info", { accountInfo });
 });
+
 app.get("/account/pendingRequests", isLoggedIn, async (req, res) => {
   const beinglikeduser = await User.findById(req.session.userId).populate({
     path: "likeRequests",
@@ -3385,6 +3405,49 @@ app.get("/privacy", (req, res) => {
     title: "Privacy Policy - D'amour Muslim",
   });
 });
+app.get("/blog", (req, res) => {
+  // For now, we'll serve a static list. You can later make this dynamic
+  const blogPosts = [
+    {
+      id: "muslim-wedding-planner-guide",
+      title:
+        "Ultimate Guide to Hiring a Muslim Wedding Planner: Everything You Need to Know",
+      excerpt:
+        "Planning a wedding is exciting — but for Muslim couples, it also comes with additional values, traditions, and sensitivities. Learn everything you need to know about hiring the right Muslim wedding planner.",
+      author: "D'amour Muslim Team",
+      publishDate: "2025-01-11",
+      readTime: "12 min read",
+      category: "Wedding Planning",
+      image:
+        "https://res.cloudinary.com/dhuc2plh0/image/upload/v1760180212/coverblog1_rdulvr.png", // You can add this image later
+      slug: "muslim-wedding-planner-guide",
+    },
+  ];
+
+  res.render("blog/index", {
+    title: "Blog - D'amour Muslim",
+    posts: blogPosts,
+    user: req.session.user || null,
+  });
+});
+
+app.get("/blog/:slug", (req, res) => {
+  const { slug } = req.params;
+
+  // For now, handle the single article. You can make this dynamic later
+  if (slug === "muslim-wedding-planner-guide") {
+    res.render("blog/muslim-wedding-planner-guide", {
+      title:
+        "Ultimate Guide to Hiring a Muslim Wedding Planner - D'amour Muslim",
+      user: req.session.user || null,
+    });
+  } else {
+    res.status(404).render("404", {
+      title: "Blog Post Not Found - D'amour Muslim",
+      url: req.originalUrl,
+    });
+  }
+});
 // SEO: Generate dynamic sitemap
 app.get("/sitemap.xml", async (req, res) => {
   try {
@@ -3426,6 +3489,17 @@ app.get("/sitemap.xml", async (req, res) => {
           ? user.updatedAt.toISOString().split("T")[0]
           : new Date().toISOString().split("T")[0];
         sitemap += `
+        <url>
+    <loc>https://damourmuslim.com/blog</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/blog/muslim-wedding-planner-guide</loc>
+    <lastmod>2025-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
   <url>
     <loc>https://damourmuslim.com/profiles/${user.profileSlug}</loc>
     <lastmod>${lastmod}</lastmod>
