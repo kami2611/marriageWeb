@@ -5,84 +5,126 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%
-  // Dynamic Title & Description
-  const pageTitle = `${profile.username}, ${profile.age} | ${profile.gender === 'male' ? 'Muslim Man' : 'Muslim Woman'} for Marriage in ${profile.city || 'UK'} | D'amour Muslim`;
-  
-  const metaDescription = `View the profile of ${profile.username}, a ${profile.age}-year-old ${profile.gender} from ${profile.city || 'the UK'}. Seeking a serious halal marriage through D'amour Muslim matchmaking. Discover their background, values, and what they are looking for in a life partner.`;
-  
+  // ----------------------------
+  // 🔹 DYNAMIC SEO VARIABLES
+  // ----------------------------
+  const appName = "D'amour Muslim";
+  const city = profile.city || 'UK';
+  const country = profile.country || 'United Kingdom';
+  const genderLabel = profile.gender === 'male' ? 'Muslim Man' : 'Muslim Woman';
+  const ethnicity = profile.ethnicity || 'Muslim';
+
+  // 🔹 Dynamic Title
+  const pageTitle = `${profile.username}, ${profile.age} | ${ethnicity} ${genderLabel} for Halal Marriage in ${city} | ${appName}`;
+
+  // 🔹 Canonical Profile URL
   const profileUrl = `https://damourmuslim.com/profiles/${profile.profileSlug || profile._id}`;
-  
-  // Image Fallback
-  let imageUrl;
-  if (profile.profilePic && profile.profilePic.url) {
-    imageUrl = profile.profilePic.url;
-  } else {
-    imageUrl = 'https://damourmuslim.com/images/default-profile-og.jpg';
+
+  // 🔹 Profile Image Fallback
+  const imageUrl = (profile.profilePic && profile.profilePic.url)
+    ? profile.profilePic.url
+    : 'https://damourmuslim.com/images/default-profile-og.jpg';
+
+  // ----------------------------
+  // 🔹 DYNAMIC KEYWORD LOGIC (5–8 per profile)
+  // ----------------------------
+  const baseKeywords = [
+    "Muslim matrimony", "Halal marriage", "Muslim marriage UK", "Islamic marriage site",
+    "Muslim matchmaking", "Halal Muslim marriage", "Muslim spouse search"
+  ];
+
+  const locationKeywords = city.toLowerCase().includes('london') ? [
+    "Muslim marriage London", "Shaadi in London", "Find Halal Partner London", "Nikkah London", "London Rishta"
+  ] : city.toLowerCase().includes('leicester') ? [
+    "Leicester Muslim marriage", "Muslim rishta Leicester", "Pakistani shaadi Leicester"
+  ] : city.toLowerCase().includes('birmingham') ? [
+    "Muslim marriage Birmingham", "Muslim shaadi Birmingham", "Birmingham shaadi"
+  ] : [
+    "Muslim marriage site UK", "Halal marriage site UK", "Muslim matrimonial UK"
+  ];
+
+  const ethnicityKeywords = ethnicity.toLowerCase().includes('pakistani') ? [
+    "Pakistani Muslim wedding", "Pakistani marriage", "Pakistani nikkah", "Pakistani shaadi", "Pakistani Muslim"
+  ] : ethnicity.toLowerCase().includes('bengali') ? [
+    "Bengali Muslim wedding", "Bengali wedding", "Bengali Muslim marriage"
+  ] : ethnicity.toLowerCase().includes('arab') ? [
+    "Arab Muslim wedding", "Arab Muslim marriage", "Arab Muslim"
+  ] : [
+    "Muslim wedding", "Islamic wedding", "Nikkah ceremony", "Sunnah marriage"
+  ];
+
+  const keywordList = [...baseKeywords, ...locationKeywords, ...ethnicityKeywords].join(', ');
+
+  // ----------------------------
+  // 🔹 META & OG DESCRIPTIONS (SEO-Optimized)
+  // ----------------------------
+  const metaDescription = `View ${profile.username}’s verified ${ethnicity} ${genderLabel.toLowerCase()} profile for halal Muslim marriage in ${city}, UK. Join ${appName} to find genuine Muslim singles, nikah profiles, and rishta services across the UK.`;
+
+  const richDescription = `${profile.username}, ${profile.age}, from ${city}, ${country} — a ${ethnicity} ${genderLabel.toLowerCase()} seeking halal Muslim marriage. Connect on ${appName}, the trusted Islamic matrimony and matchmaking site for UK Muslims.`;
+  %>
+
+  <!-- ✅ SEO Title & Meta -->
+  <title><%= pageTitle %></title>
+  <meta name="description" content="<%= metaDescription %>">
+  <meta name="keywords" content="<%= keywordList %>">
+  <link rel="canonical" href="<%= profileUrl %>">
+
+  <!-- ✅ Favicon & Theme -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="manifest" href="/images/site.webmanifest">
+  <meta name="theme-color" content="#E91E63">
+
+  <!-- ✅ Open Graph / Facebook -->
+  <meta property="og:type" content="profile">
+  <meta property="og:url" content="<%= profileUrl %>">
+  <meta property="og:title" content="<%= pageTitle %>">
+  <meta property="og:description" content="<%= richDescription %>">
+  <meta property="og:image" content="<%= imageUrl %>">
+  <meta property="og:image:width" content="400">
+  <meta property="og:image:height" content="400">
+  <meta property="og:site_name" content="D'amour Muslim">
+  <meta property="og:image:alt" content="<%= profile.username %>'s verified Muslim marriage profile">
+  <meta property="og:locale" content="en_GB">
+
+  <!-- ✅ Profile-specific OG -->
+  <meta property="profile:first_name" content="<%= profile.username %>">
+  <meta property="profile:username" content="<%= profile.username %>">
+  <meta property="profile:gender" content="<%= profile.gender %>">
+
+  <!-- ✅ Twitter Meta -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:site" content="@damourmuslim">
+  <meta name="twitter:title" content="<%= pageTitle %>">
+  <meta name="twitter:description" content="<%= richDescription %>">
+  <meta name="twitter:image" content="<%= imageUrl %>">
+
+  <!-- ✅ JSON-LD Structured Data (Person Schema for Muslim Marriage Profiles) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "<%= profile.username %>",
+    "gender": "<%= profile.gender %>",
+    "birthDate": "<%= profile.age ? (new Date().getFullYear() - profile.age) + '-01-01' : '' %>",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "<%= city %>",
+      "addressCountry": "<%= country %>"
+    },
+    "image": "<%= imageUrl %>",
+    "url": "<%= profileUrl %>",
+    "description": "<%= richDescription %>",
+    "sameAs": [
+      "https://damourmuslim.com",
+      "https://www.facebook.com/damourmuslim",
+      "https://www.instagram.com/damourmuslim"
+    ],
+    "knowsAbout": [<%= keywordList.split(',').map(k => `"${k.trim()}"`).join(', ') %>]
   }
-  
-  // Rich, keyword-focused description
-  const richDescription = `${profile.username}, ${profile.age} years old • ${profile.gender} • ${profile.city || 'UK'} ${profile.country ? '• ' + profile.country : ''} ${profile.height ? '• ' + (profile.height / 30.48).toFixed(1) + ' ft' : ''} ${profile.work ? '• ' + profile.work : ''} ${profile.education && profile.education.length > 0 ? '• ' + profile.education[0].title : ''}. Looking for a halal Muslim marriage partner. Join D'amour Muslim to connect with ${profile.gender === 'male' ? 'single Muslim men' : 'single Muslim women'} in London, Leicester & across the UK.`;
-%>
-
-<title><%= pageTitle %></title>
-
-<!-- SEO Meta Tags -->
-<meta name="description" content="<%= richDescription %>">
-<meta name="keywords" content="Muslim matrimony, <%= profile.gender %> for marriage, Muslim singles <%= profile.city || 'UK' %>, Muslim marriage London, Muslim matchmaking Leicester, halal marriage, Islamic matrimonial profiles">
-<link rel="canonical" href="<%= profileUrl %>">
-<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-<link rel="manifest" href="/images/site.webmanifest">
-<meta name="theme-color" content="#E91E63">
-
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="profile">
-<meta property="og:url" content="<%= profileUrl %>">
-<meta property="og:title" content="<%= pageTitle %>">
-<meta property="og:description" content="<%= richDescription %>">
-<meta property="og:image" content="<%= imageUrl %>">
-<meta property="og:image:width" content="400">
-<meta property="og:image:height" content="400">
-<meta property="og:site_name" content="D'amour Muslim">
-
-<!-- Profile-specific Open Graph -->
-<meta property="profile:first_name" content="<%= profile.username %>">
-<meta property="profile:username" content="<%= profile.username %>">
-<meta property="profile:gender" content="<%= profile.gender %>">
-
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:site" content="@damourmuslim">
-<meta name="twitter:title" content="<%= pageTitle %>">
-<meta name="twitter:description" content="<%= richDescription %>">
-<meta name="twitter:image" content="<%= imageUrl %>">
-
-<!-- WhatsApp / Sharing Enhancements -->
-<meta property="og:image:alt" content="<%= profile.username %>'s Muslim matchmaking profile photo">
-<meta property="og:locale" content="en_US">
-
-<!-- Structured Data for SEO (JSON-LD Person Schema) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Person",
-  "name": "<%= profile.username %>",
-  "gender": "<%= profile.gender %>",
-  "birthDate": "<%= profile.age ? (new Date().getFullYear() - profile.age) + '-01-01' : '' %>",
-  "address": {
-    "@type": "PostalAddress",
-    "addressLocality": "<%= profile.city || 'UK' %>",
-    "addressCountry": "<%= profile.country || 'UK' %>"
-  },
-  "image": "<%= imageUrl %>",
-  "url": "<%= profileUrl %>",
-  "description": "<%= richDescription %>"
-}
-</script>
-
-
+  </script>
   <link rel="stylesheet" href="/css/output.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

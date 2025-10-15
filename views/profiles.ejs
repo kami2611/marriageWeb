@@ -5,22 +5,25 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <%
-  let pageTitle = "Browse Muslim Profiles for Marriage | Muslim Singles in UK";
-  let metaDescription = "Explore trusted Muslim profiles for marriage on D'amour Muslim. Browse single Muslims by age, city, and interests to find your ideal life partner in London, Leicester & across the UK.";
+  let pageTitle = "Muslim Matrimony UK | Islamic Wedding & Nikkah Partners | Halal Marriage Site";
+  let metaDescription = "Find your perfect Muslim matrimony partner for Islamic wedding and Nikkah ceremony. Browse verified Muslim couples, Pakistani marriage profiles in London, Manchester. UK's leading halal marriage site.";
+  let keywords = "Muslim matrimony, Islamic wedding, Nikkah wedding ceremony, Pakistani marriage, Shaadi London, Nikkah London, halal marriage site UK, Pakistani couple, Muslim couple, Sunni Muslim marriage, Muslim marriage services, Islam love marriage, Muslim matrimonial, Muslim marriage Manchester, Pakistani wedding London";
   
   if (filters && filters.gender === 'male') {
-    pageTitle = "Muslim Men for Marriage | Single Muslim Men in UK";
-    metaDescription = "Browse profiles of single Muslim men seeking marriage. Connect with serious Muslim men in London, Leicester, and across the UK who are ready for a blessed marriage.";
+    pageTitle = "Muslim Men for Matrimony | Islamic Wedding Grooms | Nikkah Partners UK";
+    metaDescription = "Discover Muslim men seeking Islamic wedding and Nikkah ceremony. Browse Pakistani marriage profiles of single Muslim men in London, Manchester for halal matrimony.";
+    keywords = "Muslim men matrimony, Islamic wedding grooms, Nikkah ceremony men, Pakistani marriage men, Muslim couple men, Sunni Muslim men marriage, halal marriage men UK, Shaadi London men, Muslim matrimonial men";
   } else if (filters && filters.gender === 'female') {
-    pageTitle = "Muslim Women for Marriage | Single Muslim Women in UK";
-    metaDescription = "Discover profiles of single Muslim women looking for a life partner. Find Muslim women for marriage in London, Leicester & across the UK through trusted matchmaking.";
+    pageTitle = "Muslim Women for Matrimony | Islamic Wedding Brides | Nikkah Partners UK";
+    metaDescription = "Connect with Muslim women for Islamic wedding and Nikkah ceremony. Browse Pakistani marriage profiles of single Muslim women in London, Manchester for halal matrimony.";
+    keywords = "Muslim women matrimony, Islamic wedding brides, Nikkah ceremony women, Pakistani marriage women, Muslim couple women, Sunni Muslim women marriage, halal marriage women UK, Shaadi London women, Muslim matrimonial women";
   }
 %>
 <title><%= pageTitle %> | D'amour Muslim</title>
 
 <!-- SEO Meta Tags -->
 <meta name="description" content="<%= metaDescription %>">
-<meta name="keywords" content="Muslim profiles, single Muslims UK, Muslim men for marriage, Muslim women for marriage, Muslim matchmaking London, Muslim marriage Leicester, Islamic matrimonial site, rishta online">
+<meta name="keywords" content="<%= keywords %>">
 <link rel="canonical" href="https://www.damourmuslim.com/profiles">
 <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
@@ -149,6 +152,93 @@ img[src*="ui-avatars"] {
   animation: none;
 }
   </style>
+  <!-- **ENHANCED**: Structured Data for SEO -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "<%= pageTitle %>",
+  "description": "<%= metaDescription %>",
+  "url": "https://www.damourmuslim.com/profiles",
+  "mainEntity": {
+    "@type": "ItemList",
+    "name": "Muslim Matrimony Profiles",
+    "description": "Browse verified Muslim singles for Islamic wedding, Nikkah ceremony, and Pakistani marriage across the UK",
+    "numberOfItems": "<%= totalProfiles %>",
+    "itemListElement": [
+      {
+        "@type": "Service",
+        "name": "Islamic Wedding Matching",
+        "description": "Connect Muslim singles for Islamic wedding and Nikkah ceremony"
+      },
+      {
+        "@type": "Service", 
+        "name": "Pakistani Marriage Service",
+        "description": "Specialized Pakistani marriage and matrimony services"
+      },
+      {
+        "@type": "Service",
+        "name": "Halal Marriage Site UK",
+        "description": "UK's leading halal marriage platform for Muslim couples"
+      }
+    ]
+  },
+  "breadcrumb": {
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://www.damourmuslim.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Muslim Matrimony Profiles",
+        "item": "https://www.damourmuslim.com/profiles"
+      }
+    ]
+  },
+  "provider": {
+    "@type": "Organization",
+    "name": "D'amour Muslim",
+    "description": "UK's leading Muslim matrimony and Islamic wedding service"
+  }
+}
+</script>
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "name": "Muslim Matrimony & Islamic Wedding Service",
+  "description": "Professional Muslim matrimony service for Islamic wedding, Nikkah ceremony, and Pakistani marriage across the UK",
+  "provider": {
+    "@type": "Organization",
+    "name": "D'amour Muslim"
+  },
+  "serviceType": [
+    "Muslim Matrimony",
+    "Islamic Wedding Matching", 
+    "Nikkah Ceremony Partners",
+    "Pakistani Marriage Service",
+    "Halal Marriage Site",
+    "Muslim Couple Matching"
+  ],
+  "areaServed": [
+    "London",
+    "Manchester", 
+    "Birmingham",
+    "Leicester",
+    "United Kingdom"
+  ],
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "Muslim Singles seeking Islamic Wedding"
+  }
+}
+</script>
 </head>
 <% if (isProd && !isAdmin) { %>
 <!-- Google Analytics -->
@@ -349,10 +439,13 @@ img[src*="ui-avatars"] {
             <div class="flex items-center justify-center mb-8">
               <div class="flex items-center">
                 <i class="ri-star-fill text-2xl text-yellow-500 mr-3"></i>
-                <h2 class="text-3xl font-bold text-gray-800 font-['Playfair_Display']">Featured Profiles</h2>
+                <h2 class="text-3xl font-bold text-gray-800 font-['Playfair_Display']">Featured Muslim Matrimony Profiles</h2>
                 <i class="ri-star-fill text-2xl text-yellow-500 ml-3"></i>
               </div>
             </div>
+            <p class="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+              Discover highlighted Muslim singles ready for Islamic wedding and Nikkah ceremony. These verified profiles represent our most active members seeking Pakistani marriage and halal matrimony.
+            </p>
 
             <!-- Featured Profiles Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -371,7 +464,7 @@ img[src*="ui-avatars"] {
                   <% if (profile.profilePic && profile.profilePic.url) { %>
                   <img 
       src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" 
-      alt="<%= profile.name || profile.username %>" 
+     alt="<%= profile.name || profile.username %> - Muslim matrimony profile for Islamic wedding and Nikkah ceremony"
       class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
       loading="lazy"
       onload="this.classList.add('loaded')"
@@ -431,13 +524,15 @@ img[src*="ui-avatars"] {
 
           <!-- **UPDATED**: Other Profiles Section -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-8 gap-4">
-            <h2 class="text-3xl font-bold text-gray-800 font-['Playfair_Display']">
-              <% if (featuredProfiles && featuredProfiles.length > 0) { %>
-              Other Profiles
-              <% } else { %>
-              All Profiles
-              <% } %>
-            </h2>
+            <div>
+              <h2 class="text-3xl font-bold text-gray-800 font-['Playfair_Display'] mb-2">
+                <% if (featuredProfiles && featuredProfiles.length > 0) { %>
+                More Muslim Matrimony Profiles
+                <% } else { %>
+                All Muslim Matrimony Profiles
+                <% } %>
+              </h2>
+            </div>
 
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
               <!-- Sort By Dropdown -->
@@ -468,7 +563,7 @@ img[src*="ui-avatars"] {
                 <% if (profile.profilePic && profile.profilePic.url) { %>
                 <img 
       src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" 
-      alt="<%= profile.name || profile.username %>" 
+      alt="<%= profile.name || profile.username %> - Pakistani marriage profile for Muslim matrimony UK" 
       class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
       loading="lazy"
       onload="this.classList.add('loaded')"
