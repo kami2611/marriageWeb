@@ -3408,21 +3408,48 @@ app.get("/privacy", (req, res) => {
 app.get("/blog", (req, res) => {
   // For now, we'll serve a static list. You can later make this dynamic
   const blogPosts = [
-    {
-      id: "muslim-wedding-planner-guide",
-      title:
-        "Ultimate Guide to Hiring a Muslim Wedding Planner: Everything You Need to Know",
-      excerpt:
-        "Planning a wedding is exciting — but for Muslim couples, it also comes with additional values, traditions, and sensitivities. Learn everything you need to know about hiring the right Muslim wedding planner.",
-      author: "D'amour Muslim Team",
-      publishDate: "2025-01-11",
-      readTime: "12 min read",
-      category: "Wedding Planning",
-      image:
-        "https://res.cloudinary.com/dhuc2plh0/image/upload/v1760180212/coverblog1_rdulvr.png", // You can add this image later
-      slug: "muslim-wedding-planner-guide",
-    },
-  ];
+  {
+    id: "muslim-wedding-planner-guide",
+    title:
+      "Ultimate Guide to Hiring a Muslim Wedding Planner: Everything You Need to Know",
+    excerpt:
+      "Planning a wedding is exciting — but for Muslim couples, it also comes with additional values, traditions, and sensitivities. Learn everything you need to know about hiring the right Muslim wedding planner.",
+    author: "D'amour Muslim Team",
+    publishDate: "2025-01-11",
+    readTime: "12 min read",
+    category: "Wedding Planning",
+    image:
+      "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870954/jubair-ahmed-himu-5b0jgXvfimE-unsplash_tmjkew.jpg",
+    slug: "muslim-wedding-planner-guide",
+  },
+  {
+    id: "uk-rishta-whatsapp-group",
+    title: "UK Rishta WhatsApp Group: Your Gateway to Halal Marriage",
+    excerpt:
+      "Join our verified UK rishta WhatsApp group where serious Muslims connect for halal marriage. Discover how to find your perfect match through our trusted, moderated community across London, Leicester and the UK.",
+    author: "D'amour Muslim Team",
+    publishDate: "2025-01-15",
+    readTime: "10 min read",
+    category: "Muslim Rishta",
+    image:
+      "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870946/brett-jordan-dMUeHGE8Dio-unsplash_eozw9p.jpg",
+    slug: "uk-rishta-whatsapp-group",
+  },
+  {
+    id: "uk-muslim-rishta-service-charges",
+    title:
+      "UK Muslim Rishta Service: Affordable Registration Fees & Matchmaking Charges (2025)",
+    excerpt:
+      "Discover transparent pricing for D'Amour Muslim's rishta service with four flexible plans: Standard (Free), Premium (£50), Premium Plus (£100+£200), and Executive (£150+£450). 100% money-back guarantee included.",
+    author: "D'amour Muslim Team",
+    publishDate: "2025-01-20",
+    readTime: "8 min read",
+    category: "Rishta Services",
+    image:
+      "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870921/jubair-ahmed-himu-XILfo8IMMjc-unsplash_qffxew.jpg",
+    slug: "uk-muslim-rishta-service-charges",
+  },
+];
 
   res.render("blog/index", {
     title: "Blog - D'amour Muslim",
@@ -3434,11 +3461,22 @@ app.get("/blog", (req, res) => {
 app.get("/blog/:slug", (req, res) => {
   const { slug } = req.params;
 
-  // For now, handle the single article. You can make this dynamic later
   if (slug === "muslim-wedding-planner-guide") {
     res.render("blog/muslim-wedding-planner-guide", {
       title:
         "Ultimate Guide to Hiring a Muslim Wedding Planner - D'amour Muslim",
+      user: req.session.user || null,
+    });
+  } else if (slug === "uk-rishta-whatsapp-group") {
+    res.render("blog/uk-rishta-whatsapp-group", {
+      title:
+        "UK Rishta WhatsApp Group | Join Muslim Marriage Community - D'amour Muslim",
+      user: req.session.user || null,
+    });
+  } else if (slug === "uk-muslim-rishta-service-charges") {
+    res.render("blog/uk-muslim-rishta-service-charges", {
+      title:
+        "UK Muslim Rishta Service: Registration Fees & Matchmaking Charges - D'amour Muslim",
       user: req.session.user || null,
     });
   } else {
@@ -3497,6 +3535,18 @@ app.get("/sitemap.xml", async (req, res) => {
   <url>
     <loc>https://damourmuslim.com/blog/muslim-wedding-planner-guide</loc>
     <lastmod>2025-01-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/blog/uk-rishta-whatsapp-group</loc>
+    <lastmod>2025-01-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/blog/uk-muslim-rishta-service-charges</loc>
+    <lastmod>2025-01-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
