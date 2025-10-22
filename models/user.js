@@ -326,5 +326,13 @@ const userSchema = new mongoose.Schema({
   googleProfilePic: {
     type: String,
   },
+  randomNameForSeo: {
+  type: String,
+  default: null,
+},
+seoKeywords: {
+  type: [String],
+  default: [],
+},
 });
 module.exports = mongoose.model("User", userSchema);

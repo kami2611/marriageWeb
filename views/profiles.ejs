@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<%
+  <%
   let pageTitle = "Muslim Matrimony UK | Islamic Wedding & Nikkah Partners | Halal Marriage Site";
   let metaDescription = "Find your perfect Muslim matrimony partner for Islamic wedding and Nikkah ceremony. Browse verified Muslim couples, Pakistani marriage profiles in London, Manchester. UK's leading halal marriage site.";
   let keywords = "Muslim matrimony, Islamic wedding, Nikkah wedding ceremony, Pakistani marriage, Shaadi London, Nikkah London, halal marriage site UK, Pakistani couple, Muslim couple, Sunni Muslim marriage, Muslim marriage services, Islam love marriage, Muslim matrimonial, Muslim marriage Manchester, Pakistani wedding London";
@@ -19,32 +19,32 @@
     keywords = "Muslim women matrimony, Islamic wedding brides, Nikkah ceremony women, Pakistani marriage women, Muslim couple women, Sunni Muslim women marriage, halal marriage women UK, Shaadi London women, Muslim matrimonial women";
   }
 %>
-<title><%= pageTitle %> | D'amour Muslim</title>
+  <title><%= pageTitle %> | D'amour Muslim</title>
 
-<!-- SEO Meta Tags -->
-<meta name="description" content="<%= metaDescription %>">
-<meta name="keywords" content="<%= keywords %>">
-<link rel="canonical" href="https://www.damourmuslim.com/profiles">
-<link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
-<link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-<link rel="manifest" href="/images/site.webmanifest">
-<meta name="theme-color" content="#E91E63">
+  <!-- SEO Meta Tags -->
+  <meta name="description" content="<%= metaDescription %>">
+  <meta name="keywords" content="<%= keywords %>">
+  <link rel="canonical" href="https://www.damourmuslim.com/profiles">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
+  <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+  <link rel="manifest" href="/images/site.webmanifest">
+  <meta name="theme-color" content="#E91E63">
 
-<!-- Open Graph / Facebook -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://www.damourmuslim.com/profiles">
-<meta property="og:title" content="<%= pageTitle %> | D'amour Muslim">
-<meta property="og:description" content="<%= metaDescription %>">
-<meta property="og:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.damourmuslim.com/profiles">
+  <meta property="og:title" content="<%= pageTitle %> | D'amour Muslim">
+  <meta property="og:description" content="<%= metaDescription %>">
+  <meta property="og:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
 
-<!-- Twitter -->
-<meta property="twitter:card" content="summary_large_image">
-<meta property="twitter:url" content="https://www.damourmuslim.com/profiles">
-<meta property="twitter:title" content="<%= pageTitle %> | D'amour Muslim">
-<meta property="twitter:description" content="<%= metaDescription %>">
-<meta property="twitter:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:url" content="https://www.damourmuslim.com/profiles">
+  <meta property="twitter:title" content="<%= pageTitle %> | D'amour Muslim">
+  <meta property="twitter:description" content="<%= metaDescription %>">
+  <meta property="twitter:image" content="https://www.damourmuslim.com/images/og-image-profiles.jpg">
 
   <link rel="stylesheet" href="/css/output.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -124,121 +124,125 @@
     .featured-profile-card:hover {
       box-shadow: 0 8px 25px rgba(255, 215, 0, 0.2);
     }
+
     /* Progressive image loading */
-img {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
+    img {
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
 
-img.loaded,
-img[src*="ui-avatars"] {
-  opacity: 1;
-}
+    img.loaded,
+    img[src*="ui-avatars"] {
+      opacity: 1;
+    }
 
-/* Skeleton loader for images */
-.aspect-\[4\/5\] {
-  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
-  background-size: 200% 100%;
-  animation: loading 1.5s infinite;
-}
+    /* Skeleton loader for images */
+    .aspect-\[4\/5\] {
+      background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+      background-size: 200% 100%;
+      animation: loading 1.5s infinite;
+    }
 
-@keyframes loading {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
+    @keyframes loading {
+      0% {
+        background-position: 200% 0;
+      }
 
-.aspect-\[4\/5\]:has(img.loaded) {
-  background: none;
-  animation: none;
-}
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .aspect-\[4\/5\]:has(img.loaded) {
+      background: none;
+      animation: none;
+    }
   </style>
   <!-- **ENHANCED**: Structured Data for SEO -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  "name": "<%= pageTitle %>",
-  "description": "<%= metaDescription %>",
-  "url": "https://www.damourmuslim.com/profiles",
-  "mainEntity": {
-    "@type": "ItemList",
-    "name": "Muslim Matrimony Profiles",
-    "description": "Browse verified Muslim singles for Islamic wedding, Nikkah ceremony, and Pakistani marriage across the UK",
-    "numberOfItems": "<%= totalProfiles %>",
-    "itemListElement": [
-      {
-        "@type": "Service",
-        "name": "Islamic Wedding Matching",
-        "description": "Connect Muslim singles for Islamic wedding and Nikkah ceremony"
-      },
-      {
-        "@type": "Service", 
-        "name": "Pakistani Marriage Service",
-        "description": "Specialized Pakistani marriage and matrimony services"
-      },
-      {
-        "@type": "Service",
-        "name": "Halal Marriage Site UK",
-        "description": "UK's leading halal marriage platform for Muslim couples"
-      }
-    ]
-  },
-  "breadcrumb": {
-    "@type": "BreadcrumbList",
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": "https://www.damourmuslim.com"
-      },
-      {
-        "@type": "ListItem",
-        "position": 2,
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "<%= pageTitle %>",
+      "description": "<%= metaDescription %>",
+      "url": "https://www.damourmuslim.com/profiles",
+      "mainEntity": {
+        "@type": "ItemList",
         "name": "Muslim Matrimony Profiles",
-        "item": "https://www.damourmuslim.com/profiles"
+        "description": "Browse verified Muslim singles for Islamic wedding, Nikkah ceremony, and Pakistani marriage across the UK",
+        "numberOfItems": "<%= totalProfiles %>",
+        "itemListElement": [{
+            "@type": "Service",
+            "name": "Islamic Wedding Matching",
+            "description": "Connect Muslim singles for Islamic wedding and Nikkah ceremony"
+          },
+          {
+            "@type": "Service",
+            "name": "Pakistani Marriage Service",
+            "description": "Specialized Pakistani marriage and matrimony services"
+          },
+          {
+            "@type": "Service",
+            "name": "Halal Marriage Site UK",
+            "description": "UK's leading halal marriage platform for Muslim couples"
+          }
+        ]
+      },
+      "breadcrumb": {
+        "@type": "BreadcrumbList",
+        "itemListElement": [{
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://www.damourmuslim.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": "Muslim Matrimony Profiles",
+            "item": "https://www.damourmuslim.com/profiles"
+          }
+        ]
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "D'amour Muslim",
+        "description": "UK's leading Muslim matrimony and Islamic wedding service"
       }
-    ]
-  },
-  "provider": {
-    "@type": "Organization",
-    "name": "D'amour Muslim",
-    "description": "UK's leading Muslim matrimony and Islamic wedding service"
-  }
-}
-</script>
+    }
+  </script>
 
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "Service",
-  "name": "Muslim Matrimony & Islamic Wedding Service",
-  "description": "Professional Muslim matrimony service for Islamic wedding, Nikkah ceremony, and Pakistani marriage across the UK",
-  "provider": {
-    "@type": "Organization",
-    "name": "D'amour Muslim"
-  },
-  "serviceType": [
-    "Muslim Matrimony",
-    "Islamic Wedding Matching", 
-    "Nikkah Ceremony Partners",
-    "Pakistani Marriage Service",
-    "Halal Marriage Site",
-    "Muslim Couple Matching"
-  ],
-  "areaServed": [
-    "London",
-    "Manchester", 
-    "Birmingham",
-    "Leicester",
-    "United Kingdom"
-  ],
-  "audience": {
-    "@type": "Audience",
-    "audienceType": "Muslim Singles seeking Islamic Wedding"
-  }
-}
-</script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Service",
+      "name": "Muslim Matrimony & Islamic Wedding Service",
+      "description": "Professional Muslim matrimony service for Islamic wedding, Nikkah ceremony, and Pakistani marriage across the UK",
+      "provider": {
+        "@type": "Organization",
+        "name": "D'amour Muslim"
+      },
+      "serviceType": [
+        "Muslim Matrimony",
+        "Islamic Wedding Matching",
+        "Nikkah Ceremony Partners",
+        "Pakistani Marriage Service",
+        "Halal Marriage Site",
+        "Muslim Couple Matching"
+      ],
+      "areaServed": [
+        "London",
+        "Manchester",
+        "Birmingham",
+        "Leicester",
+        "United Kingdom"
+      ],
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Muslim Singles seeking Islamic Wedding"
+      }
+    }
+  </script>
 </head>
 <% if (isProd && !isAdmin) { %>
 <!-- Google Analytics -->
@@ -267,6 +271,24 @@ img[src*="ui-avatars"] {
 
         <!-- Main Content -->
         <div class="flex-1">
+          <!-- Breadcrumb Navigation - ADD THIS -->
+          <nav class="flex py-3 px-2 mb-4 bg-gray-50 rounded-lg text-sm text-gray-600" aria-label="Breadcrumb">
+            <ol class="flex flex-wrap items-center">
+              <li class="flex items-center">
+                <a href="/" class="hover:text-primary transition-colors">Home</a>
+                <i class="ri-arrow-right-s-line mx-2"></i>
+              </li>
+              <li class="flex items-center">
+                <a href="/profiles" class="hover:text-primary transition-colors">Profiles</a>
+                <% if (filters && filters.gender) { %>
+                <i class="ri-arrow-right-s-line mx-2"></i>
+              </li>
+              <li class="text-primary font-medium truncate">
+                <%= filters.gender === 'male' ? 'Male' : 'Female' %> Profiles
+                <% } %>
+              </li>
+            </ol>
+          </nav>
           <!-- Page Heading -->
           <div class="mb-6 text-center md:text-left">
             <h1 class="text-3xl md:text-4xl font-bold text-gray-800 font-['Playfair_Display']"><%= pageTitle %></h1>
@@ -462,22 +484,10 @@ img[src*="ui-avatars"] {
                 <!-- Profile Image -->
                 <div class="aspect-[4/5] overflow-hidden relative">
                   <% if (profile.profilePic && profile.profilePic.url) { %>
-                  <img 
-      src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" 
-     alt="<%= profile.name || profile.username %> - Muslim matrimony profile for Islamic wedding and Nikkah ceremony"
-      class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-      loading="lazy"
-      onload="this.classList.add('loaded')"
-      onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'"
-    >
+                  <img src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" alt="<%= profile.name || profile.username %> - Muslim matrimony profile for Islamic wedding and Nikkah ceremony" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" onload="this.classList.add('loaded')" onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'">
                   <% } else { %>
                   <!-- Default avatar based on gender -->
-                  <img 
-      src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" 
-      alt="<%= profile.name || profile.username %>" 
-      class="w-full h-full object-cover"
-      loading="lazy"
-    >
+                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" alt="<%= profile.name || profile.username %>" class="w-full h-full object-cover" loading="lazy">
                   <% } %>
                 </div>
 
@@ -561,22 +571,10 @@ img[src*="ui-avatars"] {
             <a href="/profiles/<%= profile.profileSlug || profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
               <div class="aspect-[4/5] overflow-hidden">
                 <% if (profile.profilePic && profile.profilePic.url) { %>
-                <img 
-      src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" 
-      alt="<%= profile.name || profile.username %> - Pakistani marriage profile for Muslim matrimony UK" 
-      class="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-      loading="lazy"
-      onload="this.classList.add('loaded')"
-      onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'"
-    >
+                <img src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" alt="<%= profile.name || profile.username %> - Pakistani marriage profile for Muslim matrimony UK" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" onload="this.classList.add('loaded')" onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'">
                 <% } else { %>
                 <!-- Default placeholder based on gender -->
-                <img 
-      src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" 
-      alt="<%= profile.name || profile.username %>" 
-      class="w-full h-full object-cover"
-      loading="lazy"
-    >
+                <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" alt="<%= profile.name || profile.username %>" class="w-full h-full object-cover" loading="lazy">
                 <% } %>
               </div>
               <div class="p-4">
@@ -1091,44 +1089,44 @@ img[src*="ui-avatars"] {
     });
   </script>
   <script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Progressive image loading
-  const images = document.querySelectorAll('img[loading="lazy"]');
-  
-  // IntersectionObserver for better lazy loading
-  if ('IntersectionObserver' in window) {
-    const imageObserver = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const img = entry.target;
-          
-          // Add loading state
-          img.addEventListener('load', function() {
-            this.classList.add('loaded');
-            // Stop animation on parent
-            const parent = this.closest('.aspect-\\[4\\/5\\]');
-            if (parent) {
-              parent.style.animation = 'none';
-              parent.style.background = 'none';
+    document.addEventListener('DOMContentLoaded', function() {
+      // Progressive image loading
+      const images = document.querySelectorAll('img[loading="lazy"]');
+
+      // IntersectionObserver for better lazy loading
+      if ('IntersectionObserver' in window) {
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              const img = entry.target;
+
+              // Add loading state
+              img.addEventListener('load', function() {
+                this.classList.add('loaded');
+                // Stop animation on parent
+                const parent = this.closest('.aspect-\\[4\\/5\\]');
+                if (parent) {
+                  parent.style.animation = 'none';
+                  parent.style.background = 'none';
+                }
+              });
+
+              observer.unobserve(img);
             }
           });
-          
-          observer.unobserve(img);
-        }
-      });
-    });
+        });
 
-    images.forEach(img => imageObserver.observe(img));
-  } else {
-    // Fallback for browsers without IntersectionObserver
-    images.forEach(img => {
-      img.addEventListener('load', function() {
-        this.classList.add('loaded');
-      });
+        images.forEach(img => imageObserver.observe(img));
+      } else {
+        // Fallback for browsers without IntersectionObserver
+        images.forEach(img => {
+          img.addEventListener('load', function() {
+            this.classList.add('loaded');
+          });
+        });
+      }
     });
-  }
-});
-</script>
+  </script>
 </body>
 
 </html>

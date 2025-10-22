@@ -1,3 +1,14 @@
+const { muslimMaleNames, muslimFemaleNames } = require("./config/seoData");
+function getRandomSeoName(gender) {
+  if (gender === "male") {
+    const randomIndex = Math.floor(Math.random() * muslimMaleNames.length);
+    return muslimMaleNames[randomIndex];
+  } else if (gender === "female") {
+    const randomIndex = Math.floor(Math.random() * muslimFemaleNames.length);
+    return muslimFemaleNames[randomIndex];
+  }
+  return null;
+}
 // **NEW**: Image optimization helper
 function getOptimizedImageUrl(
   originalUrl,
@@ -793,7 +804,7 @@ app.post("/api/savegenderandusername", async (req, res) => {
       "temp_" + Math.random().toString(36).substring(2, 15),
       12
     );
-
+    const randomNameForSeo = getRandomSeoName(gender);
     const newUser = new User({
       username,
       gender,
@@ -802,6 +813,7 @@ app.post("/api/savegenderandusername", async (req, res) => {
       passcodeUsed: req.session.verifiedPasscode,
       employeeRef: req.session.employeePrefix,
       registrationSource: "register",
+      randomNameForSeo: randomNameForSeo
     });
 
     // Generate profile slug
@@ -1057,9 +1069,8 @@ app.post("/requests/:id/accept", isLoggedIn, async (req, res) => {
       userId: request.from._id,
       type: "request_accepted",
       title: "Request Accepted!",
-      message: `Congratulations! Your request was accepted by ${
-        request.to.name || request.to.username
-      }.`,
+      message: `Congratulations! Your request was accepted by ${request.to.name || request.to.username
+        }.`,
       priority: "high",
       actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
       actionText: "View Profile",
@@ -1107,9 +1118,8 @@ app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
       userId: request.from._id,
       type: "request_rejected",
       title: "Request Declined",
-      message: `Your request was declined by ${
-        request.to.name || request.to.username
-      }.`,
+      message: `Your request was declined by ${request.to.name || request.to.username
+        }.`,
       priority: "medium",
       actionUrl: "/profiles",
       actionText: "Browse Profiles",
@@ -1254,10 +1264,10 @@ app.get("/profiles", async (req, res) => {
     const profiles =
       sortBy === "random"
         ? await User.aggregate([
-            { $match: filter },
-            { $skip: skip },
-            { $sample: { size: Math.min(limit, totalProfiles - skip) } },
-          ])
+          { $match: filter },
+          { $skip: skip },
+          { $sample: { size: Math.min(limit, totalProfiles - skip) } },
+        ])
         : await User.find(filter).sort(sortOptions).skip(skip).limit(limit);
 
     const activeFilters = {
@@ -1349,6 +1359,9 @@ app.get("/profiles/:slug", async (req, res) => {
         hasalreadysentrequest = true;
       }
     }
+    const { findSimilarProfiles } = require("./utils/profileHelpers");
+    const currentUserId = req.session.userId || null;
+    const similarProfiles = await findSimilarProfiles(foundProfile, 3, currentUserId);
 
     res.render("profile", {
       profile: foundProfile,
@@ -1357,6 +1370,7 @@ app.get("/profiles/:slug", async (req, res) => {
       user: req.session.user,
       isAdmin: req.session.isAdmin,
       filters: null,
+      similarProfiles
     });
   } catch (err) {
     console.error("Profile route error:", err);
@@ -1708,13 +1722,14 @@ app.post("/admin/user/add", requireAdminOnly, async (req, res) => {
     // Process education and children arrays
     const educationArr = Array.isArray(education) ? education : [];
     const childrenArr = Array.isArray(children) ? children : [];
-
+    const randomNameForSeo = getRandomSeoName(gender);
     // Create new user object with required fields
     const userData = {
       username,
       password: hashedPassword,
       gender,
       registrationSource: "admin",
+      randomNameForSeo: randomNameForSeo
     };
 
     // Add optional STRING fields only if they exist and are not "N/A"
@@ -2658,9 +2673,8 @@ app.get("/admin/newsletter/export", requireAdminOnly, async (req, res) => {
     });
 
     // Set headers for file download
-    const filename = `newsletter_subscribers_${
-      new Date().toISOString().split("T")[0]
-    }.csv`;
+    const filename = `newsletter_subscribers_${new Date().toISOString().split("T")[0]
+      }.csv`;
     res.setHeader("Content-Type", "text/csv");
     res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
 
@@ -2771,9 +2785,8 @@ app.post(
           userId: request.from._id,
           type: "request_rejected", // Reuse rejected type or create new one
           title: "Request Deleted",
-          message: `Your request to ${
-            request.to.name || request.to.username
-          } was deleted by admin.`,
+          message: `Your request to ${request.to.name || request.to.username
+            } was deleted by admin.`,
           priority: "medium",
           actionUrl: "/profiles",
           actionText: "Browse Profiles",
@@ -2823,9 +2836,8 @@ app.post(
           userId: request.from._id,
           type: "request_revoked",
           title: "Request Access Revoked",
-          message: `Your accepted request with ${
-            request.to.name || request.to.username
-          } has been revoked by admin.`,
+          message: `Your accepted request with ${request.to.name || request.to.username
+            } has been revoked by admin.`,
           priority: "high",
           actionUrl: "/profiles",
           actionText: "Browse Profiles",
@@ -2835,9 +2847,8 @@ app.post(
           userId: request.to._id,
           type: "request_revoked",
           title: "Request Access Revoked",
-          message: `Your connection with ${
-            request.from.name || request.from.username
-          } has been revoked by admin.`,
+          message: `Your connection with ${request.from.name || request.from.username
+            } has been revoked by admin.`,
           priority: "high",
           actionUrl: "/profiles",
           actionText: "Browse Profiles",
@@ -2881,9 +2892,8 @@ app.post(
           userId: request.from._id,
           type: "request_accepted",
           title: "Request Accepted!",
-          message: `Congratulations! Your request was accepted by ${
-            request.to.name || request.to.username
-          }.`,
+          message: `Congratulations! Your request was accepted by ${request.to.name || request.to.username
+            }.`,
           priority: "high",
           actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
           actionText: "View Profile",
@@ -2908,9 +2918,8 @@ app.post(
           userId: request.from._id,
           type: "request_rejected",
           title: "Request Declined",
-          message: `Your request was declined by ${
-            request.to.name || request.to.username
-          }.`,
+          message: `Your request was declined by ${request.to.name || request.to.username
+            }.`,
           priority: "medium",
           actionUrl: "/profiles",
           actionText: "Browse Profiles",
@@ -3408,48 +3417,48 @@ app.get("/privacy", (req, res) => {
 app.get("/blog", (req, res) => {
   // For now, we'll serve a static list. You can later make this dynamic
   const blogPosts = [
-  {
-    id: "muslim-wedding-planner-guide",
-    title:
-      "Ultimate Guide to Hiring a Muslim Wedding Planner: Everything You Need to Know",
-    excerpt:
-      "Planning a wedding is exciting — but for Muslim couples, it also comes with additional values, traditions, and sensitivities. Learn everything you need to know about hiring the right Muslim wedding planner.",
-    author: "D'amour Muslim Team",
-    publishDate: "2025-01-11",
-    readTime: "12 min read",
-    category: "Wedding Planning",
-    image:
-      "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870954/jubair-ahmed-himu-5b0jgXvfimE-unsplash_tmjkew.jpg",
-    slug: "muslim-wedding-planner-guide",
-  },
-  {
-    id: "uk-rishta-whatsapp-group",
-    title: "UK Rishta WhatsApp Group: Your Gateway to Halal Marriage",
-    excerpt:
-      "Join our verified UK rishta WhatsApp group where serious Muslims connect for halal marriage. Discover how to find your perfect match through our trusted, moderated community across London, Leicester and the UK.",
-    author: "D'amour Muslim Team",
-    publishDate: "2025-01-15",
-    readTime: "10 min read",
-    category: "Muslim Rishta",
-    image:
-      "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870946/brett-jordan-dMUeHGE8Dio-unsplash_eozw9p.jpg",
-    slug: "uk-rishta-whatsapp-group",
-  },
-  {
-    id: "uk-muslim-rishta-service-charges",
-    title:
-      "UK Muslim Rishta Service: Affordable Registration Fees & Matchmaking Charges (2025)",
-    excerpt:
-      "Discover transparent pricing for D'Amour Muslim's rishta service with four flexible plans: Standard (Free), Premium (£50), Premium Plus (£100+£200), and Executive (£150+£450). 100% money-back guarantee included.",
-    author: "D'amour Muslim Team",
-    publishDate: "2025-01-20",
-    readTime: "8 min read",
-    category: "Rishta Services",
-    image:
-      "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870921/jubair-ahmed-himu-XILfo8IMMjc-unsplash_qffxew.jpg",
-    slug: "uk-muslim-rishta-service-charges",
-  },
-];
+    {
+      id: "muslim-wedding-planner-guide",
+      title:
+        "Ultimate Guide to Hiring a Muslim Wedding Planner: Everything You Need to Know",
+      excerpt:
+        "Planning a wedding is exciting — but for Muslim couples, it also comes with additional values, traditions, and sensitivities. Learn everything you need to know about hiring the right Muslim wedding planner.",
+      author: "D'amour Muslim Team",
+      publishDate: "2025-01-11",
+      readTime: "12 min read",
+      category: "Wedding Planning",
+      image:
+        "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870954/jubair-ahmed-himu-5b0jgXvfimE-unsplash_tmjkew.jpg",
+      slug: "muslim-wedding-planner-guide",
+    },
+    {
+      id: "uk-rishta-whatsapp-group",
+      title: "UK Rishta WhatsApp Group: Your Gateway to Halal Marriage",
+      excerpt:
+        "Join our verified UK rishta WhatsApp group where serious Muslims connect for halal marriage. Discover how to find your perfect match through our trusted, moderated community across London, Leicester and the UK.",
+      author: "D'amour Muslim Team",
+      publishDate: "2025-01-15",
+      readTime: "10 min read",
+      category: "Muslim Rishta",
+      image:
+        "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870946/brett-jordan-dMUeHGE8Dio-unsplash_eozw9p.jpg",
+      slug: "uk-rishta-whatsapp-group",
+    },
+    {
+      id: "uk-muslim-rishta-service-charges",
+      title:
+        "UK Muslim Rishta Service: Affordable Registration Fees & Matchmaking Charges (2025)",
+      excerpt:
+        "Discover transparent pricing for D'Amour Muslim's rishta service with four flexible plans: Standard (Free), Premium (£50), Premium Plus (£100+£200), and Executive (£150+£450). 100% money-back guarantee included.",
+      author: "D'amour Muslim Team",
+      publishDate: "2025-01-20",
+      readTime: "8 min read",
+      category: "Rishta Services",
+      image:
+        "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870921/jubair-ahmed-himu-XILfo8IMMjc-unsplash_qffxew.jpg",
+      slug: "uk-muslim-rishta-service-charges",
+    },
+  ];
 
   res.render("blog/index", {
     title: "Blog - D'amour Muslim",
