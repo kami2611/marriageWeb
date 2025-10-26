@@ -1544,44 +1544,76 @@
       }
 
       // Display sent requests
+      // Find the displaySentRequests function (around line 1030) and replace it with this updated version
+
       function displaySentRequests(requests) {
         const container = document.getElementById('sentRequestsContainer');
 
+        // **NEW**: Calculate pending requests count
+        const pendingRequests = requests.filter(req => req.status === 'pending');
+        const pendingCount = pendingRequests.length;
+        const maxRequests = 3;
+
         if (requests.length === 0) {
-          container.innerHTML = '<div class="text-center py-8"><i class="ri-send-plane-line text-3xl text-gray-400 mb-4"></i><p class="text-gray-500">No requests sent yet</p></div>';
+          container.innerHTML = `
+      <div class="mb-4 flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">Your Sent Requests</h3>
+        <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+          ${pendingCount}/${maxRequests} requests sent
+        </span>
+      </div>
+      <div class="text-center py-8">
+        <i class="ri-send-plane-line text-3xl text-gray-400 mb-4"></i>
+        <p class="text-gray-500">No requests sent yet</p>
+      </div>
+    `;
           return;
         }
 
-        const requestsHtml = requests.map(request => `
-          <div class="border border-gray-200 rounded-lg p-6 mb-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-                  <i class="ri-user-line text-gray-500"></i>
-                </div>
-                <div>
-                  <h4 class="font-medium text-gray-900">${request.to.username}</h4>
-                  <p class="text-sm text-gray-500">${request.to.city || ''}, ${request.to.state || ''}</p>
-                  <p class="text-xs text-gray-400">Sent: ${new Date(request.createdAt).toLocaleDateString()}</p>
-                </div>
-              </div>
-              <div class="flex items-center">
-                <span class="px-3 py-1 rounded-full text-xs font-medium ${
-                  request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                  request.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                  'bg-red-100 text-red-800'
-                }">${request.status}</span>
-                ${request.status === 'pending' ? `
-                  <button onclick="cancelRequest('${request._id}')" class="ml-3 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">
-                    Cancel
-                  </button>
-                ` : ''}
-              </div>
-            </div>
-          </div>
-        `).join('');
+        // **NEW**: Create header with request limit indicator
+        const headerHtml = `
+    <div class="mb-4 flex items-center justify-between">
+      <h3 class="text-lg font-semibold text-gray-900">Your Sent Requests</h3>
+      <span class="px-3 py-1 rounded-full text-sm font-medium ${
+        pendingCount >= maxRequests ? 'bg-red-100 text-red-800' : 
+        pendingCount >= 2 ? 'bg-yellow-100 text-yellow-800' : 
+        'bg-green-100 text-green-800'
+      }">
+        ${pendingCount}/${maxRequests} requests sent
+      </span>
+    </div>
+  `;
 
-        container.innerHTML = requestsHtml;
+        const requestsHtml = requests.map(request => `
+    <div class="border border-gray-200 rounded-lg p-6 mb-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+            <i class="ri-user-line text-gray-500"></i>
+          </div>
+          <div>
+            <h4 class="font-medium text-gray-900">${request.to.username}</h4>
+            <p class="text-sm text-gray-500">${request.to.city || ''}, ${request.to.state || ''}</p>
+            <p class="text-xs text-gray-400">Sent: ${new Date(request.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="px-3 py-1 rounded-full text-xs font-medium ${
+            request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+            request.status === 'accepted' ? 'bg-green-100 text-green-800' :
+            'bg-red-100 text-red-800'
+          }">${request.status}</span>
+          ${request.status === 'pending' ? `
+            <button onclick="cancelRequest('${request._id}')" class="ml-3 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">
+              Cancel
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
+
+        container.innerHTML = headerHtml + requestsHtml;
       }
 
       // Display received requests

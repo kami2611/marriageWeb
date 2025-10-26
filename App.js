@@ -1396,6 +1396,19 @@ app.post(
         return res.status(404).json({ error: "User not found" });
       }
 
+      // **NEW**: Check if user already has 3 pending requests
+      const pendingRequestsCount = await Request.countDocuments({
+        from: likeUserId,
+        status: "pending"
+      });
+
+      if (pendingRequestsCount >= 3) {
+        return res.json({
+          error: "request_limit_reached",
+          message: "You can only send maximum 3 profile like requests. You can cancel existing sent requests to add this new request."
+        });
+      }
+
       // Check if request already exists
       const existingRequest = await Request.findOne({
         from: likeUserId,
