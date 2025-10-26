@@ -1453,54 +1453,15 @@ app.get("/admin/addUser", requireAdminOnly, (req, res) => {
   if (!req.session.isAdmin) return res.redirect("/admin");
   res.render("admin/addUser");
 });
-// app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
-//   if (!req.session.isAdmin && !req.session.isModerator) {
-//     return res.redirect("/login");
-//   }
+// Replace the existing /admin/dashboard route with this updated version
 
-//   try {
-//     // Get all users with registration source
-//     const users = await User.find({}).sort({ createdAt: -1, _id: -1 });
-
-//     // Calculate basic stats
-//     const totalUsers = users.length;
-//     const byAdmin = users.filter(
-//       (user) => user.registrationSource === "admin"
-//     ).length;
-//     const bySelf = users.filter(
-//       (user) => user.registrationSource === "register"
-//     ).length;
-
-//     const stats = {
-//       totalUsers,
-//       registrationSources: {
-//         byAdmin,
-//         bySelf,
-//       },
-//     };
-
-//     res.render("admin/dashboard", { users, stats });
-//   } catch (error) {
-//     console.error("Dashboard error:", error);
-//     res.render("admin/dashboard", {
-//       users: [],
-//       stats: {
-//         totalUsers: 0,
-//         registrationSources: {
-//           byAdmin: 0,
-//           bySelf: 0,
-//         },
-//       },
-//     });
-//   }
-// });
 app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
   if (!req.session.isAdmin && !req.session.isModerator) {
     return res.redirect("/login");
   }
 
   try {
-    // **UPDATED**: Handle filter parameter
+    // **UPDATED**: Handle filter parameter including employee names
     const { filter } = req.query;
 
     // Build query based on filter
@@ -1511,6 +1472,10 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
       query.registrationSource = "register";
     } else if (filter === "featured") {
       query.isFeatured = true;
+    } else if (filter && filter.startsWith("employee-")) {
+      // **NEW**: Filter by employee/referrer name
+      const employeeName = filter.replace("employee-", "");
+      query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
     }
     // For 'all' or no filter, query remains empty (gets all users)
 
@@ -1523,7 +1488,41 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
     const bySelf = await User.countDocuments({
       registrationSource: "register",
     });
-    const featuredCount = await User.countDocuments({ isFeatured: true }); // **NEW**
+    const featuredCount = await User.countDocuments({ isFeatured: true });
+
+    // **NEW**: Extract unique employee/referrer names from passcodes
+    const allUsers = await User.find({}, { passcodeUsed: 1 }).lean();
+    const employeeNames = new Set();
+
+    allUsers.forEach(user => {
+      if (user.passcodeUsed && typeof user.passcodeUsed === 'string') {
+        const passcode = user.passcodeUsed.trim();
+        // Check if passcode contains a dash (indicating employee prefix)
+        if (passcode.includes('-')) {
+          const parts = passcode.split('-');
+          if (parts.length >= 2) {
+            const employeeName = parts[0].trim();
+            // Validate that the part after dash contains digits (valid passcode format)
+            const passcodeDigits = parts[1];
+            if (employeeName && passcodeDigits && /^\d+$/.test(passcodeDigits)) {
+              employeeNames.add(employeeName);
+            }
+          }
+        }
+      }
+    });
+
+    // Convert Set to sorted array
+    const uniqueEmployees = Array.from(employeeNames).sort();
+
+    // **NEW**: Calculate employee stats
+    const employeeStats = {};
+    for (const employeeName of uniqueEmployees) {
+      const count = await User.countDocuments({
+        passcodeUsed: { $regex: new RegExp(`^${employeeName}-`, "i") }
+      });
+      employeeStats[employeeName] = count;
+    }
 
     const stats = {
       totalUsers,
@@ -1531,13 +1530,15 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
         byAdmin,
         bySelf,
       },
-      featuredCount, // **NEW**
+      featuredCount,
+      employeeStats, // **NEW**: Add employee stats
     };
 
     res.render("admin/dashboard", {
       users,
       stats,
-      currentFilter: filter || "all", // **NEW**
+      currentFilter: filter || "all",
+      uniqueEmployees, // **NEW**: Pass employee names to template
     });
   } catch (error) {
     console.error("Dashboard error:", error);
@@ -1549,9 +1550,11 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
           byAdmin: 0,
           bySelf: 0,
         },
-        featuredCount: 0, // **NEW**
+        featuredCount: 0,
+        employeeStats: {},
       },
-      currentFilter: "all", // **NEW**
+      currentFilter: "all",
+      uniqueEmployees: [], // **NEW**
     });
   }
 });
