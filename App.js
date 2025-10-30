@@ -1807,7 +1807,8 @@ app.post("/admin/user/add", requireAdminOnly, async (req, res) => {
     )
       userData.anySpecialInformationPeopleShouldKnow =
         anySpecialInformationPeopleShouldKnow;
-
+    if (req.body.seoField1 && req.body.seoField1 !== "N/A") userData.seoField1 = req.body.seoField1;
+    if (req.body.seoField2 && req.body.seoField2 !== "N/A") userData.seoField2 = req.body.seoField2;
     // Handle MARITAL STATUS (enum field)
     if (maritalStatus && maritalStatus !== "N/A") {
       userData.maritalStatus = maritalStatus;
@@ -2023,7 +2024,6 @@ app.get("/admin/edit-user/:id", requireAdminOnly, async (req, res) => {
 });
 
 // Update User Route
-// Replace the entire /admin/user/update route with this corrected version:
 const profileUpload = multer({ storage }).fields([
   { name: "profilePic", maxCount: 1 },
   { name: "coverPhoto", maxCount: 1 },

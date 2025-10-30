@@ -327,12 +327,20 @@ const userSchema = new mongoose.Schema({
     type: String,
   },
   randomNameForSeo: {
-  type: String,
-  default: null,
-},
-seoKeywords: {
-  type: [String],
-  default: [],
-},
+    type: String,
+    default: null,
+  },
+  seoKeywords: {
+    type: [String],
+    default: [],
+  },
+  seoField1: {
+    type: String,
+    maxlength: [500, 'SEO Field 1 cannot exceed 500 characters']
+  },
+  seoField2: {
+    type: String,
+    maxlength: [500, 'SEO Field 2 cannot exceed 500 characters']
+  },
 });
 module.exports = mongoose.model("User", userSchema);

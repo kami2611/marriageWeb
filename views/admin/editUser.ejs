@@ -308,6 +308,17 @@
             <label for="hobbies" class="block text-sm font-medium text-gray-700">Hobbies (comma separated)</label>
             <input type="text" id="hobbies" name="hobbies" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="e.g., Reading, Swimming, Cooking">
           </div>
+          <div class="space-y-2">
+            <label for="seoField1" class="block text-sm font-medium text-gray-700">SEO Field 1 (Admin Only)</label>
+            <input type="text" id="seoField1" name="seoField1" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter SEO field 1 content" maxlength="500">
+            <p class="text-xs text-gray-500">This field is only visible to administrators and used for SEO purposes.</p>
+          </div>
+
+          <div class="space-y-2">
+            <label for="seoField2" class="block text-sm font-medium text-gray-700">SEO Field 2 (Admin Only)</label>
+            <input type="text" id="seoField2" name="seoField2" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter SEO field 2 content" maxlength="500">
+            <p class="text-xs text-gray-500">This field is only visible to administrators and used for SEO purposes.</p>
+          </div>
         </form>
       </div>
 
@@ -1101,6 +1112,8 @@
             work: userDataRaw.work || '',
             aboutMe: userDataRaw.aboutMe || '',
             hobbies: Array.isArray(userDataRaw.hobbies) ? userDataRaw.hobbies.join(', ') : '',
+            seoField1: userDataRaw.seoField1 || '',
+            seoField2: userDataRaw.seoField2 || '',
 
             // Contact & Location
             contact: userDataRaw.contact || '',
