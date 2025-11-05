@@ -1,4 +1,5 @@
 const { muslimMaleNames, muslimFemaleNames } = require("./config/seoData");
+const Blog = require("./models/Blog");
 function getRandomSeoName(gender) {
   if (gender === "male") {
     const randomIndex = Math.floor(Math.random() * muslimMaleNames.length);
@@ -3002,6 +3003,338 @@ app.post(
     }
   }
 );
+// **NEW**: Blog Management Routes
+
+// Blog listing page (admin)
+app.get("/admin/blogs", requireAdminOnly, async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const { filter } = req.query;
+
+    // Build query based on filter
+    let query = {};
+    if (filter === "published") {
+      query.isPublished = true;
+    } else if (filter === "draft") {
+      query.isPublished = false;
+    }
+    // For 'all' or no filter, query remains empty (gets all blogs)
+
+    const blogs = await Blog.find(query).sort({ createdAt: -1 });
+
+    // Calculate stats
+    const totalBlogs = await Blog.countDocuments({});
+    const publishedBlogs = await Blog.countDocuments({ isPublished: true });
+    const draftBlogs = await Blog.countDocuments({ isPublished: false });
+
+    const stats = {
+      total: totalBlogs,
+      published: publishedBlogs,
+      drafts: draftBlogs,
+    };
+
+    res.render("admin/blogs", {
+      blogs,
+      stats,
+      currentFilter: filter || "all",
+    });
+  } catch (error) {
+    console.error("Blog listing error:", error);
+    res.render("admin/blogs", {
+      blogs: [],
+      stats: { total: 0, published: 0, drafts: 0 },
+      currentFilter: "all",
+    });
+  }
+});
+
+// Create blog page
+app.get("/admin/blogs/create", requireAdminOnly, (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.redirect("/login");
+  }
+  res.render("admin/createBlog");
+});
+
+// Create blog API
+app.post("/admin/blogs", requireAdminOnly, async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.status(403).json({ success: false, error: "Forbidden" });
+  }
+
+  try {
+    const {
+      title,
+      content,
+      excerpt,
+      category,
+      tags,
+      metaTitle,
+      metaDescription,
+      keywords,
+      isPublished,
+      featuredImageUrl,
+      featuredImageAlt,
+      featuredImageCaption,
+    } = req.body;
+
+    // Validate required fields
+    if (!title || !content) {
+      return res.json({
+        success: false,
+        error: "Title and content are required",
+      });
+    }
+
+    // Process arrays from comma-separated strings
+    const tagsArray = tags
+      ? tags.split(",").map((tag) => tag.trim()).filter((tag) => tag)
+      : [];
+    const keywordsArray = keywords
+      ? keywords.split(",").map((kw) => kw.trim()).filter((kw) => kw)
+      : [];
+    const featuredImage = featuredImageUrl ? {
+      url: featuredImageUrl,
+      alt: featuredImageAlt || '',
+      caption: featuredImageCaption || ''
+    } : undefined;
+    // Create blog
+    const blog = new Blog({
+      title: title.trim(),
+      content: content.trim(),
+      excerpt: excerpt ? excerpt.trim() : "",
+      category: category || "Matrimony Tips",
+      tags: tagsArray,
+      metaTitle: metaTitle ? metaTitle.trim() : "",
+      metaDescription: metaDescription ? metaDescription.trim() : "",
+      keywords: keywordsArray,
+      isPublished: Boolean(isPublished),
+      publishedAt: Boolean(isPublished) ? new Date() : null,
+      featuredImage,
+      author: {
+        name: "D'amour Muslim Team",
+        profileUrl: "",
+      },
+    });
+
+    await blog.save();
+
+    console.log(`Blog created: ${blog.title} (${blog.isPublished ? 'Published' : 'Draft'})`);
+
+    res.json({
+      success: true,
+      message: `Blog ${blog.isPublished ? 'published' : 'saved as draft'} successfully`,
+      blog: blog,
+    });
+  } catch (error) {
+    console.error("Create blog error:", error);
+    res.json({
+      success: false,
+      error: `Failed to create blog: ${error.message}`,
+    });
+  }
+});
+
+// Edit blog page
+app.get("/admin/blogs/:id/edit", requireAdminOnly, async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.redirect("/login");
+  }
+
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.status(404).render("404", {
+        title: "Blog Not Found",
+        url: req.originalUrl,
+      });
+    }
+
+    res.render("admin/editBlog", { blog });
+  } catch (error) {
+    console.error("Edit blog page error:", error);
+    res.redirect("/admin/blogs");
+  }
+});
+
+// Update blog API
+app.put("/admin/blogs/:id", requireAdminOnly, async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.status(403).json({ success: false, error: "Forbidden" });
+  }
+
+  try {
+    const {
+      title,
+      content,
+      excerpt,
+      category,
+      tags,
+      metaTitle,
+      metaDescription,
+      keywords,
+      isPublished,
+      featuredImageUrl,
+      featuredImageAlt,
+      featuredImageCaption,
+    } = req.body;
+
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.json({ success: false, error: "Blog not found" });
+    }
+
+    // Process arrays from comma-separated strings
+    const tagsArray = tags
+      ? tags.split(",").map((tag) => tag.trim()).filter((tag) => tag)
+      : [];
+    const keywordsArray = keywords
+      ? keywords.split(",").map((kw) => kw.trim()).filter((kw) => kw)
+      : [];
+    if (featuredImageUrl) {
+      blog.featuredImage = {
+        url: featuredImageUrl,
+        alt: featuredImageAlt || '',
+        caption: featuredImageCaption || ''
+      };
+    } else if (featuredImageUrl === null) {
+      // Explicitly remove featured image if set to null
+      blog.featuredImage = undefined;
+    }
+    // Update blog fields
+    blog.title = title.trim();
+    blog.content = content.trim();
+    blog.excerpt = excerpt ? excerpt.trim() : "";
+    blog.category = category || "Matrimony Tips";
+    blog.tags = tagsArray;
+    blog.metaTitle = metaTitle ? metaTitle.trim() : "";
+    blog.metaDescription = metaDescription ? metaDescription.trim() : "";
+    blog.keywords = keywordsArray;
+
+    // Handle publication status
+    const wasPublished = blog.isPublished;
+    blog.isPublished = Boolean(isPublished);
+
+    if (!wasPublished && blog.isPublished) {
+      // Publishing for first time
+      blog.publishedAt = new Date();
+    } else if (wasPublished && !blog.isPublished) {
+      // Unpublishing
+      blog.publishedAt = null;
+    }
+
+    blog.updatedAt = new Date();
+
+    await blog.save();
+
+    console.log(`Blog updated: ${blog.title} (${blog.isPublished ? 'Published' : 'Draft'})`);
+
+    res.json({
+      success: true,
+      message: `Blog ${blog.isPublished ? 'updated and published' : 'updated as draft'} successfully`,
+    });
+  } catch (error) {
+    console.error("Update blog error:", error);
+    res.json({
+      success: false,
+      error: `Failed to update blog: ${error.message}`,
+    });
+  }
+});
+
+// Delete blog API
+app.delete("/admin/blogs/:id", requireAdminOnly, async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.status(403).json({ success: false, error: "Forbidden" });
+  }
+
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.json({ success: false, error: "Blog not found" });
+    }
+
+    await Blog.findByIdAndDelete(req.params.id);
+
+    console.log(`Blog deleted: ${blog.title}`);
+
+    res.json({
+      success: true,
+      message: "Blog deleted successfully",
+    });
+  } catch (error) {
+    console.error("Delete blog error:", error);
+    res.json({
+      success: false,
+      error: "Failed to delete blog",
+    });
+  }
+});
+
+// Toggle blog publication status
+app.post("/admin/blogs/:id/toggle-publish", requireAdminOnly, async (req, res) => {
+  if (!req.session.isAdmin) {
+    return res.status(403).json({ success: false, error: "Forbidden" });
+  }
+
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.json({ success: false, error: "Blog not found" });
+    }
+
+    // Toggle publication status
+    blog.isPublished = !blog.isPublished;
+    blog.publishedAt = blog.isPublished ? new Date() : null;
+    blog.updatedAt = new Date();
+
+    await blog.save();
+
+    console.log(`Blog ${blog.isPublished ? 'published' : 'unpublished'}: ${blog.title}`);
+
+    res.json({
+      success: true,
+      message: `Blog ${blog.isPublished ? 'published' : 'unpublished'} successfully`,
+      isPublished: blog.isPublished,
+    });
+  } catch (error) {
+    console.error("Toggle publish error:", error);
+    res.json({
+      success: false,
+      error: "Failed to toggle publication status",
+    });
+  }
+});
+// Add this route after your existing routes (around line 4500)
+
+// **NEW**: Blog image upload route
+app.post("/api/upload-blog-image", requireAdminOnly, upload.single('image'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.json({ success: false, error: "No image uploaded" });
+    }
+
+    // Image is automatically uploaded to Cloudinary via multer-storage-cloudinary
+    const imageUrl = req.file.path;
+
+    console.log('Blog image uploaded:', imageUrl);
+
+    res.json({
+      success: true,
+      url: imageUrl,
+      filename: req.file.filename
+    });
+  } catch (error) {
+    console.error('Blog image upload error:', error);
+    res.json({
+      success: false,
+      error: 'Failed to upload image'
+    });
+  }
+});
 // Unsubscribe route (for email links)
 app.get("/newsletter/unsubscribe/:email", async (req, res) => {
   try {
@@ -3430,91 +3763,230 @@ app.get("/privacy", (req, res) => {
     title: "Privacy Policy - D'amour Muslim",
   });
 });
-app.get("/blog", (req, res) => {
-  // For now, we'll serve a static list. You can later make this dynamic
-  const blogPosts = [
-    {
-      id: "muslim-wedding-planner-guide",
-      title:
-        "Ultimate Guide to Hiring a Muslim Wedding Planner: Everything You Need to Know",
-      excerpt:
-        "Planning a wedding is exciting — but for Muslim couples, it also comes with additional values, traditions, and sensitivities. Learn everything you need to know about hiring the right Muslim wedding planner.",
-      author: "D'amour Muslim Team",
-      publishDate: "2025-01-11",
-      readTime: "12 min read",
-      category: "Wedding Planning",
-      image:
-        "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870954/jubair-ahmed-himu-5b0jgXvfimE-unsplash_tmjkew.jpg",
-      slug: "muslim-wedding-planner-guide",
-    },
-    {
-      id: "uk-rishta-whatsapp-group",
-      title: "UK Rishta WhatsApp Group: Your Gateway to Halal Marriage",
-      excerpt:
-        "Join our verified UK rishta WhatsApp group where serious Muslims connect for halal marriage. Discover how to find your perfect match through our trusted, moderated community across London, Leicester and the UK.",
-      author: "D'amour Muslim Team",
-      publishDate: "2025-01-15",
-      readTime: "10 min read",
-      category: "Muslim Rishta",
-      image:
-        "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870946/brett-jordan-dMUeHGE8Dio-unsplash_eozw9p.jpg",
-      slug: "uk-rishta-whatsapp-group",
-    },
-    {
-      id: "uk-muslim-rishta-service-charges",
-      title:
-        "UK Muslim Rishta Service: Affordable Registration Fees & Matchmaking Charges (2025)",
-      excerpt:
-        "Discover transparent pricing for D'Amour Muslim's rishta service with four flexible plans: Standard (Free), Premium (£50), Premium Plus (£100+£200), and Executive (£150+£450). 100% money-back guarantee included.",
-      author: "D'amour Muslim Team",
-      publishDate: "2025-01-20",
-      readTime: "8 min read",
-      category: "Rishta Services",
-      image:
-        "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870921/jubair-ahmed-himu-XILfo8IMMjc-unsplash_qffxew.jpg",
-      slug: "uk-muslim-rishta-service-charges",
-    },
-  ];
+// **UPDATED**: Dynamic blog routes
 
-  res.render("blog/index", {
-    title: "Blog - D'amour Muslim",
-    posts: blogPosts,
-    user: req.session.user || null,
-  });
+// Public blog listing page
+// Replace the existing /blog route with this updated version
+
+app.get("/blog", async (req, res) => {
+  try {
+    const { category, tag } = req.query;
+
+    // **NEW**: Define static blogs that were previously hardcoded
+    const staticBlogs = [
+      {
+        title: "Ultimate Guide to Hiring a Muslim Wedding Planner: Everything You Need to Know",
+        excerpt: "Planning a wedding is exciting — but for Muslim couples, it also comes with additional values, traditions, and sensitivities. Learn everything you need to know about hiring the right Muslim wedding planner.",
+        author: { name: "D'amour Muslim Team" },
+        publishedAt: new Date("2025-01-11"),
+        category: "Wedding Planning",
+        tags: ["wedding", "planning", "muslim", "guide"],
+        slug: "muslim-wedding-planner-guide",
+        featuredImage: {
+          url: "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870954/jubair-ahmed-himu-5b0jgXvfimE-unsplash_tmjkew.jpg",
+          alt: "Muslim Wedding Planning Guide"
+        },
+        isStatic: true // Flag to identify static blogs
+      },
+      {
+        title: "UK Rishta WhatsApp Group: Your Gateway to Halal Marriage",
+        excerpt: "Join our verified UK rishta WhatsApp group where serious Muslims connect for halal marriage. Discover how to find your perfect match through our trusted, moderated community across London, Leicester and the UK.",
+        author: { name: "D'amour Muslim Team" },
+        publishedAt: new Date("2025-01-15"),
+        category: "Muslim Rishta",
+        tags: ["rishta", "whatsapp", "uk", "halal", "marriage"],
+        slug: "uk-rishta-whatsapp-group",
+        featuredImage: {
+          url: "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870946/brett-jordan-dMUeHGE8Dio-unsplash_eozw9p.jpg",
+          alt: "UK Rishta WhatsApp Group"
+        },
+        isStatic: true
+      },
+      {
+        title: "UK Muslim Rishta Service: Affordable Registration Fees & Matchmaking Charges (2025)",
+        excerpt: "Discover transparent pricing for D'Amour Muslim's rishta service with four flexible plans: Standard (Free), Premium (£50), Premium Plus (£100+£200), and Executive (£150+£450). 100% money-back guarantee included.",
+        author: { name: "D'amour Muslim Team" },
+        publishedAt: new Date("2025-01-20"),
+        category: "Rishta Services",
+        tags: ["pricing", "rishta", "service", "uk", "charges"],
+        slug: "uk-muslim-rishta-service-charges",
+        featuredImage: {
+          url: "https://res.cloudinary.com/dhuc2plh0/image/upload/f_auto,q_auto:eco,w_800,h_450,c_fill,g_auto/v1760870921/jubair-ahmed-himu-XILfo8IMMjc-unsplash_qffxew.jpg",
+          alt: "UK Muslim Rishta Service Pricing"
+        },
+        isStatic: true
+      }
+    ];
+
+    // Build query for published blogs only
+    let query = { isPublished: true };
+
+    if (category) {
+      query.category = category;
+    }
+
+    if (tag) {
+      query.tags = { $in: [tag] };
+    }
+
+    // Get database blogs
+    const databaseBlogs = await Blog.find(query)
+      .sort({ publishedAt: -1 })
+      .select('title excerpt slug category tags publishedAt author featuredImage');
+
+    // **NEW**: Filter static blogs based on query parameters
+    let filteredStaticBlogs = staticBlogs;
+
+    if (category) {
+      filteredStaticBlogs = staticBlogs.filter(blog =>
+        blog.category.toLowerCase() === category.toLowerCase()
+      );
+    }
+
+    if (tag) {
+      filteredStaticBlogs = filteredStaticBlogs.filter(blog =>
+        blog.tags.some(blogTag => blogTag.toLowerCase() === tag.toLowerCase())
+      );
+    }
+
+    // **NEW**: Combine database and static blogs, then sort by publishedAt
+    const allBlogs = [...databaseBlogs, ...filteredStaticBlogs];
+    const sortedBlogs = allBlogs.sort((a, b) =>
+      new Date(b.publishedAt) - new Date(a.publishedAt)
+    );
+
+    // Get all categories and tags for filters (including static blogs)
+    const allBlogsForFilters = [...databaseBlogs, ...staticBlogs];
+    const categories = [...new Set(allBlogsForFilters.map(blog => blog.category))];
+    const allTags = allBlogsForFilters.reduce((tags, blog) => {
+      if (blog.tags && Array.isArray(blog.tags)) {
+        blog.tags.forEach(tag => tags.add(tag));
+      }
+      return tags;
+    }, new Set());
+
+    res.render("blog/index", {
+      title: "Blog - D'amour Muslim",
+      posts: sortedBlogs, // Combined and sorted blogs
+      categories,
+      tags: Array.from(allTags),
+      currentCategory: category || null,
+      currentTag: tag || null,
+      user: req.session.user || null,
+    });
+  } catch (error) {
+    console.error("Blog listing error:", error);
+    res.render("blog/index", {
+      title: "Blog - D'amour Muslim",
+      posts: [], // Empty posts array on error
+      categories: [],
+      tags: [],
+      currentCategory: null,
+      currentTag: null,
+      user: req.session.user || null,
+    });
+  }
 });
 
-app.get("/blog/:slug", (req, res) => {
-  const { slug } = req.params;
+// Public individual blog page
 
-  if (slug === "muslim-wedding-planner-guide") {
-    res.render("blog/muslim-wedding-planner-guide", {
-      title:
-        "Ultimate Guide to Hiring a Muslim Wedding Planner - D'amour Muslim",
+app.get("/blog/:slug", async (req, res) => {
+  try {
+    const { slug } = req.params;
+
+    // **NEW**: Check for static blog templates first
+    const staticBlogTemplates = [
+      "muslim-wedding-planner-guide",
+      "uk-rishta-whatsapp-group",
+      "uk-muslim-rishta-service-charges"
+    ];
+
+    if (staticBlogTemplates.includes(slug)) {
+      // Render the specific static template
+      return res.render(`blog/${slug}`, {
+        user: req.session.user || null,
+      });
+    }
+
+    // **EXISTING**: Check database for dynamic blogs
+    const blog = await Blog.findOne({
+      slug: slug,
+      isPublished: true
+    });
+
+    if (!blog) {
+      return res.status(404).render("404", {
+        title: "Blog Post Not Found - D'amour Muslim",
+        url: req.originalUrl,
+      });
+    }
+
+    // Get related blogs (same category, excluding current blog)
+    const relatedBlogs = await Blog.find({
+      isPublished: true,
+      category: blog.category,
+      _id: { $ne: blog._id }
+    })
+      .sort({ publishedAt: -1 })
+      .limit(3)
+      .select('title excerpt slug publishedAt');
+
+    // Generate structured data for SEO
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "BlogPosting",
+      "headline": blog.title,
+      "description": blog.excerpt || blog.metaDescription,
+      "image": blog.featuredImage?.url || "",
+      "author": {
+        "@type": "Organization",
+        "name": blog.author.name || "D'amour Muslim Team"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "D'amour Muslim",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://damourmuslim.com/images/logo.png"
+        }
+      },
+      "datePublished": blog.publishedAt?.toISOString(),
+      "dateModified": blog.updatedAt.toISOString(),
+      "mainEntityOfPage": {
+        "@type": "WebPage",
+        "@id": `https://damourmuslim.com/blog/${blog.slug}`
+      }
+    };
+
+    res.render("blog/post", {
+      title: blog.metaTitle || `${blog.title} - D'amour Muslim`,
+      metaDescription: blog.metaDescription || blog.excerpt,
+      canonicalUrl: blog.canonicalUrl || `https://damourmuslim.com/blog/${blog.slug}`,
+      blog,
+      relatedBlogs,
+      structuredData,
       user: req.session.user || null,
     });
-  } else if (slug === "uk-rishta-whatsapp-group") {
-    res.render("blog/uk-rishta-whatsapp-group", {
-      title:
-        "UK Rishta WhatsApp Group | Join Muslim Marriage Community - D'amour Muslim",
-      user: req.session.user || null,
-    });
-  } else if (slug === "uk-muslim-rishta-service-charges") {
-    res.render("blog/uk-muslim-rishta-service-charges", {
-      title:
-        "UK Muslim Rishta Service: Registration Fees & Matchmaking Charges - D'amour Muslim",
-      user: req.session.user || null,
-    });
-  } else {
+  } catch (error) {
+    console.error("Individual blog error:", error);
     res.status(404).render("404", {
       title: "Blog Post Not Found - D'amour Muslim",
       url: req.originalUrl,
     });
   }
 });
-// SEO: Generate dynamic sitemap
+// Update the sitemap.xml route to include static blogs
 app.get("/sitemap.xml", async (req, res) => {
   try {
     const users = await User.find({}).select("_id updatedAt profileSlug");
+    const blogs = await Blog.find({ isPublished: true }).select("slug updatedAt publishedAt");
+
+    // **NEW**: Static blog slugs
+    const staticBlogs = [
+      { slug: "muslim-wedding-planner-guide", lastmod: "2025-01-11" },
+      { slug: "uk-rishta-whatsapp-group", lastmod: "2025-01-15" },
+      { slug: "uk-muslim-rishta-service-charges", lastmod: "2025-01-20" }
+    ];
 
     let sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
@@ -3529,52 +4001,43 @@ app.get("/sitemap.xml", async (req, res) => {
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://damourmuslim.com/profiles?gender=male</loc>
-    <changefreq>daily</changefreq>
+    <loc>https://damourmuslim.com/blog</loc>
+    <changefreq>weekly</changefreq>
     <priority>0.8</priority>
-  </url>
+  </url>`;
+
+    // Add database blog posts
+    blogs.forEach((blog) => {
+      const lastmod = blog.updatedAt
+        ? blog.updatedAt.toISOString().split("T")[0]
+        : blog.publishedAt.toISOString().split("T")[0];
+      sitemap += `
   <url>
-    <loc>https://damourmuslim.com/profiles?gender=female</loc>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://damourmuslim.com/register</loc>
+    <loc>https://damourmuslim.com/blog/${blog.slug}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>`;
+    });
 
-    // Add individual profile pages (only for users with profileSlug)
+    // **NEW**: Add static blog posts
+    staticBlogs.forEach((blog) => {
+      sitemap += `
+  <url>
+    <loc>https://damourmuslim.com/blog/${blog.slug}</loc>
+    <lastmod>${blog.lastmod}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`;
+    });
+
+    // Add profile URLs (existing code continues...)
     users.forEach((user) => {
       if (user.profileSlug) {
-        // Only include users with valid profileSlug
         const lastmod = user.updatedAt
           ? user.updatedAt.toISOString().split("T")[0]
           : new Date().toISOString().split("T")[0];
         sitemap += `
-        <url>
-    <loc>https://damourmuslim.com/blog</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://damourmuslim.com/blog/muslim-wedding-planner-guide</loc>
-    <lastmod>2025-01-11</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://damourmuslim.com/blog/uk-rishta-whatsapp-group</loc>
-    <lastmod>2025-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://damourmuslim.com/blog/uk-muslim-rishta-service-charges</loc>
-    <lastmod>2025-01-15</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
   <url>
     <loc>https://damourmuslim.com/profiles/${user.profileSlug}</loc>
     <lastmod>${lastmod}</lastmod>

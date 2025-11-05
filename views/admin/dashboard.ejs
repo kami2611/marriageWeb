@@ -169,6 +169,10 @@
               <i class="ri-mail-line text-lg"></i>
               <span>Newsletter</span>
             </button>
+            <button id="blogsBtn" class="flex items-center gap-3 px-4 py-2.5 bg-purple-600 text-white hover:bg-purple-700 transition-all duration-300 !rounded-button material-shadow hover:material-shadow-hover ripple">
+              <i class="ri-mail-line text-lg"></i>
+              <span>Manage Blogs</span>
+            </button>
             <% } %>
             <!-- **UPDATED**: Only show Add User for admins -->
             <% if (isAdmin) { %>
@@ -509,6 +513,12 @@
       if (newsletterBtn) {
         newsletterBtn.addEventListener('click', function() {
           window.location.href = '/admin/newsletter';
+        });
+      }
+      const blogsBtn = document.getElementById('blogsBtn');
+      if (blogsBtn) {
+        blogsBtn.addEventListener('click', function() {
+          window.location.href = '/admin/blogs';
         });
       }
       const searchInput = document.getElementById('searchInput');
