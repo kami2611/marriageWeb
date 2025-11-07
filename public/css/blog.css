@@ -147,7 +147,6 @@
 /* Images */
 .article-content img {
   max-width: 100%;
-  height: auto;
   border-radius: 0.75rem;
   margin: 1.5rem 0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);

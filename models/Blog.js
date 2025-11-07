@@ -66,6 +66,7 @@ const blogSchema = new mongoose.Schema(
                 "Relationship Advice",
                 "Wedding Etiquette",
                 "Halal Lifestyle",
+                "general",
             ],
             default: "Matrimony Tips",
             index: true,
