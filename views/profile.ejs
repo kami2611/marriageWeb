@@ -1545,6 +1545,29 @@
           <strong><%= profile.ethnicity || 'Muslim' %> <%= profile.gender === 'male' ? 'grooms' : 'brides' %></strong> and find your perfect match today.
         </p>
       </div>
+      <!-- **SIMPLE VERSION**: SEO Content Fields -->
+      <% if ((profile.seoField1 && profile.seoField1.trim()) || (profile.seoField2 && profile.seoField2.trim())) { %>
+      <div class="mt-6 pt-6 border-t border-gray-200">
+        <div class="bg-gray-50 rounded-lg p-4 border-l-4 border-blue-400">
+          <p class="text-xs text-gray-500 mb-4 italic">
+            <i class="ri-information-line mr-1"></i>
+            <strong>General Information:</strong> The following content provides additional context about Muslim matrimony services and is not specific to this individual profile.
+          </p>
+
+          <% if (profile.seoField1 && profile.seoField1.trim()) { %>
+          <div class="mb-4 text-sm text-gray-700 leading-relaxed">
+            <%- profile.seoField1.replace(/\n/g, '<br>') %>
+          </div>
+          <% } %>
+
+          <% if (profile.seoField2 && profile.seoField2.trim()) { %>
+          <div class="text-sm text-gray-700 leading-relaxed">
+            <%- profile.seoField2.replace(/\n/g, '<br>') %>
+          </div>
+          <% } %>
+        </div>
+      </div>
+      <% } %>
 
     </div>
   </div>

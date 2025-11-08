@@ -2117,7 +2117,6 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
       "prays",
       "celebratesMilaad",
       "celebrateKhatams",
-      // "willingToRelocate",
       "allowParnterToWork",
       "allowPartnerToStudy",
       "acceptSomeoneWithChildren",
@@ -2164,7 +2163,6 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
     booleanFields.forEach((field) => {
       if (user[field] === "N/A" || user[field] === null) {
         user[field] = undefined;
-        console.log(`Cleared existing N/A value for ${field}`);
       }
     });
 
@@ -2179,20 +2177,16 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
         value === "N/A" ||
         value === null
       ) {
-        console.log(`Processing N/A or empty value for field ${key}:`, value);
 
         // **FIX**: Clear boolean fields when N/A
         if (booleanFields.includes(key) && value === "N/A") {
           user[key] = undefined;
-          console.log(
-            `Explicitly cleared boolean field ${key} due to N/A value`
-          );
+
         }
 
         // **NEW**: Clear enum fields when N/A
         else if (enumFields[key] && value === "N/A") {
           user[key] = undefined;
-          console.log(`Explicitly cleared enum field ${key} due to N/A value`);
         }
 
         // Skip truly empty values (but N/A was handled above)
@@ -2204,19 +2198,16 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
         return;
       }
 
-      console.log(`Processing field ${key} with value:`, value);
 
       // Handle BOOLEAN fields
       if (booleanFields.includes(key)) {
         user[key] = value === "true" || value === true;
-        console.log(`Set boolean ${key} to:`, user[key]);
       }
       // Handle NUMERIC fields
       else if (numericFields.includes(key)) {
         const num = parseInt(value);
         if (!isNaN(num)) {
           user[key] = num;
-          console.log(`Set number ${key} to:`, user[key]);
         }
       }
       // Handle ARRAY fields (comma-separated strings)
@@ -2229,7 +2220,6 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
             .map((item) => item.trim())
             .filter((item) => item);
         }
-        console.log(`Set array ${key} to:`, user[key]);
       }
       // Handle OBJECT ARRAY fields (education, children)
       else if (objectArrayFields.includes(key)) {
@@ -2238,16 +2228,13 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
             (item) =>
               item && Object.values(item).some((val) => val && val.trim())
           );
-          console.log(`Set object array ${key} to:`, user[key]);
         }
       }
       // Handle ENUM fields with validation
       else if (enumFields[key]) {
         if (enumFields[key].includes(value)) {
           user[key] = value;
-          console.log(`Set enum ${key} to:`, user[key]);
         } else {
-          console.log(`Invalid enum value for ${key}:`, value);
         }
       }
       // Handle DISABILITY special case
@@ -2257,16 +2244,13 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
         } else if (value && value.trim()) {
           user[key] = value.trim();
         }
-        console.log(`Set disability to:`, user[key]);
       }
       // Handle all other STRING fields
       else {
         if (typeof value === "string" && value.trim()) {
           user[key] = value.trim();
-          console.log(`Set string ${key} to:`, user[key]);
         } else if (typeof value === "number") {
           user[key] = value;
-          console.log(`Set number ${key} to:`, user[key]);
         }
       }
     });
@@ -2279,7 +2263,6 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
         user[field] === "null"
       ) {
         user[field] = undefined;
-        console.log(`Final cleanup: cleared ${field} with invalid value`);
       }
     });
 

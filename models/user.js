@@ -336,11 +336,9 @@ const userSchema = new mongoose.Schema({
   },
   seoField1: {
     type: String,
-    maxlength: [500, 'SEO Field 1 cannot exceed 500 characters']
   },
   seoField2: {
     type: String,
-    maxlength: [500, 'SEO Field 2 cannot exceed 500 characters']
   },
 });
 module.exports = mongoose.model("User", userSchema);
