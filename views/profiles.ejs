@@ -157,6 +157,41 @@
       background: none;
       animation: none;
     }
+    /* Mobile profile card adjustments */
+@media (max-width: 640px) {
+  /* Reduce padding on mobile */
+  #profileGrid .p-4 {
+    padding: 0.75rem;
+  }
+  
+  /* Smaller text on mobile */
+  #profileGrid h3 {
+    font-size: 0.875rem;
+  }
+  
+  #profileGrid .text-gray-600 {
+    font-size: 0.75rem;
+  }
+  
+  /* Adjust icon sizes */
+  #profileGrid i {
+    font-size: 0.875rem;
+  }
+}
+/* Prevent horizontal overflow */
+body {
+  overflow-x: hidden;
+}
+
+html {
+  overflow-x: hidden;
+}
+
+/* Ensure pagination stays within viewport */
+.pagination-container {
+  max-width: 100%;
+  overflow-x: auto;
+}
   </style>
   <!-- **ENHANCED**: Structured Data for SEO -->
   <script type="application/ld+json">
@@ -470,7 +505,7 @@
             </p>
 
             <!-- Featured Profiles Grid -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
               <% featuredProfiles.forEach(profile => { %>
               <div class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 group relative">
                 <!-- Featured Badge -->
@@ -565,7 +600,7 @@
             </div>
           </div>
           <!-- Profiles Grid -->
-          <div id="profileGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div id="profileGrid" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             <% if (profiles && profiles.length > 0) { %>
             <% profiles.forEach(profile => { %>
             <a href="/profiles/<%= profile.profileSlug || profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
@@ -632,15 +667,15 @@
 
           <!-- Pagination -->
           <% if (profiles && profiles.length > 0 && totalPages > 1) { %>
-          <div class="flex justify-center items-center gap-4 mt-12">
+          <div class="flex justify-center items-center gap-2 sm:gap-4 mt-12 overflow-x-auto pb-2">
             <% if (page > 1) { %>
-            <a href="/profiles?page=<%= page - 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %><% if (sortBy && sortBy !== 'newly-created') { %>&sortBy=<%= sortBy %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
+            <a href="/profiles?page=<%= page - 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %><% if (sortBy && sortBy !== 'newly-created') { %>&sortBy=<%= sortBy %><% } %>" class="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300 whitespace-nowrap flex-shrink-0">
               <i class="ri-arrow-left-line"></i>
-              <span>Previous</span>
+              <span class="sm:hidden">Prev</span>
             </a>
             <% } %>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1 sm:gap-2 flex-shrink-0">
               <% for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) { %>
               <% if (i === page) { %>
               <span class="w-10 h-10 flex items-center justify-center bg-primary text-white rounded-button">
@@ -655,8 +690,9 @@
             </div>
 
             <% if (page < totalPages) { %>
-            <a href="/profiles?page=<%= page + 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %><% if (sortBy && sortBy !== 'newly-created') { %>&sortBy=<%= sortBy %><% } %>" class="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300">
-              <span>Next</span>
+            <a href="/profiles?page=<%= page + 1 %><% if (filters) { %><% Object.keys(filters).forEach(key => { if (filters[key]) { %>&<%= key %>=<%= encodeURIComponent(filters[key]) %><% } }) %><% } %><% if (sortBy && sortBy !== 'newly-created') { %>&sortBy=<%= sortBy %><% } %>" class="flex items-center gap-1 sm:gap-2 px-2 sm:px-4 py-2 border border-gray-300 rounded-button text-gray-600 hover:border-primary hover:text-primary transition-all duration-300 whitespace-nowrap flex-shrink-0">
+              <span class="hidden sm:inline">Next</span>
+              <span class="sm:hidden">Next</span>
               <i class="ri-arrow-right-line"></i>
             </a>
             <% } %>

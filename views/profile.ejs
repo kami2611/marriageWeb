@@ -225,6 +225,36 @@
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
+
+/* Mobile similar profiles adjustments */
+@media (max-width: 640px) {
+  /* Reduce padding on mobile for similar profiles */
+  .similar-profile-card .p-4 {
+    padding: 0.75rem;
+  }
+  
+  /* Smaller text on mobile */
+  .similar-profile-card h3 {
+    font-size: 0.875rem;
+  }
+  
+  .similar-profile-card .text-sm {
+    font-size: 0.75rem;
+  }
+  
+  /* Adjust icon sizes */
+  .similar-profile-card i {
+    font-size: 0.875rem;
+  }
+  
+  /* Make age badge smaller */
+  .similar-profile-card .absolute.top-3 {
+    top: 0.5rem;
+    right: 0.5rem;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+  }
+}
   </style>
 </head>
 <% if (isProd && !isAdmin) { %>
@@ -246,7 +276,7 @@
   <!-- Header remains the same -->
   <%- include('partials/header') %>
   <main class="pb-16 min-h-screen">
-    <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-7xl mx-auto">
       <div class="flex gap-8">
         <!-- Filter Sidebar -->
         <div class="w-80 flex-shrink-0 hidden lg:block">
@@ -511,92 +541,6 @@
                     </div>
                     <% } %>
                   </div>
-                  <div class="bg-white rounded-xl p-6 material-shadow mb-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-4 font-['Playfair_Display']">
-                      Finding a <%= profile.gender==='male' ? 'Bride' : 'Groom' %> in <%= profile.city || 'the UK'
-                                %>
-                    </h2>
-                    <p class="text-gray-700 leading-relaxed">
-                      <% if (profile.gender === 'male') { %>
-                      <%= profile.username %> is one of many <%= profile.ethnicity || 'Muslim' %> men
-                      seeking a <strong>Halal Muslim wife</strong> for <strong><%= profile.city ? profile.city + ' Muslim marriage' : 'Muslim marriage in the UK' %></strong>.
-                      Our <%= profile.city || 'UK' %> <strong>Muslim matrimony</strong> platform connects genuine <strong>Single Muslim</strong> men
-                      looking for meaningful <strong>Halal marriage</strong> through verified <strong>Muslim profiles</strong> and trusted matchmaking.
-                      <% } else { %>
-                      <%= profile.username %> is one of many <%= profile.ethnicity || 'Muslim' %> women
-                      searching for a <strong>practising Muslim husband</strong> and <strong>Halal marriage</strong> in <%= profile.city || 'the UK' %>.
-                      Our <%= profile.city || 'UK' %> <strong>Muslim marriage site</strong> helps <strong>Single Muslim women</strong>
-                      find compatible <strong>Muslim spouses</strong> through <strong>Nikkah</strong> and <strong>Sunnah marriage</strong> principles.
-                      <% } %>
-
-                      The <%= profile.city || 'UK' %> <%= profile.ethnicity || 'Muslim' %> community values both traditional
-                      <strong>arranged marriages</strong> and modern <strong>online rishta services</strong> that bring together
-                      like-minded <strong>Muslim singles</strong> seeking <strong>Halal relationships</strong>.
-
-                      <% if (profile.city && profile.city.toLowerCase().includes('london')) { %>
-                      London’s <strong>Muslim marriage</strong> scene includes thousands of <strong>Pakistani Muslim</strong>,
-                      <strong>Arab Muslim</strong>, and <strong>Indian Muslim</strong> singles looking for <strong>Halal matchmaking</strong>
-                      and <strong>Muslim shaadi</strong> opportunities. Whether you’re interested in a <strong>London Nikkah</strong> or
-                      finding your <strong>Halal partner</strong> online, our <strong>Muslim rishta service London</strong> makes it easy.
-                      <% } else if (profile.city && profile.city.toLowerCase().includes('birmingham')) { %>
-                      Birmingham’s <strong>Muslim community</strong> is one of the UK’s largest, with vibrant <strong>Pakistani marriage</strong>
-                      traditions, frequent <strong>Muslim shaadi</strong> events, and active <strong>Halal matchmaking</strong> networks.
-                      <% } else if (profile.city && profile.city.toLowerCase().includes('bradford')) { %>
-                      Bradford offers a thriving <strong>Muslim matrimonial</strong> culture, where <strong>Pakistani shaadi</strong> and
-                      <strong>Nikkah ceremonies</strong> remain an important part of community life for <strong>Halal marriage seekers</strong>.
-                      <% } %>
-                    </p>
-
-                  </div>
-                  <div class="bg-white rounded-xl p-6 material-shadow mb-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-6 font-['Playfair_Display']">
-                      Common Questions About <%= profile.username %>
-                    </h2>
-
-                    <div class="space-y-4">
-                      <div class="border-l-4 border-primary pl-4">
-                        <h3 class="font-semibold text-gray-800 mb-2">What is <%= profile.username %> looking for in a marriage?</h3>
-                        <p class="text-gray-600">
-                          <% if (profile.lookingForASpouseThatIs) { %>
-                          <%= profile.username %> is seeking a spouse who is <%= profile.lookingForASpouseThatIs %>.
-                          <% } else { %>
-                          <%= profile.username %> is seeking a compatible Muslim partner who shares their values and commitment to faith.
-                          <% } %>
-                        </p>
-                      </div>
-
-                      <div class="border-l-4 border-primary pl-4">
-                        <h3 class="font-semibold text-gray-800 mb-2">Where is <%= profile.username %> located?</h3>
-                        <p class="text-gray-600">
-                          <%= profile.username %> is currently based in <%= profile.city || 'the UK' %>
-                          <% if (profile.willingToRelocate === 'yes') { %> and is open to relocating for the right match<% } %>.
-                        </p>
-                      </div>
-
-                      <% if (profile.work || (profile.education && profile.education[0])) { %>
-                      <div class="border-l-4 border-primary pl-4">
-                        <h3 class="font-semibold text-gray-800 mb-2">What is <%= profile.username %>'s background?</h3>
-                        <p class="text-gray-600">
-                          <%= profile.username %>
-                          <% if (profile.education && profile.education[0] && profile.education[0].title) { %>
-                          has studied <%= profile.education[0].title %>
-                          <% if (profile.work) { %> and currently works as <%= profile.work %><% } %>
-                          <% } else if (profile.work) { %>
-                          works as <%= profile.work %>
-                          <% } %>.
-                        </p>
-                      </div>
-                      <% } %>
-
-                      <div class="border-l-4 border-primary pl-4">
-                        <h3 class="font-semibold text-gray-800 mb-2">How can I connect with <%= profile.username %>?</h3>
-                        <p class="text-gray-600">
-                          You can express interest by sending a request through D'amour Muslim's secure communication system. If <%= profile.username %> accepts, you'll be able to view contact details and connect directly.
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- Private Information Section -->
                   <div class="bg-gray-50 rounded-xl p-6">
                     <h2 class="text-xl font-semibold text-gray-900 mb-4 font-['Playfair_Display']">
                       Private Information
@@ -1428,6 +1372,93 @@
                     </div>
                     <% } %>
                   </div>
+                  <div class="bg-white rounded-xl p-6 material-shadow mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4 font-['Playfair_Display']">
+                      Finding a <%= profile.gender==='male' ? 'Bride' : 'Groom' %> in <%= profile.city || 'the UK'
+                                %>
+                    </h2>
+                    <p class="text-gray-700 leading-relaxed">
+                      <% if (profile.gender === 'male') { %>
+                      <%= profile.username %> is one of many <%= profile.ethnicity || 'Muslim' %> men
+                      seeking a <strong>Halal Muslim wife</strong> for <strong><%= profile.city ? profile.city + ' Muslim marriage' : 'Muslim marriage in the UK' %></strong>.
+                      Our <%= profile.city || 'UK' %> <strong>Muslim matrimony</strong> platform connects genuine <strong>Single Muslim</strong> men
+                      looking for meaningful <strong>Halal marriage</strong> through verified <strong>Muslim profiles</strong> and trusted matchmaking.
+                      <% } else { %>
+                      <%= profile.username %> is one of many <%= profile.ethnicity || 'Muslim' %> women
+                      searching for a <strong>practising Muslim husband</strong> and <strong>Halal marriage</strong> in <%= profile.city || 'the UK' %>.
+                      Our <%= profile.city || 'UK' %> <strong>Muslim marriage site</strong> helps <strong>Single Muslim women</strong>
+                      find compatible <strong>Muslim spouses</strong> through <strong>Nikkah</strong> and <strong>Sunnah marriage</strong> principles.
+                      <% } %>
+
+                      The <%= profile.city || 'UK' %> <%= profile.ethnicity || 'Muslim' %> community values both traditional
+                      <strong>arranged marriages</strong> and modern <strong>online rishta services</strong> that bring together
+                      like-minded <strong>Muslim singles</strong> seeking <strong>Halal relationships</strong>.
+
+                      <% if (profile.city && profile.city.toLowerCase().includes('london')) { %>
+                      London’s <strong>Muslim marriage</strong> scene includes thousands of <strong>Pakistani Muslim</strong>,
+                      <strong>Arab Muslim</strong>, and <strong>Indian Muslim</strong> singles looking for <strong>Halal matchmaking</strong>
+                      and <strong>Muslim shaadi</strong> opportunities. Whether you’re interested in a <strong>London Nikkah</strong> or
+                      finding your <strong>Halal partner</strong> online, our <strong>Muslim rishta service London</strong> makes it easy.
+                      <% } else if (profile.city && profile.city.toLowerCase().includes('birmingham')) { %>
+                      Birmingham’s <strong>Muslim community</strong> is one of the UK’s largest, with vibrant <strong>Pakistani marriage</strong>
+                      traditions, frequent <strong>Muslim shaadi</strong> events, and active <strong>Halal matchmaking</strong> networks.
+                      <% } else if (profile.city && profile.city.toLowerCase().includes('bradford')) { %>
+                      Bradford offers a thriving <strong>Muslim matrimonial</strong> culture, where <strong>Pakistani shaadi</strong> and
+                      <strong>Nikkah ceremonies</strong> remain an important part of community life for <strong>Halal marriage seekers</strong>.
+                      <% } %>
+                    </p>
+
+                  </div>
+                  <div class="bg-white rounded-xl p-6 material-shadow mb-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-6 font-['Playfair_Display']">
+                      Common Questions About <%= profile.username %>
+                    </h2>
+
+                    <div class="space-y-4">
+                      <div class="border-l-4 border-primary pl-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">What is <%= profile.username %> looking for in a marriage?</h3>
+                        <p class="text-gray-600">
+                          <% if (profile.lookingForASpouseThatIs) { %>
+                          <%= profile.username %> is seeking a spouse who is <%= profile.lookingForASpouseThatIs %>.
+                          <% } else { %>
+                          <%= profile.username %> is seeking a compatible Muslim partner who shares their values and commitment to faith.
+                          <% } %>
+                        </p>
+                      </div>
+
+                      <div class="border-l-4 border-primary pl-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">Where is <%= profile.username %> located?</h3>
+                        <p class="text-gray-600">
+                          <%= profile.username %> is currently based in <%= profile.city || 'the UK' %>
+                          <% if (profile.willingToRelocate === 'yes') { %> and is open to relocating for the right match<% } %>.
+                        </p>
+                      </div>
+
+                      <% if (profile.work || (profile.education && profile.education[0])) { %>
+                      <div class="border-l-4 border-primary pl-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">What is <%= profile.username %>'s background?</h3>
+                        <p class="text-gray-600">
+                          <%= profile.username %>
+                          <% if (profile.education && profile.education[0] && profile.education[0].title) { %>
+                          has studied <%= profile.education[0].title %>
+                          <% if (profile.work) { %> and currently works as <%= profile.work %><% } %>
+                          <% } else if (profile.work) { %>
+                          works as <%= profile.work %>
+                          <% } %>.
+                        </p>
+                      </div>
+                      <% } %>
+
+                      <div class="border-l-4 border-primary pl-4">
+                        <h3 class="font-semibold text-gray-800 mb-2">How can I connect with <%= profile.username %>?</h3>
+                        <p class="text-gray-600">
+                          You can express interest by sending a request through D'amour Muslim's secure communication system. If <%= profile.username %> accepts, you'll be able to view contact details and connect directly.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Private Information Section -->
+                  
                 </div>
               </div>
             </div>
@@ -1457,10 +1488,10 @@
       </div>
 
       <!-- Similar profiles grid -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
         <% if (similarProfiles && similarProfiles.length > 0) { %>
         <% similarProfiles.forEach(similarProfile => { %>
-        <a href="/profiles/<%= similarProfile.profileSlug || similarProfile._id %>" class="block bg-white rounded-lg border border-gray-200 hover:border-primary transition-all duration-300 overflow-hidden hover:shadow-md">
+        <a href="/profiles/<%= similarProfile.profileSlug || similarProfile._id %>" class="similar-profile-card block bg-white rounded-lg border border-gray-200 hover:border-primary transition-all duration-300 overflow-hidden hover:shadow-md">
           <!-- Profile Image -->
           <div class="aspect-square overflow-hidden bg-gray-100 relative">
             <% if (similarProfile.profilePic && similarProfile.profilePic.url) { %>
@@ -1500,7 +1531,7 @@
         <% }); %>
         <% } else { %>
         <!-- No similar profiles found -->
-        <div class="col-span-3 py-8 text-center">
+        <div class="col-span-2 sm:col-span-2 md:col-span-3 py-8 text-center">
           <p class="text-gray-500">
             Currently, there are no similar profiles available. Please check back later or browse all
             <a href="/profiles?gender=<%= profile.gender %>" class="text-primary hover:text-pink-700 font-medium">
@@ -1515,17 +1546,17 @@
       <div class="mt-6 pt-6 border-t border-gray-200">
         <h3 class="text-lg font-medium text-gray-900 mb-3">Explore More Options</h3>
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <a href="/profiles?gender=<%= profile.gender %>&city=<%= encodeURIComponent(profile.city || '') %>" class="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors">
+          <a href="/profiles?gender=<%= profile.gender %>&city=<%= encodeURIComponent(profile.city || '') %>" class="flex items-center gap-2 px-4 py-3 bg-gray-50 hover:bg-primary hover:text-white text-gray-700 rounded-lg border border-gray-200 hover:border-primary transition-all duration-300 shadow-sm hover:shadow-md">
             <i class="ri-map-pin-line"></i>
             <span><%= profile.gender === 'male' ? 'Grooms' : 'Brides' %> in <%= profile.city || 'your area' %></span>
           </a>
 
-          <a href="/profiles?gender=<%= profile.gender %>&ethnicity=<%= encodeURIComponent(profile.ethnicity || '') %>" class="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors">
+          <a href="/profiles?gender=<%= profile.gender %>&ethnicity=<%= encodeURIComponent(profile.ethnicity || '') %>" class="flex items-center gap-2 px-4 py-3 bg-gray-50 hover:bg-primary hover:text-white text-gray-700 rounded-lg border border-gray-200 hover:border-primary transition-all duration-300 shadow-sm hover:shadow-md">
             <i class="ri-global-line"></i>
             <span><%= profile.ethnicity || 'Similar background' %> matches</span>
           </a>
 
-          <a href="/profiles?gender=<%= profile.gender %>&minAge=<%= Math.max(18, (profile.age || 25) - 2) %>&maxAge=<%= (profile.age || 25) + 2 %>" class="flex items-center gap-2 text-gray-700 hover:text-primary transition-colors">
+          <a href="/profiles?gender=<%= profile.gender %>&minAge=<%= Math.max(18, (profile.age || 25) - 2) %>&maxAge=<%= (profile.age || 25) + 2 %>" class="flex items-center gap-2 px-4 py-3 bg-gray-50 hover:bg-primary hover:text-white text-gray-700 rounded-lg border border-gray-200 hover:border-primary transition-all duration-300 shadow-sm hover:shadow-md">
             <i class="ri-calendar-line"></i>
             <span>Age <%= profile.age ? profile.age-2 : '23' %>-<%= profile.age ? profile.age+2 : '27' %></span>
           </a>
