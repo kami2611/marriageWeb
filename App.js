@@ -1,3 +1,4 @@
+require("dotenv").config(); // MUST be first!
 const { muslimMaleNames, muslimFemaleNames } = require("./config/seoData");
 const Blog = require("./models/Blog");
 function getRandomSeoName(gender) {
@@ -44,6 +45,7 @@ const path = require("path");
 const Request = require("./models/Request");
 const Notification = require("./models/Notification");
 const NotificationService = require("./services/notificationService");
+const QueueService = require("./services/queueService");
 const isLoggedIn = require("./middlewares/isLoggedIn");
 const findUser = require("./middlewares/findUser");
 const {
@@ -954,9 +956,9 @@ app.get(
 
       // **UPDATED**: Different redirect logic based on user profile completeness
       // Check if user needs onboarding (new user or incomplete profile)
-      // if (!req.user.age || !req.user.gender || !req.user.city) {
-      //   return res.redirect("/onboarding");
-      // }
+      if (!req.user.age || !req.user.gender || !req.user.city) {
+        return res.redirect("/onboarding");
+      }
 
       // **NEW**: For existing users with complete basic info, redirect to home
       res.redirect("/home");
@@ -1032,106 +1034,115 @@ app.get("/account/acceptedRequests", isLoggedIn, async (req, res) => {
   res.render("account/acceptedLikeRequests", { acceptedlikeRequests });
 });
 
+// Find the /requests/:id/accept route and update it
+
 app.post("/requests/:id/accept", isLoggedIn, async (req, res) => {
   try {
     const requestId = req.params.id;
+    const currentUserId = req.session.userId;
 
-    const request = await Request.findById(requestId);
+    // Find the request
+    const request = await Request.findById(requestId).populate("from to");
+
     if (!request) {
       return res.status(404).json({ error: "Request not found" });
     }
 
-    // Check if current user is the recipient
-    if (request.to.toString() !== req.session.userId) {
-      return res.status(403).json({ error: "Unauthorized" });
+    // Verify the current user is the recipient of the request
+    if (request.to._id.toString() !== currentUserId) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to accept this request" });
+    }
+
+    // Check if request is still pending
+    if (request.status !== "pending") {
+      return res
+        .status(400)
+        .json({ error: "This request has already been processed" });
     }
 
     // Update request status
     request.status = "accepted";
+    request.respondedAt = new Date();
     await request.save();
 
-    // Get both users
-    const requestFromUser = await User.findById(request.from);
-    const requestToUser = await User.findById(request.to);
-
-    // Grant MUTUAL access (both users can see each other's full profiles)
-    if (!requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)) {
-      requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
-    }
-
-    if (!requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)) {
-      requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
-    }
-
-    await requestFromUser.save();
-    await requestToUser.save();
-
-    await NotificationService.createNotification({
-      userId: request.from._id,
-      type: "request_accepted",
-      title: "Request Accepted!",
-      message: `Congratulations! Your request was accepted by ${request.to.name || request.to.username
-        }.`,
-      priority: "high",
-      actionUrl: `/profiles/${request.to.profileSlug || request.to._id}`,
-      actionText: "View Profile",
+    // **RESTORED**: Give sender access to receiver's (acceptor's) full profile
+    await User.findByIdAndUpdate(request.from._id, {
+      $addToSet: { canAccessFullProfileOf: request.to._id },
     });
-    console.log(
-      `User ${request.to.username} accepted request from ${request.from.username}`
-    );
 
-    return res.redirect("/account/pendingRequests");
+    // **NEW**: Queue background job for notifications and emails (non-blocking)
+    // request.to is the acceptor (current user), request.from is the original requester
+    QueueService.queueRequestAccepted(request.to, request.from);
+
+    res.json({
+      message: "Request accepted successfully",
+      request: request,
+    });
   } catch (error) {
     console.error("Error accepting request:", error);
-    return res.status(500).json({ error: "Failed to accept request" });
+    res.status(500).json({ error: "Failed to accept request" });
   }
 });
 // Replace the existing /requests/:id/reject route
+// Find the /requests/:id/reject route and update it
+
 app.post("/requests/:id/reject", isLoggedIn, async (req, res) => {
   try {
     const requestId = req.params.id;
+    const currentUserId = req.session.userId;
 
-    const request = await Request.findById(requestId);
+    // Find the request with populated users
+    const request = await Request.findById(requestId).populate("from to");
+
     if (!request) {
       return res.status(404).json({ error: "Request not found" });
     }
 
-    // Check if current user is the recipient
-    if (request.to.toString() !== req.session.userId) {
-      return res.status(403).json({ error: "Unauthorized" });
+    // Verify the current user is the recipient of the request
+    if (request.to._id.toString() !== currentUserId) {
+      return res
+        .status(403)
+        .json({ error: "You are not authorized to reject this request" });
+    }
+
+    // Check if request is still pending
+    if (request.status !== "pending") {
+      return res
+        .status(400)
+        .json({ error: "This request has already been processed" });
     }
 
     // Update request status
     request.status = "rejected";
+    request.respondedAt = new Date();
     await request.save();
 
-    // Remove sender's access to receiver's profile
-    // (Receiver had granted access for sender to be seen during decision)
-    const requestToUser = await User.findById(request.to);
-    const requestFromUser = await User.findById(request.from);
-
-    // Remove sender from receiver's access list
-    requestToUser.canAccessFullProfileOf.pull(request.from);
-
-    await requestToUser.save();
-    await requestFromUser.save();
-    await NotificationService.createNotification({
-      userId: request.from._id,
-      type: "request_rejected",
-      title: "Request Declined",
-      message: `Your request was declined by ${request.to.name || request.to.username
-        }.`,
-      priority: "medium",
-      actionUrl: "/profiles",
-      actionText: "Browse Profiles",
+    // Remove request from both users' likeRequests arrays
+    await User.findByIdAndUpdate(request.from._id, {
+      $pull: { likeRequests: request._id },
     });
-    console.log(
-      `User ${request.to.username} rejected request from ${request.from.username}`
-    );
-    return res.redirect("/account/pendingRequests");
+
+    await User.findByIdAndUpdate(request.to._id, {
+      $pull: { likeRequests: request._id },
+    });
+
+    // **RESTORED**: Remove receiver's access to sender's full profile
+    await User.findByIdAndUpdate(request.to._id, {
+      $pull: { canAccessFullProfileOf: request.from._id },
+    });
+
+    // **NEW**: Queue background job for notifications and emails (non-blocking)
+    // request.to is the rejector (current user), request.from is the original requester
+    QueueService.queueRequestRejected(request.to, request.from);
+
+    res.json({
+      message: "Request rejected successfully",
+    });
   } catch (error) {
     console.error("Error rejecting request:", error);
-    return res.status(500).json({ error: "Failed to reject request" });
+    res.status(500).json({ error: "Failed to reject request" });
   }
 });
 
@@ -1182,6 +1193,81 @@ app.post("/api/requests/:requestId/cancel", isLoggedIn, async (req, res) => {
     res.status(500).json({
       success: false,
       error: "Failed to cancel request",
+    });
+  }
+});
+// Add after the /api/requests/:requestId/cancel route
+
+// **NEW**: Revoke access to accepted request
+app.post("/api/requests/:requestId/revoke", isLoggedIn, async (req, res) => {
+  try {
+    const { requestId } = req.params;
+    const currentUserId = req.session.userId;
+
+    const request = await Request.findById(requestId).populate("from to");
+
+    if (!request) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Request not found" });
+    }
+
+    // Verify the current user is either the sender or receiver
+    const isFromUser = request.from._id.toString() === currentUserId;
+    const isToUser = request.to._id.toString() === currentUserId;
+
+    if (!isFromUser && !isToUser) {
+      return res.status(403).json({ success: false, error: "Unauthorized" });
+    }
+
+    // Only allow revoking accepted requests
+    if (request.status !== "accepted") {
+      return res.status(400).json({
+        success: false,
+        error: "Can only revoke accepted requests",
+      });
+    }
+
+    const fromUserId = request.from._id;
+    const toUserId = request.to._id;
+
+    // Remove mutual access from both users
+    await User.findByIdAndUpdate(fromUserId, {
+      $pull: { canAccessFullProfileOf: toUserId },
+    });
+
+    await User.findByIdAndUpdate(toUserId, {
+      $pull: { canAccessFullProfileOf: fromUserId },
+    });
+
+    // Update request status to revoked
+    request.status = "revoked";
+    request.respondedAt = new Date();
+    await request.save();
+
+    // Create notifications for both users
+    const revokerUser = isFromUser ? request.from : request.to;
+    const otherUser = isFromUser ? request.to : request.from;
+
+    await NotificationService.createNotification({
+      userId: otherUser._id,
+      type: "request_revoked",
+      title: "Connection Revoked",
+      message: `${revokerUser.username} has revoked access to their profile.`,
+      priority: "medium",
+      actionUrl: "/profiles",
+      actionText: "Browse Profiles",
+    });
+
+    res.json({
+      success: true,
+      message: "Access revoked successfully. You are now strangers.",
+    });
+  } catch (error) {
+    console.error("Error revoking access:", error);
+    res.status(500).json({
+      success: false,
+      error: "Failed to revoke access",
     });
   }
 });
@@ -1382,75 +1468,100 @@ app.get("/profiles/:slug", async (req, res) => {
     });
   }
 });
+// Find the /interested/:id route and update it
+
 app.post(
   "/interested/:id",
   isLoggedIn,
   requireProfileComplete,
   async (req, res) => {
     try {
-      const beinglikeduserId = req.params.id; // receiver
-      const likeUserId = req.session.userId; // sender
+      const interestedInUserId = req.params.id;
+      const currentUserId = req.session.userId;
 
-      // Check if target user exists
-      const beingLikedUser = await User.findById(beinglikeduserId);
-      if (!beingLikedUser) {
+      // Get both users
+      const currentUser = await User.findById(currentUserId);
+      const interestedInUser = await User.findById(interestedInUserId);
+
+      if (!currentUser || !interestedInUser) {
         return res.status(404).json({ error: "User not found" });
       }
 
-      // **NEW**: Check if user already has 3 pending requests
-      const pendingRequestsCount = await Request.countDocuments({
-        from: likeUserId,
-        status: "pending"
+      // **NEW**: Check request limit (max 5 pending requests)
+      const pendingSentRequests = await Request.countDocuments({
+        from: currentUserId,
+        status: "pending",
       });
 
-      if (pendingRequestsCount >= 3) {
-        return res.json({
+      if (pendingSentRequests >= 5) {
+        return res.status(400).json({
           error: "request_limit_reached",
-          message: "You can only send maximum 3 profile like requests. You can cancel existing sent requests to add this new request."
+          message:
+            "You have reached the maximum of 5 pending requests. Please wait for responses or cancel existing requests.",
         });
       }
 
       // Check if request already exists
       const existingRequest = await Request.findOne({
-        from: likeUserId,
-        to: beinglikeduserId,
+  from: currentUserId,
+  to: interestedInUserId,
+  status: { $in: ["pending", "accepted"] } // Only block if pending or accepted
+});
+
+if (existingRequest) {
+  if (existingRequest.status === "pending") {
+    return res.status(400).json({ error: "You have already sent a pending request to this user" });
+  } else if (existingRequest.status === "accepted") {
+    return res.status(400).json({ error: "You already have an active connection with this user" });
+  }
+}
+
+      // Check if reverse request exists (they already sent you a request)
+      const reverseRequest = await Request.findOne({
+        from: interestedInUserId,
+        to: currentUserId,
         status: "pending",
       });
 
-      if (existingRequest) {
-        return res.json({ error: "Request already sent" });
+      if (reverseRequest) {
+        return res.status(400).json({
+          error: "This user has already sent you a request. Check your pending requests.",
+        });
       }
 
-      // ONLY grant access to sender's profile to receiver
-      // (Receiver can see sender's info to make decision)
-      if (!beingLikedUser.canAccessFullProfileOf.includes(likeUserId)) {
-        beingLikedUser.canAccessFullProfileOf.push(likeUserId);
-      }
-
-      // Create new request
+      // Create the request
       const newRequest = new Request({
-        from: likeUserId,
-        to: beinglikeduserId,
-        status: "pending", // explicitly set as pending
+        from: currentUserId,
+        to: interestedInUserId,
+        status: "pending",
       });
 
       await newRequest.save();
 
-      // Add request to receiver's list
-      if (!beingLikedUser.likeRequests.includes(newRequest._id)) {
-        beingLikedUser.likeRequests.push(newRequest);
-      }
+      // Add request to both users' likeRequests arrays
+      await User.findByIdAndUpdate(currentUserId, {
+        $push: { likeRequests: newRequest._id },
+      });
 
-      await beingLikedUser.save();
+      await User.findByIdAndUpdate(interestedInUserId, {
+        $push: { likeRequests: newRequest._id },
+      });
 
-      return res.json({
-        message: "Successfully sent your like request",
+      // **RESTORED**: Give receiver access to sender's full profile
+      await User.findByIdAndUpdate(interestedInUserId, {
+        $addToSet: { canAccessFullProfileOf: currentUserId },
+      });
+
+      // **NEW**: Queue background job for notifications and emails (non-blocking)
+      QueueService.queueRequestSent(currentUser, interestedInUser);
+
+      res.json({
+        message: "Interest request sent successfully",
+        requestId: newRequest._id,
       });
     } catch (error) {
-      console.error("Error sending request:", error);
-      return res.status(500).json({
-        error: "Failed to send request. Please try again.",
-      });
+      console.error("Error sending interest request:", error);
+      res.status(500).json({ error: "Failed to send interest request" });
     }
   }
 );
@@ -2380,58 +2491,73 @@ app.get("/api/requests/received", isLoggedIn, async (req, res) => {
   }
 });
 
-// Respond to request
-// Replace your existing /api/requests/:requestId/respond route
+
 app.post("/api/requests/:requestId/respond", isLoggedIn, async (req, res) => {
   try {
     const { requestId } = req.params;
-    const { action } = req.body;
+    const { action } = req.body; // 'accept' or 'reject'
+    const currentUserId = req.session.userId;
 
-    if (!["accepted", "rejected"].includes(action)) {
-      return res.status(400).json({ success: false, error: "Invalid action" });
+    if (!["accept", "reject"].includes(action)) {
+      return res.status(400).json({ error: "Invalid action" });
     }
 
-    const request = await Request.findById(requestId);
+    const request = await Request.findById(requestId).populate("from to");
+
     if (!request) {
-      return res
-        .status(404)
-        .json({ success: false, error: "Request not found" });
+      return res.status(404).json({ error: "Request not found" });
     }
 
-    // Check if user is the recipient
-    if (request.to.toString() !== req.session.userId) {
-      return res.status(403).json({ success: false, error: "Unauthorized" });
+    // Verify the current user is the recipient
+    if (request.to._id.toString() !== currentUserId) {
+      return res.status(403).json({ error: "Not authorized" });
     }
 
-    request.status = action;
-    await request.save();
-
-    if (action === "accepted") {
-      // Grant mutual access
-      const requestFromUser = await User.findById(request.from);
-      const requestToUser = await User.findById(request.to);
-
-      if (!requestFromUser.canAccessFullProfileOf.includes(requestToUser._id)) {
-        requestFromUser.canAccessFullProfileOf.push(requestToUser._id);
-      }
-
-      if (!requestToUser.canAccessFullProfileOf.includes(requestFromUser._id)) {
-        requestToUser.canAccessFullProfileOf.push(requestFromUser._id);
-      }
-
-      await requestFromUser.save();
-      await requestToUser.save();
-    } else if (action === "rejected") {
-      // Remove access
-      const requestToUser = await User.findById(request.to);
-      requestToUser.canAccessFullProfileOf.pull(request.from);
-      await requestToUser.save();
+    if (request.status !== "pending") {
+      return res.status(400).json({ error: "Request already processed" });
     }
 
-    res.json({ success: true, message: `Request ${action} successfully` });
+    if (action === "accept") {
+      request.status = "accepted";
+      request.respondedAt = new Date();
+      await request.save();
+
+      // **RESTORED**: Give sender access to receiver's (acceptor's) full profile
+      await User.findByIdAndUpdate(request.from._id, {
+        $addToSet: { canAccessFullProfileOf: request.to._id },
+      });
+
+      // **NEW**: Queue notification
+      QueueService.queueRequestAccepted(request.to, request.from);
+
+      return res.json({ success: true, message: "Request accepted" });
+    } else {
+      request.status = "rejected";
+      request.respondedAt = new Date();
+      await request.save();
+
+      // Remove from like requests
+      await User.findByIdAndUpdate(request.from._id, {
+        $pull: { likeRequests: request._id },
+      });
+
+      await User.findByIdAndUpdate(request.to._id, {
+        $pull: { likeRequests: request._id },
+      });
+
+      // **RESTORED**: Remove receiver's access to sender's full profile
+      await User.findByIdAndUpdate(request.to._id, {
+        $pull: { canAccessFullProfileOf: request.from._id },
+      });
+
+      // **NEW**: Queue notification
+      QueueService.queueRequestRejected(request.to, request.from);
+
+      return res.json({ success: true, message: "Request rejected" });
+    }
   } catch (error) {
     console.error("Error responding to request:", error);
-    res.status(500).json({ success: false, error: "Failed to update request" });
+    res.status(500).json({ error: "Failed to process request" });
   }
 });
 // Admin Requests Management Route
@@ -4065,6 +4191,18 @@ app.use((req, res) => {
     title: "Page Not Found - D'amour Muslim",
     url: req.originalUrl,
   });
+});
+// **NEW**: Graceful shutdown handler
+process.on("SIGTERM", async () => {
+  console.log("🛑 SIGTERM received. Closing queue connections...");
+  await QueueService.close();
+  process.exit(0);
+});
+
+process.on("SIGINT", async () => {
+  console.log("🛑 SIGINT received. Closing queue connections...");
+  await QueueService.close();
+  process.exit(0);
 });
 app.listen(port, (req, res) => {
   console.log("on port 3000!");

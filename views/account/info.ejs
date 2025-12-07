@@ -1546,45 +1546,38 @@
       // Display sent requests
       // Find the displaySentRequests function (around line 1030) and replace it with this updated version
 
-      function displaySentRequests(requests) {
-        const container = document.getElementById('sentRequestsContainer');
+    // Find the displaySentRequests function and update it
 
-        // **NEW**: Calculate pending requests count
-        const pendingRequests = requests.filter(req => req.status === 'pending');
-        const pendingCount = pendingRequests.length;
-        const maxRequests = 3;
+function displaySentRequests(requests) {
+  const container = document.getElementById('sentRequestsContainer');
 
-        if (requests.length === 0) {
-          container.innerHTML = `
+  if (requests.length === 0) {
+    container.innerHTML = `
       <div class="mb-4 flex items-center justify-between">
         <h3 class="text-lg font-semibold text-gray-900">Your Sent Requests</h3>
-        <span class="px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-          ${pendingCount}/${maxRequests} requests sent
-        </span>
+        <span class="px-3 py-1 rounded-full text-sm font-medium bg-gray-100 text-gray-800">0 / 5</span>
       </div>
       <div class="text-center py-8">
-        <i class="ri-send-plane-line text-3xl text-gray-400 mb-4"></i>
+        <i class="ri-inbox-line text-3xl text-gray-400 mb-4"></i>
         <p class="text-gray-500">No requests sent yet</p>
       </div>
     `;
-          return;
-        }
+    return;
+  }
 
-        // **NEW**: Create header with request limit indicator
-        const headerHtml = `
+  const headerHtml = `
     <div class="mb-4 flex items-center justify-between">
       <h3 class="text-lg font-semibold text-gray-900">Your Sent Requests</h3>
       <span class="px-3 py-1 rounded-full text-sm font-medium ${
-        pendingCount >= maxRequests ? 'bg-red-100 text-red-800' : 
-        pendingCount >= 2 ? 'bg-yellow-100 text-yellow-800' : 
+        requests.length >= 5 ? 'bg-red-100 text-red-800' : 
         'bg-green-100 text-green-800'
       }">
-        ${pendingCount}/${maxRequests} requests sent
+        ${requests.length} / 5
       </span>
     </div>
   `;
 
-        const requestsHtml = requests.map(request => `
+  const requestsHtml = requests.map(request => `
     <div class="border border-gray-200 rounded-lg p-6 mb-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
@@ -1601,11 +1594,16 @@
           <span class="px-3 py-1 rounded-full text-xs font-medium ${
             request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
             request.status === 'accepted' ? 'bg-green-100 text-green-800' :
+            request.status === 'revoked' ? 'bg-gray-100 text-gray-800' :
             'bg-red-100 text-red-800'
           }">${request.status}</span>
           ${request.status === 'pending' ? `
             <button onclick="cancelRequest('${request._id}')" class="ml-3 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">
               Cancel
+            </button>
+          ` : request.status === 'accepted' ? `
+            <button onclick="revokeAccess('${request._id}')" class="ml-3 px-3 py-1 bg-orange-500 text-white text-xs rounded hover:bg-orange-600">
+              Revoke Access
             </button>
           ` : ''}
         </div>
@@ -1613,52 +1611,59 @@
     </div>
   `).join('');
 
-        container.innerHTML = headerHtml + requestsHtml;
-      }
+  container.innerHTML = headerHtml + requestsHtml;
+}
 
       // Display received requests
-      function displayReceivedRequests(requests) {
-        const container = document.getElementById('receivedRequestsContainer');
+      // Find the displayReceivedRequests function and update it
 
-        if (requests.length === 0) {
-          container.innerHTML = '<div class="text-center py-8"><i class="ri-inbox-line text-3xl text-gray-400 mb-4"></i><p class="text-gray-500">No requests received yet</p></div>';
-          return;
-        }
+function displayReceivedRequests(requests) {
+  const container = document.getElementById('receivedRequestsContainer');
 
-        const requestsHtml = requests.map(request => `
-          <div class="border border-gray-200 rounded-lg p-6 mb-4">
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
-                  <i class="ri-user-line text-gray-500"></i>
-                </div>
-                <div>
-                  <h4 class="font-medium text-gray-900">${request.from.username}</h4>
-                  <p class="text-sm text-gray-500">${request.from.city || ''}</p>
-                  <p class="text-xs text-gray-400">Received: ${new Date(request.createdAt).toLocaleDateString()}</p>
-                </div>
-              </div>
-              <div class="flex items-center">
-                <span class="px-3 py-1 rounded-full text-xs font-medium ${
-                  request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
-                  request.status === 'accepted' ? 'bg-green-100 text-green-800' :
-                  'bg-red-100 text-red-800'
-                }">${request.status}</span>
-                ${request.status === 'pending' ? `
-                  <button onclick="respondToRequest('${request._id}', 'accepted')" class="ml-3 px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">
-                    Accept
-                  </button>
-                  <button onclick="respondToRequest('${request._id}', 'rejected')" class="ml-2 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">
-                    Reject
-                  </button>
-                ` : ''}
-              </div>
-            </div>
+  if (requests.length === 0) {
+    container.innerHTML = '<div class="text-center py-8"><i class="ri-inbox-line text-3xl text-gray-400 mb-4"></i><p class="text-gray-500">No requests received yet</p></div>';
+    return;
+  }
+
+  const requestsHtml = requests.map(request => `
+    <div class="border border-gray-200 rounded-lg p-6 mb-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center">
+          <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center mr-4">
+            <i class="ri-user-line text-gray-500"></i>
           </div>
-        `).join('');
+          <div>
+            <h4 class="font-medium text-gray-900">${request.from.username}</h4>
+            <p class="text-sm text-gray-500">${request.from.city || ''}</p>
+            <p class="text-xs text-gray-400">Received: ${new Date(request.createdAt).toLocaleDateString()}</p>
+          </div>
+        </div>
+        <div class="flex items-center">
+          <span class="px-3 py-1 rounded-full text-xs font-medium ${
+            request.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+            request.status === 'accepted' ? 'bg-green-100 text-green-800' :
+            request.status === 'revoked' ? 'bg-gray-100 text-gray-800' :
+            'bg-red-100 text-red-800'
+          }">${request.status}</span>
+          ${request.status === 'pending' ? `
+            <button onclick="respondToRequest('${request._id}', 'accept')" class="ml-3 px-3 py-1 bg-green-500 text-white text-xs rounded hover:bg-green-600">
+              Accept
+            </button>
+            <button onclick="respondToRequest('${request._id}', 'reject')" class="ml-2 px-3 py-1 bg-red-500 text-white text-xs rounded hover:bg-red-600">
+              Reject
+            </button>
+          ` : request.status === 'accepted' ? `
+            <button onclick="revokeAccess('${request._id}')" class="ml-3 px-3 py-1 bg-orange-500 text-white text-xs rounded hover:bg-orange-600">
+              Revoke Access
+            </button>
+          ` : ''}
+        </div>
+      </div>
+    </div>
+  `).join('');
 
-        container.innerHTML = requestsHtml;
-      }
+  container.innerHTML = requestsHtml;
+}
 
       // Global functions for request actions
       window.cancelRequest = function(requestId) {
@@ -1686,7 +1691,7 @@
       };
 
       window.respondToRequest = function(requestId, action) {
-        const actionText = action === 'accepted' ? 'accept' : 'reject';
+        const actionText = action === 'accept' ? 'accept' : 'reject';
         if (confirm(`Are you sure you want to ${actionText} this request?`)) {
           fetch(`/api/requests/${requestId}/respond`, {
               method: 'POST',
@@ -1712,6 +1717,33 @@
             });
         }
       };
+      // Add after the respondToRequest function
+
+window.revokeAccess = function(requestId) {
+  if (confirm('Are you sure you want to revoke access? You will both become strangers and lose access to each other\'s full profiles.')) {
+    fetch(`/api/requests/${requestId}/revoke`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          showNotification('Access Revoked', data.message, 'success');
+          // Reload both sections since the request could be in either
+          loadSentRequests();
+          loadReceivedRequests();
+        } else {
+          showNotification('Error', data.error || 'Failed to revoke access', 'error');
+        }
+      })
+      .catch(error => {
+        console.error('Error revoking access:', error);
+        showNotification('Error', 'Failed to revoke access', 'error');
+      });
+  }
+};
 
       // Notification function
       function showNotification(title, message, type = 'info') {
