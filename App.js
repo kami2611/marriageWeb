@@ -1419,6 +1419,9 @@ app.get("/profiles/:slug", async (req, res) => {
 
     let canAccessFullProfile = false;
     let hasalreadysentrequest = false;
+    let connectionStatus = null; // NEW: Track connection status
+    let incomingRequest = null;  // NEW: Track if profile owner sent us a request
+    let outgoingRequest = null;  // NEW: Track our sent request to this profile
 
     // If admin, always grant full access
     if (req.session.isAdmin || req.session.isModerator) {
@@ -1436,14 +1439,43 @@ app.get("/profiles/:slug", async (req, res) => {
       }
 
       // Check if user has already sent a pending request
-      const existingRequest = await Request.findOne({
+      const existingOutgoingRequest = await Request.findOne({
         from: req.session.userId,
         to: foundProfile._id,
+        status: { $in: ["pending", "accepted"] },
+      });
+
+      if (existingOutgoingRequest) {
+        hasalreadysentrequest = existingOutgoingRequest.status === "pending";
+        outgoingRequest = existingOutgoingRequest; // Store the full request object
+        
+        if (existingOutgoingRequest.status === "accepted") {
+          connectionStatus = "connected";
+        }
+      }
+
+      // NEW: Check if profile owner has sent a request TO the logged-in user
+      const existingIncomingRequest = await Request.findOne({
+        from: foundProfile._id,
+        to: req.session.userId,
         status: "pending",
       });
 
-      if (existingRequest) {
-        hasalreadysentrequest = true;
+      if (existingIncomingRequest) {
+        incomingRequest = existingIncomingRequest;
+      }
+
+      // NEW: Also check for accepted incoming request (they sent, we accepted)
+      if (!connectionStatus) {
+        const acceptedIncomingRequest = await Request.findOne({
+          from: foundProfile._id,
+          to: req.session.userId,
+          status: "accepted",
+        });
+        if (acceptedIncomingRequest) {
+          connectionStatus = "connected";
+          outgoingRequest = acceptedIncomingRequest; // Use this for revoke action
+        }
       }
     }
     const { findSimilarProfiles } = require("./utils/profileHelpers");
@@ -1454,6 +1486,9 @@ app.get("/profiles/:slug", async (req, res) => {
       profile: foundProfile,
       canAccessFullProfile,
       hasalreadysentrequest,
+      connectionStatus,     // NEW
+      incomingRequest,      // NEW
+      outgoingRequest,      // NEW
       user: req.session.user,
       isAdmin: req.session.isAdmin,
       filters: null,
