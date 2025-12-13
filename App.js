@@ -1615,14 +1615,18 @@ app.get("/admin/addUser", requireAdminOnly, (req, res) => {
 });
 // Replace the existing /admin/dashboard route with this updated version
 
+// ...existing code...
 app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
   if (!req.session.isAdmin && !req.session.isModerator) {
     return res.redirect("/login");
   }
 
   try {
-    // **UPDATED**: Handle filter parameter including employee names
+    // **UPDATED**: Handle filter and pagination parameters
     const { filter } = req.query;
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
 
     // Build query based on filter
     let query = {};
@@ -1633,36 +1637,38 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
     } else if (filter === "featured") {
       query.isFeatured = true;
     } else if (filter && filter.startsWith("employee-")) {
-      // **NEW**: Filter by employee/referrer name
       const employeeName = filter.replace("employee-", "");
       query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
     }
-    // For 'all' or no filter, query remains empty (gets all users)
 
-    // Get users with applied filter
-    const users = await User.find(query).sort({ createdAt: -1, _id: -1 });
+    // Get total count for pagination
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limit);
+    const hasMore = page < totalPages;
 
-    // Calculate basic stats (always from all users, not filtered)
-    const totalUsers = await User.countDocuments({});
+    // Get users with pagination
+    const users = await User.find(query)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    // Calculate stats (always from all users, not filtered)
+    const allTotalUsers = await User.countDocuments({});
     const byAdmin = await User.countDocuments({ registrationSource: "admin" });
-    const bySelf = await User.countDocuments({
-      registrationSource: "register",
-    });
+    const bySelf = await User.countDocuments({ registrationSource: "register" });
     const featuredCount = await User.countDocuments({ isFeatured: true });
 
-    // **NEW**: Extract unique employee/referrer names from passcodes
+    // Extract unique employee/referrer names
     const allUsers = await User.find({}, { passcodeUsed: 1 }).lean();
     const employeeNames = new Set();
 
     allUsers.forEach(user => {
       if (user.passcodeUsed && typeof user.passcodeUsed === 'string') {
         const passcode = user.passcodeUsed.trim();
-        // Check if passcode contains a dash (indicating employee prefix)
         if (passcode.includes('-')) {
           const parts = passcode.split('-');
           if (parts.length >= 2) {
             const employeeName = parts[0].trim();
-            // Validate that the part after dash contains digits (valid passcode format)
             const passcodeDigits = parts[1];
             if (employeeName && passcodeDigits && /^\d+$/.test(passcodeDigits)) {
               employeeNames.add(employeeName);
@@ -1672,10 +1678,9 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
       }
     });
 
-    // Convert Set to sorted array
     const uniqueEmployees = Array.from(employeeNames).sort();
 
-    // **NEW**: Calculate employee stats
+    // Calculate employee stats
     const employeeStats = {};
     for (const employeeName of uniqueEmployees) {
       const count = await User.countDocuments({
@@ -1685,20 +1690,27 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
     }
 
     const stats = {
-      totalUsers,
+      totalUsers: allTotalUsers,
       registrationSources: {
         byAdmin,
         bySelf,
       },
       featuredCount,
-      employeeStats, // **NEW**: Add employee stats
+      employeeStats,
     };
 
     res.render("admin/dashboard", {
       users,
       stats,
       currentFilter: filter || "all",
-      uniqueEmployees, // **NEW**: Pass employee names to template
+      uniqueEmployees,
+      pagination: {
+        currentPage: page,
+        totalPages,
+        totalUsers: totalUsers,
+        hasMore,
+        limit
+      }
     });
   } catch (error) {
     console.error("Dashboard error:", error);
@@ -1706,18 +1718,67 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
       users: [],
       stats: {
         totalUsers: 0,
-        registrationSources: {
-          byAdmin: 0,
-          bySelf: 0,
-        },
+        registrationSources: { byAdmin: 0, bySelf: 0 },
         featuredCount: 0,
         employeeStats: {},
       },
       currentFilter: "all",
-      uniqueEmployees: [], // **NEW**
+      uniqueEmployees: [],
+      pagination: { currentPage: 1, totalPages: 1, totalUsers: 0, hasMore: false, limit: 20 }
     });
   }
 });
+// ...existing code... (after the dashboard route)
+
+// API endpoint for infinite scroll pagination
+app.get("/api/admin/users", requireAdminOrModerator, async (req, res) => {
+  try {
+    const { filter, page = 1 } = req.query;
+    const limit = 20;
+    const skip = (parseInt(page) - 1) * limit;
+
+    // Build query based on filter
+    let query = {};
+    if (filter === "admin") {
+      query.registrationSource = "admin";
+    } else if (filter === "register") {
+      query.registrationSource = "register";
+    } else if (filter === "featured") {
+      query.isFeatured = true;
+    } else if (filter && filter.startsWith("employee-")) {
+      const employeeName = filter.replace("employee-", "");
+      query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
+    }
+
+    const totalUsers = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalUsers / limit);
+    const hasMore = parseInt(page) < totalPages;
+
+    const users = await User.find(query)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    res.json({
+      success: true,
+      users,
+      pagination: {
+        currentPage: parseInt(page),
+        totalPages,
+        totalUsers,
+        hasMore
+      },
+      isAdmin: req.session.isAdmin || false,
+      isModerator: req.session.isModerator || false
+    });
+  } catch (error) {
+    console.error("API users error:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch users" });
+  }
+});
+
+// ...existing code...
 app.post("/admin/user/:id/edit", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
   const { id } = req.params;
@@ -2106,7 +2167,10 @@ app.post("/admin/user/add", requireAdminOnly, async (req, res) => {
   }
 });
 app.get("/admin/user/:id", requireAdminOrModerator, async (req, res) => {
-  if (!req.session.isAdmin) return res.redirect("/admin");
+  if (!req.session.isAdmin && !req.session.isModerator) {
+    return res.redirect("/login");
+  }
+  
   const user = await User.findById(req.params.id);
   if (!user) return res.status(404).send("User not found");
 
@@ -2123,6 +2187,8 @@ app.get("/admin/user/:id", requireAdminOrModerator, async (req, res) => {
     userRequests,
     pendingRequests,
     acceptedRequests,
+    isAdmin: req.session.isAdmin || false,
+    isModerator: req.session.isModerator || false,
   });
 });
 app.get("/generate-username", async (req, res) => {
