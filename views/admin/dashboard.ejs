@@ -145,7 +145,7 @@
 
 <body class="bg-gray-50 font-['Roboto']">
   <!-- Top Navigation Bar with Search -->
-  <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
+ <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="max-w-full mx-auto px-4 py-3">
       <div class="flex items-center justify-between gap-4">
         <!-- Search Bar -->
@@ -158,8 +158,13 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex items-center gap-3">
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="md:hidden lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
+          <i class="ri-menu-line text-xl"></i>
+        </button>
+
+        <!-- Desktop Action Buttons (hidden on mobile) -->
+        <div class="hidden md:flex items-center gap-3">
           <button id="requestsBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
             Requests
           </button>
@@ -185,6 +190,47 @@
             </button>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Mobile Menu Dropdown -->
+    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-200 bg-white">
+      <div class="px-4 py-3 space-y-2">
+        <!-- View Toggle -->
+        <div class="flex items-center justify-between py-2 border-b border-gray-100">
+          <span class="text-sm text-gray-600 font-medium">View</span>
+          <div class="flex border border-gray-300 rounded-lg overflow-hidden">
+            <button id="mobileGridViewBtn" class="p-2 bg-white hover:bg-gray-50 text-gray-600 transition-all duration-200" title="Grid View">
+              <i class="ri-layout-grid-line text-lg"></i>
+            </button>
+            <button id="mobileTableViewBtn" class="p-2 bg-gray-100 text-primary border-l border-gray-300 transition-all duration-200" title="Table View">
+              <i class="ri-list-check text-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Navigation Links -->
+        <button id="mobileRequestsBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+          <i class="ri-mail-send-line text-lg text-gray-500"></i>
+          <span class="text-sm font-medium">Requests</span>
+        </button>
+
+        <% if (isAdmin) { %>
+        <button id="mobileNewsletterBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+          <i class="ri-mail-line text-lg text-gray-500"></i>
+          <span class="text-sm font-medium">Newsletter</span>
+        </button>
+
+        <button id="mobileBlogsBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+          <i class="ri-article-line text-lg text-gray-500"></i>
+          <span class="text-sm font-medium">Manage Blogs</span>
+        </button>
+
+        <button id="mobileAddUserBtn" class="w-full flex items-center gap-3 px-3 py-2.5 bg-primary text-white hover:bg-pink-600 rounded-lg transition-colors duration-200">
+          <i class="ri-user-add-line text-lg"></i>
+          <span class="text-sm font-medium">Add User</span>
+        </button>
+        <% } %>
       </div>
     </div>
   </header>
@@ -449,27 +495,6 @@
         </div>
 
         <!-- Pagination -->
-         <% if (users && users.length > 0) { %>
-        <div class="px-6 py-4 border-t border-gray-200 bg-gray-50">
-          <div class="flex items-center justify-between">
-            <div class="text-sm text-gray-600">
-              Showing <span id="showingCount"><%= users.length %></span> of <span id="totalCount"><%= pagination.totalUsers %></span> users
-            </div>
-            <% if (pagination.hasMore) { %>
-            <div id="loadMoreContainer">
-              <button id="loadMoreBtn" class="px-4 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-lg text-sm font-medium">
-                <i class="ri-refresh-line mr-2"></i>Load More
-              </button>
-            </div>
-            <% } %>
-          </div>
-          <!-- Loading indicator -->
-          <div id="loadingIndicator" class="hidden text-center py-4">
-            <i class="ri-loader-4-line animate-spin text-2xl text-primary"></i>
-            <p class="text-sm text-gray-500 mt-2">Loading more users...</p>
-          </div>
-        </div>
-        <% } %>
       </div>
     </div>
   </main>
@@ -547,7 +572,105 @@
 
       let currentDeleteUserId = null;
       let currentDeleteElement = null;
+      // Mobile Menu functionality
+      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+      const mobileMenu = document.getElementById('mobileMenu');
 
+      if (mobileMenuBtn && mobileMenu) {
+        mobileMenuBtn.addEventListener('click', function() {
+          mobileMenu.classList.toggle('hidden');
+          const icon = this.querySelector('i');
+          if (mobileMenu.classList.contains('hidden')) {
+            icon.className = 'ri-menu-line text-xl';
+          } else {
+            icon.className = 'ri-close-line text-xl';
+          }
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+          if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+            mobileMenu.classList.add('hidden');
+            const icon = mobileMenuBtn.querySelector('i');
+            icon.className = 'ri-menu-line text-xl';
+          }
+        });
+      }
+
+      // Mobile navigation buttons
+      const mobileRequestsBtn = document.getElementById('mobileRequestsBtn');
+      const mobileNewsletterBtn = document.getElementById('mobileNewsletterBtn');
+      const mobileBlogsBtn = document.getElementById('mobileBlogsBtn');
+      const mobileAddUserBtn = document.getElementById('mobileAddUserBtn');
+
+      if (mobileRequestsBtn) {
+        mobileRequestsBtn.addEventListener('click', function() {
+          window.location.href = '/admin/requests';
+        });
+      }
+
+      if (mobileNewsletterBtn) {
+        mobileNewsletterBtn.addEventListener('click', function() {
+          window.location.href = '/admin/newsletter';
+        });
+      }
+
+      if (mobileBlogsBtn) {
+        mobileBlogsBtn.addEventListener('click', function() {
+          window.location.href = '/admin/blogs';
+        });
+      }
+
+      if (mobileAddUserBtn) {
+        mobileAddUserBtn.addEventListener('click', function() {
+          window.location.href = '/admin/addUser';
+        });
+      }
+
+      // Mobile View Toggle functionality
+      const mobileGridViewBtn = document.getElementById('mobileGridViewBtn');
+      const mobileTableViewBtn = document.getElementById('mobileTableViewBtn');
+
+      if (mobileGridViewBtn && mobileTableViewBtn && tableView && gridView) {
+        mobileGridViewBtn.addEventListener('click', function() {
+          tableView.classList.add('hidden');
+          gridView.classList.remove('hidden');
+          // Update mobile buttons
+          mobileGridViewBtn.classList.add('bg-gray-100', 'text-primary');
+          mobileGridViewBtn.classList.remove('bg-white', 'text-gray-600');
+          mobileTableViewBtn.classList.add('bg-white', 'text-gray-600');
+          mobileTableViewBtn.classList.remove('bg-gray-100', 'text-primary');
+          // Sync with desktop buttons
+          if (gridViewBtn) {
+            gridViewBtn.classList.add('bg-gray-100', 'text-primary');
+            gridViewBtn.classList.remove('bg-white', 'text-gray-600');
+          }
+          if (tableViewBtn) {
+            tableViewBtn.classList.add('bg-white', 'text-gray-600');
+            tableViewBtn.classList.remove('bg-gray-100', 'text-primary');
+          }
+        });
+
+        mobileTableViewBtn.addEventListener('click', function() {
+          gridView.classList.add('hidden');
+          tableView.classList.remove('hidden');
+          // Update mobile buttons
+          mobileTableViewBtn.classList.add('bg-gray-100', 'text-primary');
+          mobileTableViewBtn.classList.remove('bg-white', 'text-gray-600');
+          mobileGridViewBtn.classList.add('bg-white', 'text-gray-600');
+          mobileGridViewBtn.classList.remove('bg-gray-100', 'text-primary');
+          // Sync with desktop buttons
+          if (tableViewBtn) {
+            tableViewBtn.classList.add('bg-gray-100', 'text-primary');
+            tableViewBtn.classList.remove('bg-white', 'text-gray-600');
+          }
+          if (gridViewBtn) {
+            gridViewBtn.classList.add('bg-white', 'text-gray-600');
+            gridViewBtn.classList.remove('bg-gray-100', 'text-primary');
+          }
+        });
+      }
+// ...existing code...
       // View Toggle functionality
       if (gridViewBtn && tableViewBtn && tableView && gridView) {
         gridViewBtn.addEventListener('click', function() {
@@ -1054,283 +1177,6 @@ viewButtons.forEach(button => {
         });
       }
     });
-  </script>
-
-  <script>
-    // Infinite scroll pagination - separate script to avoid EJS conflicts
-    (function() {
-      let currentPage = <%= pagination.currentPage %>;
-      let hasMore = <%= pagination.hasMore %>;
-      let isLoading = false;
-      const paginationFilter = '<%= currentFilter %>';
-      const userIsAdmin = <%= isAdmin %>;
-      const userIsModerator = <%= isModerator %>;
-
-      const loadMoreBtn = document.getElementById('loadMoreBtn');
-      const loadingIndicator = document.getElementById('loadingIndicator');
-      const showingCount = document.getElementById('showingCount');
-      const totalCount = document.getElementById('totalCount');
-      const tableBody = document.querySelector('.user-table tbody');
-      const profileGrid = document.getElementById('profileGrid');
-
-      // Get references to modal elements
-      const deleteModal = document.getElementById('deleteModal');
-      const deleteModalUserName = document.getElementById('deleteModalUserName');
-      const deleteModalUserUsername = document.getElementById('deleteModalUserUsername');
-      const deleteConfirmationInput = document.getElementById('deleteConfirmationInput');
-      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-      const deleteInputError = document.getElementById('deleteInputError');
-
-      let currentDeleteUserId = null;
-      let currentDeleteElement = null;
-
-      // Function to create table row HTML
-      function createTableRowHtml(user) {
-        let sourceText = 'Unknown';
-        if (user.registrationSource === 'admin') sourceText = 'by Admin';
-        else if (user.registrationSource === 'register') sourceText = 'Self';
-
-        let locationHtml = '<span class="text-gray-400">Location not specified</span>';
-        if (user.city && user.country) locationHtml = user.city + ', ' + user.country;
-        else if (user.city) locationHtml = user.city;
-        else if (user.country) locationHtml = user.country;
-
-        let actionsHtml = '';
-        if (userIsAdmin) {
-          actionsHtml = '<button class="delete-btn px-3 py-1.5 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="' + user._id + '">Delete</button>' +
-            '<button class="view-btn px-3 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="' + user._id + '" data-user-slug="' + (user.profileSlug || '') + '">View</button>';
-        } else if (userIsModerator) {
-          actionsHtml = '<button class="view-btn px-3 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="' + user._id + '" data-user-slug="' + (user.profileSlug || '') + '">View Profile</button>';
-        }
-
-        return '<tr class="user-row" ' +
-          'data-waliMyContactDetails="' + (user.waliMyContactDetails || '') + '" ' +
-          'data-username="' + user.username + '" ' +
-          'data-name="' + (user.name || user.username) + '" ' +
-          'data-contact="' + (user.contact || '') + '" ' +
-          'data-registration-source="' + (user.registrationSource || 'unknown') + '" ' +
-          'data-featured="' + (user.isFeatured || false) + '" ' +
-          'data-passcode="' + (user.passcodeUsed || '') + '">' +
-          '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="text-sm font-medium text-gray-900">' + (user.name || user.username) + '</div>' +
-          '</td>' +
-          '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="text-sm text-gray-600">' + locationHtml + '</div>' +
-          '</td>' +
-          '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="text-sm text-gray-600">' + user.username + '</div>' +
-          '</td>' +
-          '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="text-sm text-gray-600">' + (user.age || '-') + '</div>' +
-          '</td>' +
-          '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="text-sm text-gray-600">' + (user.email || '-') + '</div>' +
-          '</td>' +
-          '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="text-sm text-gray-600">' + sourceText + '</div>' +
-          '</td>' +
-          '<td class="px-6 py-4 whitespace-nowrap">' +
-            '<div class="flex items-center gap-2">' + actionsHtml + '</div>' +
-          '</td>' +
-        '</tr>';
-      }
-
-      // Function to create grid card HTML
-      function createGridCardHtml(user) {
-        let cardSourceText = 'Unknown';
-        let cardSourceClass = 'bg-gray-100 text-gray-600';
-        if (user.registrationSource === 'admin') {
-          cardSourceText = 'by Admin';
-          cardSourceClass = 'bg-purple-100 text-purple-600';
-        } else if (user.registrationSource === 'register') {
-          cardSourceText = 'Self';
-          cardSourceClass = 'bg-orange-100 text-orange-600';
-        }
-
-        let avatarHtml = '';
-        if (user.profilePic && user.profilePic.url) {
-          avatarHtml = '<img src="' + user.profilePic.url + '" class="w-full h-full object-cover" alt="' + (user.name || user.username) + ' Profile">';
-        } else {
-          const avatarSrc = user.gender === 'male' ? '/images/boyavatar.png' : '/images/girlavatar.png';
-          avatarHtml = '<div class="w-full h-full flex items-center justify-center"><img src="' + avatarSrc + '" class="w-20 h-20 rounded-full object-cover" alt="' + (user.name || user.username) + ' Profile"></div>';
-        }
-
-        let actionsHtml = '';
-        if (userIsAdmin) {
-          actionsHtml = '<button class="delete-btn flex-1 px-2 py-1.5 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded text-xs" data-user-id="' + user._id + '">Delete</button>' +
-            '<button class="view-btn flex-1 px-2 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs" data-user-id="' + user._id + '" data-user-slug="' + (user.profileSlug || '') + '">View</button>';
-        } else if (userIsModerator) {
-          actionsHtml = '<button class="view-btn w-full px-2 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs" data-user-id="' + user._id + '" data-user-slug="' + (user.profileSlug || '') + '">View</button>';
-        }
-
-        let ageHtml = user.age ? '<p>Age: ' + user.age + '</p>' : '';
-
-        return '<div class="profile-card bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-lg" ' +
-          'data-waliMyContactDetails="' + (user.waliMyContactDetails || '') + '" ' +
-          'data-username="' + user.username + '" ' +
-          'data-name="' + (user.name || user.username) + '" ' +
-          'data-contact="' + (user.contact || '') + '" ' +
-          'data-registration-source="' + (user.registrationSource || 'unknown') + '" ' +
-          'data-featured="' + (user.isFeatured || false) + '" ' +
-          'data-passcode="' + (user.passcodeUsed || '') + '">' +
-          '<div class="aspect-[4/3] overflow-hidden bg-gray-100">' + avatarHtml + '</div>' +
-          '<div class="p-4">' +
-            '<div class="flex items-center justify-between mb-2">' +
-              '<h3 class="text-base font-semibold text-gray-900 truncate">' + (user.name || user.username) + '</h3>' +
-              '<span class="px-2 py-0.5 ' + cardSourceClass + ' text-xs rounded-full whitespace-nowrap">' + cardSourceText + '</span>' +
-            '</div>' +
-            '<div class="text-sm text-gray-500 mb-3">' +
-              '<p class="truncate">@' + user.username + '</p>' +
-              ageHtml +
-            '</div>' +
-            '<div class="flex gap-2">' + actionsHtml + '</div>' +
-          '</div>' +
-        '</div>';
-      }
-
-      // Function to attach event listeners to new elements
-      function attachEventListeners(container) {
-        container.querySelectorAll('.view-btn').forEach(function(button) {
-          button.addEventListener('click', function() {
-            const userId = this.getAttribute('data-user-id');
-            window.location.href = '/admin/user/' + userId;
-          });
-        });
-
-        container.querySelectorAll('.delete-btn').forEach(function(button) {
-          button.addEventListener('click', function() {
-            const userId = this.getAttribute('data-user-id');
-            const row = this.closest('.user-row') || this.closest('.profile-card');
-            const name = row.getAttribute('data-name');
-            const username = row.getAttribute('data-username');
-
-            currentDeleteUserId = userId;
-            currentDeleteElement = row;
-
-            if (deleteModalUserName) deleteModalUserName.textContent = name;
-            if (deleteModalUserUsername) deleteModalUserUsername.textContent = '@' + username;
-            if (deleteConfirmationInput) deleteConfirmationInput.value = '';
-            if (confirmDeleteBtn) confirmDeleteBtn.disabled = true;
-            if (deleteInputError) deleteInputError.classList.add('hidden');
-            if (deleteModal) deleteModal.classList.remove('hidden');
-
-            setTimeout(function() {
-              if (deleteConfirmationInput) deleteConfirmationInput.focus();
-            }, 100);
-          });
-        });
-      }
-
-      // Notification function for pagination
-      function showPaginationNotification(title, message, type) {
-        type = type || 'info';
-        const notification = document.createElement('div');
-        const bgColor = type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-blue-500' : 'bg-red-500';
-        const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'info' ? 'ri-information-line' : 'ri-error-warning-line';
-
-        notification.className = 'fixed bottom-4 right-4 ' + bgColor + ' text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50';
-        notification.innerHTML = '<i class="' + icon + ' text-xl"></i><div><p class="font-semibold">' + title + '</p><p class="text-sm opacity-90">' + message + '</p></div>';
-
-        document.body.appendChild(notification);
-
-        setTimeout(function() {
-          notification.style.transform = 'translateY(100%)';
-          notification.style.opacity = '0';
-          setTimeout(function() { notification.remove(); }, 300);
-        }, 3000);
-      }
-
-      // Load more users
-      function loadMoreUsers() {
-        if (isLoading || !hasMore) return;
-
-        isLoading = true;
-        if (loadMoreBtn) loadMoreBtn.disabled = true;
-        if (loadingIndicator) loadingIndicator.classList.remove('hidden');
-
-        const filterParam = paginationFilter !== 'all' ? '&filter=' + paginationFilter : '';
-        
-        fetch('/api/admin/users?page=' + (currentPage + 1) + filterParam)
-          .then(function(response) {
-            return response.json();
-          })
-          .then(function(data) {
-            if (data.success && data.users && data.users.length > 0) {
-              currentPage++;
-              hasMore = data.pagination.hasMore;
-
-              // Add to table view
-              if (tableBody) {
-                data.users.forEach(function(user) {
-                  const tempDiv = document.createElement('tbody');
-                  tempDiv.innerHTML = createTableRowHtml(user);
-                  const newRow = tempDiv.firstElementChild;
-                  if (newRow) {
-                    tableBody.appendChild(newRow);
-                    attachEventListeners(newRow);
-                  }
-                });
-              }
-
-              // Add to grid view
-              if (profileGrid) {
-                data.users.forEach(function(user) {
-                  const tempDiv = document.createElement('div');
-                  tempDiv.innerHTML = createGridCardHtml(user);
-                  const newCard = tempDiv.firstElementChild;
-                  if (newCard) {
-                    profileGrid.appendChild(newCard);
-                    attachEventListeners(newCard);
-                  }
-                });
-              }
-
-              // Update counts
-              if (showingCount) {
-                const currentShowing = parseInt(showingCount.textContent) + data.users.length;
-                showingCount.textContent = currentShowing;
-              }
-
-              // Hide load more if no more pages
-              if (!hasMore && loadMoreBtn && loadMoreBtn.parentElement) {
-                loadMoreBtn.parentElement.style.display = 'none';
-              }
-            }
-          })
-          .catch(function(error) {
-            console.error('Error loading more users:', error);
-            showPaginationNotification('Error', 'Failed to load more users', 'error');
-          })
-          .finally(function() {
-            isLoading = false;
-            if (loadMoreBtn) loadMoreBtn.disabled = false;
-            if (loadingIndicator) loadingIndicator.classList.add('hidden');
-          });
-      }
-
-      // Load more button click
-      if (loadMoreBtn) {
-        loadMoreBtn.addEventListener('click', loadMoreUsers);
-      }
-
-      // Infinite scroll - load when near bottom
-      let scrollTimeout;
-      window.addEventListener('scroll', function() {
-        clearTimeout(scrollTimeout);
-        scrollTimeout = setTimeout(function() {
-          if (isLoading || !hasMore) return;
-          
-          const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-          const scrollHeight = document.documentElement.scrollHeight;
-          const clientHeight = document.documentElement.clientHeight;
-          
-          // Load more when user is 200px from bottom
-          if (scrollTop + clientHeight >= scrollHeight - 200) {
-            loadMoreUsers();
-          }
-        }, 100);
-      });
-    })();
   </script>
 </body>
 

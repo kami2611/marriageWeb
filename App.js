@@ -1622,11 +1622,8 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
   }
 
   try {
-    // **UPDATED**: Handle filter and pagination parameters
+    // **UPDATED**: Handle filter parameter only (no pagination)
     const { filter } = req.query;
-    const page = parseInt(req.query.page) || 1;
-    const limit = 20;
-    const skip = (page - 1) * limit;
 
     // Build query based on filter
     let query = {};
@@ -1641,16 +1638,9 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
       query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
     }
 
-    // Get total count for pagination
-    const totalUsers = await User.countDocuments(query);
-    const totalPages = Math.ceil(totalUsers / limit);
-    const hasMore = page < totalPages;
-
-    // Get users with pagination
+    // Get ALL users (no pagination)
     const users = await User.find(query)
-      .sort({ createdAt: -1, _id: -1 })
-      .skip(skip)
-      .limit(limit);
+      .sort({ createdAt: -1, _id: -1 });
 
     // Calculate stats (always from all users, not filtered)
     const allTotalUsers = await User.countDocuments({});
@@ -1704,13 +1694,8 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
       stats,
       currentFilter: filter || "all",
       uniqueEmployees,
-      pagination: {
-        currentPage: page,
-        totalPages,
-        totalUsers: totalUsers,
-        hasMore,
-        limit
-      }
+      isAdmin: req.session.isAdmin || false,
+      isModerator: req.session.isModerator || false
     });
   } catch (error) {
     console.error("Dashboard error:", error);
@@ -1724,59 +1709,14 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
       },
       currentFilter: "all",
       uniqueEmployees: [],
-      pagination: { currentPage: 1, totalPages: 1, totalUsers: 0, hasMore: false, limit: 20 }
+      isAdmin: req.session.isAdmin || false,
+      isModerator: req.session.isModerator || false
     });
   }
 });
 // ...existing code... (after the dashboard route)
 
 // API endpoint for infinite scroll pagination
-app.get("/api/admin/users", requireAdminOrModerator, async (req, res) => {
-  try {
-    const { filter, page = 1 } = req.query;
-    const limit = 20;
-    const skip = (parseInt(page) - 1) * limit;
-
-    // Build query based on filter
-    let query = {};
-    if (filter === "admin") {
-      query.registrationSource = "admin";
-    } else if (filter === "register") {
-      query.registrationSource = "register";
-    } else if (filter === "featured") {
-      query.isFeatured = true;
-    } else if (filter && filter.startsWith("employee-")) {
-      const employeeName = filter.replace("employee-", "");
-      query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
-    }
-
-    const totalUsers = await User.countDocuments(query);
-    const totalPages = Math.ceil(totalUsers / limit);
-    const hasMore = parseInt(page) < totalPages;
-
-    const users = await User.find(query)
-      .sort({ createdAt: -1, _id: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
-
-    res.json({
-      success: true,
-      users,
-      pagination: {
-        currentPage: parseInt(page),
-        totalPages,
-        totalUsers,
-        hasMore
-      },
-      isAdmin: req.session.isAdmin || false,
-      isModerator: req.session.isModerator || false
-    });
-  } catch (error) {
-    console.error("API users error:", error);
-    res.status(500).json({ success: false, error: "Failed to fetch users" });
-  }
-});
 
 // ...existing code...
 app.post("/admin/user/:id/edit", async (req, res) => {
