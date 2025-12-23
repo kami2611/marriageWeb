@@ -336,19 +336,15 @@
               <div class="relative -mt-24 px-8 pb-8">
                 <!-- Profile Picture -->
                 <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white material-shadow mx-auto mb-6">
-                  <% if (profile.profilePic && profile.profilePic.url) { %>
-                  <img src="<%= profile.profilePic.url %>" class="w-full h-full object-cover" alt="<%=  profile.username %>'s Profile">
-                  <% } else { %>
                   <!-- Default avatar based on gender -->
                   <% if (profile.gender==='male' ) { %>
                   <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %>'s Profile">
                   <% } else { %>
                   <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %>'s Profile">
                   <% } %>
-                  <% } %>
+                  
                 </div>
 
-                <!-- Name and Verification -->
                 <!-- Name and Verification -->
                 <div class="text-center mb-8">
                   <h1 class="text-3xl font-bold text-gray-900 mb-2 font-['Playfair_Display']">
@@ -1569,12 +1565,9 @@
         <a href="/profiles/<%= similarProfile.profileSlug || similarProfile._id %>" class="similar-profile-card block bg-white rounded-lg border border-gray-200 hover:border-primary transition-all duration-300 overflow-hidden hover:shadow-md">
           <!-- Profile Image -->
           <div class="aspect-square overflow-hidden bg-gray-100 relative">
-            <% if (similarProfile.profilePic && similarProfile.profilePic.url) { %>
-            <img src="<%= typeof getOptimizedImageUrl === 'function' ? getOptimizedImageUrl(similarProfile.profilePic.url, 300, 300, 'fill') : similarProfile.profilePic.url %>" class="w-full h-full object-cover" alt="<%= similarProfile.username %>'s Profile" loading="lazy">
-            <% } else { %>
+           
             <!-- Default avatar based on gender -->
             <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(similarProfile.username) %>&background=<%= similarProfile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= similarProfile.username %>'s Profile" loading="lazy">
-            <% } %>
 
             <!-- Age badge -->
             <% if (similarProfile.age) { %>
