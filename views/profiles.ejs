@@ -339,14 +339,6 @@ html {
             <!-- Results Count and Active Filters - RESPONSIVE VERSION -->
             <div class="flex-1 min-w-0">
               <% if (totalProfiles > 0) { %>
-              <div class="mb-3">
-                <span class=" ml-3 text-gray-600">
-                  Showing <%= totalProfiles %> <%= totalProfiles === 1 ? 'profile' : 'profiles' %>
-                  <% if (filters && Object.values(filters).some(f => f)) { %>
-                  filtered
-                  <% } %>
-                </span>
-              </div>
 
               <!-- Active Filters Display - MOBILE OPTIMIZED -->
               <% if (filters && Object.values(filters).some(f => f)) { %>
@@ -693,10 +685,6 @@ html {
               <i class="ri-arrow-right-line"></i>
             </a>
             <% } %>
-          </div>
-
-          <div class="text-center text-gray-500 text-sm mt-4">
-            Showing <%= (page - 1) * 10 + 1 %> to <%= Math.min(page * 10, totalProfiles) %> of <%= totalProfiles %> profiles
           </div>
           <% } %>
         </div>
