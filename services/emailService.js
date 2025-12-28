@@ -118,7 +118,7 @@ async function sendVerificationEmail(email, code, username) {
         <div class="footer">
           <p><strong>© 2024 D'amour Muslim</strong> - Connecting Hearts, Building Futures</p>
           <p>Need help? Contact us at <a href="mailto:support@damourmuslim.com">support@damourmuslim.com</a></p>
-          <p>📱 WhatsApp: <a href="https://wa.me/+447899816181">+44 7899 816181</a></p>
+          <p>📱 WhatsApp: <a href="https://wa.me/+447899816181">+447454516156</a></p>
         </div>
       </div>
     </body>
@@ -227,7 +227,7 @@ async function sendPasswordResetEmail(email, resetToken, username) {
         <div class="footer">
           <p><strong>© 2024 D'amour Muslim</strong> - Connecting Hearts, Building Futures</p>
           <p>Need help? Contact us at <a href="mailto:support@damourmuslim.com">support@damourmuslim.com</a></p>
-          <p>📱 WhatsApp: <a href="https://wa.me/+447899816181">+44 7899 816181</a></p>
+          <p>📱 WhatsApp: <a href="https://wa.me/+447899816181">+447454516156</a></p>
         </div>
       </div>
     </body>
@@ -247,7 +247,121 @@ Important:
 - If you didn't request this reset, please ignore this email
 - Your password remains unchanged until you complete the reset
 
-Need help? Contact us at support@damourmuslim.com or WhatsApp: +44 7899 816181
+Need help? Contact us at support@damourmuslim.com or WhatsApp: +447454516156
+
+© 2024 D'amour Muslim
+  `;
+
+  return await sendZeptoMail(email, subject, htmlBody, textBody);
+}
+
+// Send profile approval congratulations email
+async function sendProfileApprovalEmail(email, username, name) {
+  const subject = "🎉 Congratulations! Your Profile Has Been Approved - D'amour Muslim";
+  const profileUrl = `${process.env.BASE_URL || "https://damourmuslim.com"}/account/info`;
+
+  const htmlBody = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Profile Approved - D'amour Muslim</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f9f9f9; }
+        .container { max-width: 600px; margin: 0 auto; background: white; }
+        .header { background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%); color: white; padding: 30px 20px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
+        .header p { margin: 10px 0 0 0; font-size: 16px; opacity: 0.9; }
+        .content { padding: 40px 30px; }
+        .welcome { font-size: 20px; font-weight: bold; color: #333; margin-bottom: 15px; }
+        .message { font-size: 16px; color: #666; line-height: 1.6; margin-bottom: 30px; }
+        .celebration { text-align: center; padding: 30px; background: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%); border-radius: 16px; margin: 20px 0; }
+        .celebration-icon { font-size: 60px; margin-bottom: 15px; }
+        .celebration h2 { color: #E91E63; margin: 0 0 10px 0; font-size: 24px; }
+        .celebration p { color: #666; margin: 0; }
+        .button { display: inline-block; background: #E91E63; color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+        .button:hover { background: #C2185B; }
+        .next-steps { background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 12px; padding: 25px; margin: 30px 0; }
+        .next-steps h3 { color: #166534; margin: 0 0 15px 0; font-size: 18px; }
+        .next-steps ul { margin: 0; padding-left: 20px; color: #15803d; }
+        .next-steps li { margin-bottom: 10px; line-height: 1.5; }
+        .footer { background: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #eee; }
+        .footer p { margin: 5px 0; color: #666; font-size: 14px; }
+        .footer a { color: #E91E63; text-decoration: none; }
+        @media (max-width: 600px) {
+          .content { padding: 30px 20px; }
+          .header { padding: 25px 20px; }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <div class="header">
+          <h1>D'amour Muslim</h1>
+          <p>Your Journey Begins!</p>
+        </div>
+        
+        <div class="content">
+          <div class="celebration">
+            <div class="celebration-icon">🎉</div>
+            <h2>Congratulations, ${name || username}!</h2>
+            <p>Your profile has been approved by our team</p>
+          </div>
+
+          <div class="message">
+            We're thrilled to welcome you to the D'amour Muslim community! Our team has reviewed your profile 
+            and it's now live on our platform. Other members can now view your profile and express interest.
+          </div>
+          
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${profileUrl}" class="button">View My Profile</a>
+          </div>
+          
+          <div class="next-steps">
+            <h3>✨ What's Next?</h3>
+            <ul>
+              <li><strong>Complete your profile</strong> - Add more details to attract suitable matches</li>
+              <li><strong>Browse and send requests to profiles</strong> - Start exploring and finding compatible partners</li>
+              <li><strong>Stay active</strong> - Regular activity helps you appear in search results</li>
+              <li><strong>Be patient</strong> - The right match is worth waiting for!</li>
+            </ul>
+          </div>
+
+          <div class="message" style="text-align: center; font-style: italic; color: #888;">
+            "And among His signs is that He created for you spouses from among yourselves, 
+            that you may find tranquility in them." - Quran 30:21
+          </div>
+        </div>
+        
+        <div class="footer">
+          <p><strong>© 2024 D'amour Muslim</strong> - Connecting Hearts, Building Futures</p>
+          <p>Need help? Contact us at <a href="mailto:support@damourmuslim.com">support@damourmuslim.com</a></p>
+          <p>📱 WhatsApp: <a href="https://wa.me/+447899816181">+447454516156</a></p>
+        </div>
+      </div>
+    </body>
+    </html>
+  `;
+
+  const textBody = `
+Congratulations ${name || username}!
+
+🎉 Your profile has been approved by our team!
+
+We're thrilled to welcome you to the D'amour Muslim community. Your profile is now live and other members can view it and express interest.
+
+What's Next?
+- Complete your profile - Add more details to attract suitable matches
+- Browse and send requests to profiles - Start exploring and finding compatible partners
+- Stay active - Regular activity helps you appear in search results
+- Be patient - The right match is worth waiting for!
+
+View your profile: ${profileUrl}
+
+"And among His signs is that He created for you spouses from among yourselves, that you may find tranquility in them." - Quran 30:21
+
+Need help? Contact us at support@damourmuslim.com or WhatsApp: +447454516156
 
 © 2024 D'amour Muslim
   `;
@@ -259,4 +373,5 @@ module.exports = {
   generateVerificationCode,
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendProfileApprovalEmail,
 };

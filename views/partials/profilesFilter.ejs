@@ -26,15 +26,25 @@
       </div>
     </div>
 
-    <!-- Age Range Filter -->
+    <!-- Age Range Filter (selects) -->
     <div>
       <label class="block text-sm font-medium text-gray-700 mb-3">Age Range</label>
       <div class="grid grid-cols-2 gap-3">
         <div>
-          <input type="number" name="minAge" placeholder="Min Age" min="18" max="70" value="<%= filters?.minAge || '' %>" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+          <select name="minAge" id="minAgeSelect" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm">
+            <option value="">Min Age</option>
+            <% for (let a = 18; a <= 70; a++) { %>
+              <option value="<%= a %>" <%= (filters?.minAge && Number(filters.minAge) === a) ? 'selected' : '' %>><%= a %></option>
+            <% } %>
+          </select>
         </div>
         <div>
-          <input type="number" name="maxAge" placeholder="Max Age" min="18" max="70" value="<%= filters?.maxAge || '' %>" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+          <select name="maxAge" id="maxAgeSelect" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm">
+            <option value="">Max Age</option>
+            <% for (let a = 18; a <= 70; a++) { %>
+              <option value="<%= a %>" <%= (filters?.maxAge && Number(filters.maxAge) === a) ? 'selected' : '' %>><%= a %></option>
+            <% } %>
+          </select>
         </div>
       </div>
     </div>
@@ -91,37 +101,44 @@
       </div>
     </div>
 
-    <!-- Location Filter -->
+    <!-- Location Filter: Country & City Selects -->
     <div>
-      <label for="city" class="block text-sm font-medium text-gray-700 mb-3">Location</label>
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <i class="ri-map-pin-line text-gray-400"></i>
+      <label class="block text-sm font-medium text-gray-700 mb-3">Location</label>
+      <div class="space-y-3">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="ri-earth-line text-gray-400"></i>
+          </div>
+          <select name="country" id="filterCountry" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none">
+            <option value="">All Countries</option>
+            <option value="United Kingdom" <%= filters?.country === 'United Kingdom' ? 'selected' : '' %> >United Kingdom</option>
+            <option value="Pakistan" <%= filters?.country === 'Pakistan' ? 'selected' : '' %> >Pakistan</option>
+            <option value="Bangladesh" <%= filters?.country === 'Bangladesh' ? 'selected' : '' %> >Bangladesh</option>
+            <option value="India" <%= filters?.country === 'India' ? 'selected' : '' %> >India</option>
+            <option value="United States" <%= filters?.country === 'United States' ? 'selected' : '' %> >United States</option>
+            <option value="Canada" <%= filters?.country === 'Canada' ? 'selected' : '' %> >Canada</option>
+            <option value="United Arab Emirates" <%= filters?.country === 'United Arab Emirates' ? 'selected' : '' %> >United Arab Emirates</option>
+            <option value="Saudi Arabia" <%= filters?.country === 'Saudi Arabia' ? 'selected' : '' %> >Saudi Arabia</option>
+            <option value="Australia" <%= filters?.country === 'Australia' ? 'selected' : '' %> >Australia</option>
+            <option value="Germany" <%= filters?.country === 'Germany' ? 'selected' : '' %> >Germany</option>
+            <option value="France" <%= filters?.country === 'France' ? 'selected' : '' %> >France</option>
+            <option value="Malaysia" <%= filters?.country === 'Malaysia' ? 'selected' : '' %> >Malaysia</option>
+            <option value="Singapore" <%= filters?.country === 'Singapore' ? 'selected' : '' %> >Singapore</option>
+            <option value="Other" <%= filters?.country === 'Other' ? 'selected' : '' %> >Other</option>
+          </select>
         </div>
-        <input type="text" name="city" id="city" placeholder="Enter city or location" value="<%= filters?.city || '' %>" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+        <div class="relative">
+          <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <i class="ri-map-pin-line text-gray-400"></i>
+          </div>
+          <select name="city" id="filterCity" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none" disabled>
+            <option value="">Select City</option>
+          </select>
+        </div>
       </div>
     </div>
 
-    <!-- Nationality Filter -->
-    <div>
-      <label for="nationality" class="block text-sm font-medium text-gray-700 mb-3">Nationality</label>
-      <div class="relative">
-        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <i class="ri-earth-line text-gray-400"></i>
-        </div>
-        <select name="nationality" id="nationality" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none">
-          <option value="">All Nationalities</option>
-
-          <option value="British" <%= filters?.nationality === 'British' ? 'selected' : '' %>>British</option>
-          <option value="Pakistani" <%= filters?.nationality === 'Pakistani' ? 'selected' : '' %>>Pakistani</option>
-          <option value="Bangladeshi" <%= filters?.nationality === 'Bangladeshi' ? 'selected' : '' %>>Bangladeshi</option>
-          <option value="Other" <%= filters?.nationality === 'Other' ? 'selected' : '' %>>Other</option>
-        </select>
-        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-          <i class="ri-arrow-down-s-line text-gray-400"></i>
-        </div>
-      </div>
-    </div>
+    
 
     <!-- Apply Filters Button -->
     <button type="submit" class="w-full py-2.5 px-4 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button ripple material-shadow">
@@ -144,6 +161,8 @@
     const clearFiltersBtn = document.getElementById('clearFilters');
     const minHeightSelect = document.getElementById('minHeightSelect');
     const maxHeightSelect = document.getElementById('maxHeightSelect');
+    const filterCountry = document.getElementById('filterCountry');
+    const filterCity = document.getElementById('filterCity');
 
     // Function to update max height options based on min height selection
     function updateMaxHeightOptions() {
@@ -220,6 +239,58 @@
       updateMinHeightOptions();
     }
 
+    // City options by country
+    const cityData = {
+      'United Kingdom': ['London','Birmingham','Manchester','Glasgow','Liverpool','Leeds','Sheffield','Edinburgh','Bristol','Leicester','Bradford','Cardiff','Nottingham','Newcastle','Other'],
+      'Pakistan': ['Karachi','Lahore','Islamabad','Rawalpindi','Faisalabad','Multan','Peshawar','Quetta','Sialkot','Gujranwala','Hyderabad','Other'],
+      'Bangladesh': ['Dhaka','Chittagong','Sylhet','Khulna','Rajshahi','Comilla','Gazipur','Narayanganj','Other'],
+      'India': ['Mumbai','Delhi','Bangalore','Hyderabad','Chennai','Kolkata','Ahmedabad','Pune','Lucknow','Jaipur','Other'],
+      'United States': ['New York','Los Angeles','Chicago','Houston','Dallas','San Francisco','Miami','Atlanta','Washington DC','Boston','Other'],
+      'Canada': ['Toronto','Vancouver','Montreal','Calgary','Ottawa','Edmonton','Mississauga','Brampton','Other'],
+      'United Arab Emirates': ['Dubai','Abu Dhabi','Sharjah','Ajman','Al Ain','Ras Al Khaimah','Other'],
+      'Saudi Arabia': ['Riyadh','Jeddah','Mecca','Medina','Dammam','Dhahran','Other'],
+      'Australia': ['Sydney','Melbourne','Brisbane','Perth','Adelaide','Gold Coast','Other'],
+      'Germany': ['Berlin','Munich','Frankfurt','Hamburg','Cologne','Dusseldorf','Other'],
+      'France': ['Paris','Lyon','Marseille','Toulouse','Nice','Strasbourg','Other'],
+      'Malaysia': ['Kuala Lumpur','George Town','Johor Bahru','Ipoh','Shah Alam','Other'],
+      'Singapore': ['Singapore','Other'],
+      'Other': ['Other']
+    };
+
+    if (filterCountry && filterCity) {
+      filterCountry.addEventListener('change', function() {
+        const country = this.value;
+        filterCity.innerHTML = '<option value="">Select City</option>';
+        if (country && cityData[country]) {
+          filterCity.disabled = false;
+          cityData[country].forEach(c => {
+            const opt = document.createElement('option');
+            opt.value = c;
+            opt.textContent = c;
+            filterCity.appendChild(opt);
+          });
+        } else {
+          filterCity.disabled = true;
+        }
+      });
+
+      // Initialize if a country is already selected
+      if (filterCountry.value) {
+        const evt = new Event('change');
+        filterCountry.dispatchEvent(evt);
+        // If a city filter exists, set it
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentCity = urlParams.get('city');
+        if (currentCity) {
+          Array.from(filterCity.options).forEach(o => {
+            if (o.value.toLowerCase() === currentCity.toLowerCase()) {
+              o.selected = true;
+            }
+          });
+        }
+      }
+    }
+
     // Handle form submission
     if (filterForm) {
       filterForm.addEventListener('submit', function(e) {
@@ -230,8 +301,8 @@
 
         // Build query parameters
         for (let [key, value] of formData.entries()) {
-          if (value.trim() !== '') {
-            params.append(key, value);
+          if (value && value.trim() !== '') {
+            params.append(key, value.trim());
           }
         }
 

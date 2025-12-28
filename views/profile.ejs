@@ -306,6 +306,39 @@
                 <li class="text-primary font-medium truncate max-w-[150px]"><%= profile.username %></li>
               </ol>
             </nav>
+
+            <!-- Pending Approval Notice - Show only when viewing own unapproved profile -->
+            <% if (isOwnProfile && !profile.isApproved) { %>
+            <div class="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-5">
+              <div class="flex items-start gap-4">
+                <!-- <div class="flex-shrink-0">
+                  <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                    <i class="ri-eye-off-line text-2xl text-amber-600"></i>
+                  </div>
+                </div> -->
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold text-amber-800 mb-2">
+                    <i class="ri-time-line mr-1"></i>
+                    Your Profile is Pending Approval
+                  </h3>
+                  <p class="text-amber-700 mb-3">
+                    Your profile is <strong>currently only visible to you</strong>. Once our team reviews and approves your profile, other users will be able to see it and connect with you.
+                  </p>
+                  <div class="bg-white rounded-lg p-4 border border-amber-200">
+                    <p class="text-sm text-gray-700 mb-3">
+                      <i class="ri-lightbulb-line text-amber-500 mr-1"></i>
+                      <strong>Increase your approval chances:</strong> Fill in as many fields as possible in your profile to help our team verify your information.
+                    </p>
+                    <a href="/account/info" class="inline-flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-pink-600 font-medium text-sm transition-colors">
+                      <i class="ri-edit-line"></i>
+                      Complete Your Profile
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+
             <!-- ...existing code (after breadcrumb </nav>)... -->
 
 
@@ -485,25 +518,33 @@
                         </div>
                         <% } %>
 
+                        <% if (profile.city) { %>
                         <div class="flex items-center gap-4">
                           <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
                             <i class="ri-map-pin-line"></i>
                           </div>
                           <div>
-                            <p class="text-sm text-gray-500">Location</p>
+                            <p class="text-sm text-gray-500">City</p>
                             <p class="text-gray-900">
-                              <% if (profile.city && profile.country) { %>
-                              <%= profile.city %>, <%= profile.country %>
-                              <% } else if (profile.city) { %>
                               <%= profile.city %>
-                              <% } else if (profile.country) { %>
-                              <%= profile.country %>
-                              <% } else { %>
-                              Location not specified
-                              <% } %>
                             </p>
                           </div>
                         </div>
+                        <% } %>
+
+                        <% if (profile.country) { %>
+                        <div class="flex items-center gap-4">
+                          <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <i class="ri-earth-line"></i>
+                          </div>
+                          <div>
+                            <p class="text-sm text-gray-500">Country</p>
+                            <p class="text-gray-900">
+                              <%= profile.country %>
+                            </p>
+                          </div>
+                        </div>
+                        <% } %>
 
                         <% if (profile.nationality) { %>
                         <div class="flex items-center gap-4">
@@ -535,7 +576,7 @@
                         </div>
                         <% } %>
 
-                        <% if (profile.education && profile.education.length> 0) { %>
+                        <% if (profile.highestEducation || (profile.education && profile.education.length > 0)) { %>
                         <div class="flex items-center gap-4">
                           <div class="w-10 h-10 flex items-center justify-center rounded-full bg-primary/10 text-primary">
                             <i class="ri-graduation-cap-line"></i>
@@ -543,7 +584,11 @@
                           <div>
                             <p class="text-sm text-gray-500">Education</p>
                             <p class="text-gray-900">
-                              <%= profile.education[0].title || 'Education details available' %>
+                              <% if (profile.highestEducation) { %>
+                                <%= profile.highestEducation %>
+                              <% } else if (profile.education && profile.education.length > 0) { %>
+                                <%= profile.education[0].title || 'Education details available' %>
+                              <% } %>
                             </p>
                           </div>
                         </div>
@@ -1409,15 +1454,36 @@
                         </div>
                       </div>
 
-                      <% if (!hasalreadysentrequest && user && !user.isAdmin) {
-                                                                %>
-                      <button id="requestAccessBtn" data-profile-id="<%= profile._id %>" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
-                        <i class="ri-profile-line"></i>
-                        <span>Request Profile Sharing</span>
-                      </button>
-                      <p class="text-sm text-gray-500 mt-2">By clicking this
-                        button, you agree to share your private information
-                        with this person</p>
+                      <% if (!hasalreadysentrequest && user && !user.isAdmin) { %>
+                        <% if (!user.isApproved) { %>
+                        <!-- User's profile is not approved - show disabled button with message -->
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4">
+                          <div class="flex items-start gap-3">
+                            <i class="ri-time-line text-amber-600 text-xl mt-0.5"></i>
+                            <div class="text-left">
+                              <p class="text-amber-700 text-sm">
+                                You can send requests to other users once your profile is accepted by our team.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        <button disabled class="inline-flex items-center gap-2 px-6 py-3 bg-gray-300 text-gray-500 cursor-not-allowed rounded-button">
+                          <i class="ri-profile-line"></i>
+                          <span>Request Profile Sharing</span>
+                        </button>
+                        <p class="text-sm text-gray-500 mt-2">
+                          <a href="/account/info" class="text-primary hover:text-pink-600 font-medium">Complete your profile</a> to increase approval chances.
+                        </p>
+                        <% } else { %>
+                        <!-- User is approved - show normal request button -->
+                        <button id="requestAccessBtn" data-profile-id="<%= profile._id %>" class="inline-flex items-center gap-2 px-6 py-3 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button whitespace-nowrap ripple material-shadow">
+                          <i class="ri-profile-line"></i>
+                          <span>Request Profile Sharing</span>
+                        </button>
+                        <p class="text-sm text-gray-500 mt-2">By clicking this
+                          button, you agree to share your private information
+                          with this person</p>
+                        <% } %>
                       <% } else if (hasalreadysentrequest && outgoingRequest) { %>
                       <div class="flex flex-col sm:flex-row items-center gap-3">
                         <div class="inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-button">
@@ -1701,6 +1767,13 @@
                 //   // Reset button
                 button.disabled = false;
                 button.innerHTML = '<i class="ri-profile-line mr-2"></i>Request Profile Sharing';
+              } else if (data.error === "profile_not_approved") {
+                // **NEW**: Show notification that profile needs approval first
+                showProfileNotApprovedNotification(data.message);
+
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = '<i class="ri-profile-line mr-2"></i>Request Profile Sharing';
               } else if (data.error === "request_limit_reached") {
                 // **NEW**: Show request limit notification
                 showRequestLimitNotification(data.message);
@@ -1708,13 +1781,20 @@
                 // Reset button
                 button.disabled = false;
                 button.innerHTML = '<i class="ri-profile-line mr-2"></i>Request Profile Sharing';
-              } else if (data.message) {
-                // Show success notification
+              } else if (data.message && !data.error) {
+                // Show success notification ONLY if there's a success message and no error
                 showNotification('Request Sent!', "We'll notify you when they respond", 'success');
 
                 // Update button to show request sent
                 button.innerHTML = '<i class="ri-time-line mr-2"></i>Request Pending';
                 button.className = 'inline-flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-button';
+              } else if (data.error) {
+                // Any other error - show generic error notification
+                showNotification('Request Failed', data.message || data.error || 'Please try again later', 'error');
+                
+                // Reset button
+                button.disabled = false;
+                button.innerHTML = '<i class="ri-profile-line mr-2"></i>Request Profile Sharing';
               } else {
                 throw new Error(data.error || 'Failed to send request');
               }
@@ -1746,6 +1826,41 @@
           </a>
         </div>
         <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-orange-200 transition-colors">
+          <i class="ri-close-line text-xl"></i>
+        </button>
+      </div>
+    `;
+
+        document.body.appendChild(notification);
+
+        // Auto remove after 8 seconds
+        setTimeout(() => {
+          if (notification.parentElement) {
+            notification.style.transform = 'translateY(100%)';
+            notification.style.opacity = '0';
+            setTimeout(() => {
+              if (notification.parentElement) notification.remove();
+            }, 300);
+          }
+        }, 8000);
+      }
+
+      // Notification for profile not approved
+      function showProfileNotApprovedNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = `fixed bottom-4 right-4 bg-amber-500 text-white rounded-xl p-6 material-shadow-elevated transform translate-y-0 opacity-100 transition-all duration-300 z-50 max-w-sm`;
+        notification.innerHTML = `
+      <div class="flex items-start gap-3">
+        <i class="ri-time-line text-2xl mt-1"></i>
+        <div class="flex-1">
+          <p class="font-semibold mb-2">Profile Pending Approval</p>
+          <p class="text-sm opacity-90 mb-3">${message || 'Your profile is pending approval. You can send requests to other users once your profile is approved by our team.'}</p>
+          <a href="/account/info" class="inline-flex items-center gap-2 bg-white text-amber-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-amber-50 transition-colors">
+            <i class="ri-edit-line"></i>
+            Complete Profile
+          </a>
+        </div>
+        <button onclick="this.parentElement.parentElement.remove()" class="text-white hover:text-amber-200 transition-colors">
           <i class="ri-close-line text-xl"></i>
         </button>
       </div>

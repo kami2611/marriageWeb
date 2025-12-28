@@ -342,12 +342,12 @@
                 <!-- **NEW**: Email Field, verification will be added here after everything goes right wih smtp server -->
 
                 <div class="space-y-2">
-                  <label for="email" class="block text-sm font-medium text-gray-700">Email Address <span class="text-gray-400 text-xs">(Optional)</span></label>
+                  <label for="email" class="block text-sm font-medium text-gray-700">Email Address <span class="text-gray-400 text-xs">(Cannot be changed)</span></label>
                   <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                       <i class="ri-mail-line text-gray-400"></i>
                     </div>
-                    <input type="email" id="email" name="email" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter your email address">
+                    <input type="email" id="email" name="email" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded-button text-gray-900 placeholder-gray-400 bg-gray-100 cursor-not-allowed" placeholder="Enter your email address" disabled readonly>
                   </div>
 
                   <!-- Email Status Display -->
@@ -430,12 +430,18 @@
                 <div class="space-y-2">
                   <label for="maritalStatus" class="block text-sm font-medium text-gray-700">Marital Status</label>
                   <select id="maritalStatus" name="maritalStatus" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
-                    <option value="unmarried" <%= (accountInfo.maritalStatus === 'unmarried') ? 'selected' : '' %>>Unmarried</option>
-                    <option value="married" <%= (accountInfo.maritalStatus === 'married') ? 'selected' : '' %>>Married</option>
-                    <option value="divorced" <%= (accountInfo.maritalStatus === 'divorced') ? 'selected' : '' %>>Divorced</option>
-                    <option value="widowed" <%= (accountInfo.maritalStatus === 'widowed') ? 'selected' : '' %>>Widowed</option>
-                    <option value="separated" <%= (accountInfo.maritalStatus === 'separated') ? 'selected' : '' %>>Separated</option>
-                    <option value="N/A" <%= (!accountInfo.maritalStatus || accountInfo.maritalStatus === 'N/A') ? 'selected' : '' %>>N/A</option>
+                    <% 
+                      const standardStatuses = ['nevermarried', 'divorced', 'widowed', 'annulled'];
+                      const currentStatus = accountInfo.maritalStatus || '';
+                      const isNonStandard = currentStatus && !standardStatuses.includes(currentStatus.toLowerCase());
+                    %>
+                    <% if (isNonStandard) { %>
+                    <option value="<%= currentStatus %>" selected><%= currentStatus.charAt(0).toUpperCase() + currentStatus.slice(1) %></option>
+                    <% } %>
+                    <option value="nevermarried" <%= (currentStatus.toLowerCase() === 'nevermarried') ? 'selected' : '' %>>Never Married</option>
+                    <option value="divorced" <%= (currentStatus.toLowerCase() === 'divorced') ? 'selected' : '' %>>Divorced</option>
+                    <option value="widowed" <%= (currentStatus.toLowerCase() === 'widowed') ? 'selected' : '' %>>Widowed</option>
+                    <option value="annulled" <%= (currentStatus.toLowerCase() === 'annulled') ? 'selected' : '' %>>Annulled</option>
                   </select>
                 </div>
                 <div class="space-y-2">
@@ -837,6 +843,28 @@
                   <button type="button" id="addEducation" class="px-4 py-2 bg-secondary text-white hover:bg-purple-700 transition-all duration-300 !rounded-button text-sm ripple">
                     <i class="ri-add-line mr-1"></i>Add Education
                   </button>
+                </div>
+                <!-- Highest Education (new primary field) -->
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="space-y-2">
+                    <label for="highestEducation" class="block text-sm font-medium text-gray-700">Highest Education</label>
+                    <select id="highestEducation" name="highestEducation" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white">
+                      <option value="" <%= !accountInfo.highestEducation ? 'selected' : '' %> >Select education level</option>
+                      <option value="High School" <%= accountInfo.highestEducation === 'High School' ? 'selected' : '' %> >High School / Secondary</option>
+                      <option value="Diploma" <%= accountInfo.highestEducation === 'Diploma' ? 'selected' : '' %> >Diploma / Certificate</option>
+                      <option value="Bachelor's Degree" <%= accountInfo.highestEducation === "Bachelor's Degree" ? 'selected' : '' %> >Bachelor's Degree</option>
+                      <option value="Master's Degree" <%= accountInfo.highestEducation === "Master's Degree" ? 'selected' : '' %> >Master's Degree</option>
+                      <option value="Doctorate / PhD" <%= accountInfo.highestEducation === 'Doctorate / PhD' ? 'selected' : '' %> >Doctorate / PhD</option>
+                      <option value="Professional Degree" <%= accountInfo.highestEducation === 'Professional Degree' ? 'selected' : '' %> >Professional Degree (MBBS, LLB, etc.)</option>
+                      <option value="Islamic Studies" <%= accountInfo.highestEducation === 'Islamic Studies' ? 'selected' : '' %> >Islamic Studies / Alim</option>
+                      <option value="Hafiz-e-Quran" <%= accountInfo.highestEducation === 'Hafiz-e-Quran' ? 'selected' : '' %> >Hafiz-e-Quran</option>
+                      <option value="Other" <%= accountInfo.highestEducation === 'Other' ? 'selected' : '' %> >Other</option>
+                    </select>
+                  </div>
+                  <div class="space-y-2">
+                    <label for="work" class="block text-sm font-medium text-gray-700">Profession/Work</label>
+                    <input type="text" id="work" name="work" class="block w-full px-3 py-2.5 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white" placeholder="Enter profession" value="<%= accountInfo.work || '' %>">
+                  </div>
                 </div>
                 <div id="educationContainer" class="space-y-4">
                   <!-- Education items will be added here -->

@@ -297,7 +297,34 @@ html {
 <body class="bg-gray-50 font-['Roboto']">
   <%- include('partials/header') %>
   <main class="pt-24 pb-16 min-h-screen">
-    <div class="max-w-7xl mx-auto px-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6">
+      <!-- Pending Approval Notice for Current User -->
+      <% if (currentUserProfile && !currentUserProfile.isApproved) { %>
+      <div class="mb-6 bg-amber-50 border border-amber-200 rounded-xl p-4 sm:p-5">
+        <div class="flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4">
+          <div class="flex-shrink-0 self-center sm:self-start">
+            
+          </div>
+          <div class="flex-1 text-center sm:text-left">
+            <h3 class="text-base sm:text-lg font-semibold text-amber-800 mb-1 sm:mb-2">Your Profile is Pending Approval</h3>
+            <p class="text-sm sm:text-base text-amber-700 mb-3">
+              Your profile is currently only visible to yourself. Once our team reviews and approves your profile, other users will be able to see it and connect with you.
+            </p>
+            <div class="bg-white rounded-lg p-3 sm:p-4 border border-amber-200">
+              <p class="text-xs sm:text-sm text-gray-700 mb-2">
+                <i class="ri-lightbulb-line text-amber-500 mr-1"></i>
+                <strong>Tip:</strong> Complete as many fields as possible to increase your chances of approval!
+              </p>
+              <a href="/account/info" class="inline-flex items-center gap-2 text-primary hover:text-pink-600 font-medium text-sm transition-colors">
+                <i class="ri-edit-line"></i>
+                Complete Your Profile
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <% } %>
+
       <div class="flex gap-8">
         <!-- Filter Sidebar -->
         <div class="w-80 flex-shrink-0 hidden lg:block">
@@ -593,6 +620,48 @@ html {
           </div>
           <!-- Profiles Grid -->
           <div id="profileGrid" class="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+            <!-- Show user's own profile card if not approved -->
+            <% if (currentUserProfile && !currentUserProfile.isApproved) { %>
+            <a href="/profiles/<%= currentUserProfile.profileSlug || currentUserProfile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block relative border-2 border-amber-300">
+              <div class="absolute top-2 left-2 z-10 bg-amber-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+                <i class="ri-eye-off-line"></i>
+                Your Profile (Pending)
+              </div>
+              <div class="aspect-[4/5] overflow-hidden">
+                <% if (currentUserProfile.profilePic && currentUserProfile.profilePic.url) { %>
+                <img src="<%= currentUserProfile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" alt="<%= currentUserProfile.name || currentUserProfile.username %>" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" onload="this.classList.add('loaded')">
+                <% } else { %>
+                <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(currentUserProfile.name || currentUserProfile.username) %>&background=<%= currentUserProfile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" alt="<%= currentUserProfile.name || currentUserProfile.username %>" class="w-full h-full object-cover" loading="lazy">
+                <% } %>
+              </div>
+              <div class="p-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-1">
+                  <%= currentUserProfile.username %>
+                </h3>
+                <div class="flex items-center text-gray-600 mb-2">
+                  <i class="ri-map-pin-line mr-2"></i>
+                  <span>
+                    <% if (currentUserProfile.city && currentUserProfile.country) { %>
+                    <%= currentUserProfile.city %>, <%= currentUserProfile.country %>
+                    <% } else if (currentUserProfile.city) { %>
+                    <%= currentUserProfile.city %>
+                    <% } else if (currentUserProfile.country) { %>
+                    <%= currentUserProfile.country %>
+                    <% } else { %>
+                    Location not specified
+                    <% } %>
+                  </span>
+                </div>
+                <% if (currentUserProfile.age) { %>
+                <div class="flex items-center text-gray-600 mb-2">
+                  <i class="ri-calendar-line mr-2"></i>
+                  <span><%= currentUserProfile.age %> years old</span>
+                </div>
+                <% } %>
+              </div>
+            </a>
+            <% } %>
+            
             <% if (profiles && profiles.length > 0) { %>
             <% profiles.forEach(profile => { %>
             <a href="/profiles/<%= profile.profileSlug || profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
@@ -725,15 +794,25 @@ html {
               </div>
             </div>
 
-            <!-- Age Range Filter -->
+            <!-- Age Range Filter (selects) -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-3">Age Range</label>
               <div class="grid grid-cols-2 gap-3">
                 <div>
-                  <input type="number" name="minAge" placeholder="Min Age" min="18" max="70" value="<%= filters?.minAge || '' %>" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+                  <select name="minAge" id="mobileMinAgeSelect" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm">
+                    <option value="">Min Age</option>
+                    <% for (let a = 18; a <= 70; a++) { %>
+                      <option value="<%= a %>" <%= (filters?.minAge && Number(filters.minAge) === a) ? 'selected' : '' %>><%= a %></option>
+                    <% } %>
+                  </select>
                 </div>
                 <div>
-                  <input type="number" name="maxAge" placeholder="Max Age" min="18" max="70" value="<%= filters?.maxAge || '' %>" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+                  <select name="maxAge" id="mobileMaxAgeSelect" class="block w-full px-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm">
+                    <option value="">Max Age</option>
+                    <% for (let a = 18; a <= 70; a++) { %>
+                      <option value="<%= a %>" <%= (filters?.maxAge && Number(filters.maxAge) === a) ? 'selected' : '' %>><%= a %></option>
+                    <% } %>
+                  </select>
                 </div>
               </div>
             </div>
@@ -789,36 +868,43 @@ html {
               </div>
             </div>
 
-            <!-- Location Filter -->
+            <!-- Location Filter: Country & City Selects -->
             <div>
-              <label for="mobile-city" class="block text-sm font-medium text-gray-700 mb-3">Location</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i class="ri-map-pin-line text-gray-400"></i>
+              <label class="block text-sm font-medium text-gray-700 mb-3">Location</label>
+              <div class="space-y-3">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="ri-earth-line text-gray-400"></i>
+                  </div>
+                  <select name="country" id="mobileFilterCountry" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none">
+                    <option value="">All Countries</option>
+                    <option value="United Kingdom" <%= filters?.country === 'United Kingdom' ? 'selected' : '' %> >United Kingdom</option>
+                    <option value="Pakistan" <%= filters?.country === 'Pakistan' ? 'selected' : '' %> >Pakistan</option>
+                    <option value="Bangladesh" <%= filters?.country === 'Bangladesh' ? 'selected' : '' %> >Bangladesh</option>
+                    <option value="India" <%= filters?.country === 'India' ? 'selected' : '' %> >India</option>
+                    <option value="United States" <%= filters?.country === 'United States' ? 'selected' : '' %> >United States</option>
+                    <option value="Canada" <%= filters?.country === 'Canada' ? 'selected' : '' %> >Canada</option>
+                    <option value="United Arab Emirates" <%= filters?.country === 'United Arab Emirates' ? 'selected' : '' %> >United Arab Emirates</option>
+                    <option value="Saudi Arabia" <%= filters?.country === 'Saudi Arabia' ? 'selected' : '' %> >Saudi Arabia</option>
+                    <option value="Australia" <%= filters?.country === 'Australia' ? 'selected' : '' %> >Australia</option>
+                    <option value="Germany" <%= filters?.country === 'Germany' ? 'selected' : '' %> >Germany</option>
+                    <option value="France" <%= filters?.country === 'France' ? 'selected' : '' %> >France</option>
+                    <option value="Malaysia" <%= filters?.country === 'Malaysia' ? 'selected' : '' %> >Malaysia</option>
+                    <option value="Singapore" <%= filters?.country === 'Singapore' ? 'selected' : '' %> >Singapore</option>
+                    <option value="Other" <%= filters?.country === 'Other' ? 'selected' : '' %> >Other</option>
+                  </select>
                 </div>
-                <input type="text" name="city" id="mobile-city" placeholder="Enter city or location" value="<%= filters?.city || '' %>" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+                <div class="relative">
+                  <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <i class="ri-map-pin-line text-gray-400"></i>
+                  </div>
+                  <select name="city" id="mobileFilterCity" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none" disabled>
+                    <option value="">Select City</option>
+                  </select>
+                </div>
               </div>
             </div>
 
-            <!-- Nationality Filter -->
-            <div>
-              <label for="mobile-nationality" class="block text-sm font-medium text-gray-700 mb-3">Nationality</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <i class="ri-earth-line text-gray-400"></i>
-                </div>
-                <select name="nationality" id="mobile-nationality" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none">
-                  <option value="">All Nationalities</option>
-                  <option value="British" <%= filters?.nationality === 'British' ? 'selected' : '' %>>British</option>
-                  <option value="Pakistani" <%= filters?.nationality === 'Pakistani' ? 'selected' : '' %>>Pakistani</option>
-                  <option value="Bangladeshi" <%= filters?.nationality === 'Bangladeshi' ? 'selected' : '' %>>Bangladeshi</option>
-                  <option value="Other" <%= filters?.nationality === 'Other' ? 'selected' : '' %>>Other</option>
-                </select>
-                <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  <i class="ri-arrow-down-s-line text-gray-400"></i>
-                </div>
-              </div>
-            </div>
             <!-- Apply Filters Button -->
             <button type="submit" class="w-full py-2.5 px-4 bg-primary text-white hover:bg-pink-600 transition-all duration-300 !rounded-button ripple material-shadow">
               <i class="ri-search-line mr-2"></i>Apply Filters
@@ -1063,6 +1149,61 @@ html {
           closeMobileFilterPanel();
         }
       });
+
+      // Mobile filter: Country and City functionality
+      const mobileFilterCountry = document.getElementById('mobileFilterCountry');
+      const mobileFilterCity = document.getElementById('mobileFilterCity');
+
+      const mobileCityData = {
+        'United Kingdom': ['London','Birmingham','Manchester','Glasgow','Liverpool','Leeds','Sheffield','Edinburgh','Bristol','Leicester','Bradford','Cardiff','Nottingham','Newcastle','Other'],
+        'Pakistan': ['Karachi','Lahore','Islamabad','Rawalpindi','Faisalabad','Multan','Peshawar','Quetta','Sialkot','Gujranwala','Hyderabad','Other'],
+        'Bangladesh': ['Dhaka','Chittagong','Sylhet','Khulna','Rajshahi','Comilla','Gazipur','Narayanganj','Other'],
+        'India': ['Mumbai','Delhi','Bangalore','Hyderabad','Chennai','Kolkata','Ahmedabad','Pune','Lucknow','Jaipur','Other'],
+        'United States': ['New York','Los Angeles','Chicago','Houston','Dallas','San Francisco','Miami','Atlanta','Washington DC','Boston','Other'],
+        'Canada': ['Toronto','Vancouver','Montreal','Calgary','Ottawa','Edmonton','Mississauga','Brampton','Other'],
+        'United Arab Emirates': ['Dubai','Abu Dhabi','Sharjah','Ajman','Al Ain','Ras Al Khaimah','Other'],
+        'Saudi Arabia': ['Riyadh','Jeddah','Mecca','Medina','Dammam','Dhahran','Other'],
+        'Australia': ['Sydney','Melbourne','Brisbane','Perth','Adelaide','Gold Coast','Other'],
+        'Germany': ['Berlin','Munich','Frankfurt','Hamburg','Cologne','Dusseldorf','Other'],
+        'France': ['Paris','Lyon','Marseille','Toulouse','Nice','Strasbourg','Other'],
+        'Malaysia': ['Kuala Lumpur','George Town','Johor Bahru','Ipoh','Shah Alam','Other'],
+        'Singapore': ['Singapore','Other'],
+        'Other': ['Other']
+      };
+
+      if (mobileFilterCountry && mobileFilterCity) {
+        mobileFilterCountry.addEventListener('change', function() {
+          const country = this.value;
+          mobileFilterCity.innerHTML = '<option value="">Select City</option>';
+          if (country && mobileCityData[country]) {
+            mobileFilterCity.disabled = false;
+            mobileCityData[country].forEach(c => {
+              const opt = document.createElement('option');
+              opt.value = c;
+              opt.textContent = c;
+              mobileFilterCity.appendChild(opt);
+            });
+          } else {
+            mobileFilterCity.disabled = true;
+          }
+        });
+
+        // Initialize if a country is already selected
+        if (mobileFilterCountry.value) {
+          const evt = new Event('change');
+          mobileFilterCountry.dispatchEvent(evt);
+          // If a city filter exists, set it
+          const urlParams = new URLSearchParams(window.location.search);
+          const currentCity = urlParams.get('city');
+          if (currentCity) {
+            Array.from(mobileFilterCity.options).forEach(o => {
+              if (o.value.toLowerCase() === currentCity.toLowerCase()) {
+                o.selected = true;
+              }
+            });
+          }
+        }
+      }
     });
   </script>
   <script id="active-filters">

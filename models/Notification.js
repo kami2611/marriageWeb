@@ -19,6 +19,7 @@ const notificationSchema = new mongoose.Schema({
       "request_sent",        // **ADD THIS**
       "connection_made",
       "system_announcement",
+      "profile_approved",
     ],
   },
   title: {

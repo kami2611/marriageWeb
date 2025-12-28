@@ -78,7 +78,7 @@ const emailTemplates = {
 </ul>
             </div>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="https://damourmuslim.com/account" class="button">View Your Requests</a>
+              <a style="color:white" href="https://damourmuslim.com/account" class="button">View Your Requests</a>
             </div>
           </div>
           <div class="footer">
@@ -131,8 +131,8 @@ const emailTemplates = {
 <p>You can now view <strong>${senderUsername}'s complete profile</strong> including their contact details. If you accept this request, they will also be able to view your full profile.</p>
             </div>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${senderProfileUrl}" class="button">View Their Profile</a>
-              <a href="https://damourmuslim.com/account" class="button button-secondary">Manage Requests</a>
+              <a style="color:white" href="${senderProfileUrl}" class="button">View Their Profile</a>
+              <a style="color:white" href="https://damourmuslim.com/account" class="button button-secondary">Manage Requests</a>
             </div>
           </div>
           <div class="footer">
@@ -186,7 +186,7 @@ const emailTemplates = {
               <p>We wish you the best on your journey to finding your life partner!</p>
             </div>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${acceptedByProfileUrl}" class="button">View ${acceptedByUsername}'s Full Profile</a>
+              <a style="color:white" href="${acceptedByProfileUrl}" class="button">View ${acceptedByUsername}'s Full Profile</a>
             </div>
           </div>
           <div class="footer">
@@ -235,7 +235,7 @@ const emailTemplates = {
 <p>May Allah bless this connection!</p>
             </div>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="${acceptedProfileUrl}" class="button">View ${acceptedUsername}'s Profile</a>
+              <a style="color:white" href="${acceptedProfileUrl}" class="button">View ${acceptedUsername}'s Profile</a>
             </div>
           </div>
           <div class="footer">
@@ -287,7 +287,7 @@ const emailTemplates = {
               <p>Finding the right match takes time. We encourage you to explore more profiles and send requests to others who interest you.</p>
             </div>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="https://damourmuslim.com/profiles" class="button">Browse More Profiles</a>
+              <a style="color:white" href="https://damourmuslim.com/profiles" class="button">Browse More Profiles</a>
             </div>
           </div>
           <div class="footer">

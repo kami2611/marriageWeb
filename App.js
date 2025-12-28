@@ -48,6 +48,7 @@ const NotificationService = require("./services/notificationService");
 const QueueService = require("./services/queueService");
 const isLoggedIn = require("./middlewares/isLoggedIn");
 const findUser = require("./middlewares/findUser");
+const requireApprovedProfile = require("./middlewares/requireApprovedProfile");
 const {
   requireAdminOrModerator,
   requireAdminOnly,
@@ -190,8 +191,10 @@ const {
   generateVerificationCode,
   sendVerificationEmail,
   sendPasswordResetEmail,
+  sendProfileApprovalEmail,
 } = require("./services/emailService");
 const requireProfileComplete = require("./middlewares/requireProfileComplete");
+const requireOnboardingComplete = require("./middlewares/requireOnboardingComplete");
 
 // Add this middleware after your session setup but before your routes
 app.set("view engine", "ejs");
@@ -221,7 +224,7 @@ app.use((req, res, next) => {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.get(["/", "/home"], (req, res) => {
+app.get(["/", "/home"], requireOnboardingComplete, (req, res) => {
   res.render("home", {
     user: req.session.user || null,
   });
@@ -232,22 +235,28 @@ app.get("/register", (req, res) => {
     // User is already logged in, redirect to home or dashboard
     return res.redirect("/home");
   }
-  res.render("register", {
-    countryOptions,
-    countryPlaceholders,
-    query: req.query,
+  res.render("register-new", {
+    error: req.query.error || null,
   });
 });
 
 app.get("/onboarding", isLoggedIn, findUser, (req, res) => {
   const user = req.userData;
 
-  // Check if user has completed onboarding
-  // if (user.profileSlug && user.name && user.age && user.country) {
-  //   return res.redirect(`/account/info`);
-  // }
+  // Check if user has completed onboarding (has all required fields from 5 steps)
+  // Step 1: profileFor, gender, username
+  // Step 2: name, age, height, maritalStatus  
+  // Step 3: city, country
+  // Step 4: highestEducation, work
+  // Step 5: lookingForASpouseThatIs, aboutMe, contact
+  if (user.profileSlug && user.name && user.age && user.height && 
+      user.maritalStatus && user.city && user.country && 
+      user.highestEducation && user.work && 
+      user.lookingForASpouseThatIs && user.aboutMe && user.contact) {
+    return res.redirect(`/account/info`);
+  }
 
-  res.render("onboarding", { user });
+  res.render("onboarding-new", { user });
 });
 // **NEW**: Save onboarding step
 app.post("/api/onboarding/save", isLoggedIn, findUser, async (req, res) => {
@@ -257,15 +266,55 @@ app.post("/api/onboarding/save", isLoggedIn, findUser, async (req, res) => {
 
     console.log(`Onboarding step ${step} data:`, data);
 
+    // Server-side validation for step 6 (phone number)
+    if (Number(step) === 6) {
+      const countryCode = data.countryCode;
+      const contactRaw = String(data.contact || "");
+      const digits = contactRaw.replace(/\D/g, "");
+
+      const phoneRules = {
+        "+44": { min: 10, max: 10 },
+        "+92": { min: 10, max: 10 },
+        "+880": { min: 10, max: 10 },
+        "+91": { min: 10, max: 10 },
+        "+1": { min: 10, max: 10 },
+        "+971": { min: 9, max: 9 },
+        "+966": { min: 9, max: 9 },
+        "+61": { min: 9, max: 9 },
+        "+49": { min: 10, max: 11 },
+        "+33": { min: 9, max: 9 },
+        "+60": { min: 9, max: 10 },
+        "+65": { min: 8, max: 8 },
+      };
+
+      const rule = phoneRules[countryCode];
+      if (!rule || digits.length < rule.min || digits.length > rule.max) {
+        return res.json({
+          success: false,
+          error: "invalid_phone",
+          message: "Please enter a valid phone number for your selected country.",
+        });
+      }
+    }
+
     // Update user fields based on step
     Object.keys(data).forEach((key) => {
-      if (data[key] !== undefined && data[key] !== "" && data[key] !== "N/A") {
-        user[key] = data[key];
-      }
-    });
+  if (data[key] !== undefined && data[key] !== "" && data[key] !== "N/A") {
+    // Handle numeric fields
+    if (key === 'age' || key === 'height') {
+      user[key] = Number(data[key]) || data[key];
+    } else if (key === 'contact') {
+      // Strip all non-numeric characters and convert to Number
+      const cleanedContact = String(data[key]).replace(/\D/g, '');
+      user[key] = cleanedContact ? Number(cleanedContact) : null;
+    } else {
+      user[key] = data[key];
+    }
+  }
+});
 
-    // Generate profile slug when we have enough data (step 1)
-    if (step === 1 && user.name) {
+    // Generate profile slug when we have the name (step 2)
+    if (step === 2 && user.name && !user.profileSlug) {
       user.profileSlug = await generateUniqueSlug(user);
     }
 
@@ -277,7 +326,7 @@ app.post("/api/onboarding/save", isLoggedIn, findUser, async (req, res) => {
     res.json({
       success: true,
       message: `Step ${step} completed successfully!`,
-      isLastStep: step === 4,
+      isLastStep: Number(step) === 6,
     });
   } catch (error) {
     console.error("Onboarding save error:", error);
@@ -301,6 +350,7 @@ app.post("/api/onboarding/complete", isLoggedIn, findUser, async (req, res) => {
       await user.save();
     }
 
+    // No server-side phone validation - handled on client side
     res.json({
       success: true,
       redirectUrl: `/account/info?from=onboarding`,
@@ -381,7 +431,11 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
     }
 
     // Contact & Location Tab
-    if (formData.contact) user.contact = formData.contact;
+    if (formData.contact) {
+  // Strip all non-numeric characters and convert to Number
+  const cleanedContact = String(formData.contact).replace(/\D/g, '');
+  user.contact = cleanedContact ? Number(cleanedContact) : null;
+}
     if (formData.waliMyContactDetails)
       user.waliMyContactDetails = formData.waliMyContactDetails;
     if (formData.adress) user.adress = formData.adress;
@@ -570,109 +624,116 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
     res.json({ error: `Failed to update profile: ${error.message}` });
   }
 });
-// Update the existing /register POST route
+// Update the existing /register POST route - NEW SIMPLIFIED FLOW
 app.post("/register", async (req, res) => {
   console.log("Register request body:", req.body);
 
-  const { email, password, confirmPassword } = req.body;
+  const { email, password, confirmPassword, emailVerified } = req.body;
 
-  if (!password) {
-    return res.render("register", {
-      error: "Password is required.",
-      countryOptions,
-      countryPlaceholders,
+  // Validate required fields
+  if (!email || !password) {
+    return res.render("register-new", {
+      error: "Email and password are required.",
     });
   }
 
-  // Check if temp user exists from gender/username step
-  if (!req.session.tempUserId) {
-    return res.render("register", {
-      error: "Please complete the verification process first.",
-      countryOptions,
-      countryPlaceholders,
+  // Check email verification
+  if (emailVerified !== 'true' || !req.session.emailVerified || req.session.verifiedEmail !== email.toLowerCase()) {
+    return res.render("register-new", {
+      error: "Please verify your email address first.",
     });
   }
 
   // Check password confirmation
   if (password !== confirmPassword) {
-    return res.render("register", {
+    return res.render("register-new", {
       error: "Passwords do not match.",
-      countryOptions,
-      countryPlaceholders,
     });
-  }
-
-  // Email verification check (if email provided)
-  if (email && email.trim()) {
-    if (
-      !req.session.emailVerified ||
-      req.session.verifiedEmail !== email.toLowerCase()
-    ) {
-      return res.render("register", {
-        error:
-          "Please verify your email address or leave it empty to register without email.",
-        countryOptions,
-        countryPlaceholders,
-      });
-    }
   }
 
   // Check password length
   if (password.length < 5) {
-    return res.render("register", {
+    return res.render("register-new", {
       error: "Password must be at least 5 characters long.",
-      countryOptions,
-      countryPlaceholders,
+    });
+  }
+
+  // Validate email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.render("register-new", {
+      error: "Please enter a valid email address.",
     });
   }
 
   try {
-    // Get the temporary user
-    const user = await User.findById(req.session.tempUserId);
-    if (!user) {
-      return res.render("register", {
-        error: "Session expired. Please start registration again.",
-        countryOptions,
-        countryPlaceholders,
+    // Check if email already exists
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    if (existingUser) {
+      return res.render("register-new", {
+        error: "An account with this email already exists. Please login instead.",
       });
     }
 
-    // Update user with final details
-    const hashedPassword = await bcrypt.hash(password, 12);
-    user.password = hashedPassword;
+    // Generate a unique username
+    const generateUsername = () => {
+      const adjectives = ['happy', 'bright', 'noble', 'kind', 'wise', 'calm', 'pure', 'true'];
+      const nouns = ['soul', 'heart', 'star', 'light', 'moon', 'rose', 'pearl', 'gem'];
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const noun = nouns[Math.floor(Math.random() * nouns.length)];
+      const num = Math.floor(Math.random() * 9999);
+      return `${adj}${noun}${num}`;
+    };
 
-    // Add email if provided
-    if (email && email.trim()) {
-      user.email = email.toLowerCase();
-      user.isEmailVerified = true;
+    let username = generateUsername();
+    // Ensure username is unique
+    while (await User.findOne({ username })) {
+      username = generateUsername();
     }
 
-    await user.save();
+    // Create new user
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const newUser = new User({
+      username,
+      email: email.toLowerCase(),
+      password: hashedPassword,
+      registrationSource: "register",
+      isApproved: false,
+      approvalStatus: "pending",
+      isEmailVerified: true, // Email was verified during registration
+    });
 
-    console.log("User registration completed:", user.username);
+    // Generate profile slug
+    newUser.profileSlug = await generateUniqueSlug(newUser);
+    await newUser.save();
 
-    // Set up session
-    req.session.userId = user._id;
-    req.session.user = user;
+    console.log("User registration completed:", newUser.username);
 
-    // Clean up temporary session data
-    delete req.session.tempUserId;
+    // Clean up verification session data
     delete req.session.emailVerified;
     delete req.session.verifiedEmail;
-    delete req.session.passcodeVerified;
-    delete req.session.verifiedMobile;
 
-    return res.redirect("/onboarding");
+    // Set up session
+    req.session.userId = newUser._id;
+    req.session.user = newUser;
+
+    // Save session before redirect to ensure data is persisted
+    req.session.save((err) => {
+      if (err) {
+        console.error("Session save error:", err);
+      }
+      return res.redirect("/onboarding");
+    });
   } catch (error) {
-    console.error("Registration completion error:", error);
-    return res.render("register", {
+    console.error("Registration error:", error);
+    return res.render("register-new", {
       error: "Registration failed. Please try again.",
-      countryOptions,
-      countryPlaceholders,
     });
   }
 });
-// **NEW**: Passcode verification route
+
+// Keep old passcode verification route for backward compatibility but mark as deprecated
+// **DEPRECATED**: Passcode verification route
 app.post("/api/verify-passcode", async (req, res) => {
   try {
     const { countryCode, mobileNumber, passcode } = req.body;
@@ -1007,7 +1068,7 @@ app.get("/logout", (req, res) => {
   });
 });
 
-app.get(["/account", "/account/info"], isLoggedIn, findUser, (req, res) => {
+app.get(["/account", "/account/info"], isLoggedIn, findUser, requireOnboardingComplete, (req, res) => {
   const accountInfo = req.userData;
   res.render("account/info", { accountInfo });
 });
@@ -1271,22 +1332,30 @@ app.post("/api/requests/:requestId/revoke", isLoggedIn, async (req, res) => {
     });
   }
 });
-app.get("/profiles", async (req, res) => {
+app.get("/profiles",requireOnboardingComplete, async (req, res) => {
   // Pagination params
   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
   const limit = 12;
   const skip = (page - 1) * limit;
 
   // Extract filter parameters
-  const { gender, minAge, maxAge, minHeight, maxHeight, city, nationality } =
+  const { gender, minAge, maxAge, minHeight, maxHeight, city, country, nationality } =
     req.query;
 
   // Build filter object
   const filter = {};
 
+  // **NEW**: Only show approved profiles to regular users
+  // Admins and moderators can see all profiles
+  if (!req.session.isAdmin && !req.session.isModerator) {
+    filter.isApproved = true;
+    filter.approvalStatus = "approved";
+  }
+
   if (gender) filter.gender = gender;
   if (city) filter.city = { $regex: new RegExp(city, "i") };
-  if (nationality) filter.nationality = nationality;
+  if (country) filter.country = { $regex: new RegExp(country, "i") };
+  if (nationality) filter.nationality = nationality; // kept for backward compatibility
 
   // Age range filter
   if (minAge || maxAge) {
@@ -1364,10 +1433,17 @@ app.get("/profiles", async (req, res) => {
       minHeight,
       maxHeight,
       city,
+      country,
       nationality,
     };
 
     const totalPages = Math.ceil(totalProfiles / limit);
+
+    // Get current user's profile if logged in
+    let currentUserProfile = null;
+    if (req.session.userId) {
+      currentUserProfile = await User.findById(req.session.userId);
+    }
 
     return res.render("profiles", {
       featuredProfiles, // **NEW**
@@ -1377,6 +1453,7 @@ app.get("/profiles", async (req, res) => {
       page,
       totalPages,
       totalProfiles,
+      currentUserProfile, // **NEW**: Pass current user's profile for pending notice
     });
   } catch (error) {
     console.error("Error fetching profiles:", error);
@@ -1404,6 +1481,17 @@ app.get("/profiles/:slug", async (req, res) => {
     }
 
     if (!foundProfile) {
+      return res.status(404).render("404", {
+        title: "Profile Not Found - D'amour Muslim",
+        url: req.originalUrl,
+      });
+    }
+
+    // **NEW**: Hide unapproved profiles from regular users
+    // Only admins and moderators can view unapproved profiles
+    // Also allow the user to see their own profile
+    const isOwnProfile = req.session.userId && foundProfile._id.toString() === req.session.userId.toString();
+    if (!foundProfile.isApproved && !req.session.isAdmin && !req.session.isModerator && !isOwnProfile) {
       return res.status(404).render("404", {
         title: "Profile Not Found - D'amour Muslim",
         url: req.originalUrl,
@@ -1492,7 +1580,8 @@ app.get("/profiles/:slug", async (req, res) => {
       user: req.session.user,
       isAdmin: req.session.isAdmin,
       filters: null,
-      similarProfiles
+      similarProfiles,
+      isOwnProfile,         // **NEW**: Pass if viewing own profile
     });
   } catch (err) {
     console.error("Profile route error:", err);
@@ -1509,6 +1598,7 @@ app.post(
   "/interested/:id",
   isLoggedIn,
   requireProfileComplete,
+  requireApprovedProfile,
   async (req, res) => {
     try {
       const interestedInUserId = req.params.id;
@@ -1520,6 +1610,14 @@ app.post(
 
       if (!currentUser || !interestedInUser) {
         return res.status(404).json({ error: "User not found" });
+      }
+
+      // **NEW**: Check if the target user is approved (can't send requests to unapproved profiles)
+      if (!interestedInUser.isApproved) {
+        return res.status(400).json({ 
+          error: "cannot_send_to_unapproved",
+          message: "This profile is pending approval and cannot receive requests yet." 
+        });
       }
 
       // **NEW**: Check request limit (max 5 pending requests)
@@ -1633,6 +1731,12 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
       query.registrationSource = "register";
     } else if (filter === "featured") {
       query.isFeatured = true;
+    } else if (filter === "pending") {
+      // **NEW**: Filter for pending approval profiles
+      query.approvalStatus = "pending";
+    } else if (filter === "approved") {
+      // **NEW**: Filter for approved profiles
+      query.approvalStatus = "approved";
     } else if (filter && filter.startsWith("employee-")) {
       const employeeName = filter.replace("employee-", "");
       query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
@@ -1647,6 +1751,9 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
     const byAdmin = await User.countDocuments({ registrationSource: "admin" });
     const bySelf = await User.countDocuments({ registrationSource: "register" });
     const featuredCount = await User.countDocuments({ isFeatured: true });
+    // **NEW**: Pending and approved counts
+    const pendingCount = await User.countDocuments({ approvalStatus: "pending" });
+    const approvedCount = await User.countDocuments({ approvalStatus: "approved" });
 
     // Extract unique employee/referrer names
     const allUsers = await User.find({}, { passcodeUsed: 1 }).lean();
@@ -1686,6 +1793,8 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
         bySelf,
       },
       featuredCount,
+      pendingCount,
+      approvedCount,
       employeeStats,
     };
 
@@ -1705,6 +1814,8 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
         totalUsers: 0,
         registrationSources: { byAdmin: 0, bySelf: 0 },
         featuredCount: 0,
+        pendingCount: 0,
+        approvedCount: 0,
         employeeStats: {},
       },
       currentFilter: "all",
@@ -1754,6 +1865,93 @@ app.post("/admin/user/:id/delete", requireAdminOnly, async (req, res) => {
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: "Delete failed" });
+  }
+});
+
+// **NEW**: Approve user profile route
+app.post("/api/admin/user/:id/approve", requireAdminOrModerator, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    user.isApproved = true;
+    user.approvalStatus = "approved";
+    user.approvedAt = new Date();
+    user.approvedBy = req.session.adminUsername || "admin";
+    
+    await user.save();
+
+    console.log(`User ${user.username} approved by ${user.approvedBy}`);
+
+    // Send congratulations email if user has email
+    if (user.email) {
+      try {
+        await sendProfileApprovalEmail(user.email, user.username, user.name);
+        console.log(`Approval email sent to ${user.email}`);
+      } catch (emailError) {
+        console.error("Failed to send approval email:", emailError);
+        // Don't fail the approval if email fails
+      }
+    }
+
+    // Create notification for the user
+    try {
+      await NotificationService.createNotification({
+        userId: user._id,
+        type: "profile_approved",
+        title: "🎉 Profile Approved!",
+        message: "Congratulations! Your profile has been reviewed and approved by our team. You can now receive interest requests from other members.",
+        priority: "high",
+        actionUrl: "/account/info",
+        actionText: "View Profile",
+      });
+      console.log(`Approval notification created for user ${user.username}`);
+    } catch (notifError) {
+      console.error("Failed to create approval notification:", notifError);
+      // Don't fail the approval if notification fails
+    }
+
+    res.json({ 
+      success: true, 
+      message: `Profile for ${user.name || user.username} has been approved.` 
+    });
+  } catch (error) {
+    console.error("Approve user error:", error);
+    res.status(500).json({ success: false, error: "Failed to approve user" });
+  }
+});
+
+// **NEW**: Reject user profile route
+app.post("/api/admin/user/:id/reject", requireAdminOrModerator, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
+
+    user.isApproved = false;
+    user.approvalStatus = "rejected";
+    user.rejectedAt = new Date();
+    user.rejectionReason = reason || "Profile did not meet our guidelines";
+    
+    await user.save();
+
+    console.log(`User ${user.username} rejected. Reason: ${user.rejectionReason}`);
+
+    res.json({ 
+      success: true, 
+      message: `Profile for ${user.name || user.username} has been rejected.` 
+    });
+  } catch (error) {
+    console.error("Reject user error:", error);
+    res.status(500).json({ success: false, error: "Failed to reject user" });
   }
 });
 
@@ -3511,27 +3709,28 @@ app.post(
     try {
       const { email, username } = req.body;
 
-      if (!email || !username) {
+      if (!email) {
         return res.json({
           success: false,
-          error: "Email and username are required",
+          error: "Email is required",
         });
       }
 
       // Check if email already exists and is verified
       const existingUser = await User.findOne({ email: email.toLowerCase() });
-      if (existingUser && existingUser.isEmailVerified) {
+      if (existingUser) {
         return res.json({
           success: false,
-          error: "This email is already registered and verified",
+          error: "This email is already registered. Please login instead.",
         });
       }
 
       // Generate verification code
       const code = generateVerificationCode();
 
-      // Send email
-      const emailResult = await sendVerificationEmail(email, code, username);
+      // Send email (username is optional for registration flow)
+      const displayName = username || email.split('@')[0];
+      const emailResult = await sendVerificationEmail(email, code, displayName);
 
       if (!emailResult.success) {
         return res.json({
@@ -3544,7 +3743,7 @@ app.post(
       req.session.pendingVerification = {
         email: email.toLowerCase(),
         code: code,
-        username: username,
+        username: username || null,
         expiry: Date.now() + 10 * 60 * 1000, // 10 minutes
       };
 
@@ -3562,16 +3761,24 @@ app.post(
 // Verify email code
 app.post("/api/verify-email-code", async (req, res) => {
   try {
-    const { code } = req.body;
+    const { code, email } = req.body;
 
     if (!req.session.pendingVerification) {
       return res.json({
         success: false,
-        error: "No pending verification found",
+        error: "No pending verification found. Please request a new code.",
       });
     }
 
     const pending = req.session.pendingVerification;
+
+    // Verify email matches
+    if (email && email.toLowerCase() !== pending.email) {
+      return res.json({
+        success: false,
+        error: "Email mismatch. Please request a new code.",
+      });
+    }
 
     // Check if code expired
     if (Date.now() > pending.expiry) {
@@ -3918,7 +4125,7 @@ app.get("/privacy", (req, res) => {
 // Public blog listing page
 // Replace the existing /blog route with this updated version
 
-app.get("/blog", async (req, res) => {
+app.get("/blog",requireOnboardingComplete, async (req, res) => {
   try {
     const { category, tag } = req.query;
 
@@ -4040,7 +4247,7 @@ app.get("/blog", async (req, res) => {
 
 // Public individual blog page
 
-app.get("/blog/:slug", async (req, res) => {
+app.get("/blog/:slug",requireOnboardingComplete, async (req, res) => {
   try {
     const { slug } = req.params;
 

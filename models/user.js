@@ -142,6 +142,9 @@ const userSchema = new mongoose.Schema({
       year: { type: String },
     },
   ],
+  highestEducation: {
+    type: String,
+  },
   work: {
     type: String,
   },
@@ -339,6 +342,32 @@ const userSchema = new mongoose.Schema({
   },
   seoField2: {
     type: String,
+  },
+  // Profile approval system
+  isApproved: {
+    type: Boolean,
+    default: false,
+  },
+  approvalStatus: {
+    type: String,
+    enum: ["pending", "approved", "rejected"],
+    default: "pending",
+  },
+  approvedAt: {
+    type: Date,
+    default: null,
+  },
+  approvedBy: {
+    type: String,
+    default: null,
+  },
+  rejectedAt: {
+    type: Date,
+    default: null,
+  },
+  rejectionReason: {
+    type: String,
+    default: null,
   },
 });
 module.exports = mongoose.model("User", userSchema);
