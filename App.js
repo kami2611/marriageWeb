@@ -1856,17 +1856,6 @@ app.post("/admin/user/:id/edit", async (req, res) => {
     res.status(500).json({ error: "Update failed" });
   }
 });
-app.post("/admin/user/:id/delete", requireAdminOnly, async (req, res) => {
-  if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
-  const { id } = req.params;
-  try {
-    await User.findByIdAndDelete(id);
-    // Optionally: delete related requests, images, etc.
-    res.json({ success: true });
-  } catch (err) {
-    res.status(500).json({ error: "Delete failed" });
-  }
-});
 
 // **NEW**: Approve user profile route
 app.post("/api/admin/user/:id/approve", requireAdminOrModerator, async (req, res) => {
@@ -1954,7 +1943,140 @@ app.post("/api/admin/user/:id/reject", requireAdminOrModerator, async (req, res)
     res.status(500).json({ success: false, error: "Failed to reject user" });
   }
 });
+// **NEW**: Delete user account (with archive)
+app.post("/api/admin/user/:id/delete", requireAdminOnly, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const adminUsername = req.session.user?.username || "Admin";
+    const DeletedAccount = require("./models/deletedAccount");
 
+    const user = await User.findById(id);
+    if (!user) {
+      return res.json({ success: false, error: "User not found" });
+    }
+
+    // Create archived copy of ALL user data before deletion
+    const archivedAccount = new DeletedAccount({
+      originalUserId: user._id,
+      userData: user.toObject(), // Complete user data snapshot
+      username: user.username,
+      email: user.email,
+      name: user.name,
+      gender: user.gender,
+      registeredAt: user.registeredAt,
+      deletedBy: adminUsername,
+      deletionReason: reason || "Account deleted by admin",
+      canReactivate: false, // Account is permanently deleted
+    });
+
+    await archivedAccount.save();
+    console.log(`User ${user.username} data archived successfully`);
+
+    // Permanently delete the user (pre-delete middleware will clean up requests & notifications)
+    await User.findByIdAndDelete(id);
+    
+    console.log(`User ${user.username} permanently deleted by ${adminUsername}`);
+
+    res.json({
+      success: true,
+      message: "Account archived and permanently deleted",
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.json({
+      success: false,
+      error: "Failed to delete account: " + error.message,
+    });
+  }
+});
+
+// **NEW**: Get deleted accounts list
+app.get("/admin/deletedaccounts", requireAdminOnly, async (req, res) => {
+  try {
+    const DeletedAccount = require("./models/deletedAccount");
+    
+    const deletedAccounts = await DeletedAccount.find({})
+      .sort({ deletedAt: -1 })
+      .limit(100);
+
+    const totalDeleted = await DeletedAccount.countDocuments({});
+    const canReactivateCount = await DeletedAccount.countDocuments({ canReactivate: true });
+    const reactivatedCount = await DeletedAccount.countDocuments({ reactivatedAt: { $ne: null } });
+
+    res.render("admin/deletedaccounts", {
+      deletedAccounts,
+      totalDeleted,
+      canReactivateCount,
+      reactivatedCount,
+      currentUser: req.session.user,
+      isAdmin: req.session.user.role === "admin",
+      isProd: process.env.NODE_ENV === "production",
+      GA_ID: process.env.GA_ID,
+    });
+  } catch (error) {
+    console.error("Error loading deleted accounts:", error);
+    res.status(500).send("Error loading deleted accounts");
+  }
+});
+
+// **NEW**: View specific deleted account details
+app.get("/admin/deletedaccounts/:id", requireAdminOnly, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const DeletedAccount = require("./models/deletedAccount");
+    
+    const deletedAccount = await DeletedAccount.findById(id);
+    
+    if (!deletedAccount) {
+      return res.status(404).send("Deleted account not found");
+    }
+
+    // Check if user still exists (deactivated) or completely deleted
+    const currentUser = await User.findById(deletedAccount.originalUserId);
+
+    res.render("admin/deletedAccountDetail", {
+      deletedAccount,
+      currentUser, // null if permanently deleted, exists if just deactivated
+      isAdmin: req.session.user.role === "admin",
+      adminUser: req.session.user,
+      isProd: process.env.NODE_ENV === "production",
+      GA_ID: process.env.GA_ID,
+    });
+  } catch (error) {
+    console.error("Error loading deleted account details:", error);
+    res.status(500).send("Error loading deleted account details");
+  }
+});
+
+// **NEW**: Permanently delete archive record (user is already deleted)
+app.post("/admin/deletedaccounts/:id/permanent-delete", requireAdminOnly, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const DeletedAccount = require("./models/deletedAccount");
+    
+    const deletedAccount = await DeletedAccount.findById(id);
+    if (!deletedAccount) {
+      return res.json({ success: false, error: "Archive record not found" });
+    }
+
+    // Delete the archive record
+    await DeletedAccount.findByIdAndDelete(id);
+
+    console.log(`Archive record permanently deleted: ${deletedAccount.username}`);
+
+    res.json({
+      success: true,
+      message: "Archive record permanently deleted",
+    });
+  } catch (error) {
+    console.error("Error permanently deleting archive record:", error);
+    res.json({
+      success: false,
+      error: "Failed to permanently delete archive record",
+    });
+  }
+});
 app.post("/admin/user/add", requireAdminOnly, async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 

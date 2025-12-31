@@ -369,5 +369,58 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  rejectionReason: {
+    type: String,
+    default: null,
+  },
+  // Account deactivation system
+  isDeactivated: {
+    type: Boolean,
+    default: false,
+  },
+  deactivatedAt: {
+    type: Date,
+    default: null,
+  },
+  deactivatedBy: {
+    type: String,
+    default: null,
+  },
+  deactivationReason: {
+    type: String,
+    default: null,
+  },
 });
+
+// Pre-delete middleware to clean up associated data
+userSchema.pre('findOneAndDelete', async function(next) {
+  try {
+    const userId = this.getFilter()._id;
+    
+    if (userId) {
+      // Import models here to avoid circular dependency
+      const Request = require('./Request');
+      const Notification = require('./Notification');
+      
+      // Delete all requests where user is sender or receiver
+      const requestsDeleted = await Request.deleteMany({
+        $or: [
+          { from: userId },
+          { to: userId }
+        ]
+      });
+      console.log(`Deleted ${requestsDeleted.deletedCount} requests for user ${userId}`);
+      
+      // Delete all notifications for this user
+      const notificationsDeleted = await Notification.deleteMany({ userId: userId });
+      console.log(`Deleted ${notificationsDeleted.deletedCount} notifications for user ${userId}`);
+    }
+    
+    next();
+  } catch (error) {
+    console.error('Error in pre-delete middleware:', error);
+    next(error);
+  }
+});
+
 module.exports = mongoose.model("User", userSchema);

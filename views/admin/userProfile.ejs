@@ -198,10 +198,6 @@
             <i class="ri-save-line sm:mr-2"></i>
             <span class="hidden sm:inline">Save All Changes</span>
           </button>
-          <button id="deleteUserBtn" class="px-2 sm:px-4 py-1.5 sm:py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-lg text-xs sm:text-sm font-medium">
-            <i class="ri-delete-bin-line sm:mr-2"></i>
-            <span class="hidden sm:inline">Delete User</span>
-          </button>
           <% } %>
           <a href="/profiles/<%= user.profileSlug %>" target="_blank" class="px-2 sm:px-4 py-1.5 sm:py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-lg text-xs sm:text-sm font-medium">
             <i class="ri-external-link-line sm:mr-2"></i>
@@ -302,6 +298,10 @@
               <button id="resetPasswordBtn" class="w-full px-4 py-2 bg-blue-50 text-blue-700 hover:bg-blue-100 transition-all duration-300 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
                 <i class="ri-lock-password-line"></i>
                 Reset Password
+              </button>
+              <button id="deleteAccountBtn" class="w-full px-4 py-2.5 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
+                <i class="ri-delete-bin-line"></i>
+                Delete Account
               </button>
               <% if (user.contact) { %>
               <a href="https://wa.me/<%= user.contact %>" target="_blank" class="w-full px-4 py-2 bg-green-50 text-green-700 hover:bg-green-100 transition-all duration-300 rounded-lg text-sm font-medium flex items-center justify-center gap-2">
@@ -610,6 +610,7 @@
                 <% if (acceptedRequests.length > 0) { %>
                 <div class="space-y-4">
                   <% acceptedRequests.forEach(request => { %>
+                  <% if (request.from && request.to) { %>
                   <div class="request-card flex items-center justify-between p-4 bg-green-50 rounded-lg border border-green-100">
                     <div class="flex items-center gap-4">
                       <div class="w-12 h-12 rounded-full bg-green-200 flex items-center justify-center">
@@ -632,6 +633,7 @@
                       </button>
                     </div>
                   </div>
+                  <% } %>
                   <% }) %>
                 </div>
                 <% } else { %>
@@ -665,6 +667,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                       <% userRequests.forEach(request => { %>
+                      <% if (request.from && request.to) { %>
                       <tr>
                         <td class="px-4 py-3">
                           <% if (request.from._id.toString() === user._id.toString()) { %>
@@ -691,6 +694,7 @@
                           <% } else { %>-<% } %>
                         </td>
                       </tr>
+                      <% } %>
                       <% }) %>
                     </tbody>
                   </table>
@@ -902,42 +906,6 @@
     </div>
   </main>
 
-  <!-- Delete User Modal -->
-  <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
-    <div class="bg-white rounded-2xl p-8 max-w-md mx-4 material-shadow-elevated">
-      <div class="text-center mb-6">
-        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <i class="ri-error-warning-line text-3xl text-red-500"></i>
-        </div>
-        <h3 class="text-2xl font-bold text-gray-900 mb-2">Delete User Profile</h3>
-        <p class="text-gray-600">This action cannot be undone. All user data will be permanently deleted.</p>
-      </div>
-      <div class="bg-gray-50 rounded-lg p-4 mb-6">
-        <div class="flex items-center">
-          <div class="w-12 h-12 bg-gray-300 rounded-full flex items-center justify-center mr-3">
-            <i class="ri-user-line text-xl text-gray-600"></i>
-          </div>
-          <div>
-            <p class="font-semibold text-gray-900"><%= user.name || user.username %></p>
-            <p class="text-sm text-gray-500">@<%= user.username %></p>
-          </div>
-        </div>
-      </div>
-      <div class="mb-6">
-        <p class="text-sm font-medium text-gray-700 mb-3">Type "delete" below to confirm:</p>
-        <input type="text" id="deleteConfirmationInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-400" placeholder="Type 'delete' to confirm" autocomplete="off">
-      </div>
-      <div class="flex gap-3">
-        <button id="cancelDeleteBtn" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg font-medium">
-          Cancel
-        </button>
-        <button id="confirmDeleteBtn" class="flex-1 px-6 py-3 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-lg font-medium disabled:bg-gray-300 disabled:cursor-not-allowed" disabled>
-          Delete User
-        </button>
-      </div>
-    </div>
-  </div>
-
   <!-- Reset Password Modal -->
   <div id="resetPasswordModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
     <div class="bg-white rounded-2xl p-8 max-w-md mx-4 material-shadow-elevated">
@@ -968,7 +936,45 @@
       </div>
     </div>
   </div>
-
+    <!-- Delete Account Modal -->
+  <div id="deleteAccountModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+    <div class="bg-white rounded-2xl p-8 max-w-md mx-4 material-shadow-elevated">
+      <div class="text-center mb-6">
+        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i class="ri-delete-bin-line text-3xl text-red-500"></i>
+        </div>
+        <h3 class="text-2xl font-bold text-gray-900 mb-2">Delete Account</h3>
+        <p class="text-gray-600">This will permanently delete the account. A copy of all user data will be saved in the archive for admin reference.</p>
+      </div>
+      <div class="bg-gray-50 rounded-lg p-4 mb-6">
+        <div class="flex items-center">
+          <div class="flex-shrink-0">
+            <i class="ri-information-line text-blue-500 text-xl"></i>
+          </div>
+          <div class="ml-3">
+            <p class="text-sm text-gray-700">
+              <span class="font-semibold" id="deleteModalUserName"></span>
+              <br>
+              <span class="text-gray-500" id="deleteModalUserUsername"></span>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <label class="text-sm font-medium text-gray-700 mb-2 block">Reason for deletion (optional):</label>
+        <textarea id="deleteReasonInput" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 text-gray-900 placeholder-gray-400 resize-vertical" placeholder="User requested account deletion..." rows="3"></textarea>
+      </div>
+      <div class="flex gap-3">
+        <button id="cancelDeleteAccountBtn" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg font-medium">
+          Cancel
+        </button>
+        <button id="confirmDeleteAccountBtn" class="flex-1 px-6 py-3 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-lg font-medium">
+          <span id="deleteButtonText">Delete Account</span>
+          <i id="deleteLoadingIcon" class="ri-loader-4-line animate-spin ml-2 hidden"></i>
+        </button>
+      </div>
+    </div>
+  </div>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       const userId = '<%= user._id %>';
@@ -994,60 +1000,6 @@
           document.getElementById(`${tabId}-tab`).classList.remove('hidden');
         });
       });
-
-      // Delete user functionality
-      const deleteUserBtn = document.getElementById('deleteUserBtn');
-      const deleteModal = document.getElementById('deleteModal');
-      const cancelDeleteBtn = document.getElementById('cancelDeleteBtn');
-      const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
-      const deleteConfirmationInput = document.getElementById('deleteConfirmationInput');
-      if(deleteUserBtn) {
-      deleteUserBtn.addEventListener('click', () => {
-        deleteModal.classList.remove('hidden');
-        deleteConfirmationInput.value = '';
-        confirmDeleteBtn.disabled = true;
-      });
-
-      cancelDeleteBtn.addEventListener('click', () => {
-        deleteModal.classList.add('hidden');
-      });
-
-      deleteConfirmationInput.addEventListener('input', function() {
-        confirmDeleteBtn.disabled = this.value.trim() !== 'delete';
-      });
-
-      confirmDeleteBtn.addEventListener('click', async function() {
-        if (deleteConfirmationInput.value.trim() !== 'delete') return;
-        
-        this.disabled = true;
-        this.innerHTML = '<i class="ri-loader-4-line animate-spin mr-2"></i>Deleting...';
-        
-        try {
-          const response = await fetch(`/admin/user/${userId}/delete`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' }
-          });
-          
-          const data = await response.json();
-          if (data.success) {
-            showNotification('Success', 'User deleted successfully', 'success');
-            setTimeout(() => window.location.href = '/admin/dashboard', 1500);
-          } else {
-            showNotification('Error', data.error || 'Failed to delete user', 'error');
-            this.disabled = false;
-            this.innerHTML = 'Delete User';
-          }
-        } catch (error) {
-          showNotification('Error', 'An error occurred', 'error');
-          this.disabled = false;
-          this.innerHTML = 'Delete User';
-        }
-      });
-
-      deleteModal.addEventListener('click', function(e) {
-        if (e.target === this) this.classList.add('hidden');
-      });
-    }
 
       // Reset password functionality
       const resetPasswordBtn = document.getElementById('resetPasswordBtn');
@@ -1108,6 +1060,66 @@
         });
 
         resetPasswordModal.addEventListener('click', function(e) {
+          if (e.target === this) this.classList.add('hidden');
+        });
+      }
+            // Delete account functionality
+      const deleteAccountBtn = document.getElementById('deleteAccountBtn');
+      const deleteAccountModal = document.getElementById('deleteAccountModal');
+      const cancelDeleteAccountBtn = document.getElementById('cancelDeleteAccountBtn');
+      const confirmDeleteAccountBtn = document.getElementById('confirmDeleteAccountBtn');
+      const deleteReasonInput = document.getElementById('deleteReasonInput');
+      const deleteModalUserName = document.getElementById('deleteModalUserName');
+      const deleteModalUserUsername = document.getElementById('deleteModalUserUsername');
+      const deleteButtonText = document.getElementById('deleteButtonText');
+      const deleteLoadingIcon = document.getElementById('deleteLoadingIcon');
+
+      if (deleteAccountBtn) {
+        deleteAccountBtn.addEventListener('click', () => {
+          deleteModalUserName.textContent = '<%= user.name || user.username %>';
+          deleteModalUserUsername.textContent = '@<%= user.username %>';
+          deleteReasonInput.value = '';
+          deleteAccountModal.classList.remove('hidden');
+        });
+
+        cancelDeleteAccountBtn.addEventListener('click', () => {
+          deleteAccountModal.classList.add('hidden');
+        });
+
+        confirmDeleteAccountBtn.addEventListener('click', async function() {
+          this.disabled = true;
+          deleteButtonText.textContent = 'Deleting...';
+          deleteLoadingIcon.classList.remove('hidden');
+
+          try {
+            const response = await fetch(`/api/admin/user/${userId}/delete`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                reason: deleteReasonInput.value.trim() || 'Admin deleted account'
+              })
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+              showNotification('Account Deleted', 'The account has been deleted and archived successfully.', 'success');
+              setTimeout(() => {
+                window.location.href = '/admin/deletedaccounts';
+              }, 1500);
+            } else {
+              throw new Error(result.error || 'Failed to delete account');
+            }
+          } catch (error) {
+            console.error('Deletion error:', error);
+            showNotification('Deletion Failed', error.message, 'error');
+            this.disabled = false;
+            deleteButtonText.textContent = 'Delete Account';
+            deleteLoadingIcon.classList.add('hidden');
+          }
+        });
+
+        deleteAccountModal.addEventListener('click', function(e) {
           if (e.target === this) this.classList.add('hidden');
         });
       }
@@ -1375,8 +1387,8 @@
       // Escape key to close modals
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-          deleteModal.classList.add('hidden');
-          resetPasswordModal.classList.add('hidden');
+          if (resetPasswordModal) resetPasswordModal.classList.add('hidden');
+          if (deleteAccountModal) deleteAccountModal.classList.add('hidden');
         }
       });
     });

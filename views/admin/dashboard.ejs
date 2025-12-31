@@ -175,6 +175,10 @@
           <button id="blogsBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
             Manage Blogs
           </button>
+          <button id="deletedAccountsBtn" class="hidden md:flex items-center gap-2 px-4 py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-lg font-medium">
+  <i class="ri-delete-bin-line"></i>
+  <span>Deleted accounts Record</span>
+</button>
           <button id="addUserBtn" class="px-4 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-lg text-sm font-medium">
             Add User
           </button>
@@ -670,7 +674,12 @@
           }
         });
       }
-
+      const deletedAccountsBtn = document.getElementById('deletedAccountsBtn');
+if (deletedAccountsBtn) {
+  deletedAccountsBtn.addEventListener('click', function() {
+    window.location.href = '/admin/deletedaccounts';
+  });
+}
       // Mobile navigation buttons
       const mobileRequestsBtn = document.getElementById('mobileRequestsBtn');
       const mobileNewsletterBtn = document.getElementById('mobileNewsletterBtn');
