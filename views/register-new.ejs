@@ -78,6 +78,27 @@
     .gradient-bg {
       background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
     }
+    /* Mobile-first: Form appears first on small screens */
+@media (max-width: 1023px) {
+  .content-section {
+    order: 2;
+  }
+  
+  .form-section {
+    order: 1;
+  }
+}
+
+/* Desktop: Image/content on left, form on right */
+@media (min-width: 1024px) {
+  .content-section {
+    order: 1;
+  }
+  
+  .form-section {
+    order: 2;
+  }
+}
   </style>
 </head>
 <% if (typeof isProd !== 'undefined' && isProd && !isAdmin) { %>
@@ -112,7 +133,7 @@
   <main class="pt-24 pb-16 min-h-screen">
     <div class="flex flex-col lg:flex-row">
       <!-- Left Side: Content Section with Background Image -->
-      <div class="w-full lg:w-1/2 py-8 px-6 bg-cover bg-center bg-no-repeat relative" style="background-image: url('https://res.cloudinary.com/dhuc2plh0/image/upload/v1760555667/jeremy-wong-weddings-464ps_nOflw-unsplash_wov3ei.jpg');">
+      <div class="content-section w-full lg:w-1/2 py-8 px-6 bg-cover bg-center bg-no-repeat relative" style="background-image: url('https://res.cloudinary.com/dhuc2plh0/image/upload/v1760555667/jeremy-wong-weddings-464ps_nOflw-unsplash_wov3ei.jpg');">
         <div class="absolute inset-0 bg-black/50"></div>
         <div class="relative z-10 flex items-center justify-center h-full">
           <div class="w-full px-6 py-8">
@@ -169,7 +190,7 @@
       </div>
 
       <!-- Right Side: Form Section -->
-      <div class="w-full lg:w-1/2 bg-gradient-to-br from-gray-50 to-gray-100">
+      <div class="form-section w-full lg:w-1/2 bg-gradient-to-br from-gray-50 to-gray-100">
         <div class="py-8 flex items-center justify-center h-full">
           <div class="w-full max-w-md px-6">
             <div class="bg-white rounded-2xl p-8 material-shadow">
@@ -203,7 +224,7 @@
 
                 <button type="button" id="continueAsParent" class="w-full py-3 px-6 bg-primary text-white font-semibold rounded-xl hover:bg-pink-600 transition-all duration-300 ripple material-shadow">
                   <span class="flex items-center justify-center gap-2">
-                    <span>I am a Parent - Continue</span>
+                    <span>Register</span>
                     <i class="ri-arrow-right-line"></i>
                   </span>
                 </button>

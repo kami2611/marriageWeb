@@ -80,6 +80,27 @@
     .gradient-bg {
       background: linear-gradient(135deg, #E91E63 0%, #673AB7 100%);
     }
+    /* Mobile-first: Form appears first on small screens */
+@media (max-width: 1023px) {
+  .content-section {
+    order: 2;
+  }
+  
+  .form-section {
+    order: 1;
+  }
+}
+
+/* Desktop: Image/content on left, form on right */
+@media (min-width: 1024px) {
+  .content-section {
+    order: 1;
+  }
+  
+  .form-section {
+    order: 2;
+  }
+}
   </style>
   <!-- **NEW**: Structured Data for SEO -->
 <script type="application/ld+json">
@@ -187,7 +208,7 @@
     <!-- Split Layout Container - replaces the current hero and form sections -->
     <div class="flex flex-col lg:flex-row">
       <!-- Left Side: Content Section -->
-      <div class="w-full lg:w-1/2 py-8 px-6 bg-cover bg-center bg-no-repeat relative" style="background-image: url('https://res.cloudinary.com/dhuc2plh0/image/upload/v1760555667/jeremy-wong-weddings-464ps_nOflw-unsplash_wov3ei.jpg');">
+      <div class="content-section w-full lg:w-1/2 py-8 px-6 bg-cover bg-center bg-no-repeat relative" style="background-image: url('https://res.cloudinary.com/dhuc2plh0/image/upload/v1760555667/jeremy-wong-weddings-464ps_nOflw-unsplash_wov3ei.jpg');">
         <!-- Overlay for better text readability -->
         <div class="absolute inset-0 bg-black/50"></div>
         <div class="relative z-10 flex items-center justify-center h-full">
@@ -245,7 +266,7 @@
       </div>
       
       <!-- Right Side: Form Section -->
-      <div class="w-full lg:w-1/2 bg-gradient-to-br from-gray-50 to-gray-100">
+      <div class="form-section w-full lg:w-1/2 bg-gradient-to-br from-gray-50 to-gray-100">
         <div class="py-8 flex items-center justify-center h-full">
           <div class="w-full max-w-md px-6">
             <div class="bg-white rounded-2xl p-8 material-shadow">
