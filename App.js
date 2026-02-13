@@ -2115,7 +2115,6 @@ app.post("/admin/deletedaccounts/:id/permanent-delete", requireAdminOnly, async 
   }
 });
 app.post("/admin/user/add", requireAdminOnly, async (req, res) => {
-  if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
 
   console.log("Received user data:", req.body); // Debug log
 
