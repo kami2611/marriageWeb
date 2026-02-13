@@ -100,6 +100,11 @@
     </div>
 
     <div class="border-t border-white border-opacity-20 pt-8 text-center">
+      <% if (globalSeoSettings && globalSeoSettings.footerSeoText) { %>
+      <div class="text-pink-100 text-sm mb-4 max-w-4xl mx-auto">
+        <%= globalSeoSettings.footerSeoText %>
+      </div>
+      <% } %>
       <p class="text-pink-100">&copy; 2025 D'amour Muslim. All rights reserved. Built with love for the Muslim community.</p>
     </div>
   </div>

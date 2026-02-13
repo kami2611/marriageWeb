@@ -38,6 +38,20 @@ const {
   generateProfileSlug,
   generateUniqueSlug,
 } = require("./utils/profileHelpers");
+
+function addProfileSlugHistory(profile, oldSlug, newSlug) {
+  if (!oldSlug || oldSlug === newSlug) {
+    return;
+  }
+
+  if (!profile.profileSlugHistory) {
+    profile.profileSlugHistory = [];
+  }
+
+  if (!profile.profileSlugHistory.includes(oldSlug)) {
+    profile.profileSlugHistory.push(oldSlug);
+  }
+}
 const User = require("./models/user");
 const Newsletter = require("./models/Newsletter");
 const { countryOptions, countryPlaceholders } = require("./config/countries");
@@ -54,6 +68,8 @@ const {
   requireAdminOnly,
   requireViewAccess,
 } = require("./middlewares/accessControl");
+const { requireSeoAdmin, requireSeoAdminApi } = require("./middlewares/seoAdminAuth");
+const GlobalSeoSettings = require("./models/GlobalSeoSettings");
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
@@ -219,6 +235,17 @@ app.use((req, res, next) => {
   res.locals.isProd = process.env.NODE_ENV === "production";
   res.locals.isAdmin = req.session.user?.isAdmin || false;
   res.locals.GA_ID = process.env.GA_MEASUREMENT_ID; // Use your existing ID from Google
+  next();
+});
+
+// **NEW**: Global SEO Settings Middleware - Make available to all views
+app.use(async (req, res, next) => {
+  try {
+    res.locals.globalSeoSettings = await GlobalSeoSettings.getSettings();
+  } catch (error) {
+    console.error("Error loading global SEO settings:", error);
+    res.locals.globalSeoSettings = null;
+  }
   next();
 });
 
@@ -608,7 +635,9 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
     );
 
     if (shouldUpdateSlug) {
+      const previousSlug = user.profileSlug;
       user.profileSlug = await generateUniqueSlug(user);
+      addProfileSlugHistory(user, previousSlug, user.profileSlug);
       console.log("Updated profile slug:", user.profileSlug);
     }
 
@@ -1478,6 +1507,10 @@ app.get("/profiles/:slug", async (req, res) => {
     } else {
       // It's a slug - find by slug field
       foundProfile = await User.findOne({ profileSlug: slug });
+      if (!foundProfile) {
+        foundProfile = await User.findOne({ profileSlugHistory: slug });
+        shouldRedirect = Boolean(foundProfile);
+      }
     }
 
     if (!foundProfile) {
@@ -1499,7 +1532,11 @@ app.get("/profiles/:slug", async (req, res) => {
     }
 
     // **NEW**: If we found the profile by ID, redirect to the slug URL
-    if (shouldRedirect && foundProfile.profileSlug) {
+    if (
+      shouldRedirect &&
+      foundProfile.profileSlug &&
+      slug !== foundProfile.profileSlug
+    ) {
       return res.redirect(301, `/profiles/${foundProfile.profileSlug}`);
     }
 
@@ -2752,7 +2789,9 @@ app.post("/admin/user/update", profileUpload, async (req, res) => {
     );
 
     if (shouldUpdateSlug) {
+      const previousSlug = user.profileSlug;
       user.profileSlug = await generateUniqueSlug(user);
+      addProfileSlugHistory(user, previousSlug, user.profileSlug);
       console.log("Admin updated profile slug:", user.profileSlug);
     }
     await user.save();
@@ -4556,6 +4595,419 @@ Sitemap: https://damourmuslim.com/sitemap.xml`;
   res.set("Content-Type", "text/plain");
   res.send(robots);
 });
+// ============================================
+// SEO ADMIN PANEL ROUTES
+// ============================================
+
+// SEO Admin Login Page
+app.get("/seoadmin/login", (req, res) => {
+  if (req.session.isSeoAdmin) {
+    return res.redirect("/seoadmin/dashboard");
+  }
+  res.render("seoadmin/login", { error: null });
+});
+
+// SEO Admin Login Handler
+app.post("/seoadmin/login", (req, res) => {
+  const { password } = req.body;
+  
+  if (password === process.env.SEO_ADMIN_PASSWORD) {
+    req.session.isSeoAdmin = true;
+    return res.redirect("/seoadmin/dashboard");
+  }
+  
+  res.render("seoadmin/login", { error: "Invalid password" });
+});
+
+// SEO Admin Logout
+app.get("/seoadmin/logout", (req, res) => {
+  req.session.isSeoAdmin = false;
+  res.redirect("/seoadmin/login");
+});
+
+// SEO Admin Dashboard
+app.get("/seoadmin/dashboard", requireSeoAdmin, async (req, res) => {
+  try {
+    const stats = {
+      totalProfiles: await User.countDocuments(),
+      customSeoProfiles: await User.countDocuments({
+        $or: [
+          { "seoSettings.customMetaTitle": { $exists: true, $ne: "" } },
+          { "seoSettings.customMetaDescription": { $exists: true, $ne: "" } }
+        ]
+      }),
+      noIndexProfiles: await User.countDocuments({ "seoSettings.noIndex": true }),
+      totalBlogs: await Blog.countDocuments(),
+      profilesWithCustomTitle: await User.countDocuments({ "seoSettings.customMetaTitle": { $exists: true, $ne: "" } }),
+      profilesWithCustomDesc: await User.countDocuments({ "seoSettings.customMetaDescription": { $exists: true, $ne: "" } }),
+      approvedProfiles: await User.countDocuments({ isApproved: true, "seoSettings.noIndex": { $ne: true } })
+    };
+    
+    // Get recent SEO edits
+    const recentEdits = await User.find({ "seoSettings.lastSeoEditedAt": { $exists: true } })
+      .sort({ "seoSettings.lastSeoEditedAt": -1 })
+      .limit(5)
+      .select("username profilePic seoSettings");
+    
+    res.render("seoadmin/dashboard", { stats, recentEdits });
+  } catch (error) {
+    console.error("SEO Dashboard error:", error);
+    res.status(500).send("Error loading dashboard");
+  }
+});
+
+// SEO Admin - Profile Listing
+app.get("/seoadmin/profiles", requireSeoAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const skip = (page - 1) * limit;
+    const { search, gender, filter } = req.query;
+    
+    let query = {};
+    
+    // Search filter
+    if (search) {
+      query.$or = [
+        { username: { $regex: search, $options: "i" } },
+        { city: { $regex: search, $options: "i" } },
+        { ethnicity: { $regex: search, $options: "i" } },
+        { profileSlug: { $regex: search, $options: "i" } }
+      ];
+    }
+    
+    // Gender filter
+    if (gender) {
+      query.gender = gender;
+    }
+    
+    // SEO status filter
+    if (filter === "hasCustomSeo") {
+      query.$or = [
+        { "seoSettings.customMetaTitle": { $exists: true, $ne: "" } },
+        { "seoSettings.customMetaDescription": { $exists: true, $ne: "" } }
+      ];
+    } else if (filter === "noCustomSeo") {
+      query.$and = [
+        { $or: [{ "seoSettings.customMetaTitle": { $exists: false } }, { "seoSettings.customMetaTitle": "" }] },
+        { $or: [{ "seoSettings.customMetaDescription": { $exists: false } }, { "seoSettings.customMetaDescription": "" }] }
+      ];
+    } else if (filter === "noIndex") {
+      query["seoSettings.noIndex"] = true;
+    } else if (filter === "approved") {
+      query.isApproved = true;
+    }
+    
+    const profiles = await User.find(query)
+      .sort({ "seoSettings.lastSeoEditedAt": -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .select("username gender age city ethnicity profilePic profileSlug isApproved seoSettings");
+    
+    const totalCount = await User.countDocuments(query);
+    const totalPages = Math.ceil(totalCount / limit);
+    
+    res.render("seoadmin/profiles", {
+      profiles,
+      currentPage: page,
+      totalPages,
+      totalCount,
+      search: search || "",
+      gender: gender || "",
+      filter: filter || ""
+    });
+  } catch (error) {
+    console.error("SEO Profiles error:", error);
+    res.status(500).send("Error loading profiles");
+  }
+});
+
+// SEO Admin - Edit Profile SEO
+app.get("/seoadmin/profile/:id", requireSeoAdmin, async (req, res) => {
+  try {
+    const profile = await User.findById(req.params.id);
+    if (!profile) {
+      return res.status(404).send("Profile not found");
+    }
+    
+    res.render("seoadmin/editProfile", {
+      profile,
+      success: req.query.success || null,
+      error: req.query.error || null
+    });
+  } catch (error) {
+    console.error("SEO Edit Profile error:", error);
+    res.status(500).send("Error loading profile");
+  }
+});
+
+// SEO Admin - Update Profile SEO
+app.post("/seoadmin/profile/:id/update", requireSeoAdmin, async (req, res) => {
+  try {
+    const profile = await User.findById(req.params.id);
+    if (!profile) {
+      return res.status(404).send("Profile not found");
+    }
+    
+    const {
+      profileSlug,
+      randomNameForSeo,
+      customMetaTitle,
+      customMetaDescription,
+      focusKeyword,
+      customKeywords,
+      noIndex,
+      ogImageOverride,
+      canonicalUrlOverride,
+      seoField1,
+      seoField2,
+      internalNotes
+    } = req.body;
+    
+    // Handle profile slug update with validation
+    if (profileSlug && profileSlug !== profile.profileSlug) {
+      const previousSlug = profile.profileSlug;
+      // Validate slug format (lowercase, alphanumeric, hyphens only)
+      const slugRegex = /^[a-z0-9-]+$/;
+      if (!slugRegex.test(profileSlug)) {
+        return res.redirect(`/seoadmin/profile/${req.params.id}?error=Invalid slug format. Use lowercase letters, numbers, and hyphens only.`);
+      }
+      
+      // Check if slug already exists for another user
+      const existingUser = await User.findOne({ 
+        profileSlug: profileSlug, 
+        _id: { $ne: profile._id } 
+      });
+      
+      if (existingUser) {
+        return res.redirect(`/seoadmin/profile/${req.params.id}?error=This profile slug is already in use by another profile.`);
+      }
+      
+      // Update the slug
+      profile.profileSlug = profileSlug;
+      addProfileSlugHistory(profile, previousSlug, profile.profileSlug);
+      console.log(
+        `SEO Admin updated profile slug from ${previousSlug} to ${profile.profileSlug}`
+      );
+    }
+    
+    // Update root-level SEO fields
+    profile.randomNameForSeo = randomNameForSeo || profile.randomNameForSeo;
+    profile.seoField1 = seoField1 || "";
+    profile.seoField2 = seoField2 || "";
+    
+    // Initialize seoSettings if not exists
+    if (!profile.seoSettings) {
+      profile.seoSettings = {};
+    }
+    
+    // Update nested seoSettings
+    profile.seoSettings.customMetaTitle = customMetaTitle || "";
+    profile.seoSettings.customMetaDescription = customMetaDescription || "";
+    profile.seoSettings.focusKeyword = focusKeyword || "";
+    profile.seoSettings.customKeywords = customKeywords ? customKeywords.split(",").map(k => k.trim()).filter(k => k) : [];
+    profile.seoSettings.noIndex = noIndex === "true";
+    profile.seoSettings.ogImageOverride = ogImageOverride || "";
+    profile.seoSettings.canonicalUrlOverride = canonicalUrlOverride || "";
+    profile.seoSettings.internalNotes = internalNotes || "";
+    profile.seoSettings.lastSeoEditedAt = new Date();
+    profile.seoSettings.lastSeoEditedBy = "SEO Admin";
+    
+    await profile.save();
+    
+    res.redirect(`/seoadmin/profile/${req.params.id}?success=SEO settings updated successfully`);
+  } catch (error) {
+    console.error("SEO Update Profile error:", error);
+    res.redirect(`/seoadmin/profile/${req.params.id}?error=Failed to update SEO settings`);
+  }
+});
+
+// SEO Admin - Blog Listing
+app.get("/seoadmin/blogs", requireSeoAdmin, async (req, res) => {
+  try {
+    const { search, status } = req.query;
+    let query = {};
+    
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { slug: { $regex: search, $options: "i" } }
+      ];
+    }
+    
+    if (status) {
+      query.status = status;
+    }
+    
+    const blogs = await Blog.find(query)
+      .sort({ publishedAt: -1 })
+      .select("title slug featuredImage status metaTitle metaDescription keywords views publishedAt");
+    
+    res.render("seoadmin/blogs", {
+      blogs,
+      search: search || "",
+      status: status || ""
+    });
+  } catch (error) {
+    console.error("SEO Blogs error:", error);
+    res.status(500).send("Error loading blogs");
+  }
+});
+
+// SEO Admin - Edit Blog SEO
+app.get("/seoadmin/blog/:id", requireSeoAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.status(404).send("Blog not found");
+    }
+    
+    res.render("seoadmin/editBlog", {
+      blog,
+      success: req.query.success || null,
+      error: req.query.error || null
+    });
+  } catch (error) {
+    console.error("SEO Edit Blog error:", error);
+    res.status(500).send("Error loading blog");
+  }
+});
+
+// SEO Admin - Update Blog SEO
+app.post("/seoadmin/blog/:id/update", requireSeoAdmin, async (req, res) => {
+  try {
+    const blog = await Blog.findById(req.params.id);
+    if (!blog) {
+      return res.status(404).send("Blog not found");
+    }
+    
+    const {
+      metaTitle,
+      metaDescription,
+      keywords,
+      canonicalUrl,
+      "faqQuestion[]": faqQuestions,
+      "faqAnswer[]": faqAnswers
+    } = req.body;
+    
+    blog.metaTitle = metaTitle || "";
+    blog.metaDescription = metaDescription || "";
+    blog.keywords = keywords ? keywords.split(",").map(k => k.trim()).filter(k => k) : [];
+    blog.canonicalUrl = canonicalUrl || "";
+    
+    // Handle FAQ schema
+    if (faqQuestions && faqAnswers) {
+      const questions = Array.isArray(faqQuestions) ? faqQuestions : [faqQuestions];
+      const answers = Array.isArray(faqAnswers) ? faqAnswers : [faqAnswers];
+      
+      blog.faqSchema = questions
+        .map((q, i) => ({ question: q, answer: answers[i] || "" }))
+        .filter(faq => faq.question && faq.answer);
+    } else {
+      blog.faqSchema = [];
+    }
+    
+    await blog.save();
+    
+    res.redirect(`/seoadmin/blog/${req.params.id}?success=Blog SEO updated successfully`);
+  } catch (error) {
+    console.error("SEO Update Blog error:", error);
+    res.redirect(`/seoadmin/blog/${req.params.id}?error=Failed to update blog SEO`);
+  }
+});
+
+// SEO Admin - Global Settings
+app.get("/seoadmin/global-settings", requireSeoAdmin, async (req, res) => {
+  try {
+    const settings = await GlobalSeoSettings.getSettings();
+    
+    res.render("seoadmin/globalSettings", {
+      settings,
+      success: req.query.success || null,
+      error: req.query.error || null
+    });
+  } catch (error) {
+    console.error("SEO Global Settings error:", error);
+    res.status(500).send("Error loading global settings");
+  }
+});
+
+// SEO Admin - Update Global Settings
+app.post("/seoadmin/global-settings/update", requireSeoAdmin, async (req, res) => {
+  try {
+    const {
+      siteName,
+      defaultMetaTitleSuffix,
+      defaultMetaDescription,
+      defaultOgImage,
+      globalKeywords,
+      twitterHandle,
+      facebookPageUrl,
+      instagramHandle,
+      googleAnalyticsId,
+      googleSearchConsoleVerification,
+      bingVerification,
+      homepageMetaTitle,
+      homepageMetaDescription,
+      profilesPageMetaTitle,
+      profilesPageMetaDescription,
+      organizationName,
+      organizationUrl,
+      organizationLogo,
+      organizationEmail,
+      organizationPhone,
+      globalNoIndex,
+      robotsTxtAdditions,
+      footerSeoText
+    } = req.body;
+    
+    const updates = {
+      siteName,
+      defaultMetaTitleSuffix,
+      defaultMetaDescription,
+      defaultOgImage,
+      globalKeywords: globalKeywords ? globalKeywords.split(",").map(k => k.trim()).filter(k => k) : [],
+      twitterHandle,
+      facebookPageUrl,
+      instagramHandle,
+      googleAnalyticsId,
+      googleSearchConsoleVerification,
+      bingVerification,
+      homepageMetaTitle,
+      homepageMetaDescription,
+      profilesPageMetaTitle,
+      profilesPageMetaDescription,
+      organizationName,
+      organizationUrl,
+      organizationLogo,
+      organizationEmail,
+      organizationPhone,
+      globalNoIndex: globalNoIndex === "true",
+      robotsTxtAdditions,
+      footerSeoText
+    };
+    
+    await GlobalSeoSettings.updateSettings(updates, "SEO Admin");
+    
+    res.redirect("/seoadmin/global-settings?success=Global settings updated successfully");
+  } catch (error) {
+    console.error("SEO Update Global Settings error:", error);
+    res.redirect("/seoadmin/global-settings?error=Failed to update global settings");
+  }
+});
+
+// SEO Admin - Redirect base /seoadmin to dashboard
+app.get("/seoadmin", (req, res) => {
+  if (req.session.isSeoAdmin) {
+    return res.redirect("/seoadmin/dashboard");
+  }
+  res.redirect("/seoadmin/login");
+});
+
+// ============================================
+// END SEO ADMIN ROUTES
+// ============================================
+
 app.use((req, res) => {
   res.status(404).render("404", {
     title: "Page Not Found - D'amour Muslim",

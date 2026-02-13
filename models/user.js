@@ -302,6 +302,10 @@ const userSchema = new mongoose.Schema({
     sparse: true, // Allows multiple documents without this field
     index: true, // For faster lookups
   },
+  profileSlugHistory: {
+    type: [String],
+    default: [],
+  },
   registrationSource: {
     type: String,
     enum: ["register", "admin", "google"],
@@ -342,6 +346,42 @@ const userSchema = new mongoose.Schema({
   },
   seoField2: {
     type: String,
+  },
+  // Nested SEO settings for SEO admin panel
+  seoSettings: {
+    customMetaTitle: {
+      type: String,
+      maxlength: 60,
+    },
+    customMetaDescription: {
+      type: String,
+      maxlength: 160,
+    },
+    customKeywords: [{
+      type: String,
+    }],
+    focusKeyword: {
+      type: String,
+    },
+    noIndex: {
+      type: Boolean,
+      default: false,
+    },
+    ogImageOverride: {
+      type: String,
+    },
+    canonicalUrlOverride: {
+      type: String,
+    },
+    internalNotes: {
+      type: String,
+    },
+    lastSeoEditedAt: {
+      type: Date,
+    },
+    lastSeoEditedBy: {
+      type: String,
+    },
   },
   // Profile approval system
   isApproved: {

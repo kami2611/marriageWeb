@@ -5,8 +5,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <%
-  let pageTitle = "Muslim Matrimony UK | Islamic Wedding & Nikkah Partners | Halal Marriage Site";
-  let metaDescription = "Find your perfect Muslim matrimony partner for Islamic wedding and Nikkah ceremony. Browse verified Muslim couples, Pakistani marriage profiles in London, Manchester. UK's leading halal marriage site.";
+  let pageTitle = globalSeoSettings && globalSeoSettings.profilesPageMetaTitle ? globalSeoSettings.profilesPageMetaTitle : "Muslim Matrimony UK | Islamic Wedding & Nikkah Partners | Halal Marriage Site";
+  let metaDescription = globalSeoSettings && globalSeoSettings.profilesPageMetaDescription ? globalSeoSettings.profilesPageMetaDescription : "Find your perfect Muslim matrimony partner for Islamic wedding and Nikkah ceremony. Browse verified Muslim couples, Pakistani marriage profiles in London, Manchester. UK's leading halal marriage site.";
   let keywords = "Muslim matrimony, Islamic wedding, Nikkah wedding ceremony, Pakistani marriage, Shaadi London, Nikkah London, halal marriage site UK, Pakistani couple, Muslim couple, Sunni Muslim marriage, Muslim marriage services, Islam love marriage, Muslim matrimonial, Muslim marriage Manchester, Pakistani wedding London";
   
   if (filters && filters.gender === 'male') {
