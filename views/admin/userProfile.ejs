@@ -622,33 +622,33 @@
                   <span class="info-label">Highest Education</span>
                   <span class="info-value" data-field="highestEducation"><%= user.highestEducation || '-' %></span>
                 </div>
-                <% if (user.education && user.education.length > 0) { %>
                 <div class="info-row">
                   <span class="info-label">Education</span>
-                  <span class="info-value">
-                    <% user.education.forEach(edu => { %>
-                    <div class="mb-2">
-                      <strong><%= edu.title %></strong>
-                      <% if (edu.institute) { %> - <%= edu.institute %><% } %>
-                      <% if (edu.year) { %> (<%= edu.year %>)<% } %>
-                    </div>
-                    <% }) %>
+                  <span class="info-value" data-field="education" data-readonly="true">
+                    <% if (user.education && user.education.length > 0) { %>
+                      <% user.education.forEach(edu => { %>
+                      <div class="mb-2">
+                        <strong><%= edu.title %></strong>
+                        <% if (edu.institute) { %> - <%= edu.institute %><% } %>
+                        <% if (edu.year) { %> (<%= edu.year %>)<% } %>
+                      </div>
+                      <% }) %>
+                    <% } else { %>-<% } %>
                   </span>
                 </div>
-                <% } %>
-                <% if (user.children && user.children.length > 0) { %>
                 <div class="info-row">
                   <span class="info-label">Children</span>
-                  <span class="info-value">
-                    <% user.children.forEach(child => { %>
-                    <div class="mb-2">
-                      <strong><%= child.name %></strong> - Age: <%= child.age %>
-                      <% if (child.livingLocation) { %>, Lives in: <%= child.livingLocation %><% } %>
-                    </div>
-                    <% }) %>
+                  <span class="info-value" data-field="children" data-readonly="true">
+                    <% if (user.children && user.children.length > 0) { %>
+                      <% user.children.forEach(child => { %>
+                      <div class="mb-2">
+                        <strong><%= child.name %></strong> - Age: <%= child.age %>
+                        <% if (child.livingLocation) { %>, Lives in: <%= child.livingLocation %><% } %>
+                      </div>
+                      <% }) %>
+                    <% } else { %>-<% } %>
                   </span>
                 </div>
-                <% } %>
                 <div class="info-row">
                   <span class="info-label">Describe Your Nature</span>
                   <span class="info-value" data-field="describeNature"><%= user.describeNature || '-' %></span>
@@ -1282,6 +1282,23 @@
               
               const textareaFields = ['aboutMe', 'futurePlans', 'islamIsImportantToMeInfo', 'describeNature', 'livingArrangementsAfterMarriage', 'anySpecialInformationPeopleShouldKnow', 'lookingForASpouseThatIs'];
               
+              // Height select options (value in cm)
+              const heightOptions = [
+                {v:'',l:'-- Select --'},{v:'122',l:"4'0\" - 122cm"},{v:'124',l:"4'1\" - 124cm"},{v:'127',l:"4'2\" - 127cm"},{v:'130',l:"4'3\" - 130cm"},
+                {v:'132',l:"4'4\" - 132cm"},{v:'135',l:"4'5\" - 135cm"},{v:'137',l:"4'6\" - 137cm"},{v:'140',l:"4'7\" - 140cm"},
+                {v:'142',l:"4'8\" - 142cm"},{v:'145',l:"4'9\" - 145cm"},{v:'147',l:"4'10\" - 147cm"},{v:'150',l:"4'11\" - 150cm"},
+                {v:'152',l:"5'0\" - 152cm"},{v:'155',l:"5'1\" - 155cm"},{v:'157',l:"5'2\" - 157cm"},{v:'160',l:"5'3\" - 160cm"},
+                {v:'163',l:"5'4\" - 163cm"},{v:'165',l:"5'5\" - 165cm"},{v:'168',l:"5'6\" - 168cm"},{v:'170',l:"5'7\" - 170cm"},
+                {v:'173',l:"5'8\" - 173cm"},{v:'175',l:"5'9\" - 175cm"},{v:'178',l:"5'10\" - 178cm"},{v:'180',l:"5'11\" - 180cm"},
+                {v:'183',l:"6'0\" - 183cm"},{v:'185',l:"6'1\" - 185cm"},{v:'188',l:"6'2\" - 188cm"},{v:'191',l:"6'3\" - 191cm"},
+                {v:'193',l:"6'4\" - 193cm"},{v:'196',l:"6'5\" - 196cm"},{v:'198',l:"6'6\" - 198cm"},{v:'201',l:"6'7\" - 201cm"},
+                {v:'203',l:"6'8\" - 203cm"},{v:'206',l:"6'9\" - 206cm"},{v:'208',l:"6'10\" - 208cm"},{v:'211',l:"6'11\" - 211cm"},
+                {v:'213',l:"7'0\" - 213cm"},{v:'216',l:"7'1\" - 216cm"},{v:'218',l:"7'2\" - 218cm"},{v:'221',l:"7'3\" - 221cm"},
+                {v:'224',l:"7'4\" - 224cm"},{v:'226',l:"7'5\" - 226cm"},{v:'229',l:"7'6\" - 229cm"},{v:'231',l:"7'7\" - 231cm"},
+                {v:'234',l:"7'8\" - 234cm"},{v:'236',l:"7'9\" - 236cm"},{v:'239',l:"7'10\" - 239cm"},{v:'241',l:"7'11\" - 241cm"},
+                {v:'244',l:"8'0\" - 244cm"}
+              ];
+
               // Create input based on field type
               let inputHtml = '';
               
@@ -1308,6 +1325,15 @@
               } else if (textareaFields.includes(field)) {
                 // Textarea fields
                 inputHtml = `<textarea class="edit-textarea" data-field="${field}">${currentValue === '-' ? '' : currentValue}</textarea>`;
+              } else if (field === 'height') {
+                // Height select dropdown
+                const currentHeightValue = currentValue.replace(' cm', '').trim();
+                inputHtml = `<select class="edit-input" data-field="height">`;
+                heightOptions.forEach(opt => {
+                  const isSelected = opt.v === currentHeightValue ? 'selected' : '';
+                  inputHtml += `<option value="${opt.v}" ${isSelected}>${opt.l}</option>`;
+                });
+                inputHtml += `</select>`;
               } else {
                 // Regular text input
                 inputHtml = `<input type="text" class="edit-input" data-field="${field}" value="${currentValue === '-' ? '' : currentValue}">`;
