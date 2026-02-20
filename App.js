@@ -2509,29 +2509,6 @@ app.get("/generate-username", async (req, res) => {
   res.json({ username });
 });
 
-// Add these routes after your existing admin routes (around line 385, after the generate-username route)
-
-// Edit User Page Route
-app.get("/admin/edit-user/:id", requireAdminOnly, async (req, res) => {
-  if (!req.session.isAdmin) {
-    return res.redirect("/admin");
-  }
-
-  try {
-    const userId = req.params.id;
-    const userToEdit = await User.findById(userId);
-
-    if (!userToEdit) {
-      return res.status(404).send("User not found");
-    }
-
-    res.render("admin/editUser", { userToEdit });
-  } catch (error) {
-    console.error("Admin edit user error:", error);
-    res.redirect("/admin/dashboard");
-  }
-});
-
 // Update User Route
 const profileUpload = multer({ storage }).fields([
   { name: "profilePic", maxCount: 1 },

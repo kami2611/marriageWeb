@@ -319,25 +319,33 @@
           <!-- Tab Navigation -->
           <div class="bg-white rounded-xl p-2 material-shadow">
             <div class="flex flex-wrap gap-2">
-              <button class="tab-btn tab-active flex-1 py-2.5 px-4 text-center transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="info">
-                <i class="ri-user-line mr-2"></i>Profile Info
+              <button class="tab-btn tab-active flex-1 py-2.5 px-4 text-center transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="basic">
+                <i class="ri-user-line mr-2"></i>Basic Info
               </button>
-              <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="requests">
-                <i class="ri-mail-line mr-2"></i>Requests (<%= userRequests.length %>)
+              <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="contact">
+                <i class="ri-contacts-line mr-2"></i>Contact & Location
+              </button>
+              <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="appearance">
+                <i class="ri-user-heart-line mr-2"></i>Physical Appearance
+              </button>
+              <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="religion">
+                <i class="ri-moon-line mr-2"></i>Religion & Faith
+              </button>
+              <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="family">
+                <i class="ri-group-line mr-2"></i>Family & Background
               </button>
               <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="preferences">
                 <i class="ri-heart-line mr-2"></i>Partner Preferences
               </button>
-              <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="family">
-                <i class="ri-group-line mr-2"></i>Family & Religion
+              <button class="tab-btn flex-1 py-2.5 px-4 text-gray-500 hover:text-primary transition-all duration-300 rounded-lg whitespace-nowrap" data-tab="requests">
+                <i class="ri-mail-line mr-2"></i>Requests (<%= userRequests.length %>)
               </button>
             </div>
           </div>
 
-          <!-- Profile Info Tab -->
-          <div id="info-tab" class="tab-content">
-            <!-- Basic Information -->
-            <div class="bg-white rounded-xl material-shadow section-card mb-6">
+          <!-- ==================== 1. Basic Info Tab ==================== -->
+          <div id="basic-tab" class="tab-content">
+            <div class="bg-white rounded-xl material-shadow section-card">
               <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 class="font-semibold text-gray-900 flex items-center gap-2">
                   <i class="ri-user-3-line text-primary"></i>
@@ -351,12 +359,21 @@
               </div>
               <div class="p-6" id="basic-section">
                 <div class="info-row">
-                  <span class="info-label">Full Name</span>
-                  <span class="info-value" data-field="name"><%= user.name || '-' %></span>
-                </div>
-                <div class="info-row">
                   <span class="info-label">Username</span>
                   <span class="info-value"><%= user.username %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Email</span>
+                  <span class="info-value" data-field="email" data-readonly="true">
+                    <%= user.email || '-' %>
+                    <% if (user.isEmailVerified) { %>
+                    <i class="ri-verified-badge-fill text-green-500 ml-1" title="Verified"></i>
+                    <% } %>
+                  </span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Full Name</span>
+                  <span class="info-value" data-field="name"><%= user.name || '-' %></span>
                 </div>
                 <div class="info-row">
                   <span class="info-label">Age</span>
@@ -371,7 +388,7 @@
                   <span class="info-value" data-field="maritalStatus"><%= user.maritalStatus || '-' %></span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Profession</span>
+                  <span class="info-label">Profession/Work</span>
                   <span class="info-value" data-field="work"><%= user.work || '-' %></span>
                 </div>
                 <div class="info-row">
@@ -384,13 +401,15 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Contact Information -->
-            <div class="bg-white rounded-xl material-shadow section-card mb-6">
+          <!-- ==================== 2. Contact & Location Tab ==================== -->
+          <div id="contact-tab" class="tab-content hidden">
+            <div class="bg-white rounded-xl material-shadow section-card">
               <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 class="font-semibold text-gray-900 flex items-center gap-2">
                   <i class="ri-contacts-line text-primary"></i>
-                  Contact Information
+                  Contact & Location Information
                 </h3>
                 <% if (isAdmin) { %>
                 <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="contact">
@@ -400,20 +419,11 @@
               </div>
               <div class="p-6" id="contact-section">
                 <div class="info-row">
-                  <span class="info-label">Email</span>
-                  <span class="info-value" data-field="email" data-readonly="true">
-                    <%= user.email || '-' %>
-                    <% if (user.isEmailVerified) { %>
-                    <i class="ri-verified-badge-fill text-green-500 ml-1" title="Verified"></i>
-                    <% } %>
-                  </span>
-                </div>
-                <div class="info-row">
                   <span class="info-label">Contact Number</span>
                   <span class="info-value" data-field="contact"><%= user.contact || '-' %></span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Wali Contact</span>
+                  <span class="info-label">Wali Contact Details</span>
                   <span class="info-value" data-field="waliMyContactDetails"><%= user.waliMyContactDetails || '-' %></span>
                 </div>
                 <div class="info-row">
@@ -425,7 +435,7 @@
                   <span class="info-value" data-field="city"><%= user.city || '-' %></span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">State</span>
+                  <span class="info-label">State/Province</span>
                   <span class="info-value" data-field="state"><%= user.state || '-' %></span>
                 </div>
                 <div class="info-row">
@@ -441,14 +451,20 @@
                   <span class="info-value" data-field="birthPlace"><%= user.birthPlace || '-' %></span>
                 </div>
                 <div class="info-row">
-                  <span class="info-label">Languages</span>
+                  <span class="info-label">Willing to Relocate</span>
+                  <span class="info-value" data-field="willingToRelocate"><%= user.willingToRelocate || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Languages Spoken</span>
                   <span class="info-value" data-field="languagesSpoken"><%= user.languagesSpoken && user.languagesSpoken.length ? user.languagesSpoken.join(', ') : '-' %></span>
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- Physical Appearance -->
-            <div class="bg-white rounded-xl material-shadow section-card mb-6">
+          <!-- ==================== 3. Physical Appearance Tab ==================== -->
+          <div id="appearance-tab" class="tab-content hidden">
+            <div class="bg-white rounded-xl material-shadow section-card">
               <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                 <h3 class="font-semibold text-gray-900 flex items-center gap-2">
                   <i class="ri-user-heart-line text-primary"></i>
@@ -469,18 +485,6 @@
                   <span class="info-label">Build</span>
                   <span class="info-value" data-field="build"><%= user.build || '-' %></span>
                 </div>
-                <div class="info-row">
-                  <span class="info-label">Complexion</span>
-                  <span class="info-value" data-field="complexion"><%= user.complexion || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Eye Color</span>
-                  <span class="info-value" data-field="eyeColor"><%= user.eyeColor || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Hair Color</span>
-                  <span class="info-value" data-field="hairColor"><%= user.hairColor || '-' %></span>
-                </div>
                 <% if (user.gender === 'female') { %>
                 <div class="info-row">
                   <span class="info-label">Wears Hijab</span>
@@ -493,33 +497,130 @@
                 </div>
                 <% } %>
                 <div class="info-row">
-                  <span class="info-label">Disability</span>
-                  <span class="info-value" data-field="disability"><%= user.disability || 'no' %></span>
+                  <span class="info-label">Eye Color</span>
+                  <span class="info-value" data-field="eyeColor"><%= user.eyeColor || '-' %></span>
                 </div>
-              </div>
-            </div>
-
-            <!-- Education & Work -->
-            <div class="bg-white rounded-xl material-shadow section-card">
-              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900 flex items-center gap-2">
-                  <i class="ri-graduation-cap-line text-primary"></i>
-                  Education & Work
-                </h3>
-                <% if (isAdmin) { %>
-                <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="education">
-                  <i class="ri-edit-line mr-1"></i>Edit
-                </button>
-                <% } %>
-              </div>
-              <div class="p-6" id="education-section">
+                <div class="info-row">
+                  <span class="info-label">Hair Color</span>
+                  <span class="info-value" data-field="hairColor"><%= user.hairColor || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Complexion</span>
+                  <span class="info-value" data-field="complexion"><%= user.complexion || '-' %></span>
+                </div>
                 <div class="info-row">
                   <span class="info-label">Ethnicity</span>
                   <span class="info-value" data-field="ethnicity"><%= user.ethnicity || '-' %></span>
                 </div>
                 <div class="info-row">
+                  <span class="info-label">Disability</span>
+                  <span class="info-value" data-field="disability"><%= user.disability || 'no' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Smoker</span>
+                  <span class="info-value" data-field="smoker"><%= user.smoker === true ? 'Yes' : user.smoker === false ? 'No' : '-' %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== 4. Religion & Faith Tab ==================== -->
+          <div id="religion-tab" class="tab-content hidden">
+            <div class="bg-white rounded-xl material-shadow section-card">
+              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                  <i class="ri-moon-line text-primary"></i>
+                  Religion & Faith
+                </h3>
+                <% if (isAdmin) { %>
+                <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="religion">
+                  <i class="ri-edit-line mr-1"></i>Edit
+                </button>
+                <% } %>
+              </div>
+              <div class="p-6" id="religion-section">
+                <div class="info-row">
+                  <span class="info-label">Religion</span>
+                  <span class="info-value" data-field="religion"><%= user.religion || '-' %></span>
+                </div>
+                <div class="info-row">
                   <span class="info-label">Caste</span>
                   <span class="info-value" data-field="caste"><%= user.caste || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Islamic Sect</span>
+                  <span class="info-value" data-field="islamicSect"><%= user.islamicSect || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Born Muslim</span>
+                  <span class="info-value" data-field="bornMuslim"><%= user.bornMuslim === true ? 'Yes' : user.bornMuslim === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Prays Regularly</span>
+                  <span class="info-value" data-field="prays"><%= user.prays === true ? 'Yes' : user.prays === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Celebrates Milaad</span>
+                  <span class="info-value" data-field="celebratesMilaad"><%= user.celebratesMilaad === true ? 'Yes' : user.celebratesMilaad === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Celebrates Khatams</span>
+                  <span class="info-value" data-field="celebrateKhatams"><%= user.celebrateKhatams === true ? 'Yes' : user.celebrateKhatams === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">How Important is Islam to You</span>
+                  <span class="info-value" data-field="islamIsImportantToMeInfo"><%= user.islamIsImportantToMeInfo || '-' %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== 5. Family & Background Tab ==================== -->
+          <div id="family-tab" class="tab-content hidden">
+            <div class="bg-white rounded-xl material-shadow section-card">
+              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                  <i class="ri-group-line text-primary"></i>
+                  Family & Background
+                </h3>
+                <% if (isAdmin) { %>
+                <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="family">
+                  <i class="ri-edit-line mr-1"></i>Edit
+                </button>
+                <% } %>
+              </div>
+              <div class="p-6" id="family-section">
+                <div class="info-row">
+                  <span class="info-label">Father's Name</span>
+                  <span class="info-value" data-field="fatherName"><%= user.fatherName || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Mother's Name</span>
+                  <span class="info-value" data-field="motherName"><%= user.motherName || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Father's Profession</span>
+                  <span class="info-value" data-field="fatherProfession"><%= user.fatherProfession || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Number of Siblings</span>
+                  <span class="info-value" data-field="siblings"><%= user.siblings !== undefined ? user.siblings : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Living Arrangements After Marriage</span>
+                  <span class="info-value" data-field="livingArrangementsAfterMarriage"><%= user.livingArrangementsAfterMarriage || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Future Plans</span>
+                  <span class="info-value" data-field="futurePlans"><%= user.futurePlans || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Who Completed Profile</span>
+                  <span class="info-value" data-field="whoCompletedProfile"><%= user.whoCompletedProfile || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Highest Education</span>
+                  <span class="info-value" data-field="highestEducation"><%= user.highestEducation || '-' %></span>
                 </div>
                 <% if (user.education && user.education.length > 0) { %>
                 <div class="info-row">
@@ -535,15 +636,131 @@
                   </span>
                 </div>
                 <% } %>
+                <% if (user.children && user.children.length > 0) { %>
                 <div class="info-row">
-                  <span class="info-label">Willing to Relocate</span>
-                  <span class="info-value" data-field="willingToRelocate"><%= user.willingToRelocate || '-' %></span>
+                  <span class="info-label">Children</span>
+                  <span class="info-value">
+                    <% user.children.forEach(child => { %>
+                    <div class="mb-2">
+                      <strong><%= child.name %></strong> - Age: <%= child.age %>
+                      <% if (child.livingLocation) { %>, Lives in: <%= child.livingLocation %><% } %>
+                    </div>
+                    <% }) %>
+                  </span>
+                </div>
+                <% } %>
+                <div class="info-row">
+                  <span class="info-label">Describe Your Nature</span>
+                  <span class="info-value" data-field="describeNature"><%= user.describeNature || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Qualities You Can Bring to Marriage</span>
+                  <span class="info-value" data-field="QualitiesThatYouCanBringToYourMarriage"><%= user.QualitiesThatYouCanBringToYourMarriage && user.QualitiesThatYouCanBringToYourMarriage.length ? user.QualitiesThatYouCanBringToYourMarriage.join(', ') : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Any Special Information</span>
+                  <span class="info-value" data-field="anySpecialInformationPeopleShouldKnow"><%= user.anySpecialInformationPeopleShouldKnow || '-' %></span>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Requests Tab -->
+          <!-- ==================== 6. Partner Preferences Tab ==================== -->
+          <div id="preferences-tab" class="tab-content hidden">
+            <div class="bg-white rounded-xl material-shadow section-card">
+              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="font-semibold text-gray-900 flex items-center gap-2">
+                  <i class="ri-heart-line text-primary"></i>
+                  Partner Preferences
+                </h3>
+                <% if (isAdmin) { %>
+                <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="preferences">
+                  <i class="ri-edit-line mr-1"></i>Edit
+                </button>
+                <% } %>
+              </div>
+              <div class="p-6" id="preferences-section">
+                <div class="info-row">
+                  <span class="info-label">Preferred Age Range</span>
+                  <span class="info-value" data-field="preferredAgeRange"><%= user.preferredAgeRange || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Preferred Height Range</span>
+                  <span class="info-value" data-field="preferredHeightRange"><%= user.preferredHeightRange || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Preferred Caste</span>
+                  <span class="info-value" data-field="preferredCaste"><%= user.preferredCaste || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Preferred Ethnicity</span>
+                  <span class="info-value" data-field="preferredEthnicity"><%= user.preferredEthnicity || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Allow Partner to Work</span>
+                  <span class="info-value" data-field="allowParnterToWork"><%= user.allowParnterToWork === true ? 'Yes' : user.allowParnterToWork === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Allow Partner to Study</span>
+                  <span class="info-value" data-field="allowPartnerToStudy"><%= user.allowPartnerToStudy === true ? 'Yes' : user.allowPartnerToStudy === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Accept Someone with Children</span>
+                  <span class="info-value" data-field="acceptSomeoneWithChildren"><%= user.acceptSomeoneWithChildren === true ? 'Yes' : user.acceptSomeoneWithChildren === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Accept a Divorced Person</span>
+                  <span class="info-value" data-field="acceptADivorcedPerson"><%= user.acceptADivorcedPerson === true ? 'Yes' : user.acceptADivorcedPerson === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Accept a Widow</span>
+                  <span class="info-value" data-field="acceptAWidow"><%= user.acceptAWidow === true ? 'Yes' : user.acceptAWidow === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Agrees with Polygamy</span>
+                  <span class="info-value" data-field="agreesWithPolygamy"><%= user.agreesWithPolygamy === true ? 'Yes' : user.agreesWithPolygamy === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Accept Someone with Beard</span>
+                  <span class="info-value" data-field="AcceptSomeoneWithBeard"><%= user.AcceptSomeoneWithBeard === true ? 'Yes' : user.AcceptSomeoneWithBeard === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Accept Someone with Hijab</span>
+                  <span class="info-value" data-field="AcceptSomeoneWithHijab"><%= user.AcceptSomeoneWithHijab === true ? 'Yes' : user.AcceptSomeoneWithHijab === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Consider a Revert</span>
+                  <span class="info-value" data-field="ConsiderARevert"><%= user.ConsiderARevert === true ? 'Yes' : user.ConsiderARevert === false ? 'No' : '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Accept Someone in Other Country</span>
+                  <span class="info-value" data-field="acceptSomeoneInOtherCountry"><%= user.acceptSomeoneInOtherCountry || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Willing to Share Photos Upon Request</span>
+                  <span class="info-value" data-field="willingToSharePhotosUponRequest"><%= user.willingToSharePhotosUponRequest || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Willing to Meet Up Outside</span>
+                  <span class="info-value" data-field="willingToMeetUpOutside"><%= user.willingToMeetUpOutside || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Willing to Consider a Non-UK Citizen</span>
+                  <span class="info-value" data-field="willingToConsiderANonUkCitizen"><%= user.willingToConsiderANonUkCitizen || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Looking for a Spouse That Is</span>
+                  <span class="info-value" data-field="lookingForASpouseThatIs"><%= user.lookingForASpouseThatIs || '-' %></span>
+                </div>
+                <div class="info-row">
+                  <span class="info-label">Qualities You Need in Your Partner</span>
+                  <span class="info-value" data-field="qualitiesYouNeedInYourPartner"><%= user.qualitiesYouNeedInYourPartner && user.qualitiesYouNeedInYourPartner.length ? user.qualitiesYouNeedInYourPartner.join(', ') : '-' %></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ==================== Requests Tab ==================== -->
           <div id="requests-tab" class="tab-content hidden">
             <!-- Pending Requests -->
             <div class="bg-white rounded-xl material-shadow section-card mb-6">
@@ -705,199 +922,6 @@
                   <p>No request history</p>
                 </div>
                 <% } %>
-              </div>
-            </div>
-          </div>
-
-          <!-- Partner Preferences Tab -->
-          <div id="preferences-tab" class="tab-content hidden">
-            <div class="bg-white rounded-xl material-shadow section-card">
-              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900 flex items-center gap-2">
-                  <i class="ri-heart-line text-primary"></i>
-                  Partner Preferences
-                </h3>
-                 <% if (isAdmin) { %>
-                <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="preferences">
-                  <i class="ri-edit-line mr-1"></i>Edit
-                </button>
-                <% } %>
-              </div>
-              <div class="p-6" id="preferences-section">
-                <div class="info-row">
-                  <span class="info-label">Preferred Age Range</span>
-                  <span class="info-value" data-field="preferredAgeRange"><%= user.preferredAgeRange || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Preferred Height Range</span>
-                  <span class="info-value" data-field="preferredHeightRange"><%= user.preferredHeightRange || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Preferred Caste</span>
-                  <span class="info-value" data-field="preferredCaste"><%= user.preferredCaste || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Preferred Ethnicity</span>
-                  <span class="info-value" data-field="preferredEthnicity"><%= user.preferredEthnicity || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Accept Someone with Children</span>
-                  <span class="info-value" data-field="acceptSomeoneWithChildren"><%= user.acceptSomeoneWithChildren === true ? 'Yes' : user.acceptSomeoneWithChildren === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Accept Divorced Person</span>
-                  <span class="info-value" data-field="acceptADivorcedPerson"><%= user.acceptADivorcedPerson === true ? 'Yes' : user.acceptADivorcedPerson === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Accept Widow</span>
-                  <span class="info-value" data-field="acceptAWidow"><%= user.acceptAWidow === true ? 'Yes' : user.acceptAWidow === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Agrees with Polygamy</span>
-                  <span class="info-value" data-field="agreesWithPolygamy"><%= user.agreesWithPolygamy === true ? 'Yes' : user.agreesWithPolygamy === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Consider a Revert</span>
-                  <span class="info-value" data-field="ConsiderARevert"><%= user.ConsiderARevert === true ? 'Yes' : user.ConsiderARevert === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Allow Partner to Work</span>
-                  <span class="info-value" data-field="allowParnterToWork"><%= user.allowParnterToWork === true ? 'Yes' : user.allowParnterToWork === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Allow Partner to Study</span>
-                  <span class="info-value" data-field="allowPartnerToStudy"><%= user.allowPartnerToStudy === true ? 'Yes' : user.allowPartnerToStudy === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Accept Someone in Other Country</span>
-                  <span class="info-value" data-field="acceptSomeoneInOtherCountry"><%= user.acceptSomeoneInOtherCountry || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Looking for a Spouse That Is</span>
-                  <span class="info-value" data-field="lookingForASpouseThatIs"><%= user.lookingForASpouseThatIs || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Qualities Needed in Partner</span>
-                  <span class="info-value" data-field="qualitiesYouNeedInYourPartner"><%= user.qualitiesYouNeedInYourPartner && user.qualitiesYouNeedInYourPartner.length ? user.qualitiesYouNeedInYourPartner.join(', ') : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Living Arrangements After Marriage</span>
-                  <span class="info-value" data-field="livingArrangementsAfterMarriage"><%= user.livingArrangementsAfterMarriage || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Future Plans</span>
-                  <span class="info-value" data-field="futurePlans"><%= user.futurePlans || '-' %></span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Family & Religion Tab -->
-          <div id="family-tab" class="tab-content hidden">
-            <!-- Family Information -->
-            <div class="bg-white rounded-xl material-shadow section-card mb-6">
-              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900 flex items-center gap-2">
-                  <i class="ri-group-line text-primary"></i>
-                  Family Information
-                </h3>
-                <% if (isAdmin) { %>
-                <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="family">
-                  <i class="ri-edit-line mr-1"></i>Edit
-                </button>
-                <% } %>
-              </div>
-              <div class="p-6" id="family-section">
-                <div class="info-row">
-                  <span class="info-label">Father's Name</span>
-                  <span class="info-value" data-field="fatherName"><%= user.fatherName || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Mother's Name</span>
-                  <span class="info-value" data-field="motherName"><%= user.motherName || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Father's Profession</span>
-                  <span class="info-value" data-field="fatherProfession"><%= user.fatherProfession || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Number of Siblings</span>
-                  <span class="info-value" data-field="siblings"><%= user.siblings !== undefined ? user.siblings : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Who Completed Profile</span>
-                  <span class="info-value" data-field="whoCompletedProfile"><%= user.whoCompletedProfile || '-' %></span>
-                </div>
-                <% if (user.children && user.children.length > 0) { %>
-                <div class="info-row">
-                  <span class="info-label">Children</span>
-                  <span class="info-value">
-                    <% user.children.forEach(child => { %>
-                    <div class="mb-2">
-                      <strong><%= child.name %></strong> - Age: <%= child.age %>
-                      <% if (child.livingLocation) { %>, Lives in: <%= child.livingLocation %><% } %>
-                    </div>
-                    <% }) %>
-                  </span>
-                </div>
-                <% } %>
-              </div>
-            </div>
-
-            <!-- Religious Information -->
-            <div class="bg-white rounded-xl material-shadow section-card">
-              <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                <h3 class="font-semibold text-gray-900 flex items-center gap-2">
-                  <i class="ri-moon-line text-primary"></i>
-                  Religious Information
-                </h3>
-                <% if (isAdmin) { %>
-                <button class="edit-section-btn text-primary hover:text-pink-600 text-sm font-medium" data-section="religion">
-                  <i class="ri-edit-line mr-1"></i>Edit
-                </button>
-                <% } %>
-              </div>
-              <div class="p-6" id="religion-section">
-                <div class="info-row">
-                  <span class="info-label">Religion</span>
-                  <span class="info-value" data-field="religion"><%= user.religion || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Islamic Sect</span>
-                  <span class="info-value" data-field="islamicSect"><%= user.islamicSect || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Born Muslim</span>
-                  <span class="info-value" data-field="bornMuslim"><%= user.bornMuslim === true ? 'Yes' : user.bornMuslim === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Prays Regularly</span>
-                  <span class="info-value" data-field="prays"><%= user.prays === true ? 'Yes' : user.prays === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Celebrates Milaad</span>
-                  <span class="info-value" data-field="celebratesMilaad"><%= user.celebratesMilaad === true ? 'Yes' : user.celebratesMilaad === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Celebrates Khatams</span>
-                  <span class="info-value" data-field="celebrateKhatams"><%= user.celebrateKhatams === true ? 'Yes' : user.celebrateKhatams === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Smoker</span>
-                  <span class="info-value" data-field="smoker"><%= user.smoker === true ? 'Yes' : user.smoker === false ? 'No' : '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Islam Importance</span>
-                  <span class="info-value" data-field="islamIsImportantToMeInfo"><%= user.islamIsImportantToMeInfo || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Describe Nature</span>
-                  <span class="info-value" data-field="describeNature"><%= user.describeNature || '-' %></span>
-                </div>
-                <div class="info-row">
-                  <span class="info-label">Qualities for Marriage</span>
-                  <span class="info-value" data-field="QualitiesThatYouCanBringToYourMarriage"><%= user.QualitiesThatYouCanBringToYourMarriage && user.QualitiesThatYouCanBringToYourMarriage.length ? user.QualitiesThatYouCanBringToYourMarriage.join(', ') : '-' %></span>
-                </div>
               </div>
             </div>
           </div>
@@ -1245,16 +1269,18 @@
               ];
               
               const enumFields = {
-                maritalStatus: ['', 'married', 'unmarried', 'divorced', 'widowed', 'separated'],
-                build: ['', 'slim', 'average', 'athletic', 'heavy'],
-                eyeColor: ['', 'black', 'brown', 'grey', 'other'],
-                hairColor: ['', 'black', 'brown', 'blonde'],
-                complexion: ['', 'fair', 'wheatish', 'dark'],
-                ethnicity: ['', 'bangladeshi', 'pakistani', 'indian', 'british', 'other'],
-                gender: ['', 'male', 'female', 'rather not say']
+                maritalStatus: ['', 'nevermarried', 'divorced', 'widowed', 'annulled'],
+                build: ['', 'slim', 'average', 'athletic', 'heavy', 'N/A'],
+                eyeColor: ['', 'black', 'brown', 'grey', 'other', 'N/A'],
+                hairColor: ['', 'black', 'brown', 'blonde', 'N/A'],
+                complexion: ['', 'fair', 'wheatish', 'dark', 'N/A'],
+                ethnicity: ['', 'bangladeshi', 'pakistani', 'indian', 'british', 'other', 'N/A'],
+                wearHijab: ['', 'yes', 'no'],
+                beard: ['', 'no', 'short', 'medium', 'long', 'N/A'],
+                highestEducation: ['', 'High School', "Bachelor's Degree", "Master's Degree", 'Doctorate / PhD', 'Diploma', 'Professional Degree', 'Islamic Studies', 'Hafiz-e-Quran', 'Other']
               };
               
-              const textareaFields = ['aboutMe', 'futurePlans', 'islamIsImportantToMeInfo', 'describeNature', 'livingArrangementsAfterMarriage'];
+              const textareaFields = ['aboutMe', 'futurePlans', 'islamIsImportantToMeInfo', 'describeNature', 'livingArrangementsAfterMarriage', 'anySpecialInformationPeopleShouldKnow', 'lookingForASpouseThatIs'];
               
               // Create input based on field type
               let inputHtml = '';
