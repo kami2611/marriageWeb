@@ -168,6 +168,9 @@
           <button id="requestsBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
             Requests
           </button>
+          <button id="chatsBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
+            Chats
+          </button>
           <% if (isAdmin) { %>
           <button id="newsletterBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
             Newsletter
@@ -217,6 +220,11 @@
         <button id="mobileRequestsBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
           <i class="ri-mail-send-line text-lg text-gray-500"></i>
           <span class="text-sm font-medium">Requests</span>
+        </button>
+
+        <button id="mobileChatsBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+          <i class="ri-chat-3-line text-lg text-gray-500"></i>
+          <span class="text-sm font-medium">Chats</span>
         </button>
 
         <% if (isAdmin) { %>
@@ -692,6 +700,13 @@ if (deletedAccountsBtn) {
         });
       }
 
+      const mobileChatsBtn = document.getElementById('mobileChatsBtn');
+      if (mobileChatsBtn) {
+        mobileChatsBtn.addEventListener('click', function() {
+          window.location.href = '/admin/chats';
+        });
+      }
+
       if (mobileNewsletterBtn) {
         mobileNewsletterBtn.addEventListener('click', function() {
           window.location.href = '/admin/newsletter';
@@ -792,6 +807,13 @@ if (deletedAccountsBtn) {
       if (requestsBtn) {
         requestsBtn.addEventListener('click', function() {
           window.location.href = '/admin/requests';
+        });
+      }
+
+      const chatsBtn = document.getElementById('chatsBtn');
+      if (chatsBtn) {
+        chatsBtn.addEventListener('click', function() {
+          window.location.href = '/admin/chats';
         });
       }
 

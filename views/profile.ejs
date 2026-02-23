@@ -443,6 +443,14 @@
                       <i id="shareIcon" class="ri-share-line"></i>
                       <span id="shareText">Share Profile</span>
                     </button>
+
+                    <% /* Chat button – only show between different users with accepted connection */ %>
+                    <% if (user && user._id && user._id.toString() !== profile._id.toString() && connectionStatus === 'connected') { %>
+                    <button id="startChatBtn" onclick="startChat('<%= profile._id %>')" class="inline-flex items-center gap-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-all duration-300 shadow-md">
+                      <i class="ri-chat-3-line"></i>
+                      <span>Chat</span>
+                    </button>
+                    <% } %>
                   </div>
                 </div>
                 <!-- Connection Status Banners -->
@@ -2006,6 +2014,39 @@
 
       showConfirmModal(title, message, confirmText, confirmClass, () => {
         cancelRequest(requestId);
+      });
+    };
+
+    // Start chat with this profile
+    window.startChat = function(profileId) {
+      const btn = document.getElementById('startChatBtn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ri-loader-4-line animate-spin"></i> <span>Opening...</span>';
+      }
+      fetch('/api/chat/start/' + profileId, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      })
+      .then(function(res) { return res.json(); })
+      .then(function(data) {
+        if (data.success && data.redirectUrl) {
+          window.location.href = data.redirectUrl;
+        } else {
+          alert(data.error || 'Could not start chat');
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="ri-chat-3-line"></i> <span>Chat</span>';
+          }
+        }
+      })
+      .catch(function(err) {
+        console.error('Start chat error:', err);
+        alert('Something went wrong. Please try again.');
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="ri-chat-3-line"></i> <span>Chat</span>';
+        }
       });
     };
 

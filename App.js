@@ -70,6 +70,7 @@ const {
 } = require("./middlewares/accessControl");
 const { requireSeoAdmin, requireSeoAdminApi } = require("./middlewares/seoAdminAuth");
 const GlobalSeoSettings = require("./models/GlobalSeoSettings");
+const http = require("http");
 const mongoose = require("mongoose");
 const express = require("express");
 const session = require("express-session");
@@ -138,18 +139,17 @@ const passwordResetLimiter = rateLimit({
 });
 
 app.use(limiter);
-app.use(
-  session({
-    secret: process.env.SECRETKEYSESSION,
-    resave: false,
-    saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
-      collectionName: "sessions",
-    }),
-    cookie: { secure: false, httpOnly: true }, // set secure: true if using HTTPS
-  })
-);
+const sessionMiddleware = session({
+  secret: process.env.SECRETKEYSESSION,
+  resave: false,
+  saveUninitialized: false,
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGODB_URI,
+    collectionName: "sessions",
+  }),
+  cookie: { secure: false, httpOnly: true }, // set secure: true if using HTTPS
+});
+app.use(sessionMiddleware);
 app.use(passport.initialize());
 app.use(passport.session());
 cloudinary.config({
@@ -2990,6 +2990,110 @@ app.get("/admin/requests", requireAdminOrModerator, async (req, res) => {
     });
   }
 });
+
+// ============================================
+// ADMIN CHATS MANAGEMENT ROUTES
+// ============================================
+
+// GET /admin/chats – View all conversations (admin & moderator)
+app.get("/admin/chats", requireAdminOrModerator, async (req, res) => {
+  try {
+    // Get all conversations with participants
+    const conversations = await Conversation.find({})
+      .populate("participants", "username profilePic profileSlug gender city country")
+      .sort({ lastMessageAt: -1 });
+
+    // Get message count and last message for each conversation
+    const conversationsWithMeta = await Promise.all(
+      conversations.map(async (conv) => {
+        const messageCount = await ChatMessage.countDocuments({ conversationId: conv._id });
+        const lastMessage = await ChatMessage.findOne({ conversationId: conv._id })
+          .sort({ createdAt: -1 })
+          .populate("senderId", "username")
+          .lean();
+
+        return {
+          _id: conv._id,
+          participants: conv.participants,
+          lastMessageAt: conv.lastMessageAt,
+          createdAt: conv.createdAt,
+          messageCount,
+          lastMessage: lastMessage ? {
+            text: lastMessage.text,
+            senderName: lastMessage.senderId?.username || "Unknown"
+          } : null
+        };
+      })
+    );
+
+    // Calculate stats
+    const totalConversations = conversations.length;
+    const totalMessages = await ChatMessage.countDocuments({});
+    
+    // Active today - conversations with messages in last 24 hours
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    const activeToday = await Conversation.countDocuments({
+      lastMessageAt: { $gte: yesterday }
+    });
+
+    res.render("admin/chats", {
+      conversations: conversationsWithMeta,
+      totalConversations,
+      totalMessages,
+      activeToday,
+      isAdmin: req.session.isAdmin
+    });
+  } catch (error) {
+    console.error("Admin chats error:", error);
+    res.render("admin/chats", {
+      conversations: [],
+      totalConversations: 0,
+      totalMessages: 0,
+      activeToday: 0,
+      isAdmin: req.session.isAdmin
+    });
+  }
+});
+
+// GET /admin/chats/:conversationId – View specific conversation details
+app.get("/admin/chats/:conversationId", requireAdminOrModerator, async (req, res) => {
+  try {
+    const { conversationId } = req.params;
+
+    const conversation = await Conversation.findById(conversationId)
+      .populate("participants", "username profilePic profileSlug gender city country");
+
+    if (!conversation) {
+      return res.status(404).render("404", {
+        title: "Conversation Not Found",
+        url: req.originalUrl
+      });
+    }
+
+    // Get all messages in this conversation
+    const messages = await ChatMessage.find({ conversationId })
+      .populate("senderId", "username profilePic")
+      .sort({ createdAt: 1 });
+
+    res.render("admin/chatDetail", {
+      conversation,
+      messages,
+      isAdmin: req.session.isAdmin
+    });
+  } catch (error) {
+    console.error("Admin chat detail error:", error);
+    res.status(500).render("404", {
+      title: "Error",
+      url: req.originalUrl
+    });
+  }
+});
+
+// ============================================
+// END ADMIN CHATS MANAGEMENT ROUTES
+// ============================================
+
 app.post("/api/newsletter/subscribe", async (req, res) => {
   try {
     const { name, email, interestedIn, preferredAgeRange } = req.body;
@@ -4984,6 +5088,245 @@ app.get("/seoadmin", (req, res) => {
 // END SEO ADMIN ROUTES
 // ============================================
 
+// ============================================
+// CHAT ROUTES
+// ============================================
+const Conversation = require("./models/Conversation");
+const ChatMessage = require("./models/Message");
+
+// GET /chats – Inbox page showing all conversations
+app.get("/chats", isLoggedIn, findUser, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+
+    const conversations = await Conversation.find({
+      participants: userId,
+    })
+      .populate("participants", "username profilePic profileSlug gender")
+      .sort({ lastMessageAt: -1 });
+
+    // Attach last message and unread count to each conversation
+    const conversationsWithMeta = await Promise.all(
+      conversations.map(async (conv) => {
+        const lastMessage = await ChatMessage.findOne({ conversationId: conv._id })
+          .sort({ createdAt: -1 })
+          .lean();
+
+        const unreadCount = await ChatMessage.countDocuments({
+          conversationId: conv._id,
+          senderId: { $ne: userId },
+          status: { $in: ["sent", "delivered"] },
+        });
+
+        const otherParticipant = conv.participants.find(
+          (p) => p._id.toString() !== userId
+        );
+
+        return {
+          _id: conv._id,
+          otherUser: otherParticipant,
+          lastMessage,
+          unreadCount,
+          lastMessageAt: conv.lastMessageAt,
+        };
+      })
+    );
+
+    // Find accepted requests where no conversation exists yet
+    const acceptedRequests = await Request.find({
+      $or: [{ from: userId }, { to: userId }],
+      status: "accepted",
+    })
+      .populate("from", "username profilePic profileSlug gender")
+      .populate("to", "username profilePic profileSlug gender");
+
+    // Filter out requests that already have conversations
+    const existingConversationUserIds = new Set(
+      conversationsWithMeta.map((c) => c.otherUser._id.toString())
+    );
+
+    const potentialChats = acceptedRequests
+      .map((req) => {
+        const otherUser =
+          req.from._id.toString() === userId ? req.to : req.from;
+        return {
+          otherUser,
+          requestId: req._id,
+        };
+      })
+      .filter((chat) => !existingConversationUserIds.has(chat.otherUser._id.toString()));
+
+    res.render("chat/inbox", {
+      conversations: conversationsWithMeta,
+      potentialChats,
+      user: req.session.user,
+      isAdmin: req.session.isAdmin,
+    });
+  } catch (err) {
+    console.error("Chat inbox error:", err);
+    res.status(500).render("404", {
+      title: "Error",
+      url: req.originalUrl,
+    });
+  }
+});
+
+// GET /chats/:conversationId – Chat room page
+app.get("/chats/:conversationId", isLoggedIn, findUser, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { conversationId } = req.params;
+
+    const conversation = await Conversation.findById(conversationId)
+      .populate("participants", "username profilePic profileSlug gender name city country");
+
+    if (!conversation) {
+      return res.status(404).render("404", {
+        title: "Chat Not Found",
+        url: req.originalUrl,
+      });
+    }
+
+    // Verify user is a participant
+    const isParticipant = conversation.participants.some(
+      (p) => p._id.toString() === userId
+    );
+    if (!isParticipant) {
+      return res.status(403).render("404", {
+        title: "Access Denied",
+        url: req.originalUrl,
+      });
+    }
+
+    const otherUser = conversation.participants.find(
+      (p) => p._id.toString() !== userId
+    );
+
+    res.render("chat/room", {
+      conversation,
+      otherUser,
+      user: req.session.user,
+      currentUserId: userId,
+      isAdmin: req.session.isAdmin,
+    });
+  } catch (err) {
+    console.error("Chat room error:", err);
+    res.status(500).render("404", {
+      title: "Error",
+      url: req.originalUrl,
+    });
+  }
+});
+
+// GET /api/chat/unread/count – Get total unread message count for header badge
+app.get("/api/chat/unread/count", isLoggedIn, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+
+    // Find all conversations the user is in
+    const conversations = await Conversation.find({ participants: userId });
+    const conversationIds = conversations.map((c) => c._id);
+
+    const unreadCount = await ChatMessage.countDocuments({
+      conversationId: { $in: conversationIds },
+      senderId: { $ne: userId },
+      status: { $in: ["sent", "delivered"] },
+    });
+
+    res.json({ success: true, unreadCount });
+  } catch (err) {
+    console.error("Unread count error:", err);
+    res.json({ success: true, unreadCount: 0 });
+  }
+});
+
+// GET /api/chat/:conversationId – Fetch chat history (API)
+app.get("/api/chat/:conversationId", isLoggedIn, async (req, res) => {
+  try {
+    const userId = req.session.userId;
+    const { conversationId } = req.params;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 50;
+
+    const conversation = await Conversation.findById(conversationId);
+    if (!conversation) {
+      return res.status(404).json({ error: "Conversation not found" });
+    }
+
+    // Verify user is a participant
+    const isParticipant = conversation.participants.some(
+      (p) => p.toString() === userId
+    );
+    if (!isParticipant) {
+      return res.status(403).json({ error: "Access denied" });
+    }
+
+    const totalMessages = await ChatMessage.countDocuments({ conversationId });
+    const messages = await ChatMessage.find({ conversationId })
+      .populate("senderId", "username profilePic profileSlug")
+      .sort({ createdAt: 1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    res.json({
+      success: true,
+      messages,
+      pagination: {
+        page,
+        limit,
+        total: totalMessages,
+        pages: Math.ceil(totalMessages / limit),
+      },
+    });
+  } catch (err) {
+    console.error("Chat history error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// POST /api/chat/start/:profileId – Start or get existing conversation
+app.post("/api/chat/start/:profileId", isLoggedIn, findUser, async (req, res) => {
+  try {
+    const currentUserId = req.session.userId;
+    const targetUserId = req.params.profileId;
+
+    if (currentUserId === targetUserId) {
+      return res.status(400).json({ error: "Cannot chat with yourself" });
+    }
+
+    // Check for accepted connection (either direction)
+    const acceptedRequest = await Request.findOne({
+      $or: [
+        { from: currentUserId, to: targetUserId, status: "accepted" },
+        { from: targetUserId, to: currentUserId, status: "accepted" },
+      ],
+    });
+
+    if (!acceptedRequest) {
+      return res.status(403).json({
+        error: "You can only chat with accepted connections",
+      });
+    }
+
+    // Find or create conversation
+    const conversation = await Conversation.findOrCreate(currentUserId, targetUserId);
+
+    res.json({
+      success: true,
+      conversationId: conversation._id,
+      redirectUrl: `/chats/${conversation._id}`,
+    });
+  } catch (err) {
+    console.error("Start chat error:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ============================================
+// END CHAT ROUTES
+// ============================================
+
 app.use((req, res) => {
   res.status(404).render("404", {
     title: "Page Not Found - D'amour Muslim",
@@ -5002,6 +5345,12 @@ process.on("SIGINT", async () => {
   await QueueService.close();
   process.exit(0);
 });
-app.listen(port, (req, res) => {
-  console.log("on port 3000!");
+// Create HTTP server and attach Socket.io
+const server = http.createServer(app);
+const { initializeSocket } = require("./services/socketService");
+const io = initializeSocket(server, sessionMiddleware);
+
+server.listen(port, () => {
+  console.log(`🚀 Server running on port ${port}`);
+  console.log("💬 Socket.io chat ready");
 });

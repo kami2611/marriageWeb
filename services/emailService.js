@@ -374,4 +374,5 @@ module.exports = {
   sendVerificationEmail,
   sendPasswordResetEmail,
   sendProfileApprovalEmail,
+  sendZeptoMail,
 };
