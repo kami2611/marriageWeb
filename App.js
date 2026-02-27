@@ -55,6 +55,7 @@ function addProfileSlugHistory(profile, oldSlug, newSlug) {
 const User = require("./models/user");
 const Newsletter = require("./models/Newsletter");
 const { countryOptions, countryPlaceholders } = require("./config/countries");
+const { detectCountry, buildGeoFilter, getFilterUIConfig } = require("./config/geoFilter");
 const path = require("path");
 const Request = require("./models/Request");
 const Notification = require("./models/Notification");
@@ -1367,12 +1368,23 @@ app.get("/profiles",requireOnboardingComplete, async (req, res) => {
   const limit = 12;
   const skip = (page - 1) * limit;
 
+  // Detect visitor country via Cloudflare header or MOCK_COUNTRY env
+  const detectedCountryCode = detectCountry(req);
+  const geoFilter = buildGeoFilter(detectedCountryCode);
+  const geoFilterUI = getFilterUIConfig(detectedCountryCode);
+
   // Extract filter parameters
   const { gender, minAge, maxAge, minHeight, maxHeight, city, country, nationality } =
     req.query;
 
   // Build filter object
   const filter = {};
+
+  // Apply geo-based location filter (e.g. PK visitors only see Pakistan profiles)
+  if (geoFilter.$or) {
+    filter.$and = filter.$and || [];
+    filter.$and.push({ $or: geoFilter.$or });
+  }
 
   // **NEW**: Only show approved profiles to regular users
   // Admins and moderators can see all profiles
@@ -1483,6 +1495,8 @@ app.get("/profiles",requireOnboardingComplete, async (req, res) => {
       totalPages,
       totalProfiles,
       currentUserProfile, // **NEW**: Pass current user's profile for pending notice
+      geoFilterUI, // Geo-based filter UI config (null if no restriction)
+      detectedCountryCode: detectedCountryCode || null,
     });
   } catch (error) {
     console.error("Error fetching profiles:", error);

@@ -109,30 +109,46 @@
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i class="ri-earth-line text-gray-400"></i>
           </div>
-          <select name="country" id="filterCountry" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none">
-            <option value="">All Countries</option>
-            <option value="United Kingdom" <%= filters?.country === 'United Kingdom' ? 'selected' : '' %> >United Kingdom</option>
-            <option value="Pakistan" <%= filters?.country === 'Pakistan' ? 'selected' : '' %> >Pakistan</option>
-            <option value="Bangladesh" <%= filters?.country === 'Bangladesh' ? 'selected' : '' %> >Bangladesh</option>
-            <option value="India" <%= filters?.country === 'India' ? 'selected' : '' %> >India</option>
-            <option value="United States" <%= filters?.country === 'United States' ? 'selected' : '' %> >United States</option>
-            <option value="Canada" <%= filters?.country === 'Canada' ? 'selected' : '' %> >Canada</option>
-            <option value="United Arab Emirates" <%= filters?.country === 'United Arab Emirates' ? 'selected' : '' %> >United Arab Emirates</option>
-            <option value="Saudi Arabia" <%= filters?.country === 'Saudi Arabia' ? 'selected' : '' %> >Saudi Arabia</option>
-            <option value="Australia" <%= filters?.country === 'Australia' ? 'selected' : '' %> >Australia</option>
-            <option value="Germany" <%= filters?.country === 'Germany' ? 'selected' : '' %> >Germany</option>
-            <option value="France" <%= filters?.country === 'France' ? 'selected' : '' %> >France</option>
-            <option value="Malaysia" <%= filters?.country === 'Malaysia' ? 'selected' : '' %> >Malaysia</option>
-            <option value="Singapore" <%= filters?.country === 'Singapore' ? 'selected' : '' %> >Singapore</option>
-            <option value="Other" <%= filters?.country === 'Other' ? 'selected' : '' %> >Other</option>
+          <select name="country" id="filterCountry" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none" <% if (typeof geoFilterUI !== 'undefined' && geoFilterUI && geoFilterUI.countries.length === 1) { %>disabled<% } %>>
+            <% if (typeof geoFilterUI !== 'undefined' && geoFilterUI) { %>
+              <!-- Geo-restricted: pre-select the country (e.g., Pakistan) -->
+              <% geoFilterUI.countries.forEach(function(c, index) { %>
+                <option value="<%= c.value %>" <%= (index === 0 && !filters?.country) || filters?.country === c.value ? 'selected' : '' %>><%= c.label %></option>
+              <% }); %>
+            <% } else { %>
+              <!-- No geo-restriction: show all countries -->
+              <option value="">All Countries</option>
+              <option value="United Kingdom" <%= filters?.country === 'United Kingdom' ? 'selected' : '' %> >United Kingdom</option>
+              <option value="Pakistan" <%= filters?.country === 'Pakistan' ? 'selected' : '' %> >Pakistan</option>
+              <option value="Bangladesh" <%= filters?.country === 'Bangladesh' ? 'selected' : '' %> >Bangladesh</option>
+              <option value="India" <%= filters?.country === 'India' ? 'selected' : '' %> >India</option>
+              <option value="United States" <%= filters?.country === 'United States' ? 'selected' : '' %> >United States</option>
+              <option value="Canada" <%= filters?.country === 'Canada' ? 'selected' : '' %> >Canada</option>
+              <option value="United Arab Emirates" <%= filters?.country === 'United Arab Emirates' ? 'selected' : '' %> >United Arab Emirates</option>
+              <option value="Saudi Arabia" <%= filters?.country === 'Saudi Arabia' ? 'selected' : '' %> >Saudi Arabia</option>
+              <option value="Australia" <%= filters?.country === 'Australia' ? 'selected' : '' %> >Australia</option>
+              <option value="Germany" <%= filters?.country === 'Germany' ? 'selected' : '' %> >Germany</option>
+              <option value="France" <%= filters?.country === 'France' ? 'selected' : '' %> >France</option>
+              <option value="Malaysia" <%= filters?.country === 'Malaysia' ? 'selected' : '' %> >Malaysia</option>
+              <option value="Singapore" <%= filters?.country === 'Singapore' ? 'selected' : '' %> >Singapore</option>
+              <option value="Other" <%= filters?.country === 'Other' ? 'selected' : '' %> >Other</option>
+            <% } %>
           </select>
         </div>
         <div class="relative">
           <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <i class="ri-map-pin-line text-gray-400"></i>
           </div>
-          <select name="city" id="filterCity" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none" disabled>
-            <option value="">Select City</option>
+          <select name="city" id="filterCity" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none" <% if (!(typeof geoFilterUI !== 'undefined' && geoFilterUI)) { %>disabled<% } %>>
+            <option value="">All Cities</option>
+            <% if (typeof geoFilterUI !== 'undefined' && geoFilterUI && geoFilterUI.countries.length > 0) { %>
+              <% const defaultCountry = geoFilterUI.countries[0].value; %>
+              <% if (geoFilterUI.cities[defaultCountry]) { %>
+                <% geoFilterUI.cities[defaultCountry].forEach(function(cityName) { %>
+                  <option value="<%= cityName %>" <%= filters?.city === cityName ? 'selected' : '' %>><%= cityName %></option>
+                <% }); %>
+              <% } %>
+            <% } %>
           </select>
         </div>
       </div>
@@ -239,10 +255,23 @@
       updateMinHeightOptions();
     }
 
-    // City options by country
+    // City options by country — geo-restricted or full list
+    <% if (typeof geoFilterUI !== 'undefined' && geoFilterUI) { %>
+    const cityData = <%- JSON.stringify(geoFilterUI.cities) %>;
+    <% } else { %>
     const cityData = {
       'United Kingdom': ['London','Birmingham','Manchester','Glasgow','Liverpool','Leeds','Sheffield','Edinburgh','Bristol','Leicester','Bradford','Cardiff','Nottingham','Newcastle','Other'],
-      'Pakistan': ['Karachi','Lahore','Islamabad','Rawalpindi','Faisalabad','Multan','Peshawar','Quetta','Sialkot','Gujranwala','Hyderabad','Other'],
+      'Pakistan': [
+  'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad',
+  'Multan', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala',
+  'Hyderabad', 'Abbottabad', 'Bahawalpur', 'Sargodha', 'Sukkur',
+  'Larkana', 'Mardan', 'Gujrat', 'Sahiwal', 'Mirpur',
+  'Sheikhupura', 'Jhang', 'Rahim Yar Khan', 'Kasur', 'Muzaffargarh',
+  'Nawabshah', 'Chiniot', 'Kamoke', 'Hafizabad', 'Sadiqabad',
+  'Burewala', 'Jacobabad', 'Shikarpur', 'Kohat', 'Jhelum',
+  'Khanewal', 'Gojra', 'Mandi Bahauddin', 'Daska', 'Dera Ghazi Khan',
+  'Dera Ismail Khan', 'Mingora', 'Bannu', 'Khuzdar','Other'
+],
       'Bangladesh': ['Dhaka','Chittagong','Sylhet','Khulna','Rajshahi','Comilla','Gazipur','Narayanganj','Other'],
       'India': ['Mumbai','Delhi','Bangalore','Hyderabad','Chennai','Kolkata','Ahmedabad','Pune','Lucknow','Jaipur','Other'],
       'United States': ['New York','Los Angeles','Chicago','Houston','Dallas','San Francisco','Miami','Atlanta','Washington DC','Boston','Other'],
@@ -256,6 +285,7 @@
       'Singapore': ['Singapore','Other'],
       'Other': ['Other']
     };
+    <% } %>
 
     if (filterCountry && filterCity) {
       filterCountry.addEventListener('change', function() {
@@ -276,8 +306,11 @@
 
       // Initialize if a country is already selected
       if (filterCountry.value) {
+        <% if (!(typeof geoFilterUI !== 'undefined' && geoFilterUI)) { %>
+        // Only trigger change event for non-geo-restricted (cities already populated server-side for geo-restricted)
         const evt = new Event('change');
         filterCountry.dispatchEvent(evt);
+        <% } %>
         // If a city filter exists, set it
         const urlParams = new URLSearchParams(window.location.search);
         const currentCity = urlParams.get('city');

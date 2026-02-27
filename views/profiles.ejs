@@ -877,21 +877,30 @@ html {
                     <i class="ri-earth-line text-gray-400"></i>
                   </div>
                   <select name="country" id="mobileFilterCountry" class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-button focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 bg-white text-sm appearance-none">
-                    <option value="">All Countries</option>
-                    <option value="United Kingdom" <%= filters?.country === 'United Kingdom' ? 'selected' : '' %> >United Kingdom</option>
-                    <option value="Pakistan" <%= filters?.country === 'Pakistan' ? 'selected' : '' %> >Pakistan</option>
-                    <option value="Bangladesh" <%= filters?.country === 'Bangladesh' ? 'selected' : '' %> >Bangladesh</option>
-                    <option value="India" <%= filters?.country === 'India' ? 'selected' : '' %> >India</option>
-                    <option value="United States" <%= filters?.country === 'United States' ? 'selected' : '' %> >United States</option>
-                    <option value="Canada" <%= filters?.country === 'Canada' ? 'selected' : '' %> >Canada</option>
-                    <option value="United Arab Emirates" <%= filters?.country === 'United Arab Emirates' ? 'selected' : '' %> >United Arab Emirates</option>
-                    <option value="Saudi Arabia" <%= filters?.country === 'Saudi Arabia' ? 'selected' : '' %> >Saudi Arabia</option>
-                    <option value="Australia" <%= filters?.country === 'Australia' ? 'selected' : '' %> >Australia</option>
-                    <option value="Germany" <%= filters?.country === 'Germany' ? 'selected' : '' %> >Germany</option>
-                    <option value="France" <%= filters?.country === 'France' ? 'selected' : '' %> >France</option>
-                    <option value="Malaysia" <%= filters?.country === 'Malaysia' ? 'selected' : '' %> >Malaysia</option>
-                    <option value="Singapore" <%= filters?.country === 'Singapore' ? 'selected' : '' %> >Singapore</option>
-                    <option value="Other" <%= filters?.country === 'Other' ? 'selected' : '' %> >Other</option>
+                    <% if (typeof geoFilterUI !== 'undefined' && geoFilterUI) { %>
+                      <!-- Geo-restricted: show only allowed countries -->
+                      <option value="">All Cities</option>
+                      <% geoFilterUI.countries.forEach(function(c) { %>
+                        <option value="<%= c.value %>" <%= filters?.country === c.value ? 'selected' : '' %>><%= c.label %></option>
+                      <% }); %>
+                    <% } else { %>
+                      <!-- No geo-restriction: show all countries -->
+                      <option value="">All Countries</option>
+                      <option value="United Kingdom" <%= filters?.country === 'United Kingdom' ? 'selected' : '' %> >United Kingdom</option>
+                      <option value="Pakistan" <%= filters?.country === 'Pakistan' ? 'selected' : '' %> >Pakistan</option>
+                      <option value="Bangladesh" <%= filters?.country === 'Bangladesh' ? 'selected' : '' %> >Bangladesh</option>
+                      <option value="India" <%= filters?.country === 'India' ? 'selected' : '' %> >India</option>
+                      <option value="United States" <%= filters?.country === 'United States' ? 'selected' : '' %> >United States</option>
+                      <option value="Canada" <%= filters?.country === 'Canada' ? 'selected' : '' %> >Canada</option>
+                      <option value="United Arab Emirates" <%= filters?.country === 'United Arab Emirates' ? 'selected' : '' %> >United Arab Emirates</option>
+                      <option value="Saudi Arabia" <%= filters?.country === 'Saudi Arabia' ? 'selected' : '' %> >Saudi Arabia</option>
+                      <option value="Australia" <%= filters?.country === 'Australia' ? 'selected' : '' %> >Australia</option>
+                      <option value="Germany" <%= filters?.country === 'Germany' ? 'selected' : '' %> >Germany</option>
+                      <option value="France" <%= filters?.country === 'France' ? 'selected' : '' %> >France</option>
+                      <option value="Malaysia" <%= filters?.country === 'Malaysia' ? 'selected' : '' %> >Malaysia</option>
+                      <option value="Singapore" <%= filters?.country === 'Singapore' ? 'selected' : '' %> >Singapore</option>
+                      <option value="Other" <%= filters?.country === 'Other' ? 'selected' : '' %> >Other</option>
+                    <% } %>
                   </select>
                 </div>
                 <div class="relative">
@@ -1154,9 +1163,22 @@ html {
       const mobileFilterCountry = document.getElementById('mobileFilterCountry');
       const mobileFilterCity = document.getElementById('mobileFilterCity');
 
+      <% if (typeof geoFilterUI !== 'undefined' && geoFilterUI) { %>
+      const mobileCityData = <%- JSON.stringify(geoFilterUI.cities) %>;
+      <% } else { %>
       const mobileCityData = {
         'United Kingdom': ['London','Birmingham','Manchester','Glasgow','Liverpool','Leeds','Sheffield','Edinburgh','Bristol','Leicester','Bradford','Cardiff','Nottingham','Newcastle','Other'],
-        'Pakistan': ['Karachi','Lahore','Islamabad','Rawalpindi','Faisalabad','Multan','Peshawar','Quetta','Sialkot','Gujranwala','Hyderabad','Other'],
+        'Pakistan': [
+  'Karachi', 'Lahore', 'Islamabad', 'Rawalpindi', 'Faisalabad',
+  'Multan', 'Peshawar', 'Quetta', 'Sialkot', 'Gujranwala',
+  'Hyderabad', 'Abbottabad', 'Bahawalpur', 'Sargodha', 'Sukkur',
+  'Larkana', 'Mardan', 'Gujrat', 'Sahiwal', 'Mirpur',
+  'Sheikhupura', 'Jhang', 'Rahim Yar Khan', 'Kasur', 'Muzaffargarh',
+  'Nawabshah', 'Chiniot', 'Kamoke', 'Hafizabad', 'Sadiqabad',
+  'Burewala', 'Jacobabad', 'Shikarpur', 'Kohat', 'Jhelum',
+  'Khanewal', 'Gojra', 'Mandi Bahauddin', 'Daska', 'Dera Ghazi Khan',
+  'Dera Ismail Khan', 'Mingora', 'Bannu', 'Khuzdar','Other'
+],
         'Bangladesh': ['Dhaka','Chittagong','Sylhet','Khulna','Rajshahi','Comilla','Gazipur','Narayanganj','Other'],
         'India': ['Mumbai','Delhi','Bangalore','Hyderabad','Chennai','Kolkata','Ahmedabad','Pune','Lucknow','Jaipur','Other'],
         'United States': ['New York','Los Angeles','Chicago','Houston','Dallas','San Francisco','Miami','Atlanta','Washington DC','Boston','Other'],
@@ -1170,6 +1192,7 @@ html {
         'Singapore': ['Singapore','Other'],
         'Other': ['Other']
       };
+      <% } %>
 
       if (mobileFilterCountry && mobileFilterCity) {
         mobileFilterCountry.addEventListener('change', function() {
