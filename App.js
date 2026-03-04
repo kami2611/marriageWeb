@@ -4587,6 +4587,10 @@ app.get("/blog/:slug",requireOnboardingComplete, async (req, res) => {
     });
   }
 });
+app.get('/marriage-profile-registration-form', (req, res) => {
+  const googleFormUrl = process.env.marriageProfileGoogleFormUrl;
+res.redirect(301, googleFormUrl);
+});
 // Update the sitemap.xml route to include static blogs
 app.get("/sitemap.xml", async (req, res) => {
   try {
