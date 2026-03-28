@@ -140,53 +140,108 @@
     .profile-card:hover {
       transform: translateY(-2px);
     }
+
+    /* Slide-out sidebar */
+    .sidebar-overlay {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    .sidebar-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .sidebar-panel {
+      transform: translateX(-100%);
+      transition: transform 0.3s ease;
+    }
+    .sidebar-panel.active {
+      transform: translateX(0);
+    }
   </style>
 </head>
 
 <body class="bg-gray-50 font-['Roboto']">
+  <!-- Slide-out Sidebar Menu -->
+  <div id="sidebarOverlay" class="sidebar-overlay fixed inset-0 bg-black bg-opacity-50 z-[60]"></div>
+  <aside id="sidebarPanel" class="sidebar-panel fixed top-0 left-0 h-full w-72 bg-white z-[70] material-shadow-elevated flex flex-col">
+    <div class="px-5 py-4 border-b border-gray-200 flex items-center justify-between">
+      <h2 class="text-lg font-semibold text-gray-900">Menu</h2>
+      <button id="closeSidebarBtn" class="p-1.5 text-gray-500 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors">
+        <i class="ri-close-line text-xl"></i>
+      </button>
+    </div>
+    <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+      <a href="/admin/requests" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+        <i class="ri-mail-send-line text-lg text-gray-500"></i>
+        <span class="text-sm font-medium">Requests</span>
+      </a>
+      <a href="/admin/chats" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+        <i class="ri-chat-3-line text-lg text-gray-500"></i>
+        <span class="text-sm font-medium">Chats</span>
+      </a>
+      <% if (isAdmin) { %>
+      <a href="/admin/newsletter" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+        <i class="ri-mail-line text-lg text-gray-500"></i>
+        <span class="text-sm font-medium">Newsletter</span>
+      </a>
+      <a href="/admin/blogs" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+        <i class="ri-article-line text-lg text-gray-500"></i>
+        <span class="text-sm font-medium">Manage Blogs</span>
+      </a>
+      <a href="/admin/export" class="flex items-center gap-3 px-4 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors">
+        <i class="ri-download-2-line text-lg text-gray-500"></i>
+        <span class="text-sm font-medium">Export Data</span>
+      </a>
+      <div class="border-t border-gray-200 my-2"></div>
+      <a href="/admin/deletedaccounts" class="flex items-center gap-3 px-4 py-2.5 text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+        <i class="ri-delete-bin-line text-lg"></i>
+        <span class="text-sm font-medium">Deleted Accounts Record</span>
+      </a>
+      <% } %>
+    </nav>
+  </aside>
+
   <!-- Top Navigation Bar with Search -->
  <header class="bg-white border-b border-gray-200 sticky top-0 z-50">
     <div class="max-w-full mx-auto px-4 py-3">
       <div class="flex items-center justify-between gap-4">
-        <!-- Search Bar -->
-        <div class="flex-1 max-w-xl">
-          <div class="relative">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <i class="ri-search-line text-gray-400"></i>
+        <!-- Menu Button + Search Bar with Radio Buttons -->
+        <div class="flex items-center gap-2 flex-1 max-w-2xl">
+          <button id="openSidebarBtn" class="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200 flex-shrink-0">
+            <i class="ri-menu-line text-xl"></i>
+          </button>
+          <div class="flex items-center gap-3 flex-1">
+            <div class="relative flex-1">
+              <input type="text" id="searchInput" placeholder="Search by name..." class="block w-full pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+              <button id="searchBtn" class="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-gray-400 hover:text-primary transition-colors">
+                <i class="ri-search-line text-lg"></i>
+              </button>
             </div>
-            <input type="text" id="searchInput" placeholder="Search by username/ name/ phone..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary text-gray-900 placeholder-gray-400 bg-white text-sm">
+            <div class="hidden md:flex items-center gap-3 text-sm">
+              <label class="flex items-center gap-1 cursor-pointer">
+                <input type="radio" name="searchBy" value="name" checked class="accent-pink-500">
+                <span class="text-gray-700">Name</span>
+              </label>
+              <label class="flex items-center gap-1 cursor-pointer">
+                <input type="radio" name="searchBy" value="username" class="accent-pink-500">
+                <span class="text-gray-700">Username</span>
+              </label>
+              <label class="flex items-center gap-1 cursor-pointer">
+                <input type="radio" name="searchBy" value="phone" class="accent-pink-500">
+                <span class="text-gray-700">Phone</span>
+              </label>
+            </div>
           </div>
         </div>
 
-        <!-- Mobile Menu Button -->
-        <button id="mobileMenuBtn" class="md:hidden lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors duration-200">
-          <i class="ri-menu-line text-xl"></i>
-        </button>
-
-        <!-- Desktop Action Buttons (hidden on mobile) -->
-        <div class="hidden md:flex items-center gap-3">
-          <button id="requestsBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
-            Requests
-          </button>
-          <button id="chatsBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
-            Chats
-          </button>
+        <!-- Right side: Add User + View Toggle -->
+        <div class="flex items-center gap-3">
           <% if (isAdmin) { %>
-          <button id="newsletterBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
-            Newsletter
-          </button>
-          <button id="blogsBtn" class="px-4 py-2 bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 rounded-lg text-sm font-medium">
-            Manage Blogs
-          </button>
-          <button id="deletedAccountsBtn" class="hidden md:flex items-center gap-2 px-4 py-2 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded-lg font-medium">
-  <i class="ri-delete-bin-line"></i>
-  <span>Deleted accounts Record</span>
-</button>
-          <button id="addUserBtn" class="px-4 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-lg text-sm font-medium">
+          <button id="addUserBtn" class="hidden md:inline-flex px-4 py-2 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded-lg text-sm font-medium">
             Add User
           </button>
           <% } %>
-          
           <!-- View Toggle Buttons -->
           <div class="flex border border-gray-300 rounded-lg overflow-hidden">
             <button id="gridViewBtn" class="p-2 bg-white hover:bg-gray-50 text-gray-600 transition-all duration-200" title="Grid View">
@@ -199,52 +254,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Mobile Menu Dropdown -->
-    <div id="mobileMenu" class="md:hidden hidden border-t border-gray-200 bg-white">
-      <div class="px-4 py-3 space-y-2">
-        <!-- View Toggle -->
-        <div class="flex items-center justify-between py-2 border-b border-gray-100">
-          <span class="text-sm text-gray-600 font-medium">View</span>
-          <div class="flex border border-gray-300 rounded-lg overflow-hidden">
-            <button id="mobileGridViewBtn" class="p-2 bg-white hover:bg-gray-50 text-gray-600 transition-all duration-200" title="Grid View">
-              <i class="ri-layout-grid-line text-lg"></i>
-            </button>
-            <button id="mobileTableViewBtn" class="p-2 bg-gray-100 text-primary border-l border-gray-300 transition-all duration-200" title="Table View">
-              <i class="ri-list-check text-lg"></i>
-            </button>
-          </div>
-        </div>
-
-        <!-- Navigation Links -->
-        <button id="mobileRequestsBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-          <i class="ri-mail-send-line text-lg text-gray-500"></i>
-          <span class="text-sm font-medium">Requests</span>
-        </button>
-
-        <button id="mobileChatsBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-          <i class="ri-chat-3-line text-lg text-gray-500"></i>
-          <span class="text-sm font-medium">Chats</span>
-        </button>
-
-        <% if (isAdmin) { %>
-        <button id="mobileNewsletterBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-          <i class="ri-mail-line text-lg text-gray-500"></i>
-          <span class="text-sm font-medium">Newsletter</span>
-        </button>
-
-        <button id="mobileBlogsBtn" class="w-full flex items-center gap-3 px-3 py-2.5 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-          <i class="ri-article-line text-lg text-gray-500"></i>
-          <span class="text-sm font-medium">Manage Blogs</span>
-        </button>
-
-        <button id="mobileAddUserBtn" class="w-full flex items-center gap-3 px-3 py-2.5 bg-primary text-white hover:bg-pink-600 rounded-lg transition-colors duration-200">
-          <i class="ri-user-add-line text-lg"></i>
-          <span class="text-sm font-medium">Add User</span>
-        </button>
-        <% } %>
-      </div>
-    </div>
   </header>
 
   <main class="py-6 min-h-screen">
@@ -252,7 +261,7 @@
       <!-- Stats Cards Row -->
       <div class="flex flex-wrap gap-4 mb-6">
         <!-- Pending Approval (NEW - Priority) -->
-        <div class="bg-white rounded-xl px-6 py-4 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card flex items-center gap-4 min-w-[160px] <%= currentFilter === 'pending' ? 'active' : '' %>" data-filter="pending">
+        <div class="bg-white rounded-xl px-6 py-4 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card flex items-center gap-4 min-w-[160px]" data-filter="pending">
           <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
             <i class="ri-time-line text-lg text-red-600"></i>
           </div>
@@ -263,7 +272,7 @@
         </div>
 
         <!-- Approved Profiles (NEW) -->
-        <div class="bg-white rounded-xl px-6 py-4 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card flex items-center gap-4 min-w-[160px] <%= currentFilter === 'approved' ? 'active' : '' %>" data-filter="approved">
+        <div class="bg-white rounded-xl px-6 py-4 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card flex items-center gap-4 min-w-[160px]" data-filter="approved">
           <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
             <i class="ri-checkbox-circle-line text-lg text-green-600"></i>
           </div>
@@ -274,7 +283,7 @@
         </div>
 
         <!-- Total Users -->
-        <div class="bg-white rounded-xl px-6 py-4 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card flex items-center gap-4 min-w-[160px] <%= currentFilter === 'all' ? 'active' : '' %>" data-filter="all">
+        <div class="bg-white rounded-xl px-6 py-4 material-shadow cursor-pointer hover:material-shadow-hover transition-all duration-300 stats-filter-card flex items-center gap-4 min-w-[160px]" data-filter="all">
           <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
             <i class="ri-group-line text-lg text-blue-600"></i>
           </div>
@@ -453,11 +462,6 @@
                         Approve
                       </button>
                       <% } %>
-                      <% if (user.approvalStatus !== 'rejected') { %>
-                      <button class="reject-btn px-3 py-1.5 bg-orange-500 text-white hover:bg-orange-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="<%= user._id %>">
-                        Reject
-                      </button>
-                      <% } %>
                     <!-- <button class="delete-btn px-3 py-1.5 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="<%= user._id %>">
                       Delete
                     </button> -->
@@ -562,7 +566,6 @@
                     <% if (user.approvalStatus !== 'approved' && !user.isApproved) { %>
                     <div class="flex gap-2">
                       <button class="approve-btn flex-1 px-2 py-1.5 bg-green-500 text-white hover:bg-green-600 transition-all duration-300 rounded text-xs" data-user-id="<%= user._id %>">Approve</button>
-                      <button class="reject-btn flex-1 px-2 py-1.5 bg-orange-500 text-white hover:bg-orange-600 transition-all duration-300 rounded text-xs" data-user-id="<%= user._id %>">Reject</button>
                     </div>
                     <% } %>
                   <div class="flex gap-2">
@@ -581,6 +584,21 @@
         </div>
 
         <!-- Pagination -->
+        <% if (hasMore) { %>
+        <div id="loadMoreContainer" class="flex justify-center py-6">
+          <button id="loadMoreBtn" class="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-300 text-sm font-medium">
+            <span>Load More</span>
+            <i class="ri-arrow-down-s-line text-lg"></i>
+          </button>
+        </div>
+        <% } else { %>
+        <div id="loadMoreContainer" class="flex justify-center py-6 hidden">
+          <button id="loadMoreBtn" class="flex items-center gap-2 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-300 text-sm font-medium">
+            <span>Load More</span>
+            <i class="ri-arrow-down-s-line text-lg"></i>
+          </button>
+        </div>
+        <% } %>
       </div>
     </div>
   </main>
@@ -636,11 +654,8 @@
   <script id="admin-interactions">
     document.addEventListener('DOMContentLoaded', function() {
       // Element declarations
-      const newsletterBtn = document.getElementById('newsletterBtn');
-      const blogsBtn = document.getElementById('blogsBtn');
       const searchInput = document.getElementById('searchInput');
-      const userRows = document.querySelectorAll('.user-row');
-      const profileCards = document.querySelectorAll('.profile-card');
+      const searchBtn = document.getElementById('searchBtn');
       const statsFilterCards = document.querySelectorAll('.stats-filter-card');
       const deleteModal = document.getElementById('deleteModal');
       const deleteModalUserName = document.getElementById('deleteModalUserName');
@@ -655,120 +670,301 @@
       const tableViewBtn = document.getElementById('tableViewBtn');
       const tableView = document.getElementById('tableView');
       const gridView = document.getElementById('gridView');
+      const loadMoreBtn = document.getElementById('loadMoreBtn');
+      const loadMoreContainer = document.getElementById('loadMoreContainer');
 
       let currentDeleteUserId = null;
       let currentDeleteElement = null;
-      // Mobile Menu functionality
-      const mobileMenuBtn = document.getElementById('mobileMenuBtn');
-      const mobileMenu = document.getElementById('mobileMenu');
 
-      if (mobileMenuBtn && mobileMenu) {
-        mobileMenuBtn.addEventListener('click', function() {
-          mobileMenu.classList.toggle('hidden');
-          const icon = this.querySelector('i');
-          if (mobileMenu.classList.contains('hidden')) {
-            icon.className = 'ri-menu-line text-xl';
+      // Pagination state
+      let currentPage = 1;
+      let currentFilter = 'all';
+      let currentSearchBy = '';
+      let currentSearchTerm = '';
+      let isLoading = false;
+
+      // Helper: get selected search radio
+      function getSearchBy() {
+        const radio = document.querySelector('input[name="searchBy"]:checked');
+        return radio ? radio.value : 'name';
+      }
+
+      // Update placeholder based on selected radio
+      document.querySelectorAll('input[name="searchBy"]').forEach(radio => {
+        radio.addEventListener('change', function() {
+          const map = { name: 'Search by name...', username: 'Search by username...', phone: 'Search by phone...' };
+          searchInput.placeholder = map[this.value] || 'Search...';
+        });
+      });
+
+      // Helper: build a table row HTML from user data
+      const isAdmin = <%= isAdmin %>;
+      const isModerator = <%= isModerator %>;
+
+      function buildTableRowHTML(user) {
+        let approvalBadgeClass = 'bg-yellow-100 text-yellow-700';
+        let approvalText = 'Pending';
+        if (user.approvalStatus === 'approved' || user.isApproved) {
+          approvalBadgeClass = 'bg-green-100 text-green-700';
+          approvalText = 'Approved';
+        } else if (user.approvalStatus === 'rejected') {
+          approvalBadgeClass = 'bg-red-100 text-red-700';
+          approvalText = 'Rejected';
+        }
+
+        let location = '<span class="text-gray-400">Location not specified</span>';
+        if (user.city && user.country) location = user.city + ', ' + user.country;
+        else if (user.city) location = user.city;
+        else if (user.country) location = user.country;
+
+        let sourceText = 'Unknown';
+        if (user.registrationSource === 'admin') sourceText = 'by Admin';
+        else if (user.registrationSource === 'register') sourceText = 'Self';
+        else if (user.registrationSource === 'google') sourceText = 'Google';
+
+        let actionsHTML = '';
+        if (isAdmin) {
+          if (user.approvalStatus !== 'approved' && !user.isApproved) {
+            actionsHTML += '<button class="approve-btn px-3 py-1.5 bg-green-500 text-white hover:bg-green-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="' + user._id + '">Approve</button>';
+          }
+          actionsHTML += '<button class="view-btn px-3 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="' + user._id + '">View</button>';
+        } else if (isModerator) {
+          actionsHTML += '<button class="view-btn px-3 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs font-medium" data-user-id="' + user._id + '">View Profile</button>';
+        }
+
+        return '<tr class="user-row" data-username="' + (user.username || '') + '" data-name="' + (user.name || user.username || '') + '" data-contact="' + (user.contact || '') + '" data-registration-source="' + (user.registrationSource || 'unknown') + '" data-featured="' + (user.isFeatured || false) + '" data-passcode="' + (user.passcodeUsed || '') + '" data-approval-status="' + (user.approvalStatus || 'pending') + '">'
+          + '<td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center gap-2"><div class="text-sm font-medium text-gray-900">' + (user.name || user.username || '') + '</div><span class="px-2 py-0.5 ' + approvalBadgeClass + ' text-xs rounded-full font-medium">' + approvalText + '</span></div></td>'
+          + '<td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">' + location + '</div></td>'
+          + '<td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">' + (user.username || '') + '</div></td>'
+          + '<td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">' + (user.age || '-') + '</div></td>'
+          + '<td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">' + (user.email || '-') + '</div></td>'
+          + '<td class="px-6 py-4 whitespace-nowrap"><div class="text-sm text-gray-600">' + sourceText + '</div></td>'
+          + '<td class="px-6 py-4 whitespace-nowrap"><div class="flex items-center gap-2 flex-wrap">' + actionsHTML + '</div></td>'
+          + '</tr>';
+      }
+
+      function buildCardHTML(user) {
+        let cardApprovalBadgeClass = 'bg-yellow-500';
+        let cardApprovalText = 'Pending';
+        if (user.approvalStatus === 'approved' || user.isApproved) {
+          cardApprovalBadgeClass = 'bg-green-500';
+          cardApprovalText = 'Approved';
+        } else if (user.approvalStatus === 'rejected') {
+          cardApprovalBadgeClass = 'bg-red-500';
+          cardApprovalText = 'Rejected';
+        }
+
+        let imgHTML = '';
+        if (user.profilePic && user.profilePic.url) {
+          imgHTML = '<img src="' + user.profilePic.url + '" class="w-full h-full object-cover" alt="Profile">';
+        } else {
+          const avatarSrc = user.gender === 'male' ? '/images/boyavatar.png' : '/images/girlavatar.png';
+          imgHTML = '<div class="w-full h-full flex items-center justify-center"><img src="' + avatarSrc + '" class="w-20 h-20 rounded-full object-cover" alt="Profile"></div>';
+        }
+
+        let cardSourceText = 'Unknown';
+        let cardSourceClass = 'bg-gray-100 text-gray-600';
+        if (user.registrationSource === 'admin') { cardSourceText = 'by Admin'; cardSourceClass = 'bg-purple-100 text-purple-600'; }
+        else if (user.registrationSource === 'register') { cardSourceText = 'Self'; cardSourceClass = 'bg-orange-100 text-orange-600'; }
+        else if (user.registrationSource === 'google') { cardSourceText = 'Google'; cardSourceClass = 'bg-blue-100 text-blue-600'; }
+
+        let buttonsHTML = '';
+        if (isAdmin) {
+          if (user.approvalStatus !== 'approved' && !user.isApproved) {
+            buttonsHTML += '<div class="flex gap-2"><button class="approve-btn flex-1 px-2 py-1.5 bg-green-500 text-white hover:bg-green-600 transition-all duration-300 rounded text-xs" data-user-id="' + user._id + '">Approve</button></div>';
+          }
+          buttonsHTML += '<div class="flex gap-2"><button class="delete-btn flex-1 px-2 py-1.5 bg-red-500 text-white hover:bg-red-600 transition-all duration-300 rounded text-xs" data-user-id="' + user._id + '">Delete</button><button class="view-btn flex-1 px-2 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs" data-user-id="' + user._id + '">View</button></div>';
+        } else if (isModerator) {
+          buttonsHTML += '<button class="view-btn w-full px-2 py-1.5 bg-primary text-white hover:bg-pink-600 transition-all duration-300 rounded text-xs" data-user-id="' + user._id + '">View</button>';
+        }
+
+        return '<div class="profile-card bg-white rounded-xl md:rounded-2xl overflow-hidden border border-gray-200 hover:shadow-lg" data-username="' + (user.username || '') + '" data-name="' + (user.name || user.username || '') + '" data-contact="' + (user.contact || '') + '" data-registration-source="' + (user.registrationSource || 'unknown') + '" data-featured="' + (user.isFeatured || false) + '" data-passcode="' + (user.passcodeUsed || '') + '" data-approval-status="' + (user.approvalStatus || 'pending') + '">'
+          + '<div class="aspect-[4/3] overflow-hidden bg-gray-100 relative">' + imgHTML
+          + '<span class="absolute top-2 left-2 px-2 py-0.5 ' + cardApprovalBadgeClass + ' text-white text-xs rounded-full font-medium">' + cardApprovalText + '</span></div>'
+          + '<div class="p-4"><div class="flex items-center justify-between mb-2"><h3 class="text-base font-semibold text-gray-900 truncate">' + (user.name || user.username || '') + '</h3><span class="px-2 py-0.5 ' + cardSourceClass + ' text-xs rounded-full whitespace-nowrap">' + cardSourceText + '</span></div>'
+          + '<div class="text-sm text-gray-500 mb-3"><p class="truncate">@' + (user.username || '') + '</p>' + (user.age ? '<p>Age: ' + user.age + '</p>' : '') + '</div>'
+          + '<div class="flex flex-col gap-2">' + buttonsHTML + '</div></div></div>';
+      }
+
+      // Attach event handlers to dynamically added buttons
+      function attachButtonHandlers(container) {
+        container.querySelectorAll('.view-btn').forEach(btn => {
+          btn.addEventListener('click', function() {
+            window.location.href = '/admin/user/' + this.getAttribute('data-user-id');
+          });
+        });
+        container.querySelectorAll('.approve-btn').forEach(btn => {
+          btn.addEventListener('click', handleApprove);
+        });
+        container.querySelectorAll('.delete-btn').forEach(btn => {
+          btn.addEventListener('click', handleDelete);
+        });
+      }
+
+      // Load more users via API
+      async function loadMoreUsers() {
+        if (isLoading) return;
+        isLoading = true;
+        loadMoreBtn.innerHTML = '<i class="ri-loader-4-line animate-spin text-lg"></i> <span>Loading...</span>';
+
+        try {
+          const params = new URLSearchParams({ page: currentPage + 1, filter: currentFilter });
+          if (currentSearchTerm && currentSearchBy) {
+            params.set('search', currentSearchTerm);
+            params.set('searchBy', currentSearchBy);
+          }
+          const response = await fetch('/api/admin/users?' + params.toString());
+          const data = await response.json();
+
+          if (data.success && data.users.length > 0) {
+            currentPage = data.page;
+            const tableBody = document.querySelector('#tableView tbody');
+            const gridContainer = document.getElementById('profileGrid');
+
+            data.users.forEach(user => {
+              // Append table row
+              const tempRow = document.createElement('tbody');
+              tempRow.innerHTML = buildTableRowHTML(user);
+              const newRow = tempRow.querySelector('tr');
+              tableBody.appendChild(newRow);
+              attachButtonHandlers(newRow);
+
+              // Append grid card
+              const tempCard = document.createElement('div');
+              tempCard.innerHTML = buildCardHTML(user);
+              const newCard = tempCard.firstElementChild;
+              gridContainer.appendChild(newCard);
+              attachButtonHandlers(newCard);
+            });
+
+            if (!data.hasMore) {
+              loadMoreContainer.classList.add('hidden');
+            }
           } else {
-            icon.className = 'ri-close-line text-xl';
+            loadMoreContainer.classList.add('hidden');
+          }
+        } catch (error) {
+          console.error('Load more error:', error);
+          showNotification('Error', 'Failed to load more users.', 'error');
+        } finally {
+          isLoading = false;
+          loadMoreBtn.innerHTML = '<span>Load More</span><i class="ri-arrow-down-s-line text-lg"></i>';
+        }
+      }
+
+      // Perform a fresh search/filter (replaces all content)
+      async function performSearch(filter, searchBy, searchTerm) {
+        if (isLoading) return;
+        isLoading = true;
+        currentPage = 1;
+        currentFilter = filter;
+        currentSearchBy = searchBy || '';
+        currentSearchTerm = searchTerm || '';
+
+        const tableBody = document.querySelector('#tableView tbody');
+        const gridContainer = document.getElementById('profileGrid');
+
+        // Show loading state
+        tableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-12 text-center"><i class="ri-loader-4-line animate-spin text-3xl text-gray-400"></i><p class="text-gray-500 mt-2">Loading...</p></td></tr>';
+        gridContainer.innerHTML = '<div class="col-span-full text-center py-12"><i class="ri-loader-4-line animate-spin text-3xl text-gray-400"></i><p class="text-gray-500 mt-2">Loading...</p></div>';
+
+        try {
+          const params = new URLSearchParams({ page: 1, filter: filter });
+          if (searchTerm && searchBy) {
+            params.set('search', searchTerm);
+            params.set('searchBy', searchBy);
+          }
+          const response = await fetch('/api/admin/users?' + params.toString());
+          const data = await response.json();
+
+          if (data.success) {
+            tableBody.innerHTML = '';
+            gridContainer.innerHTML = '';
+
+            if (data.users.length > 0) {
+              data.users.forEach(user => {
+                const tempRow = document.createElement('tbody');
+                tempRow.innerHTML = buildTableRowHTML(user);
+                const newRow = tempRow.querySelector('tr');
+                tableBody.appendChild(newRow);
+                attachButtonHandlers(newRow);
+
+                const tempCard = document.createElement('div');
+                tempCard.innerHTML = buildCardHTML(user);
+                const newCard = tempCard.firstElementChild;
+                gridContainer.appendChild(newCard);
+                attachButtonHandlers(newCard);
+              });
+
+              if (data.hasMore) {
+                loadMoreContainer.classList.remove('hidden');
+              } else {
+                loadMoreContainer.classList.add('hidden');
+              }
+            } else {
+              tableBody.innerHTML = '<tr><td colspan="7" class="px-6 py-12 text-center"><div class="flex flex-col items-center"><i class="ri-user-search-line text-5xl text-gray-300 mb-3"></i><h3 class="text-lg font-semibold text-gray-600 mb-1">No Users Found</h3><p class="text-gray-500">No matching results.</p></div></td></tr>';
+              gridContainer.innerHTML = '<div class="col-span-full text-center py-12"><i class="ri-user-search-line text-5xl text-gray-300 mb-3"></i><h3 class="text-lg font-semibold text-gray-600 mb-1">No Users Found</h3></div>';
+              loadMoreContainer.classList.add('hidden');
+            }
+
+            updateFilterIndicator(filter, data.totalCount);
+          }
+        } catch (error) {
+          console.error('Search error:', error);
+          showNotification('Error', 'Failed to search users.', 'error');
+        } finally {
+          isLoading = false;
+        }
+      }
+
+      // Load More button
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', loadMoreUsers);
+      }
+
+      // Search button click
+      if (searchBtn) {
+        searchBtn.addEventListener('click', function() {
+          const term = searchInput.value.trim();
+          if (!term) return;
+          const by = getSearchBy();
+          // Clear active filter cards
+          statsFilterCards.forEach(c => c.classList.remove('ring-2', 'ring-primary', 'active'));
+          performSearch('all', by, term);
+        });
+      }
+
+      // Search on Enter key
+      if (searchInput) {
+        searchInput.addEventListener('keydown', function(e) {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            searchBtn.click();
           }
         });
-
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-          if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
-            mobileMenu.classList.add('hidden');
-            const icon = mobileMenuBtn.querySelector('i');
-            icon.className = 'ri-menu-line text-xl';
-          }
-        });
-      }
-      const deletedAccountsBtn = document.getElementById('deletedAccountsBtn');
-if (deletedAccountsBtn) {
-  deletedAccountsBtn.addEventListener('click', function() {
-    window.location.href = '/admin/deletedaccounts';
-  });
-}
-      // Mobile navigation buttons
-      const mobileRequestsBtn = document.getElementById('mobileRequestsBtn');
-      const mobileNewsletterBtn = document.getElementById('mobileNewsletterBtn');
-      const mobileBlogsBtn = document.getElementById('mobileBlogsBtn');
-      const mobileAddUserBtn = document.getElementById('mobileAddUserBtn');
-
-      if (mobileRequestsBtn) {
-        mobileRequestsBtn.addEventListener('click', function() {
-          window.location.href = '/admin/requests';
-        });
       }
 
-      const mobileChatsBtn = document.getElementById('mobileChatsBtn');
-      if (mobileChatsBtn) {
-        mobileChatsBtn.addEventListener('click', function() {
-          window.location.href = '/admin/chats';
-        });
+      // Sidebar Menu functionality
+      const openSidebarBtn = document.getElementById('openSidebarBtn');
+      const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+      const sidebarOverlay = document.getElementById('sidebarOverlay');
+      const sidebarPanel = document.getElementById('sidebarPanel');
+
+      function openSidebar() {
+        sidebarOverlay.classList.add('active');
+        sidebarPanel.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeSidebar() {
+        sidebarOverlay.classList.remove('active');
+        sidebarPanel.classList.remove('active');
+        document.body.style.overflow = '';
       }
 
-      if (mobileNewsletterBtn) {
-        mobileNewsletterBtn.addEventListener('click', function() {
-          window.location.href = '/admin/newsletter';
-        });
-      }
+      if (openSidebarBtn) openSidebarBtn.addEventListener('click', openSidebar);
+      if (closeSidebarBtn) closeSidebarBtn.addEventListener('click', closeSidebar);
+      if (sidebarOverlay) sidebarOverlay.addEventListener('click', closeSidebar);
 
-      if (mobileBlogsBtn) {
-        mobileBlogsBtn.addEventListener('click', function() {
-          window.location.href = '/admin/blogs';
-        });
-      }
-
-      if (mobileAddUserBtn) {
-        mobileAddUserBtn.addEventListener('click', function() {
-          window.location.href = '/admin/addUser';
-        });
-      }
-
-      // Mobile View Toggle functionality
-      const mobileGridViewBtn = document.getElementById('mobileGridViewBtn');
-      const mobileTableViewBtn = document.getElementById('mobileTableViewBtn');
-
-      if (mobileGridViewBtn && mobileTableViewBtn && tableView && gridView) {
-        mobileGridViewBtn.addEventListener('click', function() {
-          tableView.classList.add('hidden');
-          gridView.classList.remove('hidden');
-          // Update mobile buttons
-          mobileGridViewBtn.classList.add('bg-gray-100', 'text-primary');
-          mobileGridViewBtn.classList.remove('bg-white', 'text-gray-600');
-          mobileTableViewBtn.classList.add('bg-white', 'text-gray-600');
-          mobileTableViewBtn.classList.remove('bg-gray-100', 'text-primary');
-          // Sync with desktop buttons
-          if (gridViewBtn) {
-            gridViewBtn.classList.add('bg-gray-100', 'text-primary');
-            gridViewBtn.classList.remove('bg-white', 'text-gray-600');
-          }
-          if (tableViewBtn) {
-            tableViewBtn.classList.add('bg-white', 'text-gray-600');
-            tableViewBtn.classList.remove('bg-gray-100', 'text-primary');
-          }
-        });
-
-        mobileTableViewBtn.addEventListener('click', function() {
-          gridView.classList.add('hidden');
-          tableView.classList.remove('hidden');
-          // Update mobile buttons
-          mobileTableViewBtn.classList.add('bg-gray-100', 'text-primary');
-          mobileTableViewBtn.classList.remove('bg-white', 'text-gray-600');
-          mobileGridViewBtn.classList.add('bg-white', 'text-gray-600');
-          mobileGridViewBtn.classList.remove('bg-gray-100', 'text-primary');
-          // Sync with desktop buttons
-          if (tableViewBtn) {
-            tableViewBtn.classList.add('bg-gray-100', 'text-primary');
-            tableViewBtn.classList.remove('bg-white', 'text-gray-600');
-          }
-          if (gridViewBtn) {
-            gridViewBtn.classList.add('bg-white', 'text-gray-600');
-            gridViewBtn.classList.remove('bg-gray-100', 'text-primary');
-          }
-        });
-      }
-// ...existing code...
       // View Toggle functionality
       if (gridViewBtn && tableViewBtn && tableView && gridView) {
         gridViewBtn.addEventListener('click', function() {
@@ -791,32 +987,6 @@ if (deletedAccountsBtn) {
       }
 
       // Navigation buttons
-      if (newsletterBtn) {
-        newsletterBtn.addEventListener('click', function() {
-          window.location.href = '/admin/newsletter';
-        });
-      }
-      
-      if (blogsBtn) {
-        blogsBtn.addEventListener('click', function() {
-          window.location.href = '/admin/blogs';
-        });
-      }
-
-      const requestsBtn = document.getElementById('requestsBtn');
-      if (requestsBtn) {
-        requestsBtn.addEventListener('click', function() {
-          window.location.href = '/admin/requests';
-        });
-      }
-
-      const chatsBtn = document.getElementById('chatsBtn');
-      if (chatsBtn) {
-        chatsBtn.addEventListener('click', function() {
-          window.location.href = '/admin/chats';
-        });
-      }
-
       const addUserBtn = document.getElementById('addUserBtn');
       const addFirstUserBtn = document.getElementById('addFirstUserBtn');
       [addUserBtn, addFirstUserBtn].forEach(btn => {
@@ -827,57 +997,17 @@ if (deletedAccountsBtn) {
         }
       });
 
-      // Search functionality - works for both table rows and profile cards
-      if (searchInput) {
-        searchInput.addEventListener('input', function() {
-          const searchTerm = this.value.toLowerCase();
-
-          // Search in table rows
-          userRows.forEach(row => {
-            const name = row.getAttribute('data-name').toLowerCase();
-            const username = row.getAttribute('data-username').toLowerCase();
-            const contact = row.getAttribute('data-contact').toLowerCase();
-            const waliMyContactDetailsRaw = row.getAttribute('data-waliMyContactDetails') || '';
-            const waliMyContactDetails = waliMyContactDetailsRaw.replace(/\D/g, '');
-
-            if (name.includes(searchTerm) || username.includes(searchTerm) || contact.includes(searchTerm) || waliMyContactDetails.includes(searchTerm)) {
-              row.style.display = '';
-            } else {
-              row.style.display = 'none';
-            }
-          });
-
-          // Search in profile cards
-          profileCards.forEach(card => {
-            const name = card.getAttribute('data-name').toLowerCase();
-            const username = card.getAttribute('data-username').toLowerCase();
-            const contact = card.getAttribute('data-contact').toLowerCase();
-            const waliMyContactDetailsRaw = card.getAttribute('data-waliMyContactDetails') || '';
-            const waliMyContactDetails = waliMyContactDetailsRaw.replace(/\D/g, '');
-
-            if (name.includes(searchTerm) || username.includes(searchTerm) || contact.includes(searchTerm) || waliMyContactDetails.includes(searchTerm)) {
-              card.style.display = 'block';
-            } else {
-              card.style.display = 'none';
-            }
-          });
-        });
-      }
-
-      // View buttons
-     const viewButtons = document.querySelectorAll('.view-btn');
-viewButtons.forEach(button => {
-  button.addEventListener('click', function() {
-    const userId = this.getAttribute('data-user-id');
-    window.location.href = `/admin/user/${userId}`;
-  });
-});
-
-
-      // Delete buttons
-      const deleteButtons = document.querySelectorAll('.delete-btn');
-      deleteButtons.forEach(button => {
+      // View buttons (initial server-rendered)
+      const viewButtons = document.querySelectorAll('.view-btn');
+      viewButtons.forEach(button => {
         button.addEventListener('click', function() {
+          const userId = this.getAttribute('data-user-id');
+          window.location.href = '/admin/user/' + userId;
+        });
+      });
+
+      // Delete handler
+      function handleDelete() {
           const userId = this.getAttribute('data-user-id');
           const row = this.closest('.user-row') || this.closest('.profile-card');
           const name = row.getAttribute('data-name');
@@ -887,7 +1017,7 @@ viewButtons.forEach(button => {
           currentDeleteElement = row;
 
           deleteModalUserName.textContent = name;
-          deleteModalUserUsername.textContent = `@${username}`;
+          deleteModalUserUsername.textContent = '@' + username;
 
           deleteConfirmationInput.value = '';
           confirmDeleteBtn.disabled = true;
@@ -898,7 +1028,12 @@ viewButtons.forEach(button => {
           setTimeout(() => {
             deleteConfirmationInput.focus();
           }, 100);
-        });
+      }
+
+      // Delete buttons (initial)
+      const deleteButtons = document.querySelectorAll('.delete-btn');
+      deleteButtons.forEach(button => {
+        button.addEventListener('click', handleDelete);
       });
 
       // Modal input validation
@@ -941,11 +1076,9 @@ viewButtons.forEach(button => {
           deleteLoadingIcon.classList.remove('hidden');
 
           try {
-            const response = await fetch(`/admin/user/${currentDeleteUserId}/delete`, {
+            const response = await fetch('/api/admin/user/' + currentDeleteUserId + '/delete', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              }
+              headers: { 'Content-Type': 'application/json' }
             });
 
             const data = await response.json();
@@ -959,7 +1092,7 @@ viewButtons.forEach(button => {
 
               setTimeout(() => {
                 currentDeleteElement.remove();
-                showNotification('User Deleted', `${deleteModalUserName.textContent}'s profile has been deleted.`, 'success');
+                showNotification('User Deleted', deleteModalUserName.textContent + "'s profile has been deleted.", 'success');
 
                 const remainingRows = document.querySelectorAll('.user-row');
                 const remainingCards = document.querySelectorAll('.profile-card');
@@ -983,57 +1116,43 @@ viewButtons.forEach(button => {
         });
       }
 
-      // Approve buttons
-      const approveButtons = document.querySelectorAll('.approve-btn');
-      approveButtons.forEach(button => {
-        button.addEventListener('click', async function() {
+      // Approve handler
+      async function handleApprove() {
           const userId = this.getAttribute('data-user-id');
           const row = this.closest('.user-row') || this.closest('.profile-card');
           const name = row.getAttribute('data-name');
           
-          if (!confirm(`Are you sure you want to approve ${name}'s profile?`)) return;
+          if (!confirm('Are you sure you want to approve ' + name + "'s profile?")) return;
           
           this.disabled = true;
           this.textContent = 'Approving...';
           
           try {
-            const response = await fetch(`/api/admin/user/${userId}/approve`, {
+            const response = await fetch('/api/admin/user/' + userId + '/approve', {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              }
+              headers: { 'Content-Type': 'application/json' }
             });
             
             const data = await response.json();
             
             if (data.success) {
-              showNotification('Profile Approved', `${name}'s profile has been approved and is now visible.`, 'success');
+              showNotification('Profile Approved', name + "'s profile has been approved and is now visible.", 'success');
               
-              // Update the row/card data attribute
               row.setAttribute('data-approval-status', 'approved');
               
-              // Update approval badge in table view
               const badgeInRow = row.querySelector('td:first-child span');
               if (badgeInRow) {
                 badgeInRow.className = 'px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full font-medium';
                 badgeInRow.textContent = 'Approved';
               }
               
-              // Update approval badge in card view
               const badgeInCard = row.querySelector('.aspect-\\[4\\/3\\] span');
               if (badgeInCard) {
                 badgeInCard.className = 'absolute top-2 left-2 px-2 py-0.5 bg-green-500 text-white text-xs rounded-full font-medium';
                 badgeInCard.textContent = 'Approved';
               }
               
-              // Remove approve button (keep reject button)
               this.remove();
-              
-              // If we were filtering by pending, reload to update counts
-              const url = new URL(window.location);
-              if (url.searchParams.get('filter') === 'pending') {
-                setTimeout(() => location.reload(), 1000);
-              }
             } else {
               showNotification('Approval Failed', data.error || 'Failed to approve profile.', 'error');
               this.disabled = false;
@@ -1045,91 +1164,12 @@ viewButtons.forEach(button => {
             this.disabled = false;
             this.textContent = 'Approve';
           }
-        });
-      });
+      }
 
-      // Reject buttons
-      const rejectButtons = document.querySelectorAll('.reject-btn');
-      rejectButtons.forEach(button => {
-        button.addEventListener('click', async function() {
-          const userId = this.getAttribute('data-user-id');
-          const row = this.closest('.user-row') || this.closest('.profile-card');
-          const name = row.getAttribute('data-name');
-          
-          const reason = prompt(`Please provide a reason for rejecting ${name}'s profile (optional):`);
-          if (reason === null) return; // User cancelled
-          
-          this.disabled = true;
-          this.textContent = 'Rejecting...';
-          
-          try {
-            const response = await fetch(`/api/admin/user/${userId}/reject`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ reason: reason || '' })
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-              showNotification('Profile Rejected', `${name}'s profile has been rejected.`, 'success');
-              
-              // Update the row/card data attribute
-              row.setAttribute('data-approval-status', 'rejected');
-              
-              // Update approval badge in table view
-              const badgeInRow = row.querySelector('td:first-child span');
-              if (badgeInRow) {
-                badgeInRow.className = 'px-2 py-0.5 bg-red-100 text-red-700 text-xs rounded-full font-medium';
-                badgeInRow.textContent = 'Rejected';
-              }
-              
-              // Update approval badge in card view
-              const badgeInCard = row.querySelector('.aspect-\\[4\\/3\\] span');
-              if (badgeInCard) {
-                badgeInCard.className = 'absolute top-2 left-2 px-2 py-0.5 bg-red-500 text-white text-xs rounded-full font-medium';
-                badgeInCard.textContent = 'Rejected';
-              }
-              
-              // Remove the reject button, show approve button if not already there
-              const approveBtn = row.querySelector('.approve-btn');
-              if (!approveBtn) {
-                // Add approve button
-                const btnContainer = this.parentElement;
-                const newApproveBtn = document.createElement('button');
-                newApproveBtn.className = 'approve-btn flex-1 px-2 py-1.5 bg-green-500 text-white hover:bg-green-600 transition-all duration-300 rounded text-xs';
-                newApproveBtn.setAttribute('data-user-id', userId);
-                newApproveBtn.textContent = 'Approve';
-                btnContainer.insertBefore(newApproveBtn, this);
-                
-                // Add click handler to new button
-                newApproveBtn.addEventListener('click', approveButtons[0]?.onclick || async function() {
-                  // Reattach approve handler
-                  location.reload();
-                });
-              }
-              
-              this.remove();
-              
-              // If we were filtering by pending, reload to update counts
-              const url = new URL(window.location);
-              if (url.searchParams.get('filter') === 'pending' || url.searchParams.get('filter') === 'approved') {
-                setTimeout(() => location.reload(), 1000);
-              }
-            } else {
-              showNotification('Rejection Failed', data.error || 'Failed to reject profile.', 'error');
-              this.disabled = false;
-              this.textContent = 'Reject';
-            }
-          } catch (error) {
-            console.error('Reject error:', error);
-            showNotification('Rejection Failed', 'An error occurred while rejecting the profile.', 'error');
-            this.disabled = false;
-            this.textContent = 'Reject';
-          }
-        });
+      // Approve buttons (initial)
+      const approveButtons = document.querySelectorAll('.approve-btn');
+      approveButtons.forEach(button => {
+        button.addEventListener('click', handleApprove);
       });
 
       // Close modal when clicking outside
@@ -1152,7 +1192,7 @@ viewButtons.forEach(button => {
         }
       });
 
-      // Stats filter functionality
+      // Stats filter functionality - now uses server-side filtering
       statsFilterCards.forEach(card => {
         card.addEventListener('click', function() {
           const filter = this.getAttribute('data-filter');
@@ -1162,64 +1202,8 @@ viewButtons.forEach(button => {
           });
           this.classList.add('ring-2', 'ring-primary', 'active');
 
-          let visibleCount = 0;
-
-          // Filter table rows
-          userRows.forEach(row => {
-            const registrationSource = row.getAttribute('data-registration-source');
-            const isFeatured = row.getAttribute('data-featured') === 'true';
-            const approvalStatus = row.getAttribute('data-approval-status');
-            let shouldShow = false;
-
-            if (filter === 'all') {
-              shouldShow = true;
-            } else if (filter === 'admin') {
-              shouldShow = registrationSource === 'admin';
-            } else if (filter === 'register') {
-              shouldShow = registrationSource === 'register';
-            } else if (filter === 'featured') {
-              shouldShow = isFeatured;
-            } else if (filter === 'pending') {
-              shouldShow = approvalStatus === 'pending' || !approvalStatus;
-            } else if (filter === 'approved') {
-              shouldShow = approvalStatus === 'approved';
-            }
-
-            if (shouldShow) {
-              row.style.display = '';
-              visibleCount++;
-            } else {
-              row.style.display = 'none';
-            }
-          });
-
-          // Filter profile cards
-          profileCards.forEach(card => {
-            const registrationSource = card.getAttribute('data-registration-source');
-            const isFeatured = card.getAttribute('data-featured') === 'true';
-            const approvalStatus = card.getAttribute('data-approval-status');
-            let shouldShow = false;
-
-            if (filter === 'all') {
-              shouldShow = true;
-            } else if (filter === 'admin') {
-              shouldShow = registrationSource === 'admin';
-            } else if (filter === 'register') {
-              shouldShow = registrationSource === 'register';
-            } else if (filter === 'featured') {
-              shouldShow = isFeatured;
-            } else if (filter === 'pending') {
-              shouldShow = approvalStatus === 'pending' || !approvalStatus;
-            } else if (filter === 'approved') {
-              shouldShow = approvalStatus === 'approved';
-            }
-
-            if (shouldShow) {
-              card.style.display = 'block';
-            } else {
-              card.style.display = 'none';
-            }
-          });
+          // Clear search input
+          searchInput.value = '';
 
           // Update URL
           const url = new URL(window.location);
@@ -1230,7 +1214,8 @@ viewButtons.forEach(button => {
           }
           window.history.replaceState({}, '', url);
 
-          updateFilterIndicator(filter, visibleCount);
+          // Perform server-side filtered search
+          performSearch(filter, '', '');
         });
       });
 
@@ -1239,49 +1224,48 @@ viewButtons.forEach(button => {
         const container = document.getElementById('filter-indicator-container');
         const indicator = document.getElementById('filter-indicator');
 
-        if (filter !== 'all') {
+        if (filter !== 'all' || (currentSearchTerm && currentSearchBy)) {
           let filterText = '';
           let filterIcon = 'ri-filter-line';
 
-          switch (filter) {
-            case 'pending':
-              filterText = 'Pending Approval';
-              filterIcon = 'ri-time-line';
-              break;
-            case 'approved':
-              filterText = 'Approved Profiles';
-              filterIcon = 'ri-checkbox-circle-line';
-              break;
-            case 'admin':
-              filterText = 'Admin Added Users';
-              filterIcon = 'ri-admin-line';
-              break;
-            case 'register':
-              filterText = 'Self Registered Users';
-              filterIcon = 'ri-user-add-line';
-              break;
-            case 'featured':
-              filterText = 'Featured Profiles';
-              filterIcon = 'ri-star-fill';
-              break;
-            default:
-              if (filter.startsWith('employee-')) {
-                const employeeName = filter.replace('employee-', '');
-                filterText = `Registered by ${employeeName.charAt(0).toUpperCase() + employeeName.slice(1)}`;
-                filterIcon = 'ri-team-line';
-              } else {
-                filterText = 'Filtered Results';
-              }
-              break;
+          if (currentSearchTerm && currentSearchBy) {
+            filterText = 'Search: "' + currentSearchTerm + '" by ' + currentSearchBy;
+            filterIcon = 'ri-search-line';
+          } else {
+            switch (filter) {
+              case 'pending':
+                filterText = 'Pending Approval';
+                filterIcon = 'ri-time-line';
+                break;
+              case 'approved':
+                filterText = 'Approved Profiles';
+                filterIcon = 'ri-checkbox-circle-line';
+                break;
+              case 'admin':
+                filterText = 'Admin Added Users';
+                filterIcon = 'ri-admin-line';
+                break;
+              case 'register':
+                filterText = 'Self Registered Users';
+                filterIcon = 'ri-user-add-line';
+                break;
+              case 'featured':
+                filterText = 'Featured Profiles';
+                filterIcon = 'ri-star-fill';
+                break;
+              default:
+                if (filter.startsWith('employee-')) {
+                  const employeeName = filter.replace('employee-', '');
+                  filterText = 'Registered by ' + employeeName.charAt(0).toUpperCase() + employeeName.slice(1);
+                  filterIcon = 'ri-team-line';
+                } else {
+                  filterText = 'Filtered Results';
+                }
+                break;
+            }
           }
 
-          indicator.innerHTML = `
-            <i class="${filterIcon}"></i>
-            <span>Showing ${filterText} (${count} users)</span>
-            <button onclick="clearFilter()" class="ml-2 hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-all duration-200">
-              <i class="ri-close-line"></i>
-            </button>
-          `;
+          indicator.innerHTML = '<i class="' + filterIcon + '"></i><span>Showing ' + filterText + ' (' + count + ' users)</span><button onclick="clearFilter()" class="ml-2 hover:bg-white hover:bg-opacity-20 rounded-full p-1 transition-all duration-200"><i class="ri-close-line"></i></button>';
           container.classList.remove('hidden');
         } else {
           container.classList.add('hidden');
@@ -1291,17 +1275,10 @@ viewButtons.forEach(button => {
       // Global function to clear filter
       window.clearFilter = function() {
         statsFilterCards.forEach(c => c.classList.remove('ring-2', 'ring-primary', 'active'));
-        if (statsFilterCards[0]) {
-          statsFilterCards[0].classList.add('ring-2', 'ring-primary', 'active');
-        }
+        const allCard = document.querySelector('[data-filter="all"]');
+        if (allCard) allCard.classList.add('ring-2', 'ring-primary', 'active');
 
-        userRows.forEach(row => {
-          row.style.display = '';
-        });
-
-        profileCards.forEach(card => {
-          card.style.display = 'block';
-        });
+        searchInput.value = '';
 
         const container = document.getElementById('filter-indicator-container');
         container.classList.add('hidden');
@@ -1309,37 +1286,23 @@ viewButtons.forEach(button => {
         const url = new URL(window.location);
         url.searchParams.delete('filter');
         window.history.replaceState({}, '', url);
+
+        performSearch('all', '', '');
       };
 
-      // Set initial active filter based on URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentFilter = urlParams.get('filter') || 'all';
-
-      if (currentFilter !== 'all') {
-        const targetCard = document.querySelector(`[data-filter="${currentFilter}"]`);
-        if (targetCard) {
-          targetCard.click();
-        }
-      } else {
-        if (statsFilterCards[0]) {
-          statsFilterCards[0].classList.add('ring-2', 'ring-primary', 'active');
-        }
-      }
+      // Set initial active filter
+      const allCard = document.querySelector('[data-filter="all"]');
+      if (allCard) allCard.classList.add('ring-2', 'ring-primary', 'active');
 
       // Notification function
-      function showNotification(title, message, type = 'info') {
+      function showNotification(title, message, type) {
+        type = type || 'info';
         const notification = document.createElement('div');
         const bgColor = type === 'success' ? 'bg-green-500' : type === 'info' ? 'bg-blue-500' : 'bg-red-500';
         const icon = type === 'success' ? 'ri-checkbox-circle-line' : type === 'info' ? 'ri-information-line' : 'ri-error-warning-line';
 
-        notification.className = `fixed bottom-4 right-4 ${bgColor} text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50`;
-        notification.innerHTML = `
-          <i class="${icon} text-xl"></i>
-          <div>
-            <p class="font-medium">${title}</p>
-            <p class="text-sm opacity-90">${message}</p>
-          </div>
-        `;
+        notification.className = 'fixed bottom-4 right-4 ' + bgColor + ' text-white rounded-xl p-4 material-shadow-elevated flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 z-50';
+        notification.innerHTML = '<i class="' + icon + ' text-xl"></i><div><p class="font-medium">' + title + '</p><p class="text-sm opacity-90">' + message + '</p></div>';
 
         document.body.appendChild(notification);
 
@@ -1395,47 +1358,9 @@ viewButtons.forEach(button => {
               c.classList.remove('ring-2', 'ring-primary', 'active', 'border-2', 'border-primary');
             });
 
-            let visibleCount = 0;
+            searchInput.value = '';
 
-            // Filter table rows
-            userRows.forEach(row => {
-              const passcodeUsed = row.getAttribute('data-passcode') || '';
-              let shouldShow = false;
-
-              if (filter === 'all') {
-                shouldShow = true;
-              } else if (filter.startsWith('employee-')) {
-                const employeePrefix = filter.replace('employee-', '');
-                shouldShow = passcodeUsed.toLowerCase().startsWith(employeePrefix.toLowerCase() + '-');
-              }
-
-              if (shouldShow) {
-                row.style.display = '';
-                visibleCount++;
-              } else {
-                row.style.display = 'none';
-              }
-            });
-
-            // Filter profile cards
-            profileCards.forEach(card => {
-              const passcodeUsed = card.getAttribute('data-passcode') || '';
-              let shouldShow = false;
-
-              if (filter === 'all') {
-                shouldShow = true;
-              } else if (filter.startsWith('employee-')) {
-                const employeePrefix = filter.replace('employee-', '');
-                shouldShow = passcodeUsed.toLowerCase().startsWith(employeePrefix.toLowerCase() + '-');
-              }
-
-              if (shouldShow) {
-                card.style.display = 'block';
-              } else {
-                card.style.display = 'none';
-              }
-            });
-
+            // Update URL
             const url = new URL(window.location);
             if (filter === 'all') {
               url.searchParams.delete('filter');
@@ -1444,7 +1369,8 @@ viewButtons.forEach(button => {
             }
             window.history.replaceState({}, '', url);
 
-            updateFilterIndicator(filter, visibleCount);
+            // Perform server-side filtered search
+            performSearch(filter, '', '');
           });
         });
       }

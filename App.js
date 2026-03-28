@@ -204,6 +204,26 @@ const storage = new CloudinaryStorage({
   },
 });
 const upload = multer({ storage });
+
+// **FIX**: Dedicated Cloudinary storage for blog images — keeps them out of user_profiles/
+const blogImageStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const uniqueId = `blog_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    return {
+      folder: "blog_images",
+      public_id: uniqueId,
+      allowed_formats: ["jpg", "jpeg", "png", "webp"],
+      transformation: [
+        { quality: "auto:good" },
+        { fetch_format: "auto" },
+        { if: "w_gt_1200", width: 1200, crop: "limit" },
+      ],
+    };
+  },
+});
+const blogImageUpload = multer({ storage: blogImageStorage });
+
 const {
   generateVerificationCode,
   sendVerificationEmail,
@@ -1771,46 +1791,29 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
   }
 
   try {
-    // **UPDATED**: Handle filter parameter only (no pagination)
-    const { filter } = req.query;
+    const PAGE_SIZE = 20;
 
-    // Build query based on filter
-    let query = {};
-    if (filter === "admin") {
-      query.registrationSource = "admin";
-    } else if (filter === "register") {
-      query.registrationSource = "register";
-    } else if (filter === "featured") {
-      query.isFeatured = true;
-    } else if (filter === "pending") {
-      // **NEW**: Filter for pending approval profiles
-      query.approvalStatus = "pending";
-    } else if (filter === "approved") {
-      // **NEW**: Filter for approved profiles
-      query.approvalStatus = "approved";
-    } else if (filter && filter.startsWith("employee-")) {
-      const employeeName = filter.replace("employee-", "");
-      query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
-    }
+    // Get first 20 users
+    const users = await User.find({})
+      .sort({ createdAt: -1, _id: -1 })
+      .limit(PAGE_SIZE);
 
-    // Get ALL users (no pagination)
-    const users = await User.find(query)
-      .sort({ createdAt: -1, _id: -1 });
+    const totalCount = await User.countDocuments({});
+    const hasMore = totalCount > PAGE_SIZE;
 
-    // Calculate stats (always from all users, not filtered)
-    const allTotalUsers = await User.countDocuments({});
+    // Calculate stats
+    const allTotalUsers = totalCount;
     const byAdmin = await User.countDocuments({ registrationSource: "admin" });
     const bySelf = await User.countDocuments({ registrationSource: "register" });
     const featuredCount = await User.countDocuments({ isFeatured: true });
-    // **NEW**: Pending and approved counts
     const pendingCount = await User.countDocuments({ approvalStatus: "pending" });
     const approvedCount = await User.countDocuments({ approvalStatus: "approved" });
 
     // Extract unique employee/referrer names
-    const allUsers = await User.find({}, { passcodeUsed: 1 }).lean();
+    const allUsersPasscodes = await User.find({}, { passcodeUsed: 1 }).lean();
     const employeeNames = new Set();
 
-    allUsers.forEach(user => {
+    allUsersPasscodes.forEach(user => {
       if (user.passcodeUsed && typeof user.passcodeUsed === 'string') {
         const passcode = user.passcodeUsed.trim();
         if (passcode.includes('-')) {
@@ -1852,7 +1855,8 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
     res.render("admin/dashboard", {
       users,
       stats,
-      currentFilter: filter || "all",
+      hasMore,
+      currentFilter: "all",
       uniqueEmployees,
       isAdmin: req.session.isAdmin || false,
       isModerator: req.session.isModerator || false
@@ -1869,6 +1873,7 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
         approvedCount: 0,
         employeeStats: {},
       },
+      hasMore: false,
       currentFilter: "all",
       uniqueEmployees: [],
       isAdmin: req.session.isAdmin || false,
@@ -1876,11 +1881,64 @@ app.get("/admin/dashboard", requireAdminOrModerator, async (req, res) => {
     });
   }
 });
-// ...existing code... (after the dashboard route)
 
-// API endpoint for infinite scroll pagination
+// API endpoint for loading more users (pagination, filtering, searching)
+app.get("/api/admin/users", requireAdminOrModerator, async (req, res) => {
+  try {
+    const PAGE_SIZE = 20;
+    const page = parseInt(req.query.page) || 1;
+    const skip = (page - 1) * PAGE_SIZE;
+    const filter = req.query.filter || "all";
+    const searchBy = req.query.searchBy; // "username", "name", or "phone"
+    const searchTerm = req.query.search || "";
 
-// ...existing code...
+    // Build query based on filter
+    let query = {};
+    if (filter === "admin") {
+      query.registrationSource = "admin";
+    } else if (filter === "register") {
+      query.registrationSource = "register";
+    } else if (filter === "featured") {
+      query.isFeatured = true;
+    } else if (filter === "pending") {
+      query.approvalStatus = "pending";
+    } else if (filter === "approved") {
+      query.approvalStatus = "approved";
+    } else if (filter.startsWith("employee-")) {
+      const employeeName = filter.replace("employee-", "");
+      query.passcodeUsed = { $regex: new RegExp(`^${employeeName}-`, "i") };
+    }
+
+    // Add search condition
+    if (searchTerm && searchBy) {
+      const escaped = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      if (searchBy === "username") {
+        query.username = { $regex: new RegExp(escaped, "i") };
+      } else if (searchBy === "name") {
+        query.name = { $regex: new RegExp(escaped, "i") };
+      } else if (searchBy === "phone") {
+        query.$or = [
+          { contact: { $regex: new RegExp(escaped, "i") } },
+          { waliMyContactDetails: { $regex: new RegExp(escaped, "i") } }
+        ];
+      }
+    }
+
+    const totalCount = await User.countDocuments(query);
+    const users = await User.find(query)
+      .sort({ createdAt: -1, _id: -1 })
+      .skip(skip)
+      .limit(PAGE_SIZE)
+      .lean();
+
+    const hasMore = skip + users.length < totalCount;
+
+    res.json({ success: true, users, hasMore, totalCount, page });
+  } catch (error) {
+    console.error("API admin users error:", error);
+    res.status(500).json({ success: false, error: "Failed to load users" });
+  }
+});
 app.post("/admin/user/:id/edit", async (req, res) => {
   if (!req.session.isAdmin) return res.status(403).json({ error: "Forbidden" });
   const { id } = req.params;
@@ -3606,6 +3664,136 @@ app.post(
     }
   }
 );
+// ==================== Export Data Routes ====================
+
+// Export page
+app.get("/admin/export", requireAdminOnly, async (req, res) => {
+  res.render("admin/export", {
+    isAdmin: req.session.isAdmin,
+    isModerator: req.session.isModerator,
+  });
+});
+
+// Export newsletter subscriber emails as CSV with gender filter
+app.get("/api/admin/export/newsletter", requireAdminOnly, async (req, res) => {
+  try {
+    const { interestedIn } = req.query;
+    const filter = { isActive: true };
+    if (interestedIn && ["male", "female", "both"].includes(interestedIn)) {
+      filter.interestedIn = interestedIn;
+    }
+    const subscribers = await Newsletter.find(filter).sort({ subscribedAt: -1 });
+
+    let csv = "Name,Email,Interested In,Subscribed Date\n";
+    subscribers.forEach((s) => {
+      const date = new Date(s.subscribedAt).toLocaleDateString();
+      csv += `"${(s.name || "").replace(/"/g, '""')}","${s.email}","${s.interestedIn}","${date}"\n`;
+    });
+
+    const filename = `newsletter_subscribers_${new Date().toISOString().split("T")[0]}.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(csv);
+  } catch (error) {
+    console.error("Export newsletter error:", error);
+    res.status(500).json({ success: false, error: "Failed to export newsletter subscribers" });
+  }
+});
+
+// Export chats (usernames + messages) as CSV
+app.get("/api/admin/export/chats", requireAdminOnly, async (req, res) => {
+  try {
+    const Conversation = require("./models/Conversation");
+    const ChatMessage = require("./models/Message");
+
+    const conversations = await Conversation.find()
+      .populate("participants", "username name")
+      .sort({ lastMessageAt: -1 });
+
+    let csv = "Conversation ID,Participant 1 Username,Participant 2 Username,Sender Username,Message,Date\n";
+
+    for (const convo of conversations) {
+      const p1 = convo.participants[0];
+      const p2 = convo.participants[1];
+      const p1Username = p1 ? p1.username : "Deleted User";
+      const p2Username = p2 ? p2.username : "Deleted User";
+
+      const messages = await ChatMessage.find({ conversationId: convo._id })
+        .populate("senderId", "username")
+        .sort({ createdAt: 1 });
+
+      messages.forEach((msg) => {
+        const senderUsername = msg.senderId ? msg.senderId.username : "Deleted User";
+        const text = (msg.text || "").replace(/"/g, '""').replace(/\n/g, " ");
+        const date = new Date(msg.createdAt).toLocaleString();
+        csv += `"${convo._id}","${p1Username}","${p2Username}","${senderUsername}","${text}","${date}"\n`;
+      });
+    }
+
+    const filename = `chats_export_${new Date().toISOString().split("T")[0]}.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(csv);
+  } catch (error) {
+    console.error("Export chats error:", error);
+    res.status(500).json({ success: false, error: "Failed to export chats" });
+  }
+});
+
+// Export user emails with approval status filter as CSV
+app.get("/api/admin/export/users", requireAdminOnly, async (req, res) => {
+  try {
+    const { status } = req.query;
+    const filter = {};
+    if (status && ["approved", "rejected", "pending"].includes(status)) {
+      filter.approvalStatus = status;
+    }
+    const users = await User.find(filter).select("username name email gender approvalStatus registrationSource createdAt").sort({ createdAt: -1 });
+
+    let csv = "Username,Name,Email,Gender,Approval Status,Registration Source,Registered Date\n";
+    users.forEach((u) => {
+      const date = new Date(u.createdAt).toLocaleDateString();
+      csv += `"${u.username}","${(u.name || "").replace(/"/g, '""')}","${u.email || ""}","${u.gender || ""}","${u.approvalStatus}","${u.registrationSource || ""}","${date}"\n`;
+    });
+
+    const filename = `users_export_${new Date().toISOString().split("T")[0]}.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(csv);
+  } catch (error) {
+    console.error("Export users error:", error);
+    res.status(500).json({ success: false, error: "Failed to export users" });
+  }
+});
+
+// Export requests as CSV
+app.get("/api/admin/export/requests", requireAdminOnly, async (req, res) => {
+  try {
+    const requests = await Request.find()
+      .populate("from", "username name")
+      .populate("to", "username name")
+      .sort({ createdAt: -1 });
+
+    let csv = "From Username,From Name,To Username,To Name,Status,Date\n";
+    requests.forEach((r) => {
+      const fromUsername = r.from ? r.from.username : "Deleted User";
+      const fromName = r.from ? (r.from.name || "").replace(/"/g, '""') : "Deleted User";
+      const toUsername = r.to ? r.to.username : "Deleted User";
+      const toName = r.to ? (r.to.name || "").replace(/"/g, '""') : "Deleted User";
+      const date = new Date(r.createdAt).toLocaleDateString();
+      csv += `"${fromUsername}","${fromName}","${toUsername}","${toName}","${r.status}","${date}"\n`;
+    });
+
+    const filename = `requests_export_${new Date().toISOString().split("T")[0]}.csv`;
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", `attachment; filename="${filename}"`);
+    res.send(csv);
+  } catch (error) {
+    console.error("Export requests error:", error);
+    res.status(500).json({ success: false, error: "Failed to export requests" });
+  }
+});
+
 // **NEW**: Blog Management Routes
 
 // Blog listing page (admin)
@@ -3913,8 +4101,8 @@ app.post("/admin/blogs/:id/toggle-publish", requireAdminOnly, async (req, res) =
 });
 // Add this route after your existing routes (around line 4500)
 
-// **NEW**: Blog image upload route
-app.post("/api/upload-blog-image", requireAdminOnly, upload.single('image'), async (req, res) => {
+// **FIX**: Blog image upload route — uses dedicated blogImageUpload to avoid user_profiles/ folder
+app.post("/api/upload-blog-image", requireAdminOnly, blogImageUpload.single('image'), async (req, res) => {
   try {
     if (!req.file) {
       return res.json({ success: false, error: "No image uploaded" });
