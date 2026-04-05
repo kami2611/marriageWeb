@@ -4563,6 +4563,44 @@ app.get("/privacy", (req, res) => {
     title: "Privacy Policy - D'amour Muslim",
   });
 });
+
+// **NEW**: Company, Policy & Information Pages
+app.get("/company-details", (req, res) => {
+  res.render("company-details", {
+    title: "Company Details - D'amour Muslim",
+  });
+});
+
+app.get("/refund-policy", (req, res) => {
+  res.render("refund-policy", {
+    title: "Refund Policy - D'amour Muslim",
+  });
+});
+
+app.get("/account-faqs", (req, res) => {
+  res.render("account-faqs", {
+    title: "Account FAQs - D'amour Muslim",
+  });
+});
+
+app.get("/pricing", (req, res) => {
+  res.render("pricing", {
+    title: "Pricing & Membership Plans - D'amour Muslim",
+  });
+});
+
+app.get("/gdpr-faqs", (req, res) => {
+  res.render("gdpr-faqs", {
+    title: "GDPR FAQs - D'amour Muslim",
+  });
+});
+
+app.get("/code-of-conduct", (req, res) => {
+  res.render("code-of-conduct", {
+    title: "Code of Conduct - D'amour Muslim",
+  });
+});
+
 // **UPDATED**: Dynamic blog routes
 
 // Public blog listing page
@@ -4808,6 +4846,46 @@ app.get("/sitemap.xml", async (req, res) => {
     <loc>https://damourmuslim.com/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/pricing</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/company-details</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/refund-policy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/account-faqs</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/gdpr-faqs</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/code-of-conduct</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/terms</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/privacy</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
   </url>`;
 
     // Add database blog posts
