@@ -1755,7 +1755,6 @@
             <i class="ri-information-line mr-1"></i>
             <strong>General Information:</strong> The following content provides additional context about Muslim matrimony services and is not specific to this individual profile.
           </p>
-
           <% if (profile.seoField1 && profile.seoField1.trim()) { %>
           <div class="mb-4 text-sm text-gray-700 leading-relaxed">
             <%- profile.seoField1.replace(/\n/g, '<br>') %>
@@ -1767,6 +1766,11 @@
             <%- profile.seoField2.replace(/\n/g, '<br>') %>
           </div>
           <% } %>
+          <% if (profile.seoKeywords && profile.seoKeywords.length > 0) { %>
+  <div class="text-sm text-gray-700 leading-relaxed">
+    <%= profile.seoKeywords.join(', ') %>
+  </div>
+<% } %>
         </div>
       </div>
       <% } %>
