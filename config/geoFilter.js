@@ -53,8 +53,14 @@ const countryFilterConfig = {
 /**
  * Detect visitor's country code from request.
  * Priority: Cloudflare header > MOCK_COUNTRY env variable > null
+ * Googlebot and other crawlers bypass geo-filtering entirely.
  */
 function detectCountry(req) {
+  const ua = req.headers["user-agent"] || "";
+  // Bypass geo-filter for crawlers so Googlebot can access all profiles
+  if (/googlebot|bingbot|slurp|duckduckbot|baiduspider|yandexbot|facebot|ia_archiver/i.test(ua)) {
+    return null;
+  }
   return req.headers["cf-ipcountry"] || process.env.MOCK_COUNTRY || null;
 }
 

@@ -88,6 +88,26 @@ const port = process.env.PORT;
 const compression = require("compression");
 const app = express();
 app.set("trust proxy", 1);
+
+// Redirect http → https and www → non-www
+app.use((req, res, next) => {
+  const host = req.headers.host || "";
+  const proto = req.headers["x-forwarded-proto"] || req.protocol;
+
+  // Redirect www to non-www
+  if (host.startsWith("www.")) {
+    const nonWwwHost = host.slice(4);
+    return res.redirect(301, `https://${nonWwwHost}${req.originalUrl}`);
+  }
+
+  // Redirect http to https (skip in local development)
+  if (proto === "http" && process.env.NODE_ENV === "production") {
+    return res.redirect(301, `https://${host}${req.originalUrl}`);
+  }
+
+  next();
+});
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use(compression());
 app.use((req, res, next) => {
@@ -4726,6 +4746,18 @@ app.get("/blog",requireOnboardingComplete, async (req, res) => {
   }
 });
 
+// 301 Redirects for duplicate "WhatsApp Group" blog posts → canonical URL
+const whatsappBlogRedirects = [
+  "/blog/join-genuine-muslim-marriage-whatsapp-groups-for-nikah",
+  "/blog/join-whatsapp-based-rishta-groups-by-muslim-matrimonial-uk",
+  "/blog/muslim-marriage-whatsapp-groups-find-genuine-halal-rishta-online",
+];
+whatsappBlogRedirects.forEach((oldPath) => {
+  app.get(oldPath, (req, res) => {
+    res.redirect(301, "/blog/uk-rishta-whatsapp-group");
+  });
+});
+
 // Public individual blog page
 
 app.get("/blog/:slug",requireOnboardingComplete, async (req, res) => {
@@ -4820,7 +4852,7 @@ res.redirect(301, googleFormUrl);
 // Update the sitemap.xml route to include static blogs
 app.get("/sitemap.xml", async (req, res) => {
   try {
-    const users = await User.find({}).select("_id updatedAt profileSlug");
+    const users = await User.find({ approvalStatus: "approved"}).select("_id updatedAt profileSlug");
     const blogs = await Blog.find({ isPublished: true }).select("slug updatedAt publishedAt");
 
     // **NEW**: Static blog slugs
