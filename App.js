@@ -292,10 +292,31 @@ app.use(async (req, res, next) => {
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.get(["/", "/home"], requireOnboardingComplete, (req, res) => {
-  res.render("home", {
-    user: req.session.user || null,
-  });
+app.get(["/", "/home"], requireOnboardingComplete, async (req, res) => {
+  try {
+    // Fetch 4 random approved profiles for homepage
+    const randomProfiles = await User.aggregate([
+      { 
+        $match: { 
+          approvalStatus: "approved",
+          profilePicture: { $exists: true, $ne: null, $ne: "" }
+        } 
+      },
+      { $sample: { size: 4 } },
+      { $project: { firstName: 1, age: 1, city: 1, profilePicture: 1 } }
+    ]);
+
+    res.render("home", {
+      user: req.session.user || null,
+      randomProfiles: randomProfiles || [],
+    });
+  } catch (error) {
+    console.error("Error fetching homepage data:", error);
+    res.render("home", {
+      user: req.session.user || null,
+      randomProfiles: [],
+    });
+  }
 });
 
 app.get("/register", (req, res) => {
