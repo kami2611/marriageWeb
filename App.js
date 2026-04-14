@@ -296,14 +296,13 @@ app.get(["/", "/home"], requireOnboardingComplete, async (req, res) => {
   try {
     // Fetch 4 random approved profiles for homepage
     const randomProfiles = await User.aggregate([
-      { 
-        $match: { 
+      { $match: { 
           approvalStatus: "approved",
-          profilePicture: { $exists: true, $ne: null, $ne: "" }
         } 
       },
       { $sample: { size: 4 } },
-      { $project: { firstName: 1, age: 1, city: 1, profilePicture: 1 } }
+      // FIX: Changed firstName to name, and profilePicture to profilePic
+      { $project: { name: 1, age: 1, city: 1, profilePic: 1, profileSlug: 1 } }
     ]);
 
     res.render("home", {
@@ -328,6 +327,527 @@ app.get("/register", (req, res) => {
     error: req.query.error || null,
   });
 });
+
+// ============================================
+// SEO LANDING PAGES
+// ============================================
+const seoPages = [
+  {
+    path: "/muslim-marriage",
+    pageTitle: "Muslim Marriage Platform | Find Your Halal Life Partner",
+    h1: "Muslim Marriage – Find Your Perfect Match",
+    heroSubtitle: "Looking for a serious Muslim marriage? Our platform helps practicing Muslims find compatible partners for halal relationships leading to Nikah.",
+    metaDescription: "Looking for a serious Muslim marriage? Our platform helps practicing Muslims find compatible partners for halal relationships leading to Nikah. Free to join today.",
+    keywords: "muslim marriage, halal marriage, muslim matchmaking, muslim matrimony UK",
+    canonicalPath: "/muslim-marriage",
+    ctaHeading: "Create Your Free Profile Today",
+    ctaSubtext: "Join thousands of Muslims who found their spouse through D'amour Muslim — the UK's trusted halal marriage platform.",
+    relatedLinks: [
+      { url: "/muslim-matrimonial", label: "Muslim Matrimonial" },
+      { url: "/halal-marriage", label: "Halal Marriage" },
+      { url: "/blog/uk-rishta-whatsapp-group", label: "UK Rishta Guides" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Looking for a serious Muslim marriage? Our platform helps practicing Muslims find compatible partners for halal relationships leading to Nikah. We focus on values, family involvement, and long-term commitment.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Muslim Marriage Matters</h2>
+        <p class="text-gray-700 mb-4 leading-relaxed">In Islam, marriage is half of one's deen. Finding the right partner is not just a personal decision — it is a spiritual journey. D'amour Muslim was built to support that journey in the most respectful and halal way possible.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Our Approach to Halal Marriage</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Values and deen-focused matching</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Family involvement encouraged</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Long-term commitment — no casual interactions</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Verified profiles for authentic connections</span></li>
+        </ul>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Looking for UK matches? Visit our <a href="/muslim-marriage-uk" class="text-primary hover:underline">Muslim Marriage UK</a> page or explore our <a href="/halal-marriage" class="text-primary hover:underline">Halal Marriage Platform</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/muslim-matrimonial",
+    pageTitle: "Trusted Muslim Matrimonial Platform | D'amour Muslim",
+    h1: "Trusted Muslim Matrimonial Platform",
+    heroSubtitle: "Find verified Muslim matrimonial profiles from the UK, Pakistan, and worldwide. Privacy, security, and serious marriage intent.",
+    metaDescription: "Find verified Muslim matrimonial profiles from the UK, Pakistan, and worldwide. Our platform ensures privacy, security, and serious marriage intent. Join free.",
+    keywords: "muslim matrimonial, muslim matrimony, islamic marriage site, muslim matrimonial UK",
+    canonicalPath: "/muslim-matrimonial",
+    ctaHeading: "Start Your Matrimonial Journey",
+    ctaSubtext: "Browse thousands of verified Muslim matrimonial profiles across the UK and beyond.",
+    relatedLinks: [
+      { url: "/muslim-marriage", label: "Muslim Marriage" },
+      { url: "/verified-muslim-profiles", label: "Verified Profiles" },
+      { url: "/blog/benefits-of-halal-matchmaking-services-uk-muslim-marriage-rishta-guide", label: "Matchmaking Guide" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Find verified Muslim matrimonial profiles from the UK, Pakistan, and worldwide. Our platform ensures privacy, security, and serious marriage intent.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">What Makes Our Matrimonial Platform Different</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Profiles verified by our moderation team</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Privacy-first design — your details are protected</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">UK-focused, with global reach to Pakistan, UAE and beyond</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Serious marriage intent — not a dating app</span></li>
+        </ul>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also explore: <a href="/muslim-matchmaking" class="text-primary hover:underline">Muslim Matchmaking Services</a> or <a href="/muslim-marriage-uk" class="text-primary hover:underline">Muslim Marriage UK</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/muslim-matchmaking",
+    pageTitle: "Professional Muslim Matchmaking Services | D'amour Muslim",
+    h1: "Professional Muslim Matchmaking Services",
+    heroSubtitle: "We connect compatible Muslim singles through a halal and structured matchmaking process — values first, always.",
+    metaDescription: "Professional Muslim matchmaking services connecting compatible Muslim singles through a halal and structured process. UK-focused, free to join.",
+    keywords: "muslim matchmaking, halal matchmaking, muslim matchmaking UK, islamic matchmaking service",
+    canonicalPath: "/muslim-matchmaking",
+    ctaHeading: "Start Your Matchmaking Journey",
+    ctaSubtext: "Let us help you find your perfect halal match today.",
+    relatedLinks: [
+      { url: "/muslim-marriage", label: "Muslim Marriage" },
+      { url: "/trusted-muslim-matchmaking", label: "Trusted Matchmaking" },
+      { url: "/blog/how-to-find-a-muslim-spouse-in-the-uk-simple-real-guide", label: "How to Find a Spouse" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">We connect compatible Muslim singles through a halal and structured matchmaking process.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">How Our Matchmaking Works</h2>
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+          <div class="bg-gray-50 rounded-xl p-5"><h3 class="font-semibold text-gray-800 mb-2">Create a Profile</h3><p class="text-gray-600 text-sm">Share your values, background, and what you're looking for in a spouse.</p></div>
+          <div class="bg-gray-50 rounded-xl p-5"><h3 class="font-semibold text-gray-800 mb-2">Browse Matches</h3><p class="text-gray-600 text-sm">Use smart filters to find compatible Muslims based on your preferences.</p></div>
+          <div class="bg-gray-50 rounded-xl p-5"><h3 class="font-semibold text-gray-800 mb-2">Connect Respectfully</h3><p class="text-gray-600 text-sm">Send and receive connection requests on your terms.</p></div>
+          <div class="bg-gray-50 rounded-xl p-5"><h3 class="font-semibold text-gray-800 mb-2">Proceed to Nikah</h3><p class="text-gray-600 text-sm">With family involvement and clear intentions, move towards marriage.</p></div>
+        </div>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also see: <a href="/best-muslim-marriage-website" class="text-primary hover:underline">Best Muslim Marriage Website</a> and <a href="/halal-marriage" class="text-primary hover:underline">Halal Marriage Platform</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/halal-marriage",
+    pageTitle: "Halal Marriage Platform for Practicing Muslims | D'amour Muslim",
+    h1: "Halal Marriage Platform for Practicing Muslims",
+    heroSubtitle: "No dating, no time waste — only serious halal marriage connections built on Islamic values.",
+    metaDescription: "Halal marriage platform for practicing Muslims. No casual dating — only serious, Shariah-compliant connections leading to Nikah. Join free today.",
+    keywords: "halal marriage, halal marriage platform, halal matchmaking, nikah, islamic marriage",
+    canonicalPath: "/halal-marriage",
+    ctaHeading: "Start Your Halal Marriage Journey",
+    ctaSubtext: "Join now and find your partner the halal way.",
+    relatedLinks: [
+      { url: "/muslim-marriage", label: "Muslim Marriage" },
+      { url: "/muslim-matchmaking", label: "Muslim Matchmaking" },
+      { url: "/blog/benefits-of-halal-matchmaking-services-uk-muslim-marriage-rishta-guide", label: "Benefits of Halal Matchmaking" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Marriage in Islam is a sacred commitment built on faith, trust, and mutual respect. In a world where modern dating often contradicts Islamic values, finding a halal way to meet a life partner can be challenging. Our halal marriage platform is designed to provide a safe, respectful, and Shariah-compliant environment where Muslims can connect for the purpose of Nikah.</p>
+        <p class="text-gray-700 mb-6 leading-relaxed">Unlike conventional dating apps, we strictly focus on halal interactions. This means no casual chatting, no time-wasting, and no inappropriate behavior. Every interaction on our platform is guided by the intention of marriage, making it ideal for practicing Muslims who want to protect their deen while searching for a spouse.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">What Makes a Marriage "Halal"?</h2>
+        <p class="text-gray-700 mb-4">A halal marriage process ensures:</p>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Intentions are clear and sincere</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Communication is respectful and modest</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Family involvement is encouraged</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Boundaries are maintained</span></li>
+        </ul>
+        <p class="text-gray-700 mb-4">Our platform supports all these principles, making it easier to find a partner without compromising Islamic teachings.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Choose a Halal Marriage Platform?</h2>
+        <p class="text-gray-700 mb-4">Many Muslims struggle with:</p>
+        <ul class="list-none space-y-3 mb-4">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Finding like-minded partners</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Avoiding haram interactions</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Balancing modern life with Islamic values</span></li>
+        </ul>
+        <p class="text-gray-700 mb-6">Our platform solves these challenges by offering a structured and ethical matchmaking system.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">How It Works</h2>
+        <div class="grid md:grid-cols-5 gap-3 mb-8">
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-bold text-lg">1</span><p class="text-gray-700 text-sm mt-1">Create a profile with honest details</p></div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-bold text-lg">2</span><p class="text-gray-700 text-sm mt-1">Search for compatible matches</p></div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-bold text-lg">3</span><p class="text-gray-700 text-sm mt-1">Connect respectfully</p></div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-bold text-lg">4</span><p class="text-gray-700 text-sm mt-1">Involve families if needed</p></div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-bold text-lg">5</span><p class="text-gray-700 text-sm mt-1">Proceed towards Nikah</p></div>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Privacy &amp; Respect</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Secure communication</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Profile moderation</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">No fake users</span></li>
+        </ul>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">This is not a dating platform — it is a marriage-focused community for Muslims who are ready to settle down. Also see: <a href="/muslim-rishta" class="text-primary hover:underline">Muslim Rishta Platform</a> and <a href="/verified-muslim-profiles" class="text-primary hover:underline">Verified Muslim Profiles</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/muslim-rishta",
+    pageTitle: "Muslim Rishta Platform – Find Serious Marriage Proposals | D'amour Muslim",
+    h1: "Muslim Rishta Platform – Find Serious Marriage Proposals",
+    heroSubtitle: "Find rishta for marriage in Pakistan and overseas with verified profiles. Family-friendly, halal, and modern.",
+    metaDescription: "Muslim rishta platform connecting serious marriage proposals in the UK, Pakistan, and worldwide. Verified profiles and family-friendly approach. Join free.",
+    keywords: "muslim rishta, rishta online, rishta pakistan, muslim rishta uk, rishta website",
+    canonicalPath: "/muslim-rishta",
+    ctaHeading: "Find Your Rishta Today",
+    ctaSubtext: "Create your profile and start your search today.",
+    relatedLinks: [
+      { url: "/muslim-rishta-pakistan", label: "Muslim Rishta Pakistan" },
+      { url: "/halal-marriage", label: "Halal Marriage" },
+      { url: "/blog/uk-rishta-whatsapp-group", label: "UK Rishta Guides" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Finding a suitable rishta has always been an important part of Muslim culture, especially in South Asian communities. However, traditional methods can be limited and slow. Our online Muslim rishta platform modernises this process while preserving its cultural and religious values.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">What is a Rishta?</h2>
+        <p class="text-gray-700 mb-4">A "rishta" refers to a marriage proposal where compatibility between individuals and families is considered. It involves:</p>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Background checks</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Family involvement</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Long-term commitment</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Use an Online Rishta Platform?</h2>
+        <p class="text-gray-700 mb-4">Traditional rishta methods often rely on relatives and community networks. Our platform expands your reach, allowing you to:</p>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Access thousands of profiles</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Filter based on preferences</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Connect quickly and securely</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Family-Friendly Approach</h2>
+        <p class="text-gray-700 mb-4">We support family-managed accounts, transparent communication, and respectful interactions.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Who Should Join?</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Singles looking for marriage</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Families searching for proposals</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Overseas Muslims</span></li>
+        </ul>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Safety first — we ensure verified profiles and a secure platform for all users. Also explore <a href="/find-muslim-spouse" class="text-primary hover:underline">Find Muslim Spouse</a> and <a href="/muslim-marriage-uk" class="text-primary hover:underline">Muslim Marriage UK</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/find-muslim-spouse",
+    pageTitle: "Find Your Muslim Spouse Online – Safe & Halal | D'amour Muslim",
+    h1: "Find Your Muslim Spouse Online – Safe & Halal",
+    heroSubtitle: "Discover compatible matches based on deen, lifestyle, and preferences. The halal way to find your life partner.",
+    metaDescription: "Find your Muslim spouse online safely and in a halal way. Compatible matches based on deen, lifestyle, and preferences. Free to join.",
+    keywords: "find muslim spouse, find muslim partner, muslim spouse online, halal spouse search",
+    canonicalPath: "/find-muslim-spouse",
+    ctaHeading: "Start Your Search",
+    ctaSubtext: "Find your Muslim spouse today — free to join.",
+    relatedLinks: [
+      { url: "/muslim-marriage", label: "Muslim Marriage" },
+      { url: "/muslim-matchmaking", label: "Muslim Matchmaking" },
+      { url: "/blog/how-to-find-a-muslim-spouse-in-the-uk-simple-real-guide", label: "How to Find a Muslim Spouse" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Searching for a life partner is a meaningful journey, and for Muslims, it must be done in a halal and respectful way. Our platform makes it easier to find a Muslim spouse who aligns with your values, goals, and lifestyle.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Finding a Spouse is Challenging Today</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Busy lifestyles</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Limited social circles</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Cultural expectations</span></li>
+        </ul>
+        <p class="text-gray-700 mb-6">Our platform bridges this gap.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Smart Matchmaking</h2>
+        <p class="text-gray-700 mb-4">We help you find matches based on:</p>
+        <div class="grid md:grid-cols-2 gap-4 mb-8">
+          <div class="bg-gray-50 rounded-xl p-4"><span class="text-primary font-semibold">Religious values</span><p class="text-gray-600 text-sm mt-1">Deen compatibility at the core of matching</p></div>
+          <div class="bg-gray-50 rounded-xl p-4"><span class="text-primary font-semibold">Education</span><p class="text-gray-600 text-sm mt-1">Find someone who matches your academic background</p></div>
+          <div class="bg-gray-50 rounded-xl p-4"><span class="text-primary font-semibold">Personality</span><p class="text-gray-600 text-sm mt-1">Detailed profiles to understand who someone really is</p></div>
+          <div class="bg-gray-50 rounded-xl p-4"><span class="text-primary font-semibold">Lifestyle</span><p class="text-gray-600 text-sm mt-1">City, background, and daily life preferences</p></div>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Global Reach</h2>
+        <p class="text-gray-700 mb-6">Connect with Muslims worldwide, including UK, Pakistan, and beyond. Serious matches only — we focus on meaningful connections, not casual dating.</p>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also see: <a href="/verified-muslim-profiles" class="text-primary hover:underline">Verified Muslim Profiles</a> and <a href="/trusted-muslim-matchmaking" class="text-primary hover:underline">Trusted Muslim Matchmaking</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/best-muslim-marriage-website",
+    pageTitle: "Best Muslim Marriage Website for Serious Relationships | D'amour Muslim",
+    h1: "Best Muslim Marriage Website for Serious Relationships",
+    heroSubtitle: "Why we are the most trusted platform for halal matchmaking — built for serious Muslims in the UK.",
+    metaDescription: "The best Muslim marriage website for serious relationships. Verified profiles, halal environment, and global reach. Join free today.",
+    keywords: "best muslim marriage website, best muslim marriage site, top muslim marriage platform, best halal marriage site",
+    canonicalPath: "/best-muslim-marriage-website",
+    ctaHeading: "Join the Best Platform",
+    ctaSubtext: "Create your free profile now and start finding compatible matches.",
+    relatedLinks: [
+      { url: "/muslim-marriage", label: "Muslim Marriage" },
+      { url: "/free-muslim-marriage-site", label: "Free Muslim Marriage Site" },
+      { url: "/blog/benefits-of-halal-matchmaking-services-uk-muslim-marriage-rishta-guide", label: "Matchmaking Benefits Guide" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Choosing the right platform is crucial when searching for a life partner. Our platform stands out as one of the best Muslim marriage websites due to its focus on halal matchmaking, user safety, and serious intentions.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">What Makes Us the Best?</h2>
+        <div class="grid md:grid-cols-2 gap-6 mb-8">
+          <div class="bg-gray-50 rounded-xl p-5 border border-gray-100"><h3 class="font-semibold text-gray-800 mb-2">✓ Verified Profiles</h3><p class="text-gray-600 text-sm">Every profile is reviewed before approval — no fake accounts.</p></div>
+          <div class="bg-gray-50 rounded-xl p-5 border border-gray-100"><h3 class="font-semibold text-gray-800 mb-2">✓ Halal Environment</h3><p class="text-gray-600 text-sm">Marriage-focused, no dating or casual interactions.</p></div>
+          <div class="bg-gray-50 rounded-xl p-5 border border-gray-100"><h3 class="font-semibold text-gray-800 mb-2">✓ UK Focused</h3><p class="text-gray-600 text-sm">Built for British Muslims with global reach for overseas matches.</p></div>
+          <div class="bg-gray-50 rounded-xl p-5 border border-gray-100"><h3 class="font-semibold text-gray-800 mb-2">✓ Easy to Use</h3><p class="text-gray-600 text-sm">Clean, modern design that works on mobile and desktop.</p></div>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Designed for Modern Muslims</h2>
+        <p class="text-gray-700 mb-6">We combine tradition with technology to offer the best experience. Trust &amp; Security — we prioritise your privacy and safety. Our goal is to help you find a life partner quickly and effectively.</p>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also explore: <a href="/trusted-muslim-matchmaking" class="text-primary hover:underline">Trusted Muslim Matchmaking</a> and <a href="/muslim-matchmaking-uk" class="text-primary hover:underline">Muslim Matchmaking UK</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/free-muslim-marriage-site",
+    pageTitle: "Free Muslim Marriage Site – Join Without Cost | D'amour Muslim",
+    h1: "Free Muslim Marriage Site – Join Without Cost",
+    heroSubtitle: "Finding a life partner should not be limited by financial barriers. Join free and start browsing profiles instantly.",
+    metaDescription: "Free Muslim marriage site — join without any cost. Create your profile, browse verified profiles, and start connecting with serious Muslims today.",
+    keywords: "free muslim marriage site, free muslim marriage, free halal marriage, free islamic marriage site",
+    canonicalPath: "/free-muslim-marriage-site",
+    ctaHeading: "Join for Free Today",
+    ctaSubtext: "Sign up now and start finding your match — no payment required.",
+    relatedLinks: [
+      { url: "/muslim-marriage", label: "Muslim Marriage" },
+      { url: "/best-muslim-marriage-website", label: "Best Muslim Marriage Website" },
+      { url: "/blog/uk-rishta-whatsapp-group", label: "UK Rishta Groups Guide" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Finding a life partner should not be limited by financial barriers. Our free Muslim marriage site allows you to start your journey without any cost.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Free Matters</h2>
+        <p class="text-gray-700 mb-4">Many platforms charge high fees, which can discourage users. We provide:</p>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Free registration</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Free profile creation</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Free browsing</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">What You Get for Free</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Access to profiles</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Basic matching features</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Secure messaging options</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Safe &amp; Reliable</h2>
+        <p class="text-gray-700 mb-6">Even though it's free, we maintain high standards of safety and authenticity. We ensure that users are genuinely interested in marriage.</p>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also explore: <a href="/verified-muslim-profiles" class="text-primary hover:underline">Verified Muslim Profiles</a> and <a href="/muslim-matrimonial" class="text-primary hover:underline">Muslim Matrimonial Platform</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/trusted-muslim-matchmaking",
+    pageTitle: "Trusted Muslim Matchmaking Service for Serious Marriage | D'amour Muslim",
+    h1: "Trusted Muslim Matchmaking Service for Serious Marriage",
+    heroSubtitle: "We prioritise safety, authenticity, and serious users. The platform built on trust and Islamic principles.",
+    metaDescription: "Trusted Muslim matchmaking service for serious marriage. Profile verification, manual moderation, secure communication. UK-focused, free to join.",
+    keywords: "trusted muslim matchmaking, reliable muslim matchmaking, safe muslim marriage platform, verified muslim matchmaking",
+    canonicalPath: "/trusted-muslim-matchmaking",
+    ctaHeading: "Start with Confidence",
+    ctaSubtext: "Join our trusted Muslim matchmaking platform today.",
+    relatedLinks: [
+      { url: "/verified-muslim-profiles", label: "Verified Profiles" },
+      { url: "/muslim-matchmaking", label: "Muslim Matchmaking" },
+      { url: "/blog/how-to-find-a-muslim-spouse-in-the-uk-simple-real-guide", label: "Finding a Spouse Guide" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Finding a life partner is one of the most important decisions you will ever make. For Muslims, this decision is not just about compatibility — it's about faith, values, family, and long-term commitment. That's why choosing a trusted Muslim matchmaking service is essential.</p>
+        <p class="text-gray-700 mb-6 leading-relaxed">Our platform is built on trust, transparency, and Islamic principles. We aim to provide a safe and reliable space where Muslims can connect with the intention of marriage, not casual relationships.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Trust Matters in Matchmaking</h2>
+        <p class="text-gray-700 mb-4">In the online world, trust is often the biggest concern. Many users worry about fake profiles, time-wasters, and misleading information. We address these concerns by implementing strict verification processes and maintaining a high standard of user authenticity.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Our Trust &amp; Safety Features</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Profile verification system</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Manual moderation</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Reporting &amp; blocking features</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Secure communication channels</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Halal &amp; Ethical Approach</h2>
+        <p class="text-gray-700 mb-4">Unlike mainstream dating apps, we follow a halal approach: no casual dating, respectful communication only, and focus on marriage. This makes our platform ideal for practicing Muslims.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Global Matchmaking Network</h2>
+        <p class="text-gray-700 mb-4">We connect users from Pakistan, United Kingdom, USA &amp; Canada, and the Middle East — giving you access to a wide pool of serious candidates.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Who Should Use This Service?</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Individuals ready for marriage</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Families looking for proposals</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">•</span><span class="text-gray-700">Professionals seeking compatible partners</span></li>
+        </ul>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Real connections, real results. Also see: <a href="/best-muslim-marriage-website" class="text-primary hover:underline">Best Muslim Marriage Website</a> and <a href="/muslim-marriage-uk" class="text-primary hover:underline">Muslim Marriage UK</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/verified-muslim-profiles",
+    pageTitle: "Verified Muslim Marriage Profiles – Safe & Authentic | D'amour Muslim",
+    h1: "Verified Muslim Marriage Profiles – Safe & Authentic Matches",
+    heroSubtitle: "Every profile is reviewed to ensure authenticity and trust. Real people with real intentions.",
+    metaDescription: "Verified Muslim marriage profiles — every profile is reviewed for authenticity. Safe, real, and serious matches for halal matrimony. Free to join.",
+    keywords: "verified muslim profiles, authentic muslim profiles, real muslim marriage profiles, safe muslim matchmaking",
+    canonicalPath: "/verified-muslim-profiles",
+    ctaHeading: "Join a Safe Platform",
+    ctaSubtext: "Browse verified profiles and find your match today.",
+    relatedLinks: [
+      { url: "/trusted-muslim-matchmaking", label: "Trusted Matchmaking" },
+      { url: "/muslim-matrimonial", label: "Muslim Matrimonial" },
+      { url: "/blog/benefits-of-halal-matchmaking-services-uk-muslim-marriage-rishta-guide", label: "Benefits of Halal Matchmaking" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">One of the biggest challenges in online matchmaking is authenticity. Many users hesitate to join platforms due to concerns about fake profiles and scams. Our platform solves this problem by offering verified Muslim profiles, ensuring that every connection you make is genuine and trustworthy.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">What Are Verified Profiles?</h2>
+        <p class="text-gray-700 mb-4">Verified profiles go through a screening process that may include:</p>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Identity checks</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Profile review</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Activity monitoring</span></li>
+        </ul>
+        <p class="text-gray-700 mb-6">This helps maintain a high-quality user base.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Verification Matters</h2>
+        <p class="text-gray-700 mb-4">Verification ensures real people only, serious intentions, and safer communication.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Our Verification Process</h2>
+        <p class="text-gray-700 mb-6">We combine automated checks with manual moderation — ensuring accuracy and reliability.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Benefits of Verified Profiles</h2>
+        <div class="grid md:grid-cols-3 gap-4 mb-8">
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-semibold block mb-1">Higher Trust</span><p class="text-gray-600 text-sm">Confidence in who you are connecting with</p></div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-semibold block mb-1">Better Matches</span><p class="text-gray-600 text-sm">Quality filters out time-wasters</p></div>
+          <div class="bg-gray-50 rounded-xl p-4 text-center"><span class="text-primary font-semibold block mb-1">Faster Decisions</span><p class="text-gray-600 text-sm">Real information speeds up the process</p></div>
+        </div>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">We filter out users who are not serious about marriage, saving your time and effort. Also see: <a href="/find-muslim-spouse" class="text-primary hover:underline">Find Muslim Spouse</a> and <a href="/trusted-muslim-matchmaking" class="text-primary hover:underline">Trusted Matchmaking</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/online-rishta-pakistan",
+    pageTitle: "Online Rishta Pakistan – Modern Matchmaking for Marriage | D'amour Muslim",
+    h1: "Online Rishta Pakistan – Modern Matchmaking for Marriage",
+    heroSubtitle: "Modern rishta system with traditional values. Serving all major cities across Pakistan.",
+    metaDescription: "Online rishta Pakistan — modern matchmaking combining traditional values with digital reach. Covering Lahore, Karachi, Islamabad and all major cities.",
+    keywords: "online rishta pakistan, rishta pakistan, rishta online pakistan, pakistani marriage proposals online",
+    canonicalPath: "/online-rishta-pakistan",
+    ctaHeading: "Start Your Rishta Search",
+    ctaSubtext: "Join now and find your ideal match in Pakistan.",
+    relatedLinks: [
+      { url: "/rishta-lahore", label: "Rishta Lahore" },
+      { url: "/rishta-karachi", label: "Rishta Karachi" },
+      { url: "/blog/uk-rishta-whatsapp-group", label: "UK Rishta Guide" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">The traditional rishta process in Pakistan has evolved significantly with the rise of digital platforms. Today, online rishta services provide a faster, more efficient, and broader way to find suitable marriage proposals. Our platform combines traditional values with modern technology to offer the best online rishta experience in Pakistan.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Online Rishta is Growing in Pakistan</h2>
+        <p class="text-gray-700 mb-4">People are moving towards online platforms because of wider reach, faster process, and more options.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Nationwide Coverage</h2>
+        <p class="text-gray-700 mb-4">We serve all major cities:</p>
+        <div class="flex flex-wrap gap-2 mb-6">
+          <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">Lahore</span>
+          <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">Karachi</span>
+          <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">Islamabad</span>
+          <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">Faisalabad</span>
+          <span class="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium">Multan</span>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Family Involvement</h2>
+        <p class="text-gray-700 mb-6">We respect cultural values by allowing family-managed profiles and transparent communication.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Advanced Search Filters</h2>
+        <p class="text-gray-700 mb-4">Find matches based on education, profession, location, and religious values.</p>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Safe &amp; Secure — we ensure privacy and authenticity for all users. Also see: <a href="/muslim-rishta", class="text-primary hover:underline">Muslim Rishta Platform</a> and <a href="/rishta-lahore" class="text-primary hover:underline">Rishta in Lahore</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/rishta-lahore",
+    pageTitle: "Rishta in Lahore – Find the Perfect Match | D'amour Muslim",
+    h1: "Rishta in Lahore – Find the Perfect Match",
+    heroSubtitle: "Connect with compatible matches in Lahore. Verified profiles, smart matching, and serious marriage intent.",
+    metaDescription: "Find rishta in Lahore with verified profiles. Smart matching for Lahore Muslims seeking serious marriage proposals. Join free today.",
+    keywords: "rishta lahore, lahore rishta, lahore marriage proposals, rishta in lahore pakistan",
+    canonicalPath: "/rishta-lahore",
+    ctaHeading: "Find Your Match in Lahore",
+    ctaSubtext: "Register today and start your search.",
+    relatedLinks: [
+      { url: "/online-rishta-pakistan", label: "Online Rishta Pakistan" },
+      { url: "/rishta-karachi", label: "Rishta Karachi" },
+      { url: "/blog/uk-rishta-whatsapp-group", label: "Rishta Groups Guide" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Lahore is one of the largest and most vibrant cities in Pakistan, with a diverse and educated population. Finding the right rishta in Lahore can be challenging due to busy lifestyles and limited social circles. Our platform makes it easier to connect with compatible matches in Lahore.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Choose Online Rishta in Lahore?</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Save time</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Access more profiles</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Better compatibility matching</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Who Can Join?</h2>
+        <p class="text-gray-700 mb-6">Professionals, students, and families are all welcome. We match users based on compatibility, values, and preferences.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Safe Environment</h2>
+        <p class="text-gray-700 mb-6">Your privacy is protected at all times. We focus on serious marriage only — meaningful relationships, not casual connections.</p>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also explore: <a href="/online-rishta-pakistan" class="text-primary hover:underline">Online Rishta Pakistan</a> and <a href="/muslim-rishta" class="text-primary hover:underline">Muslim Rishta Platform</a>.</p>
+        </div>
+      </div>
+    `
+  },
+  {
+    path: "/rishta-karachi",
+    pageTitle: "Rishta in Karachi – Trusted Marriage Platform | D'amour Muslim",
+    h1: "Rishta in Karachi – Trusted Marriage Platform",
+    heroSubtitle: "Find compatible matches in Karachi safely and efficiently. Verified profiles and family-friendly matchmaking.",
+    metaDescription: "Find rishta in Karachi with verified profiles. Trusted marriage platform for Karachi Muslims. Large user base and safe communication. Join free.",
+    keywords: "rishta karachi, karachi rishta, karachi marriage proposals, rishta in karachi pakistan",
+    canonicalPath: "/rishta-karachi",
+    ctaHeading: "Start Your Journey",
+    ctaSubtext: "Create your profile and find your match in Karachi.",
+    relatedLinks: [
+      { url: "/online-rishta-pakistan", label: "Online Rishta Pakistan" },
+      { url: "/rishta-lahore", label: "Rishta Lahore" },
+      { url: "/blog/uk-rishta-whatsapp-group", label: "Rishta Groups Guide" }
+    ],
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Karachi, being Pakistan's largest city, offers a wide range of opportunities and lifestyles. However, finding the right life partner in such a fast-paced environment can be difficult. Our rishta platform helps you connect with compatible matches in Karachi in a safe and efficient way.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Karachi Users Choose Us</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Large user base</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Verified profiles</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Easy communication</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Find Compatible Matches</h2>
+        <p class="text-gray-700 mb-4">Search based on education, career, and religious values.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Family-Friendly Platform</h2>
+        <p class="text-gray-700 mb-6">We support family involvement in the matchmaking process. Secure &amp; Private — your data and conversations are protected. We focus on long-term compatibility and build meaningful connections.</p>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also explore: <a href="/rishta-lahore" class="text-primary hover:underline">Rishta in Lahore</a> and <a href="/online-rishta-pakistan" class="text-primary hover:underline">Online Rishta Pakistan</a>.</p>
+        </div>
+      </div>
+    `
+  }
+];
+
+seoPages.forEach(function(page) {
+  app.get(page.path, (req, res) => {
+    res.render("seo-page", page);
+  });
+});
+
+// ============================================
+// END SEO LANDING PAGES
+// ============================================
+
+
 
 app.get("/onboarding", isLoggedIn, findUser, (req, res) => {
   const user = req.userData;
@@ -4939,6 +5459,71 @@ app.get("/sitemap.xml", async (req, res) => {
     <loc>https://damourmuslim.com/privacy</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-marriage</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matrimonial</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matchmaking</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/halal-marriage</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-rishta</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/find-muslim-spouse</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/best-muslim-marriage-website</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/free-muslim-marriage-site</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/trusted-muslim-matchmaking</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/verified-muslim-profiles</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/online-rishta-pakistan</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/rishta-lahore</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/rishta-karachi</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>`;
 
     // Add database blog posts

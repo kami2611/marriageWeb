@@ -404,54 +404,53 @@
 
     <!-- Random Profiles Section -->
     <div class="py-20 bg-white">
-      <div class="max-w-6xl mx-auto px-6">
-        <div class="text-center mb-12">
-          <h2 class="text-4xl font-bold text-gray-800 mb-4 font-['Playfair_Display']">Featured Muslim Profiles</h2>
-          <p class="text-lg text-gray-600 max-w-2xl mx-auto">Meet some of our verified members seeking halal marriage</p>
-        </div>
-
-        <div class="grid md:grid-cols-4 gap-6">
-          <% if (typeof randomProfiles !== 'undefined' && randomProfiles.length > 0) { %>
-            <% randomProfiles.slice(0, 4).forEach(function(profile) { %>
-              <a href="/profile/<%= profile._id %>" class="bg-gray-50 rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 group">
-                <div class="aspect-square relative overflow-hidden">
-                  <% if (profile.profilePicture) { %>
-                    <img src="<%= profile.profilePicture %>" alt="Muslim profile for marriage" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                  <% } else { %>
-                    <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
-                      <i class="ri-user-3-line text-6xl text-primary/40"></i>
-                    </div>
-                  <% } %>
-                </div>
-                <div class="p-4 text-center">
-                  <h4 class="font-semibold text-gray-800 mb-1"><%= profile.firstName %>, <%= profile.age %></h4>
-                  <p class="text-sm text-gray-500"><%= profile.city || 'UK' %></p>
-                </div>
-              </a>
-            <% }); %>
-          <% } else { %>
-            <!-- Placeholder cards when no profiles available -->
-            <% for(let i = 0; i < 4; i++) { %>
-              <div class="bg-gray-50 rounded-2xl overflow-hidden material-shadow">
-                <div class="aspect-square bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
-                  <i class="ri-user-3-line text-6xl text-primary/30"></i>
-                </div>
-                <div class="p-4 text-center">
-                  <div class="h-4 bg-gray-200 rounded w-2/3 mx-auto mb-2"></div>
-                  <div class="h-3 bg-gray-100 rounded w-1/2 mx-auto"></div>
-                </div>
-              </div>
-            <% } %>
-          <% } %>
-        </div>
-
-        <div class="text-center mt-10">
-          <a href="/profiles" class="inline-flex items-center gap-2 text-primary font-semibold hover:text-secondary transition-colors duration-300">
-            View All Profiles <i class="ri-arrow-right-line"></i>
-          </a>
-        </div>
-      </div>
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="text-center mb-12">
+      <h2 class="text-4xl font-bold text-gray-800 mb-4 font-['Playfair_Display']">Featured Muslim Profiles</h2>
+      <p class="text-lg text-gray-600 max-w-2xl mx-auto">Meet some of our verified members seeking halal marriage</p>
     </div>
+
+    <div class="grid md:grid-cols-4 gap-6">
+      <% if (typeof randomProfiles !== 'undefined' && randomProfiles.length > 0) { %>
+        <% randomProfiles.slice(0, 4).forEach(function(profile) { %>
+          <a href="/profiles/<%= profile.profileSlug || profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block group">
+            <div class="aspect-[4/5] relative overflow-hidden bg-gray-100">
+              <% if (profile.profilePic && profile.profilePic.url) { %>
+                <img src="<%= profile.profilePic.url %>" alt="Muslim profile for marriage in UK" class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500" loading="lazy" onload="this.classList.add('loaded')">
+              <% } else { %>
+                <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20 flex items-center justify-center">
+                  <i class="ri-user-3-line text-6xl text-primary/40"></i>
+                </div>
+              <% } %>
+            </div>
+            <div class="p-4 text-center">
+              <h4 class="font-semibold text-gray-800 mb-1"><%= profile.name %><% if (profile.age) { %>, <%= profile.age %><% } %></h4>
+              <p class="text-sm text-gray-500"><i class="ri-map-pin-line"></i> <%= profile.city || 'UK' %></p>
+            </div>
+          </a>
+        <% }); %>
+      <% } else { %>
+        <% for(let i = 0; i < 4; i++) { %>
+          <div class="bg-gray-50 rounded-2xl overflow-hidden material-shadow">
+            <div class="aspect-square bg-gradient-to-br from-primary/10 to-secondary/10 flex items-center justify-center">
+              <i class="ri-user-3-line text-6xl text-primary/30"></i>
+            </div>
+            <div class="p-4 text-center">
+              <div class="h-4 bg-gray-200 rounded w-2/3 mx-auto mb-2"></div>
+              <div class="h-3 bg-gray-100 rounded w-1/2 mx-auto"></div>
+            </div>
+          </div>
+        <% } %>
+      <% } %>
+    </div>
+
+    <div class="text-center mt-10">
+      <a href="/profiles" class="inline-flex items-center gap-2 text-primary font-semibold hover:text-secondary transition-colors duration-300">
+        View All Profiles <i class="ri-arrow-right-line"></i>
+      </a>
+    </div>
+  </div>
+</div>
 
     <!-- Muslim Marriage Across UK Cities Section -->
     <div class="py-20 bg-gray-50">
@@ -736,6 +735,68 @@
             <h3 class="text-xl font-bold text-gray-800 mb-3">Free to Join</h3>
             <p class="text-gray-600">Create your profile and browse matches completely free. No hidden costs to get started.</p>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blog / SEO Section -->
+    <div class="py-20 bg-gray-50">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-12">
+          <h2 class="text-4xl font-bold text-gray-800 mb-4 font-['Playfair_Display']">Muslim Marriage Advice &amp; Guides</h2>
+          <p class="text-lg text-gray-600 max-w-2xl mx-auto">Read our latest guides on halal marriage, rishta advice, and Islamic matrimony tips for UK Muslims.</p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <!-- Blog 1 -->
+          <a href="/blog/uk-rishta-whatsapp-group" class="bg-white rounded-2xl material-shadow hover:material-shadow-hover transition-all duration-300 group overflow-hidden block">
+            <div class="p-6">
+              <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <i class="ri-whatsapp-line text-2xl text-primary"></i>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-primary transition-colors duration-300">UK Rishta WhatsApp Groups — What You Need to Know</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">Find out everything about rishta WhatsApp groups for UK Muslims — benefits, risks, and a better alternative for serious marriage seekers.</p>
+              <div class="flex items-center gap-2 mt-4 text-primary text-sm font-medium">
+                <span>Read Guide</span><i class="ri-arrow-right-line group-hover:translate-x-1 transition-transform duration-300"></i>
+              </div>
+            </div>
+          </a>
+
+          <!-- Blog 2 -->
+          <a href="/blog/how-to-find-a-muslim-spouse-in-the-uk-simple-real-guide" class="bg-white rounded-2xl material-shadow hover:material-shadow-hover transition-all duration-300 group overflow-hidden block">
+            <div class="p-6">
+              <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <i class="ri-search-heart-line text-2xl text-primary"></i>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-primary transition-colors duration-300">How To Find a Muslim Spouse in the UK — Simple, Real Guide</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">A practical, no-nonsense guide for UK Muslims on how to find a spouse the halal way — from mindset and family to the right platforms.</p>
+              <div class="flex items-center gap-2 mt-4 text-primary text-sm font-medium">
+                <span>Read Guide</span><i class="ri-arrow-right-line group-hover:translate-x-1 transition-transform duration-300"></i>
+              </div>
+            </div>
+          </a>
+
+          <!-- Blog 3 -->
+          <a href="/blog/benefits-of-halal-matchmaking-services-uk-muslim-marriage-rishta-guide" class="bg-white rounded-2xl material-shadow hover:material-shadow-hover transition-all duration-300 group overflow-hidden block">
+            <div class="p-6">
+              <div class="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center mb-4">
+                <i class="ri-heart-2-line text-2xl text-primary"></i>
+              </div>
+              <h3 class="text-lg font-bold text-gray-800 mb-2 group-hover:text-primary transition-colors duration-300">Benefits of Halal Matchmaking Services — UK Muslim Marriage Guide</h3>
+              <p class="text-gray-600 text-sm leading-relaxed">Discover why halal matchmaking is the trusted choice for serious UK Muslims seeking rishta and marriage — with real benefits explained.</p>
+              <div class="flex items-center gap-2 mt-4 text-primary text-sm font-medium">
+                <span>Read Guide</span><i class="ri-arrow-right-line group-hover:translate-x-1 transition-transform duration-300"></i>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="text-center mt-10">
+          <a href="/blog" class="inline-flex items-center gap-2 gradient-bg text-white font-semibold py-3 px-8 rounded-button hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300">
+            <i class="ri-article-line"></i>
+            <span>View All Guides &amp; Advice</span>
+            <i class="ri-arrow-right-line"></i>
+          </a>
         </div>
       </div>
     </div>
