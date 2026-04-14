@@ -4025,7 +4025,7 @@ app.post(
           type: "request_rejected", // Reuse rejected type or create new one
           title: "Request Deleted",
           message: `Your request to ${request.to.name || request.to.username
-            } was deleted by admin.`,
+            } was deleted.`,
           priority: "medium",
           actionUrl: "/profiles",
           actionText: "Browse Profiles",
@@ -4034,9 +4034,6 @@ app.post(
         // Delete the request permanently
         await Request.findByIdAndDelete(requestId);
 
-        console.log(
-          `Admin deleted request from ${request.from.username} to ${request.to.username}`
-        );
         return res.json({
           success: true,
           message: "Request deleted successfully",
@@ -4076,7 +4073,7 @@ app.post(
           type: "request_revoked",
           title: "Request Access Revoked",
           message: `Your accepted request with ${request.to.name || request.to.username
-            } has been revoked by admin.`,
+            } has been revoked by the other user.`,
           priority: "high",
           actionUrl: "/profiles",
           actionText: "Browse Profiles",
@@ -4087,7 +4084,7 @@ app.post(
           type: "request_revoked",
           title: "Request Access Revoked",
           message: `Your connection with ${request.from.name || request.from.username
-            } has been revoked by admin.`,
+            } has been revoked by the other user.`,
           priority: "high",
           actionUrl: "/profiles",
           actionText: "Browse Profiles",
