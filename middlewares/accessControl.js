@@ -11,12 +11,7 @@ const requireAdminOnly = (req, res, next) => {
   const apiKey = req.headers['x-api-key'];
   const expectedKey = process.env.ADMIN_API_KEY;
 
-  // 🔍 DEBUG LOGS (Delete these after fixing)
-  console.log("------------------------------------------------");
-  console.log("🔐 Auth Debug:");
-  console.log("   Received Key:", apiKey ? `"${apiKey}"` : "undefined");
-  console.log("   Expected Key:", expectedKey ? `"${expectedKey}"` : "undefined");
-  console.log("   Session Admin:", req.session ? req.session.isAdmin : "No session");
+ 
   console.log("------------------------------------------------");
   if (apiKey && apiKey === process.env.ADMIN_API_KEY) {
     req.isApiRequest = true; // Flag for later use if needed

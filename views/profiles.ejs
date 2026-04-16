@@ -9,6 +9,17 @@
   let metaDescription = globalSeoSettings && globalSeoSettings.profilesPageMetaDescription ? globalSeoSettings.profilesPageMetaDescription : "Find your perfect Muslim matrimony partner for Islamic wedding and Nikkah ceremony. Browse verified Muslim couples, Pakistani marriage profiles in London, Manchester. UK's leading halal marriage site.";
   let keywords = "Muslim matrimony, Islamic wedding, Nikkah wedding ceremony, Pakistani marriage, Shaadi London, Nikkah London, halal marriage site UK, Pakistani couple, Muslim couple, Sunni Muslim marriage, Muslim marriage services, Islam love marriage, Muslim matrimonial, Muslim marriage Manchester, Pakistani wedding London";
   
+  // Determine if this is a filtered/paginated view (non-indexable)
+  const hasNonGenderFilters = filters && (filters.minAge || filters.maxAge || filters.minHeight || filters.maxHeight || filters.city || filters.country || filters.nationality);
+  const isDeepPagination = page > 1;
+  const shouldNoIndexPage = hasNonGenderFilters || isDeepPagination;
+
+  // Build canonical URL: only gender filter is canonical-worthy
+  let canonicalUrl = "https://damourmuslim.com/profiles";
+  if (filters && filters.gender && !hasNonGenderFilters && !isDeepPagination) {
+    canonicalUrl = "https://damourmuslim.com/profiles?gender=" + encodeURIComponent(filters.gender);
+  }
+
   if (filters && filters.gender === 'male') {
     pageTitle = "Muslim Men for Matrimony | Islamic Wedding Grooms | Nikkah Partners UK";
     metaDescription = "Discover Muslim men seeking Islamic wedding and Nikkah ceremony. Browse Pakistani marriage profiles of single Muslim men in London, Manchester for halal matrimony.";
@@ -24,7 +35,10 @@
   <!-- SEO Meta Tags -->
   <meta name="description" content="<%= metaDescription %>">
   <meta name="keywords" content="<%= keywords %>">
-  <link rel="canonical" href="https://damourmuslim.com/profiles">
+  <% if (shouldNoIndexPage) { %>
+  <meta name="robots" content="noindex, follow">
+  <% } %>
+  <link rel="canonical" href="<%= canonicalUrl %>">
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16.png">
@@ -46,11 +60,14 @@
   <meta property="twitter:description" content="<%= metaDescription %>">
   <meta property="twitter:image" content="https://damourmuslim.com/images/og-image-profiles.jpg">
 
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
   <link rel="stylesheet" href="/css/output.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"></noscript>
   <style>
     :where([class^="ri-"])::before {
       content: "\f3c2";
@@ -538,7 +555,7 @@ html {
                 <!-- Profile Image -->
                 <div class="aspect-[4/5] overflow-hidden relative">
                   <% if (profile.profilePic && profile.profilePic.url) { %>
-                  <img src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" alt="<%= profile.name || profile.username %> - Muslim matrimony profile for Islamic wedding and Nikkah ceremony" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" onload="this.classList.add('loaded')" onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'">
+                  <img src="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %>" srcset="<%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_200,h_267,q_auto,f_auto/') %> 200w, <%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_300,h_400,q_auto,f_auto/') %> 300w, <%= profile.profilePic.url.replace('/upload/', '/upload/c_fill,w_400,h_533,q_auto,f_auto/') %> 400w" sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 300px" alt="<%= profile.name || profile.username %><%= profile.age ? ', ' + profile.age + ' year old' : '' %><%= profile.work ? ' ' + profile.work : '' %> - Muslim matrimony profile<%= profile.city ? ' in ' + profile.city : '' %>" class="w-full h-full object-cover transition-transform duration-300 hover:scale-105" loading="lazy" width="300" height="400" onerror="this.src='https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png'">
                   <% } else { %>
                   <!-- Default avatar based on gender -->
                   <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" alt="<%= profile.name || profile.username %>" class="w-full h-full object-cover" loading="lazy">
@@ -667,7 +684,7 @@ html {
             <a href="/profiles/<%= profile.profileSlug || profile._id %>" class="bg-white rounded-2xl overflow-hidden material-shadow hover:material-shadow-hover transition-all duration-300 block">
               <div class="aspect-[4/5] overflow-hidden">
                 <!-- Default placeholder based on gender -->
-                <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" alt="<%= profile.name || profile.username %>" class="w-full h-full object-cover" loading="lazy">
+                <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(profile.name || profile.username) %>&background=<%= profile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&format=png" alt="<%= profile.name || profile.username %><%= profile.age ? ', ' + profile.age + ' year old' : '' %><%= profile.work ? ' ' + profile.work : '' %> - Muslim marriage profile<%= profile.city ? ' in ' + profile.city : '' %>" class="w-full h-full object-cover" loading="lazy" width="300" height="300">
                 
               </div>
               <div class="p-4">

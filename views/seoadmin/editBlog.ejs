@@ -62,7 +62,7 @@
             <div class="flex items-start gap-4">
               <% if (blog.featuredImage) { %>
               <div class="w-32 h-20 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                <img src="<%= blog.featuredImage %>" alt="" class="w-full h-full object-cover">
+                <img src="<%= blog.featuredImage %>" alt="Featured image for <%= blog.title %>" class="w-full h-full object-cover">
               </div>
               <% } %>
               <div class="flex-1">

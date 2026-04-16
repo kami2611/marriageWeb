@@ -62,7 +62,7 @@
           <!-- Featured Image -->
           <div class="aspect-video bg-gray-100 relative">
             <% if (blog.featuredImage) { %>
-            <img src="<%= blog.featuredImage %>" alt="" class="w-full h-full object-cover">
+            <img src="<%= blog.featuredImage %>" alt="Featured image for <%= blog.title %>" class="w-full h-full object-cover">
             <% } else { %>
             <div class="w-full h-full flex items-center justify-center">
               <i class="ri-article-line text-4xl text-gray-300"></i>

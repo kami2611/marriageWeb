@@ -95,7 +95,7 @@
                   <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full overflow-hidden bg-gray-100 flex-shrink-0">
                       <% if (profile.profilePic && profile.profilePic.url) { %>
-                      <img src="<%= profile.profilePic.url %>" alt="" class="w-full h-full object-cover">
+                      <img src="<%= profile.profilePic.url %>" alt="Profile photo of <%= profile.username %>" class="w-full h-full object-cover">
                       <% } else { %>
                       <div class="w-full h-full flex items-center justify-center">
                         <i class="ri-user-line text-gray-400"></i>

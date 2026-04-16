@@ -341,8 +341,9 @@
 
         // Debug log
 
-        // **FIX**: Always redirect to /profiles page for filtering
-        const newUrl = `/profiles?${params.toString()}`;
+        // **FIX**: Redirect to current page for filtering (works on /profiles and /profiles/addedBy/staff)
+        const currentPath = window.location.pathname;
+        const newUrl = `${currentPath}?${params.toString()}`;
         window.location.href = newUrl;
       });
     }
@@ -350,8 +351,8 @@
     // Clear all filters
     if (clearFiltersBtn) {
       clearFiltersBtn.addEventListener('click', function() {
-        // **FIX**: Always redirect to /profiles page when clearing
-        window.location.href = '/profiles';
+        // **FIX**: Redirect to current page when clearing
+        window.location.href = window.location.pathname;
       });
     }
   });

@@ -175,11 +175,14 @@
       ]
     }
   </script>
+  <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
   <link rel="stylesheet" href="/css/output.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Playfair+Display:wght@400;600;700&family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet"></noscript>
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css"></noscript>
   <style>
     :where([class^="ri-"])::before {
       content: "\f3c2";
@@ -377,7 +380,7 @@
               <!-- Cover Photo -->
               <div class="aspect-[3/2] relative overflow-hidden">
                 <% if (profile.coverPhoto && profile.coverPhoto.url) { %>
-                <img src="<%= profile.coverPhoto.url %>" class="w-full h-full object-cover" alt="<%=  profile.username %>'s Cover">
+                <img src="<%= profile.coverPhoto.url %>" class="w-full h-full object-cover" alt="<%= profile.username %>'s cover photo - Muslim marriage profile<%= profile.city ? ' in ' + profile.city : '' %>">
                 <% } else { %>
                 <!-- Default cover image based on gender -->
                 <% if (profile.gender==='male' ) { %>
@@ -400,9 +403,9 @@
                 <div class="w-48 h-48 rounded-full overflow-hidden border-4 border-white material-shadow mx-auto mb-6">
                   <!-- Default avatar based on gender -->
                   <% if (profile.gender==='male' ) { %>
-                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %>'s Profile">
+                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=0077be&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %> - Muslim <%= profile.age ? profile.age + ' year old ' : '' %><%= profile.gender === 'male' ? 'groom' : 'bride' %> profile<%= profile.city ? ' from ' + profile.city : '' %>">
                   <% } else { %>
-                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %>'s Profile">
+                  <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent( profile.username) %>&background=e91e63&color=fff&size=400&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= profile.username %> - Muslim <%= profile.age ? profile.age + ' year old ' : '' %><%= profile.gender === 'male' ? 'groom' : 'bride' %> profile<%= profile.city ? ' from ' + profile.city : '' %>">
                   <% } %>
                   
                 </div>
@@ -1670,7 +1673,7 @@
           <div class="aspect-square overflow-hidden bg-gray-100 relative">
            
             <!-- Default avatar based on gender -->
-            <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(similarProfile.username) %>&background=<%= similarProfile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= similarProfile.username %>'s Profile" loading="lazy">
+            <img src="https://ui-avatars.com/api/?name=<%= encodeURIComponent(similarProfile.username) %>&background=<%= similarProfile.gender === 'male' ? '0077be' : 'e91e63' %>&color=fff&size=300&rounded=false&bold=true&format=png" class="w-full h-full object-cover" alt="<%= similarProfile.username %><%= similarProfile.age ? ', ' + similarProfile.age + ' year old' : '' %> - Muslim <%= similarProfile.gender === 'male' ? 'groom' : 'bride' %><%= similarProfile.city ? ' in ' + similarProfile.city : '' %>" loading="lazy" width="300" height="300">
 
             <!-- Age badge -->
             <% if (similarProfile.age) { %>

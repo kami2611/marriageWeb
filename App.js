@@ -294,26 +294,29 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.get(["/", "/home"], requireOnboardingComplete, async (req, res) => {
   try {
-    // Fetch 4 random approved profiles for homepage
-    const randomProfiles = await User.aggregate([
-      { $match: { 
-          approvalStatus: "approved",
-        } 
-      },
-      { $sample: { size: 4 } },
-      // FIX: Changed firstName to name, and profilePicture to profilePic
-      { $project: { name: 1, age: 1, city: 1, profilePic: 1, profileSlug: 1 } }
-    ]);
+
+    // Fetch 4 most recently added profiles by admin/staff
+    const staffAddedProfiles = await User.find({
+      approvalStatus: "approved",
+      registrationSource: "admin",
+      isDeactivated: { $ne: true },
+    })
+      .sort({ registeredAt: -1, createdAt: -1 })
+      .limit(4)
+      .select("name age city profilePic profileSlug username gender work")
+      .lean();
 
     res.render("home", {
       user: req.session.user || null,
-      randomProfiles: randomProfiles || [],
+    
+      staffAddedProfiles: staffAddedProfiles || [],
     });
   } catch (error) {
     console.error("Error fetching homepage data:", error);
     res.render("home", {
       user: req.session.user || null,
       randomProfiles: [],
+      staffAddedProfiles: [],
     });
   }
 });
@@ -843,6 +846,99 @@ seoPages.forEach(function(page) {
   });
 });
 
+seoPages.forEach(function(page) {
+  app.get(page.path, (req, res) => {
+    res.render("seo-page", page);
+  });
+});
+
+// ============================================
+// PROGRAMMATIC CITY HUB PAGES
+// ============================================
+const cityHubPages = [
+  {
+    city: "London",
+    slug: "muslim-matrimony-london",
+    region: "Greater London",
+    nearbyAreas: "Tower Hamlets, Newham, Redbridge, Waltham Forest, Hackney, and Barking",
+  },
+  {
+    city: "Birmingham",
+    slug: "muslim-matrimony-birmingham",
+    region: "West Midlands",
+    nearbyAreas: "Small Heath, Sparkbrook, Alum Rock, Saltley, Handsworth, and Aston",
+  },
+  {
+    city: "Manchester",
+    slug: "muslim-matrimony-manchester",
+    region: "Greater Manchester",
+    nearbyAreas: "Rusholme, Longsight, Cheetham Hill, Oldham, Rochdale, and Bolton",
+  },
+  {
+    city: "Bradford",
+    slug: "muslim-matrimony-bradford",
+    region: "West Yorkshire",
+    nearbyAreas: "Manningham, Keighley, Dewsbury, Batley, Halifax, and Huddersfield",
+  },
+  {
+    city: "Leicester",
+    slug: "muslim-matrimony-leicester",
+    region: "East Midlands",
+    nearbyAreas: "Highfields, Evington, Belgrave, Spinney Hills, and Beaumont Leys",
+  },
+  {
+    city: "Leeds",
+    slug: "muslim-matrimony-leeds",
+    region: "West Yorkshire",
+    nearbyAreas: "Harehills, Chapeltown, Beeston, Hyde Park, and Headingley",
+  },
+];
+
+cityHubPages.forEach(function(hub) {
+  const page = {
+    path: "/" + hub.slug,
+    pageTitle: `Muslim Matrimony in ${hub.city} | Find Your Spouse | D'amour Muslim`,
+    h1: `Muslim Matrimony in ${hub.city}`,
+    heroSubtitle: `Connect with verified Muslim singles in ${hub.city} and ${hub.region}. Halal matchmaking for serious marriage seekers.`,
+    metaDescription: `Find Muslim marriage partners in ${hub.city}. Browse verified profiles of Muslim singles in ${hub.nearbyAreas}. UK's trusted halal matrimony platform. Free to join.`,
+    keywords: `muslim matrimony ${hub.city.toLowerCase()}, muslim marriage ${hub.city.toLowerCase()}, rishta ${hub.city.toLowerCase()}, halal marriage ${hub.city.toLowerCase()}, muslim singles ${hub.city.toLowerCase()}, nikkah ${hub.city.toLowerCase()}, muslim matchmaking ${hub.region.toLowerCase()}`,
+    canonicalPath: "/" + hub.slug,
+    ctaHeading: `Find Your Spouse in ${hub.city}`,
+    ctaSubtext: `Join hundreds of Muslim singles in ${hub.city} already on their path to Nikah.`,
+    relatedLinks: cityHubPages
+      .filter(c => c.city !== hub.city)
+      .slice(0, 3)
+      .map(c => ({ url: "/" + c.slug, label: `Muslim Matrimony ${c.city}` }))
+      .concat([
+        { url: "/muslim-marriage", label: "Muslim Marriage" },
+        { url: "/profiles", label: "Browse All Profiles" }
+      ]),
+    bodyContent: `
+      <div class="prose max-w-none">
+        <p class="text-lg text-gray-700 mb-6 leading-relaxed">Looking for a Muslim life partner in ${hub.city}? D'amour Muslim is the UK's trusted halal matrimony platform, helping serious marriage seekers across ${hub.region} find compatible matches. Whether you live in ${hub.nearbyAreas} — our verified profiles make the search easier, safer, and more dignified.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Why Muslims in ${hub.city} Choose D'amour</h2>
+        <ul class="list-none space-y-3 mb-6">
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Verified profiles reviewed by our team before going live</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Halal-focused — marriage intention only, no casual dating</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Free to join and browse Muslim singles in ${hub.city}</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Filter by age, profession, education, sect, and more</span></li>
+          <li class="flex items-start gap-3"><span class="text-primary mt-1">✓</span><span class="text-gray-700">Family-friendly platform — wali involvement encouraged</span></li>
+        </ul>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">Muslim Marriage in ${hub.region}</h2>
+        <p class="text-gray-700 mb-4">${hub.city} has one of the UK's largest and most vibrant Muslim communities. From young professionals to families seeking a spouse for their son or daughter, D'amour Muslim serves the diverse needs of Muslims across ${hub.region}. Our platform supports profiles from areas including ${hub.nearbyAreas}.</p>
+        <h2 class="text-2xl font-bold text-gray-800 mb-4 mt-8 font-['Playfair_Display']">How It Works</h2>
+        <p class="text-gray-700 mb-4">Create your free profile in minutes, browse verified Muslim singles in ${hub.city}, and send interest to compatible matches. Our moderation team ensures every profile meets quality standards before it goes live. Your data is protected under UK GDPR regulations.</p>
+        <div class="bg-primary/5 rounded-2xl p-6 border border-primary/10 mt-8">
+          <p class="text-gray-700 font-medium">Also explore: ${cityHubPages.filter(c => c.city !== hub.city).slice(0, 2).map(c => `<a href="/${c.slug}" class="text-primary hover:underline">Muslim Matrimony ${c.city}</a>`).join(' and ')}.</p>
+        </div>
+      </div>
+    `
+  };
+  app.get(page.path, (req, res) => {
+    res.render("seo-page", page);
+  });
+});
+
 // ============================================
 // END SEO LANDING PAGES
 // ============================================
@@ -1237,7 +1333,6 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
 });
 // Update the existing /register POST route - NEW SIMPLIFIED FLOW
 app.post("/register", async (req, res) => {
-  console.log("Register request body:", req.body);
 
   const { email, password, confirmPassword, emailVerified } = req.body;
 
@@ -1514,7 +1609,7 @@ app.post("/api/savegenderandusername", async (req, res) => {
 });
 app.post("/login", async (req, res) => {
   const { username, password, remember } = req.body;
-  console.log("received");
+
 
   // Check if it's admin login first
   if (
@@ -1943,6 +2038,78 @@ app.post("/api/requests/:requestId/revoke", isLoggedIn, async (req, res) => {
     });
   }
 });
+// ============================================
+// STAFF-ADDED PROFILES PAGE
+// ============================================
+app.get("/profiles/addedBy/staff", requireOnboardingComplete, async (req, res) => {
+  const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
+  const limit = 12;
+  const skip = (page - 1) * limit;
+
+  const { gender, minAge, maxAge, minHeight, maxHeight, city, country } = req.query;
+
+  const filter = {
+    approvalStatus: "approved",
+    registrationSource: "admin",
+    isDeactivated: { $ne: true },
+  };
+
+  if (gender) filter.gender = gender;
+  if (city) filter.city = { $regex: new RegExp(city, "i") };
+  if (country) filter.country = { $regex: new RegExp(country, "i") };
+  if (minAge || maxAge) {
+    filter.age = {};
+    if (minAge) filter.age.$gte = parseInt(minAge);
+    if (maxAge) filter.age.$lte = parseInt(maxAge);
+  }
+  if (minHeight || maxHeight) {
+    filter.height = {};
+    if (minHeight) { const v = parseFloat(minHeight); if (!isNaN(v)) filter.height.$gte = v; }
+    if (maxHeight) { const v = parseFloat(maxHeight); if (!isNaN(v)) filter.height.$lte = v; }
+  }
+
+  try {
+    const totalProfiles = await User.countDocuments(filter);
+    const profiles = await User.find(filter)
+      .sort({ registeredAt: -1, createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const totalPages = Math.ceil(totalProfiles / limit);
+
+    const activeFilters = { gender, minAge, maxAge, minHeight, maxHeight, city, country };
+
+    // Detect geo for filter UI
+    const detectedCountryCode = detectCountry(req);
+    const geoFilterUI = getFilterUIConfig(detectedCountryCode);
+
+    let currentUserProfile = null;
+    if (req.session.userId) {
+      currentUserProfile = await User.findById(req.session.userId);
+    }
+
+    return res.render("staff-profiles", {
+      profiles,
+      filters: Object.keys(req.query).length > 0 ? activeFilters : null,
+      sortBy: "newly-created",
+      page,
+      totalPages,
+      totalProfiles,
+      currentUserProfile,
+      featuredProfiles: [],
+      geoFilterUI,
+      detectedCountryCode: detectedCountryCode || null,
+    });
+  } catch (error) {
+    console.error("Error fetching staff-added profiles:", error);
+    return res.status(500).render("error", {
+      title: "Error",
+      message: "Failed to fetch profiles",
+      error: process.env.NODE_ENV === "development" ? error : {},
+    });
+  }
+});
+
 app.get("/profiles",requireOnboardingComplete, async (req, res) => {
   // Pagination params
   const page = parseInt(req.query.page) > 0 ? parseInt(req.query.page) : 1;
@@ -5390,7 +5557,12 @@ res.redirect(301, googleFormUrl);
 // Update the sitemap.xml route to include static blogs
 app.get("/sitemap.xml", async (req, res) => {
   try {
-    const users = await User.find({ approvalStatus: "approved"}).select("_id updatedAt profileSlug");
+    const users = await User.find({
+      approvalStatus: "approved",
+      "seoSettings.noIndex": { $ne: true },
+      isDeactivated: { $ne: true },
+      profileSlug: { $exists: true, $ne: null }
+    }).select("_id updatedAt createdAt profileSlug");
     const blogs = await Blog.find({ isPublished: true }).select("slug updatedAt publishedAt");
 
     // **NEW**: Static blog slugs
@@ -5521,6 +5693,51 @@ app.get("/sitemap.xml", async (req, res) => {
     <loc>https://damourmuslim.com/rishta-karachi</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/profiles?gender=male</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/profiles?gender=female</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/profiles/addedBy/staff</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matrimony-london</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matrimony-birmingham</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matrimony-manchester</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matrimony-bradford</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matrimony-leicester</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://damourmuslim.com/muslim-matrimony-leeds</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>`;
 
     // Add database blog posts
@@ -5553,7 +5770,9 @@ app.get("/sitemap.xml", async (req, res) => {
       if (user.profileSlug) {
         const lastmod = user.updatedAt
           ? user.updatedAt.toISOString().split("T")[0]
-          : new Date().toISOString().split("T")[0];
+          : user.createdAt
+            ? user.createdAt.toISOString().split("T")[0]
+            : new Date().toISOString().split("T")[0];
         sitemap += `
   <url>
     <loc>https://damourmuslim.com/profiles/${user.profileSlug}</loc>
@@ -5582,12 +5801,24 @@ Allow: /profiles
 Allow: /profile
 Allow: /profiles?gender=male
 Allow: /profiles?gender=female
+Allow: /profiles/addedBy/staff
 Allow: /register
 Allow: /login
+Disallow: /profiles?*minAge=
+Disallow: /profiles?*maxAge=
+Disallow: /profiles?*minHeight=
+Disallow: /profiles?*maxHeight=
+Disallow: /profiles?*city=
+Disallow: /profiles?*country=
+Disallow: /profiles?*nationality=
+Disallow: /profiles?*sortBy=
+Disallow: /profiles?*page=
 Disallow: /admin/
 Disallow: /account/
 Disallow: /api/
 Disallow: /logout
+Disallow: /chats/
+Disallow: /chat/
 
 Sitemap: https://damourmuslim.com/sitemap.xml`;
 
