@@ -969,7 +969,7 @@ app.post("/api/onboarding/save", isLoggedIn, findUser, async (req, res) => {
     const user = req.userData;
     const { step, data } = req.body;
 
-    console.log(`Onboarding step ${step} data:`, data);
+    
 
     // Server-side validation for step 6 (phone number)
     if (Number(step) === 6) {
@@ -1095,7 +1095,7 @@ app.get("/login", (req, res) => {
 
 // Place this after session and before your protected routes
 app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
-  console.log("Account update request body:", req.body);
+ 
 
   try {
     const user = req.userData;
@@ -1316,7 +1316,7 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
       const previousSlug = user.profileSlug;
       user.profileSlug = await generateUniqueSlug(user);
       addProfileSlugHistory(user, previousSlug, user.profileSlug);
-      console.log("Updated profile slug:", user.profileSlug);
+
     }
 
     await user.save();
@@ -1324,7 +1324,6 @@ app.post("/account/update", isLoggedIn, findUser, async (req, res) => {
     // Update session user data
     req.session.user = user;
 
-    console.log("User profile updated successfully:", user.username);
     res.json({ success: true, message: "Profile updated successfully!" });
   } catch (error) {
     console.error("Account update error:", error);
@@ -1413,7 +1412,7 @@ app.post("/register", async (req, res) => {
     newUser.profileSlug = await generateUniqueSlug(newUser);
     await newUser.save();
 
-    console.log("User registration completed:", newUser.username);
+   
 
     // Clean up verification session data
     delete req.session.emailVerified;
@@ -1590,7 +1589,7 @@ app.post("/api/savegenderandusername", async (req, res) => {
     newUser.profileSlug = await generateUniqueSlug(newUser);
     await newUser.save();
 
-    console.log("Gender and username saved for user:", username);
+    
 
     // Store user ID in session for next steps
     req.session.tempUserId = newUser._id;
@@ -1716,7 +1715,7 @@ app.get(
 
       // Clean up any temporary session data
       if (req.session.verifiedMobile) {
-        console.log("Cleaned up verified mobile from session");
+     
         delete req.session.passcodeVerified;
         delete req.session.verifiedMobile;
       }
@@ -2717,7 +2716,7 @@ app.post("/api/admin/user/:id/approve", requireAdminOrModerator, async (req, res
     if (user.email) {
       try {
         await sendProfileApprovalEmail(user.email, user.username, user.name);
-        console.log(`Approval email sent to ${user.email}`);
+        
       } catch (emailError) {
         console.error("Failed to send approval email:", emailError);
         // Don't fail the approval if email fails
@@ -2769,7 +2768,7 @@ app.post("/api/admin/user/:id/reject", requireAdminOrModerator, async (req, res)
     
     await user.save();
 
-    console.log(`User ${user.username} rejected. Reason: ${user.rejectionReason}`);
+    
 
     res.json({ 
       success: true, 
@@ -5797,22 +5796,18 @@ app.get("/sitemap.xml", async (req, res) => {
 app.get("/robots.txt", (req, res) => {
   const robots = `User-agent: *
 Allow: /
-Allow: /profiles
-Allow: /profile
-Allow: /profiles?gender=male
-Allow: /profiles?gender=female
-Allow: /profiles/addedBy/staff
-Allow: /register
-Allow: /login
-Disallow: /profiles?*minAge=
-Disallow: /profiles?*maxAge=
-Disallow: /profiles?*minHeight=
-Disallow: /profiles?*maxHeight=
-Disallow: /profiles?*city=
-Disallow: /profiles?*country=
-Disallow: /profiles?*nationality=
-Disallow: /profiles?*sortBy=
-Disallow: /profiles?*page=
+
+# Block Faceted Navigation / Filter Combinations
+Disallow: /*minAge=
+Disallow: /*maxAge=
+Disallow: /*minHeight=
+Disallow: /*maxHeight=
+Disallow: /*city=
+Disallow: /*country=
+Disallow: /*nationality=
+Disallow: /*sortBy=
+
+# Block Private & Functional Routes
 Disallow: /admin/
 Disallow: /account/
 Disallow: /api/

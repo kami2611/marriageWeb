@@ -382,7 +382,7 @@
           }
 
           const result = await response.json();
-          console.log('Save response:', result); // Debug log
+          
 
           // More specific success check
           if (result.success !== true) {
@@ -399,7 +399,7 @@
       // Complete onboarding
       async function completeOnboarding() {
         try {
-          console.log('Completing onboarding...'); // Debug log
+          
 
           const response = await fetch('/api/onboarding/complete', {
             method: 'POST',
@@ -414,7 +414,7 @@
           }
 
           const result = await response.json();
-          console.log('Complete response:', result); // Debug log
+     
 
           // More specific success check
           if (result.success !== true) {

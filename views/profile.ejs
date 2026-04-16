@@ -96,49 +96,53 @@
   <meta name="twitter:description" content="<%= richDescription %>">
   <meta name="twitter:image" content="<%= imageUrl %>">
 
-  <!-- ✅ JSON-LD Structured Data (Person Schema for Muslim Marriage Profiles) -->
-  <!-- Replace the existing schema with this more detailed version -->
+  <!-- ✅ JSON-LD Structured Data (ProfilePage + Person Schema) -->
   <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "<%= profile.randomNameForSeo || profile.username %>",
-      "gender": "<%= profile.gender %>",
-      "birthDate": "<%= profile.age ? (new Date().getFullYear() - profile.age) + '-01-01' : '' %>",
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "<%= profile.city || '' %>",
-        "addressRegion": "<%= profile.state || '' %>",
-        "addressCountry": "<%= profile.country || 'United Kingdom' %>"
-      },
-      "image": "<%= imageUrl %>",
-      "url": "<%= profileUrl %>",
-      "description": "<%= richDescription %>",
-      "jobTitle": "<%= profile.work || '' %>",
-      "alumniOf": [
-        <% if (profile.education && profile.education.length > 0) { %>
-        <% profile.education.forEach((edu, index) => { %> {
-          "@type": "EducationalOrganization",
-          "name": "<%= edu.institute || 'Educational Institution' %>"
+      "@type": "ProfilePage",
+      "dateCreated": "<%= profile.createdAt ? new Date(profile.createdAt).toISOString() : new Date().toISOString() %>",
+      "dateModified": "<%= profile.updatedAt ? new Date(profile.updatedAt).toISOString() : new Date().toISOString() %>",
+      "mainEntity": {
+        "@type": "Person",
+        "name": "<%= profile.randomNameForSeo || profile.username %>",
+        "gender": "<%= profile.gender %>",
+        "birthDate": "<%= profile.age ? (new Date().getFullYear() - profile.age) + '-01-01' : '' %>",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "<%= profile.city || '' %>",
+          "addressRegion": "<%= profile.state || '' %>",
+          "addressCountry": "<%= profile.country || 'United Kingdom' %>"
+        },
+        "image": "<%= imageUrl %>",
+        "url": "<%= profileUrl %>",
+        "description": "<%= richDescription %>",
+        "jobTitle": "<%= profile.work || '' %>",
+        "alumniOf": [
+          <% if (profile.education && profile.education.length > 0) { %>
+          <% profile.education.forEach((edu, index) => { %> {
+            "@type": "EducationalOrganization",
+            "name": "<%= edu.institute || 'Educational Institution' %>"
+          }
+          <%= index < profile.education.length - 1 ? ',' : '' %>
+          <% }) %>
+          <% } %>
+        ],
+        "knowsLanguage": [
+          <% if (profile.languagesSpoken && profile.languagesSpoken.length > 0) { %>
+          <% profile.languagesSpoken.forEach((lang, index) => { %> "<%= lang %>"
+          <%= index < profile.languagesSpoken.length - 1 ? ',' : '' %>
+          <% }) %>
+          <% } %>
+        ],
+        "seeks": {
+          "@type": "Thing",
+          "description": "<%= profile.lookingForASpouseThatIs || 'A compatible marriage partner' %>"
+        },
+        "nationality": {
+          "@type": "Country",
+          "name": "<%= profile.nationality || profile.country || 'United Kingdom' %>"
         }
-        <%= index < profile.education.length - 1 ? ',' : '' %>
-        <% }) %>
-        <% } %>
-      ],
-      "knowsLanguage": [
-        <% if (profile.languagesSpoken && profile.languagesSpoken.length > 0) { %>
-        <% profile.languagesSpoken.forEach((lang, index) => { %> "<%= lang %>"
-        <%= index < profile.languagesSpoken.length - 1 ? ',' : '' %>
-        <% }) %>
-        <% } %>
-      ],
-      "seeks": {
-        "@type": "Thing",
-        "description": "<%= profile.lookingForASpouseThatIs || 'A compatible marriage partner' %>"
-      },
-      "nationality": {
-        "@type": "Country",
-        "name": "<%= profile.nationality || profile.country || 'United Kingdom' %>"
       }
     }
   </script>
